@@ -1,0 +1,185 @@
+#
+# Author: Marcin Szamotulski
+# This is a to do list for ATP vim plugin.
+# I put here notes on planned features, 
+# but mainly I use this file for bugs that I found.
+
+pedit for openning without changing the window number! 
+
+Make defisearch use location list (in more vim style).
+		(This was imposible for some reason)
+
+ToDo: GotoNextSection --> GoTo 3rd section :) using count!
+SOLUTION: I can use the "= register (see map-examples)
+
+ToDo: completion of user defined command \mpr{} (with {}) position the cursor
+in the right place)
+
+ToDo: add support for plain TeX users in the function atplib#SearchPackage()
+	in TeX one writes: '\input tikz.tex' instead of '\usepackage{tikz}'
+	in while in ConTeXt '\usemodule[tikz]'
+
+ToDo: Pattern not found should restore the window position
+ToDo: :2match (and :3match)  in HighlightMatchingPair and Search function - it
+is better to use matchadd().
+
+ToDo: Disable mapping # before \ (make an IMAP function)
+Bug: \ref{2.\d<Tab> will try to complete label instead of passing a regexp to
+label completion.
+Doc: updatetime setting in insert mode 
+Bug: syntax groups for status don't work in vim 7.3d (in common.vim)
+
+    "THIS MIGHT BE USEFULL:
+    The first column is 1.	0 is returned for an error.
+    A more advanced example that echoes the maximum length of
+    all lines:
+    echo max(map(range(1, line('$')), "virtcol([v:val, '$'])"))
+
+MakeLatex	    
+	MakeLatex, Delete -> puts MakeLatex in an endless loop.
+
+TODO: make toc work with parts!
+ 		The work has started ...
+
+TODO: Check against lilypond 
+
+Todo: make small Help functions with list of most important mappings and
+commands for each window (this can help at the begining) make it possible to
+turn it off.
+
+<Ctrl-W>k<Ctrl-W>_		Fast switching bettween buffers				
+
+To do: MakeLatex add support for loa (list of algorithms). 
+
+<HARD>
+Make a function which reads the log file and sets error list.	
+It is quite hard to make efm so that it gets error messages with file name.
+Possible solution is to write w program/function to rewrite the log message.
+
+In 'plaintex' MakeLatex results in an infinte loop. 
+
+:S /{pattern}/ is not working in plain tex files.
+
+<NICE FEATURE> \v with counter: runs that many copies of viewer.
+	probably not needed.
+	/needed only for xpdf/
+
+<Nice Feature> YankSection -> in toc (there is delete section so yank
+shuoldn't be dificult).
+
+Bug: \ref{<Tab> and the screen is redrawn (like redraw!)
+<Nice Feature> if none of completions is working use tab as a normal Tab key.
+/this will be slow/
+<Nice Feature> make atprc.vim file in the gentoo style
+Bug: \{ ... <Tab> =? \{ ... } 	( generically it works )
+To do: add large delimiters to completion (Bracket closings: Table 3.9 in
+    lshort pdfpage: 80) but also \lceil:\rceil, \lfloor:\rfloor, \vert:\vert,
+    \Vert:\Vert (make this fast, count all $,\vert,\Vert at once)
+To do: completion: make the screen stable.
+
+To do: Make an if statement: write if the history is nonempty!
+?To do: \left\.:\right pair! (let the user write the closing bracket.
+	also \lvert:\rvert, \lVert:\rVert (only in amsmath)
+
+Bug: How to make NextSection and PreviousSection work with omap.
+
+Done: <NICE FEATURE> GotoLabel {labelname or label number}
+	(this is done with :Labels, but it might be a good idea to have
+	a command for that - with a nice completion) 
+
+To do? +- -> \pm +| -> \dagger ++ -> \ddagger  
+Partialy Solved: imap #8 is mapping to <F8> !
+To do: \cite by number.
+To do: Show History (at least the variables which are short)
+ 
+To do: Make Todo for project files.
+
+To doc: compare double empty lines, compare spaces.
+To do: test SyncXpdf when syncing the last page (boarder conditions).
+	It doesn't work as it should - this is a minor bug.
+
+NOTE: in aux file definitions are resolved (see \av)
+
+To do: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
+
+To do: :R Replace like :S  (project files). /there might be vim way to do that/.
+
+Bug:  BibSearch /Brzeznski/ shows articles of Pflaum! (Mat.bib).
+Because he is in:
+    MRCLASS   
+    MRNUMBER  
+    MRREVIEWER
+The problem is that All flag doesn't show this entries.  
+
+
+Todo: Write searchpair function for log file which ignores bracketes in
+Overfull message (it happens that these brackets doesn't come in pairs!).
+
+Todo: SetProjectName should test project scripts, I think LoadProject has this code!
+	There are two function to implement this: FindProjectScripts() and GetProjectScript()
+ 
+Todo: :S could be faster using ijump.
+Todo: TexSyntaxMotion is not working on last H of: \mbox{$L(A,H)=(A\otimes A)^{co\,H}$}
+Todo: urlop.tex \includegraphics{...} -> error which is not seen by ':ShowErrors e' command.
+	The error was caused because the graphics file was empty.
+Todo: imap <buffer> \8 It is not good to have any imapping starting with '\'.
+Todo: [NICE ADDITION] add bracket to completion list (at the end, or at the
+	begining if the world before cursor is in completion pool) if there is one to
+be closed.
+To do: vip: bmove and emove are not 100% accurate \chapter{...}\Xlabel but \chapter{...} X\label will work (X is the place were we move fromm } just before using w normal command.
+	This can be solved with moving till first ' ' (white space) or '\' or possibly some other character but before the first '}'.
+To do: tag-stack
+To do: turn off autoindent in align ... would be OK?
+
+To do:     au BufEnter *.tex.project.vim set nowrap textwidth=0
+	(Set this not using filetype plugin)
+	One can do that in plugin/atp.vim file - but it might not be worthy to do that just for one setting.
+
+To do: 	$i:\Sub_{\Alg^H}(A)\subseteq\Sub_\Alg(A)^\mathit{op<TAB HERE>$ preserves all
+	<Tab> doesn't close {! 
+
+To do: with j motion it can put \mathit{} not just \mathit{.	
+To do: TOC when modifiable is set.
+#
+To do: NEnv (hit bottom, cont at top) 
+To do: Check AMSRef, with xy-ks:galois-theory-of-skew-fields there was no comma after key.  
+To do: TabCompletion for \pagestyle command
+To do: xcolor package completion
+
+To do: add this error message.
+	    (/home/texmf/tex/settings-galois.tex) (./HopfGaloisTheory-field.aux
+
+	    ! Package natbib Error: Bibliography not compatible with author-year citations.
+
+	    (natbib)                Press <return> to continue in numerical citation style.
+
+
+	    See the natbib package documentation for explanation.
+	    Type  H <return>  for immediate help.
+	     ...                                              
+							      
+	    l.144 ...and\NAT@force@numbers{}\NAT@force@numbers
+
+To do: a command/map to switch all the ATP maps on/off :) cool
+To do: gw when the paragraph is ended on last line of the file (but not on \end{document} (it hapens in input files).
+
+To do: Open should have an option to show full path.
+
+To do: print file in a TOC iff it is in the buffer list. 
+       Clear the meaning of t:buflist (it seems that it is not working: the
+       files which are not in this list are printed in TOC).
+
+But I think it is better this way, there is vie to match just inside the align (or any other env).
+To do: vip is not stopped before \begin{align}:
+    is a bijection. In Theorem~\ref{thm:cogalois-extensions} we show that for an
+    \(H\)-coextension \(C\sir C^H\) over a ring \(k\) there exists a Galois
+    correspondence: 
+    \begin{align}\label{eq:prelim-coGalois}
+	<HERE vip>\qid(H)\cong\qquot(H)^\mathit{op}\lgalois{K\mapsto C/CK^+}{}\qquot(\nicefrac{C}{C^{H}})^\mathit{op} 
+    \end{align}
+   
+To do: \Labels command: it might be better to put page number instead of line number. 	
+To do: UnWrap command.
+
+To do: when changing bib file, the Main File is not processing (atp is not
+loaded for bib files!)

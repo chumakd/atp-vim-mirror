@@ -1,0 +1,43 @@
+s:CompleteLabels (LatexBox_complete.vim)
+s:LatexmkCallBack (LatexBox_latexmk.vim)
+
+plain tex notes:
+	no \cite	command
+	no \ref		command
+	no \textsf	command
+	no \sf		command
+
+pgfrcs.tex	
+	def files not working with gf in plaintex.
+		/ after using atplib#append_ext /
+
+	no \(:\) and \[:\] pairs
+
+there is only one math syntax region: 
+	    paintexMath	
+
+To Do: add support for plain TeX users in the function atplib#SearchPackage()
+	in TeX one writes: '\input tikz.tex' instead of '\usepackage{tikz}'
+	in while in ConTeXt '\usemodule[tikz]'
+
+Syntax motion:	
+two modes ctrl-j and ctrl-J (both forward) J goes further than j (there can be also ctrl-k anc ctrl-K going backward).
+    texStatement
+			    texMathZone...	- rather not
+	    texTitle
+	texMatcher
+	texMathMatcher
+	    texSectionName 		\section{texSectionName}[texSectionModifier]
+	    texSectionModifier
+
+    texSuperscript	every ^{}
+    texSubscript	every _{}	they should be counted together and the function should place the cursor where the last one ends
+
+    texSuperscripts any ^{}
+    texSubscripts	any _{}
+
+To Do: ADD SUPPORT FOR subfiles.sty AND subfiles.cls :)
+To Do: JMotion 
+\begin{equation}
+\aaa{<FROM HERE>}
+\end{<GOES HERE>equation}
