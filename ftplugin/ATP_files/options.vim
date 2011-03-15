@@ -274,6 +274,38 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+" Variables for imaps, standard environment names:
+    if !exists("g:atp_EnvNameTheorem")
+	let g:atp_EnvNameTheorem="theorem"
+    endif
+    if !exists("g:atp_EnvNameDefinition")
+	let g:atp_EnvNameDefinition="definition"
+    endif
+    if !exists("g:atp_EnvNameProposition")
+	let g:atp_EnvNameProposition="proposition"
+    endif
+    if !exists("g:atp_EnvNameObservation")
+	" This mapping is defined only in old layout:
+	" i.e. if g:atp_env_maps_old == 1
+	let g:atp_EnvNameObservation="observation"
+    endif
+    if !exists("g:atp_EnvNameLemma")
+	let g:atp_EnvNameLemma="lemma"
+    endif
+    if !exists("g:atp_EnvNameNote")
+	let g:atp_EnvNameNote="note"
+    endif
+    if !exists("g:atp_EnvNameCorollary")
+	let g:atp_EnvNameCorollary="corollary"
+    endif
+    if !exists("g:atp_EnvNameRemark")
+	let g:atp_EnvNameRemark="remark"
+    endif
+if !exists("g:atp_StarEnvDefault")
+    " Values are "" or "*". 
+    " It will be added to enrionemnt names which support it.
+    let g:atp_StarEnvDefault=""
+endif
 if !exists("g:atp_EnvOptions_enumerate")
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
     " enumerate map <Leader>E will put \begin{enumerate}[topsep=0pt,noitemsep] Useful
@@ -523,7 +555,6 @@ endif
 if !exists("g:atp_bracket_dict") || g:atp_reload
     let g:atp_bracket_dict = { '(' : ')', '{' : '}', '[' : ']', '\lceil' : '\rceil', '\lfloor' : '\rfloor', '\langle' : '\rangle', '\lgroup' : '\rgroup' }
 endif
-" }}}2 			variables
 if !exists("g:atp_LatexBox") || g:atp_reload
     let g:atp_LatexBox		= 1
 endif
