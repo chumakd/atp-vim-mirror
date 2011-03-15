@@ -185,5 +185,3 @@ To do: when changing bib file, the Main File is not processing (atp is not
 loaded for bib files!)
 
 To do: \DeclaraMathOperator for :LocalCommands
-
-To do: make option to add a star to every environment.
