@@ -205,7 +205,7 @@ let b:atp_running	= 0
 let s:optionsDict= { 	"atp_TexOptions" 	: "", 		
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
-		\ "atp_autex" 			: !&l:diff, 
+		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
 		\ "atp_ProjectScript"		: "1",
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "xpdf" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
@@ -1312,7 +1312,7 @@ endif
 
 	" the command \label is added at the end.
 	let g:atp_Commands=["\\begin{", "\\end{", 
-	\ "\\cite{", "\\nocite{", "\\ref{", "\\pageref{", "\\eqref{", "\\item",
+	\ "\\cite", "\\nocite{", "\\ref{", "\\pageref{", "\\eqref{", "\\item",
 	\ "\\emph{", "\\documentclass{", "\\usepackage{",
 	\ "\\section", "\\subsection", "\\subsubsection", "\\part", 
 	\ "\\chapter", "\\appendix", "\\subparagraph", "\\paragraph",

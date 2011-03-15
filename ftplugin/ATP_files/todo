@@ -184,4 +184,11 @@ To do: UnWrap command.
 To do: when changing bib file, the Main File is not processing (atp is not
 loaded for bib files!)
 
-To do: \DeclaraMathOperator for :LocalCommands
+Done: \DeclaraMathOperator for :LocalCommands
+Done: ShowErrors o <- add to command completion.
+To do: \varespilon,... - maps, completion
+To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this might be a local issue).
+(A VERY GOOD IDEA): write a package which lists in a file all theorems with numbers that tex is using.
+	This can be taken from list of theorems (lot) and list of definitions (lod) files.
+	This can be used to have more labels in GotoLabel (tex can print the line number where it is).
+	This is implemented in ntheorem.sty.
