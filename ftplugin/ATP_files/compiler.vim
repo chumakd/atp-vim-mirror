@@ -1413,7 +1413,7 @@ endfunction
 "}}}
 if !exists("*ListErrorsFlags")
 function! ListErrorsFlags(A,L,P)
-	return "e\nw\nc\nr\ncr\nf\nfi\nall\nF"
+	return "all\nc\ne\nF\nf\nfi\no\nr\nw"
 endfunction
 endif
 "}}}
