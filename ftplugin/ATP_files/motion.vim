@@ -1208,24 +1208,38 @@ endfunction "}}}
 " f works like ]*
 " b workd like [*
 " Note: the 's' search flag is passed by the associated commands.
-function! <SID>SkipComment(flag)
+" This can be extended: 
+" 	(1) skip empty lines between comments
+function! <SID>SkipComment(flag, mode, ...)
     let flag 	= ( a:flag =~ 'b' ? 'b' : '' ) 
     let nr	= ( a:flag =~ 'b' ? '-1' : 1 )
     call search('^\zs\s*%', flag)
+    call cursor(line("."), ( nr == -1 ? 1 : len(getline(line(".")))))
 
     let line	= getline(line("."))
-    " find previous non empty line
+    " find previous line
     let pline_nr=min([line("$"), max([1,line(".")+nr])])
     let pline	= getline(pline_nr) 
-    while pline =~ '^\s*$' && pline_nr > 1 && pline_nr < line("$")
-	let pline_nr += nr
-	let pline=getline(pline_nr)
-    endwhile
+    " This code find previous non empty line    
+"     while pline =~ '^\s*$' && pline_nr > 1 && pline_nr < line("$")
+" 	let pline_nr += nr
+" 	let pline=getline(pline_nr)
+"     endwhile
 
-    while line =~ '^\s*%' || ( line =~ '^\s*$' && pline =~ '^\s*%' )
-	call cursor(line(".")+nr,1)
-	let line= getline(line("."))
+"     while line =~ '^\s*%' || ( line =~ '^\s*$' && pline =~ '^\s*%' )
+    while pline =~ '^\s*%'
+	call cursor(line(".")+nr, ( nr == -1 ? 1 : len(getline(line(".")+nr))))
+" 	let line=getline(line("."))
+	let pline_nr=min([line("$"), max([1,line(".")+nr])])
+	let pline	= getline(pline_nr) 
     endwhile
+    if a:mode == 'v'
+	let end_pos = [ line("."), col(".") ]
+	" Go where visual mode started
+	exe "normal `" . ( nr == 1 ? '<' : '>' ) 
+	exe "normal " . visualmode()
+	call cursor(end_pos)
+    endif
 endfunction "}}}
 "}}}
 
@@ -1438,8 +1452,10 @@ call s:buflist()
 
 " Commands And Maps:
 " {{{
-command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs')
-command! -buffer SkipCommentBackward 	:call <SID>SkipComment('bs')
+command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs', 'n')
+command! -buffer SkipCommentBackward 	:call <SID>SkipComment('bs', 'n')
+vmap <buffer> <Plug>SkipCommentForward	:call <SID>SkipComment('fs', 'v')<CR>
+vmap <buffer> <Plug>SkipCommentBackward	:call <SID>SkipComment('bs', 'v', col("."))<CR>
 
 imap <Plug>TexSyntaxMotionForward	<Esc>:call TexSyntaxMotion(1,1,1)<CR>a
 imap <Plug>TexSyntaxMotionBackward	<Esc>:call TexSyntaxMotion(0,1,1)<CR>a

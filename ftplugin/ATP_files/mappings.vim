@@ -24,10 +24,20 @@ let g:atp_map_list	= [
 if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_maps == 0 ) && 
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
-nmap <buffer> ]*	:SkipCommentForward<CR> 
-nmap <buffer> gc	:SkipCommentForward<CR>
-nmap <buffer> [*	:SkipCommentBackward<CR> 
-nmap <buffer> gC	:SkipCommentBackward<CR>
+nmap <buffer> <silent> ]*	:SkipCommentForward<CR> 
+omap <buffer> <silent> ]*	:SkipCommentForward<CR> 
+nmap <buffer> <silent> gc	:SkipCommentForward<CR>
+omap <buffer> <silent> gc	:SkipCommentForward<CR>
+
+vmap <buffer> <silent> ]*	<Plug>SkipCommentForward
+vmap <buffer> <silent> gc	<Plug>SkipCommentForward
+vmap <buffer> <silent> gC	<Plug>SkipCommentBackward
+vmap <buffer> <silent> [*	<Plug>SkipCommentBackward
+
+nmap <buffer> <silent> [*	:SkipCommentBackward<CR> 
+omap <buffer> <silent> [*	:SkipCommentBackward<CR> 
+nmap <buffer> <silent> gC	:SkipCommentBackward<CR>
+omap <buffer> <silent> gC	:SkipCommentBackward<CR>
 
 execute "nmap <buffer> ".g:atp_map_forward_motion_leader."i				:NInput<CR>"
 execute "nmap <buffer> ".g:atp_map_backward_motion_leader."i				:PInput<CR>"
