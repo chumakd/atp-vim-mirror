@@ -192,5 +192,3 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 	This can be taken from list of theorems (lot) and list of definitions (lod) files.
 	This can be used to have more labels in GotoLabel (tex can print the line number where it is).
 	This is implemented in ntheorem.sty.
-To do: align and align* (make atp_StarDefault variable for this type of environments)	
-To do: line 1264 in hgt-ii.tex \left(:\right) is not working.

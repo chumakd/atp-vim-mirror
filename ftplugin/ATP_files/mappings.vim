@@ -136,8 +136,8 @@ nmap <C-k> <Plug>TexJMotionBackward
     execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."C   :WrapSelection '"."\\"."begin{center}','"."\\"."end{center}','0','1'<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."R   :WrapSelection '"."\\"."begin{flushright}','"."\\"."end{flushright}','0','1'<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."L   :WrapSelection '"."\\"."begin{flushleft}','"."\\"."end{flushleft}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."E   :WrapSelection '"."\\"."begin{equation}','"."\\"."end{equation}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."A   :WrapSelection '"."\\"."begin{align}','"."\\"."end{align}','0','1'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."E   :WrapSelection '"."\\"."begin{equation=g:atp_StarMathEnvDefault<CR>}','"."\\"."end{equation=g:atp_StarMathEnvDefault<CR>}','0','1'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."A   :WrapSelection '"."\\"."begin{align=g:atp_StarMathEnvDefault<CR>}','"."\\"."end{align=g:atp_StarMathEnvDefault<CR>}','0','1'<CR>"
 
     " Math Modes:
     vmap <buffer> m						:<C-U>WrapSelection '\(', '\)'<CR>
@@ -346,7 +346,7 @@ execute 'imap <buffer> '.g:atp_imap_third_leader.'c \begin{center}<CR>\end{cente
 execute 'imap <buffer> '.g:atp_imap_fourth_leader.'c \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'d \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_fourth_leader.'u \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
-execute 'imap <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'i \item'
 execute 'imap <buffer> '.g:atp_imap_fourth_leader.'i \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'l \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
@@ -360,7 +360,7 @@ execute 'imap <buffer> '.g:atp_imap_third_leader.'r \begin{=g:atp_EnvNameRemark
 execute 'imap <buffer> '.g:atp_imap_fourth_leader.'l \begin{flushleft}<CR>\end{flushleft}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'r \begin{flushright}<CR>\end{flushright}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'f \begin{frame}<CR>\end{frame}<Esc>O'
-execute 'imap <buffer> '.g:atp_imap_fourth_leader.'q \begin{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <buffer> '.g:atp_imap_fourth_leader.'q \begin{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'n \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'o \begin{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'x \begin{example=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'

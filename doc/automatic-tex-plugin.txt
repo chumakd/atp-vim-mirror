@@ -111,6 +111,21 @@ NEWS							*atp-news*
   - :SkipCommentForward, :SkipCommentBackward with vim compatible maps ]*, [*
     (they are not working as I would wish to so there are also other maps gc
     and gC). It skips also empyt lines between commented lines.
+							*g:atp_StarEnvDefault*
+  - g:atp_StarEnvDefault variable with value "*" or "" (the default). This
+    star is added to theorem like environment imaps (|atp-imap-environments|).
+    							*g:atp_StarMathEnvDefault*	
+  - g:atpStarMathEnvDefault variable with values "*" or "" (the
+    default). It is added to align and equation imaps (|atp-imap-environments|).
+    							*g:atp_EnvNameTheorem*
+    							*g:atp_EnvNameProposition*
+    							*g:atp_EnvNameLemma*
+    							*g:atp_EnvNameCorollary*
+    							*g:atp_EnvNameRemark*
+    							*g:atp_EnvNameNote*
+    							*g:atp_EnvNameDefinition*
+  - This variables defines environment names put it the environment imaps
+    |atp-imap-environments|.
     
 >
   Changes in version 8.7

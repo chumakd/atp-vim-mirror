@@ -216,7 +216,7 @@ let s:optionsDict= { 	"atp_TexOptions" 	: "",
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "" }
-
+let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
 
@@ -233,8 +233,7 @@ function! s:SetOptions()
     "value unless it was already set in .vimrc file.
     for key in s:optionsKeys
 	if string(get(s:optionsinuseDict,key, "optionnotset")) == string("optionnotset") && key != "atp_OutDir" && key != "atp_autex" || key == "atp_TexCompiler"
-" 	    echomsg key . " " . s:optionsDict[key]
-	    call setbufvar(bufname("%"),key,s:optionsDict[key])
+	    call setbufvar(bufname("%"), key, s:optionsDict[key])
 	elseif key == "atp_OutDir"
 
 	    " set b:atp_OutDir and the value of errorfile option
@@ -244,18 +243,15 @@ function! s:SetOptions()
 	    let s:ask["ask"] 	= 1
 	endif
     endfor
-    " Do not run tex on tex files which are in texmf tree
+
+        " Do not run tex on tex files which are in texmf tree
     " Exception: if it is opened using the command ':EditInputFile'
     " 		 which sets this itself.
     if string(get(s:optionsinuseDict,"atp_autex", 'optionnotset')) == string('optionnotset')
 	let atp_texinputs=split(substitute(substitute(system("kpsewhich -show-path tex"),'\/\/\+','\/','g'),'!\|\n','','g'),':')
-	call remove(atp_texinputs, '.')
-	call filter(atp_texinputs, 'v:val =~# b:atp_OutDir')
-	if len(l:atp_texinputs) == 0
-	    let b:atp_autex	= 1
-	else
-	    let b:atp_autex	= 0
-	endif
+	call remove(atp_texinputs, index(atp_texinputs, '.'))
+	call filter(atp_texinputs, 'b:atp_OutDir =~# v:val')
+	let b:atp_autex = ( len(atp_texinputs) ? 0 : s:optionsDict['atp_autex'])  
     endif
 
     if !exists("b:TreeOfFiles") || !exists("b:ListOfFiles") || !exists("b:TypeDict") || !exists("b:LevelDict")
@@ -305,6 +301,11 @@ if !exists("g:atp_StarEnvDefault")
     " Values are "" or "*". 
     " It will be added to enrionemnt names which support it.
     let g:atp_StarEnvDefault=""
+endif
+if !exists("g:atp_StarMathEnvDefault")
+    " Values are "" or "*". 
+    " It will be added to enrionemnt names which support it.
+    let g:atp_StarMathEnvDefault=""
 endif
 if !exists("g:atp_EnvOptions_enumerate")
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
