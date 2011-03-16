@@ -3941,10 +3941,9 @@ function! atplib#TabCompletion(expert_mode,...)
     " there was no completion, check if environments are closed.
     " {{{ 3 Final call of CloseLastEnvrionment / CloseLastBracket
     let len=len(completions)
-    let g:len=len
     if len == 0 && (!count(['package', 'bibfiles', 'bibstyles', 'inputfiles'], completion_method) || a:expert_mode == 1 )|| len == 1
 	if count(['command', 'tikzpicture commands', 'tikzpicture keywords'], completion_method) && 
-	    \ (len == 0 || len == 1 && completions[0] == '\'. begin )
+	    \ (len == 0 || len == 1 && completions[0] =~ '^\\\='. begin . '$' )
 
 	    let filter 		= 'strpart(getline("."), 0, col(".") - 1) =~ ''\\\@<!%'''
 	    let stopline 	= search('^\s*$\|\\par\>', 'bnW')
