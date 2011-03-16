@@ -192,3 +192,6 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 	This can be taken from list of theorems (lot) and list of definitions (lod) files.
 	This can be used to have more labels in GotoLabel (tex can print the line number where it is).
 	This is implemented in ntheorem.sty.
+
+To do: Closing environment inside environment at a wrong line. It is maybe
+	better to close enumerate where the user asks. 
