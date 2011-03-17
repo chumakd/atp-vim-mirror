@@ -1211,7 +1211,7 @@ let g:atp_completion_modes=[
 	    \ 'font shape',		'algorithmic',
 	    \ 'beamerthemes', 		'beamerinnerthemes',
 	    \ 'beamerouterthemes', 	'beamercolorthemes',
-	    \ 'beamerfontthemes' ]
+	    \ 'beamerfontthemes',	'todonotes' ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
 endtry
@@ -1646,6 +1646,11 @@ endif
 		    \ 'multilined', 'dcases', 'dcases*', 'rcases', 'rcases*', 'drcases*', 'cases*', 'spreadlines',
 		    \ 'lgathered', 'rgathered' ]
 
+	let g:atp_TodoNotes_commands = [ '\todo{', '\listoftodos', '\missingfigure' ] 
+	let g:atp_TodoNotes_todo_options	= [ 'disable', 'color=', 'backgroundcolor=', 'linecolor=', 'bordercolor=', 
+		    \ 'line', 'noline', 'inline', 'noinline', 'size=', 'list', 'nolist', 
+		    \ 'caption=', 'prepend', 'noprepend', 'fancyline']   
+	let g:atp_TodoNotes_missingfigure_options = [ 'figwidth=' ]
 if !exists("g:atp_MathOpened") || g:atp_reload
     let g:atp_MathOpened = 1
 endif

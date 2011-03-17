@@ -2873,6 +2873,7 @@ function! atplib#TabCompletion(expert_mode,...)
     " and this for '\<\w*$' (beginning of last started word) -- used in
     " tikzpicture completion method 
     let tbegin		= matchstr(l,'\zs\<\w*$')
+    " start with last '\'
     let obegin		= strpart(l,o)
 
     " what we are trying to complete: usepackage, environment.
@@ -3058,11 +3059,28 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
     "{{{3 --------- bibstyles
     elseif pline =~ '\\bibliographystyle' && !normal_mode 
-	if (index(g:atp_completion_active_modes, 'bibstyles') != -1 ) 
+	if ( index(g:atp_completion_active_modes, 'bibstyles') != -1 ) 
 	    let completion_method='bibstyles'
 	    let b:comp_method='bibstyles'
 	else
 	    let b:comp_method='bibstyles fast return'
+	    return ''
+	endif
+    "{{{3 --------- todo & missingfigure options
+    elseif obegin =~ '\\todo\[[^\]]*'
+	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
+	    let completion_method='todo options'
+	    let b:comp_method='todo options'
+	else
+	    let b:comp_method='todo options fast return'
+	    return ''
+	endif
+    elseif obegin =~ '\\missingfigure\[[^\]]*'
+	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
+	    let completion_method='missingfigure options'
+	    let b:comp_method='missingfigure options'
+	else
+	    let b:comp_method='missingfigure options fast return'
 	    return ''
 	endif
     "{{{3 --------- documentclass
@@ -3479,7 +3497,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
 	" -------------------- LOCAL commands {{{4
 	if g:atp_local_completion
-
 	    " make a list of local envs and commands:
 	    if !exists("b:atp_LocalCommands") 
 		call LocalCommands()
@@ -3524,6 +3541,10 @@ function! atplib#TabCompletion(expert_mode,...)
 	" {{{4 -------------------- MathTools commands
 	if atplib#SearchPackage('mathtools', stop_line)
 	    call extend(completion_list, g:atp_MathTools_commands)
+	endif
+	" {{{4 -------------------- ToDoNotes package commands
+	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) && atplib#SearchPackage('todonotes', stop_line)
+	    call extend(completion_list, g:atp_TodoNotes_commands)
 	endif
 	"}}}4 
 	" ToDo: add layout commands and many more packages. (COMMANDS FOR
@@ -3785,6 +3806,12 @@ function! atplib#TabCompletion(expert_mode,...)
 
 	" add the \bibitems found in include files
 	call extend(completion_list,keys(atplib#SearchBibItems(atp_MainFile)))
+    " {{{3 ------------ TodoNotes todo & missing figure options
+    elseif completion_method == 'todo options'
+	let completion_list = g:atp_TodoNotes_todo_options
+    elseif completion_method == 'missingfigure options'
+	let completion_list = g:atp_TodoNotes_missingfigure_options
+    " {{{3 ------------ Colors
     elseif completion_method == 'colors'
 	" ToDo:
 	let completion_list=[]
@@ -3843,7 +3870,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	    elseif completion_method == 'abbreviations'
 		let completions		= filter(copy(completion_list), 'v:val =~# "^" . abegin')
 	    " {{{4 --------- Tikzpicture Keywords
-	    elseif completion_method == 'tikzpicture keywords'
+	    elseif completion_method == 'tikzpicture keywords' || 
+			\ completion_method == 'todo options' ||
+			\ completion_method == 'missingfigure options'
 		if a:expert_mode == 1 
 		    let completions	= filter(deepcopy(completion_list),'v:val =~# "^".tbegin') 
 		elseif a:expert_mode != 1 
@@ -3917,6 +3946,8 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'font series'  ||
 		\ completion_method == 'font shape'   ||
 		\ completion_method == 'font encoding'||
+		\ completion_method == 'todo options' ||
+		\ completion_method == 'missingfigure options' ||
 		\ completion_method == 'inputfiles' 
 	call complete(nr+2,completions)
 	let b:tc_return="labels,package,tikz libraries,environment_names,bibitems,bibfiles,inputfiles"
