@@ -195,3 +195,9 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 
 To do: Closing environment inside environment at a wrong line. It is maybe
 	better to close enumerate where the user asks. 
+
+To do: check wdiff to make diff for tex files.
+To do: Suggest to use wdiff to get diff of pdf's with:
+	wdiff -w "\textcolor{red}{" -x "}" -y "\textcolor{blue}{" -z "}" file_rev1.tex file_rev2.tex > file_diff.tex
+	Or make a function which: removes comment lines, makes diff of \begin{document}:\end{document}, lets choose which preambule to use if they differ.
+	The problematic is making diff of math zones.

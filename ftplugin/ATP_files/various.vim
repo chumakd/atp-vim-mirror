@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Mon Mar 14 04:00  2011 W
+" Last Change: Fri Mar 18 06:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1751,6 +1751,85 @@ function! <SID>ShowWordCount(bang)
 	echomsg wc . "  " . b:atp_MainFile
     endif
 endfunction "}}}
+
+" Wdiff
+" {{{
+" Needs wdiff program.
+function! <SID>Wdiff(new_file, old_file)
+
+    if !executable("wdiff")
+	echohl WarningMsg
+	echo "You need to install GNU wdiff program." 
+	echohl Normal
+	return 1
+    endif
+
+    " Operate on temporary copies:
+    try
+	let new_file	= readfile(a:new_file)
+    catch /E484/
+	echohl ErrorMsg
+	echomsg "Can't open file " . a:new_file
+	return 1
+    endtry
+    try
+	let old_file	= readfile(a:old_file)
+    catch /E484/
+	echohl ErrorMsg
+	echomsg "Can't open file " . a:old_file
+	return 1
+    endtry
+    let new_tmp		= tempname()
+    let old_tmp		= tempname()
+
+    execute "keepalt edit " . new_tmp
+    call append(0, new_file)
+    let buf_new	= bufnr("%")
+    "delete all comments
+    let g:debug=expand("%:p") == new_tmp
+    if expand("%:p") == new_tmp
+	silent! execute ':%g/^\s*%/d'
+	silent! execute ':%s/\s*\\\@!%.*$//g'
+	silent! write
+	silent! bdelete
+    else
+	return 1
+    endif
+
+    execute "keepalt edit " . old_tmp
+    call append(0, old_file)
+    let buf_old	= bufnr("%")
+    "delete all comments
+    if expand("%:p") == old_tmp
+	silent! execute ':%g/^\s*%/d'
+	silent! execute ':%s/\s*\\\@!%.*$//g'
+	silent! write
+	silent! bdelete
+    else
+	return 1
+    endif
+
+    " make wdiff:
+    if filereadable("/tmp/wdiff.tex")
+	call delete("/tmp/wdiff.tex")
+    endif
+"     call system("wdiff -w '{\\textcolor{red}{=}' -x '\\textcolor{red}{=}}' -y '{\\textcolor{blue}{+}' -z '\\textcolor{blue}{+}}' " . new_tmp . " " . old_tmp . " > /tmp/wdiff.tex")
+    call system("wdiff -w '{=' -x '=}' -y '{+' -z '+}' " . new_tmp . " " . old_tmp . " > /tmp/wdiff.tex")
+    split /tmp/wdiff.tex
+
+    " Set atp
+    let b:atp_autex=0
+    let b:atp_ProjectScript=0
+
+    " These do not match multiline changes!
+    call matchadd('DiffDelete', '{=\zs.*\ze=}', 10)
+    call matchadd('DiffAdd', '{+\zs.*\ze+}',  10)
+    normal "gg"
+    silent! call search('\\begin{document}')
+    normal "zt"
+    map ]s /{[=+]\_.*[+=]}<CR>
+    map [s ?{[=+]\_.*[+=]}<CR>
+endfunction "}}}
 endif "}}}
 
 " COMMANDS AND MAPS:
@@ -1763,6 +1842,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleEnvBackward		:call <SID>ToggleEnvironmen
 nnoremap <silent> <buffer> 	<Plug>ChangeEnv			:call <SID>ToggleEnvironment(1)<CR>
 nnoremap <silent> <buffer> 	<Plug>TexDoc			:TexDoc 
 " Commands: "{{{1
+command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
 command! -buffer -nargs=? -range WrapSelection			:call <SID>WrapSelection(<args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
 command! -buffer	TexAlign				:call TexAlign()
