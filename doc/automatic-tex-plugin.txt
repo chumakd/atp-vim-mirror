@@ -92,10 +92,10 @@ NEWS							*atp-news*
     http://sourceforge.net/projects/atp-vim/
     You can DONATE for this project (on the project web page above). This will
     be highly appreciated, and the money will be used to cover some vary basic
-    costs (internet access, hardware updates). You can also feel supporting my
-    PhD in mathematics :). Whether you donate or not you are always cordially
-    invited to give suggestions, feature requests, bug reports or just to
-    write that you like it or not :).
+    costs (internet access, hardware updates). You can also feel like you are
+    supporting my PhD in mathematics :). Whether you donate or not you are
+    always cordially invited to give suggestions, feature requests, bug
+    reports or just to write that you like it or not :).
 
   							*atp-mailing-list*
   - There is a mailing list which will serve for both side communications:
