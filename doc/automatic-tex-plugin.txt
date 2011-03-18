@@ -90,6 +90,7 @@ NEWS							*atp-news*
 <
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
     http://sourceforge.net/projects/atp-vim/
+    							*atp-donate*
     You can DONATE for this project (on the project web page above). This will
     be highly appreciated, and the money will be used to cover some vary basic
     costs (internet access, hardware updates). You can also feel like you are
