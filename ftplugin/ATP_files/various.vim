@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Fri Mar 18 06:00  2011 W
+" Last Change: Fri Mar 18 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1779,14 +1779,47 @@ function! <SID>Wdiff(new_file, old_file)
 	echomsg "Can't open file " . a:old_file
 	return 1
     endtry
+
+    " Remove the preambule:
+    let new_pend=0
+    for line in new_file
+	if line =~ '^[^%]*\\begin{document}'
+	    break
+	endif
+	let new_pend+=1
+    endfor
+    let old_pend=0
+    for line in new_file
+	if line =~ '^[^%]*\\begin{document}'
+	    break
+	endif
+	let old_pend+=1
+    endfor
+
+    let new_preambule	= remove(new_file, 0, new_pend)  
+    let old_preambule	= remove(old_file, 0, old_pend)  
+
+    let g:new_preambule = new_preambule
+    let g:old_preambule = old_preambule
+    let g:new_file	= new_file
+    let g:old_file	= old_file
+
     let new_tmp		= tempname()
     let old_tmp		= tempname()
+
+    if new_preambule != old_preambule
+	let which_pre=inputlist(["Wich preambule to use:", "(1) from " . a:new_file, "(2) from " . a:old_file])
+	if which_pre != 1 && which_pre != 2
+	    return 0
+	endif
+    else
+	let which_pre = 1
+    endif
 
     execute "keepalt edit " . new_tmp
     call append(0, new_file)
     let buf_new	= bufnr("%")
     "delete all comments
-    let g:debug=expand("%:p") == new_tmp
     if expand("%:p") == new_tmp
 	silent! execute ':%g/^\s*%/d'
 	silent! execute ':%s/\s*\\\@!%.*$//g'
@@ -1814,7 +1847,7 @@ function! <SID>Wdiff(new_file, old_file)
 	call delete("/tmp/wdiff.tex")
     endif
 "     call system("wdiff -w '{\\textcolor{red}{=}' -x '\\textcolor{red}{=}}' -y '{\\textcolor{blue}{+}' -z '\\textcolor{blue}{+}}' " . new_tmp . " " . old_tmp . " > /tmp/wdiff.tex")
-    call system("wdiff -w '{=' -x '=}' -y '{+' -z '+}' " . new_tmp . " " . old_tmp . " > /tmp/wdiff.tex")
+    call system("wdiff " . "-w '\\{=' -x '=\\}' -y '\\{+' -z '+\\}'" . " " . new_tmp . " " . old_tmp . " > /tmp/wdiff.tex")
     split /tmp/wdiff.tex
 
     " Set atp
@@ -1822,13 +1855,25 @@ function! <SID>Wdiff(new_file, old_file)
     let b:atp_ProjectScript=0
 
     " These do not match multiline changes!
-    call matchadd('DiffDelete', '{=\zs.*\ze=}', 10)
-    call matchadd('DiffAdd', '{+\zs.*\ze+}',  10)
+    let s:atp_IDdelete	= matchadd('DiffDelete', '\\{=\zs\%(=\\}\@!\|=\\\@!}\|=\@!\\}\|[^}=\\]\|=\\\@!\|\\}\@!\|=\@<!\\\|\\}\@!\|\\\@<!}\)*\ze=\\}', 10)
+    let s:atp_IDadd	= matchadd('DiffAdd', '\\{+\zs\%(+\\}\@!\|+\\\@!}\|+\@!\\}\|[^}+\\]\|+\\\@!\|\\}\@!\|+\@<!\\\|\\}\@!\|\\\@<!}\)*\ze+\\}', 10)
     normal "gg"
+    call append(0, ( which_pre == 1 ? new_preambule : old_preambule )) 
     silent! call search('\\begin{document}')
     normal "zt"
-    map ]s /{[=+]\_.*[+=]}<CR>
-    map [s ?{[=+]\_.*[+=]}<CR>
+    map ]s /\\{[=+]\_.*[+=]\\}<CR>
+    map [s ?\\{[=+]\_.*[+=]\\}<CR>
+    function! NiceDiff()
+	let saved_pos=getpos(".")
+	keepjumps %s/\\{=\(\%(=\\}\@!\|=\\\@!}\|=\@!\\}\|[^}=\\]\|=\\\@!\|\\}\@!\|=\@<!\\\|\\}\@!\|\\\@<!}\)*\)=\\}/\\textcolor{red}{\1}/g
+	keepjumps %s/\\{+\(\%(+\\}\@!\|+\\\@!}\|+\@!\\}\|[^}+\\]\|+\\\@!\|\\}\@!\|+\@<!\\\|\\}\@!\|\\\@<!}\)*\)+\\}/\\textcolor{blue}{\1}/g
+	call cursor(saved_pos[1], saved_pos[2])
+	map ]s /\\textcolor{\%(blue\|red\)}{/e+1
+	map [s ?\\textcolor{\%(blue\|red\)}{?e+1
+	call matchadd('DiffDelete', '\textcolor{red}{[^}]*}', 10)
+	call matchadd('DiffAdd', '\textcolor{blue}{[^}]*}',  10)
+    endfunction
+    command! -buffer NiceDiff :call NiceDiff()
 endfunction "}}}
 endif "}}}
 

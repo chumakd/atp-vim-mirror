@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7	Last change: 5 March 2011
+*automatic-tex-plugin.txt* 	For Vim version 7	Last change: 18 March 2011
 
 			An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 8.8)
 				by Marcin Szamotulski
@@ -86,7 +86,7 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 
 >
-  Changes in version 8.8
+  Changes in version 9
 <
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
     http://sourceforge.net/projects/atp-vim/
@@ -119,6 +119,39 @@ NEWS							*atp-news*
     	:GotoLabel 1.2
 	:GotoLabel ^thm:
 <
+							*atp-:Wdiff*
+  - :Wdiff {old-file} {new-file}
+    This is diff using the GNU wdiff. This command will split the view and
+    show the wdiff output. You can use ]s and [s to go to next previous
+    change. The deleted parts of {old-file} are marked embraced into {=...=}
+    and highlighted with |hl-DiffDelete|. The added parts of {new-file} are
+    embraced with {+...+} and highlighted with |hl-DiffAdd|. If the preambles
+    differ you will be asked which one to use in the diff file.
+
+    This is an alternative for latexdiff program, but is much faster.
+
+    The diff file might not compile well (thus the b:atp_autex is set to 0 by
+    default), this is mainly because the math environments can be break and
+    the output might contain:
+	    \( a {= =c\)=} {+ !=c\)+}
+    Other things which are not taken into account are changes of environment
+    names, changes of coordinates in tikz. It would be nice to tell to wdiff
+    to not diff them, but this is not implemented.
+
+    After you resolve such conflicts the file should compile nicely (though
+    I didn't do many tests). After that you can change {=...=} and {+...+} for
+    something better. For example you can change {= and =} for \textcolor{red}{=}
+    and {+, +} for \textcolor{blue}{+}. If you resolved syntactic conflicts in
+    a very nice way you can change whole {=<old>=} for \textcolor{red}{<old>}
+    and {+<new>+} for \textcolor{blue}{<new>}. For this you can use the
+    following vim command:
+							*atp-:NiceDiff*
+	:NiceDiff
+    (which also remaps ]s and [s and keeps the highlighted areas).
+    The :NiceDiff command, although I tried, is not changing all the regions,
+    I will try to fix this in next releases. (Thus not all parts of the output
+    file might be highlighted).
+
   							*g:atp_VimCompatible*
   - g:atp_VimCompatible variable, with default value 0 ("no"). Its values are
     0/1 or yes/no. It changes the behaviour of '%'. In nocomatible mode it gen
@@ -146,6 +179,14 @@ NEWS							*atp-news*
   - This variables defines environment names put it the environment imaps
     |atp-imap-environments|.
     
+  - Tab completion for todonotes package. (I'm planing to integrate :ToDo
+    command with latex \todo{} command provided in todonotes and todo
+    packages).
+
+  - b:atp_autex file is only set to 1 for files with 'tex' extension.
+
+  - Some other fixes.
+    						Chears, Marcin
 >
   Changes in version 8.7
 <
