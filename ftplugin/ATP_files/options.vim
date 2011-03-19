@@ -202,8 +202,7 @@ setl keywordprg=texdoc\ -m
 let b:atp_running	= 0
 
 " these are all buffer related variables:
-let s:optionsDict= { 	
-		\ "atp_TexOptions" 		: "-synctex=1", 
+let s:optionsDict= { 	"atp_TexOptions" 	: "", 		
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
@@ -212,13 +211,11 @@ let s:optionsDict= {
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
-		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
 		\ "atp_TexCompilerVariable"	: "max_print_line=2000",
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "" }
-
 let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
@@ -383,25 +380,25 @@ endif
 if !exists("g:atp_SyncXpdfLog") || g:atp_reload
     let g:atp_SyncXpdfLog 	= 0
 endif
-if !exists("g:atp_LogSync") || g:atp_reload
-    let g:atp_LogSync 		= 0
+if !exists("g:atp_SyncLog") || g:atp_reload
+    let g:atp_SyncLog 		= 0
 endif
 
 	function! s:Sync(...)
 	    let arg = ( a:0 >=1 ? a:1 : "" )
 	    if arg == "on"
-		let g:atp_LogSync = 1
+		let g:atp_SyncLog = 1
 	    elseif arg == "off"
-		let g:atp_LogSync = 0
+		let g:atp_SyncLog = 0
 	    else
-		let g:atp_LogSync = !g:atp_LogSync
+		let g:atp_SyncLog = !g:atp_SyncLog
 	    endif
-	    echomsg "g:atp_LogSync = " . g:atp_LogSync
+	    echomsg "g:atp_SyncLog = " . g:atp_SyncLog
 	endfunction
-	command! -buffer -nargs=? -complete=customlist,s:SyncComp LogSync :call s:Sync(<f-args>)
-	function! s:SyncComp(ArgLead, CmdLine, CursorPos)
-	    return filter(['on', 'off'], "v:val =~ a:ArgLead") 
-	endfunction
+	command! -nargs=? -complete=customlist,s:SyncComp Sync :call s:Sync(<f-args>)
+	    function! s:SyncComp(ArgLead, CmdLine, CursorPos)
+		return filter(['on', 'off'], "v:val =~ a:ArgLead") 
+	    endfunction
 
 if !exists("g:atp_Compare") || g:atp_reload
     " Use b:changedtick variable to run s:Compiler automatically.
@@ -583,13 +580,13 @@ if !exists("g:atp_no_math_command_completion") || g:atp_reload
     let g:atp_no_math_command_completion = 0
 endif
 if !exists("g:atp_tex_extensions") || g:atp_reload
-    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
+    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync"]
 endif
 if !exists("g:atp_delete_output") || g:atp_reload
     let g:atp_delete_output	= 0
 endif
 if !exists("g:keep") || g:atp_reload
-    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync", "synctex.gz" ]
+    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync" ]
 endif
 if !exists("g:atp_ssh") || g:atp_reload
     let g:atp_ssh=substitute(system("whoami"),'\n','','') . "@localhost"
@@ -889,6 +886,30 @@ fun! SetXdvi()
     let b:atp_TexCompiler	= "latex "
     let b:atp_TexOptions	= " -src-specials "
     let b:atp_Viewer="xdvi " . " -editor '" . v:progname . " --servername " . v:servername . " --remote-wait +%l %f'" 
+    " Set Reverse Search Function.
+    if !exists("*RevSearch")
+    function! RevSearch()
+	let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+	let dvi_file	= fnamemodify(atp_MainFile,":p:r") . ".dvi"
+	let g:dvi_file = dvi_file
+	if !filereadable(dvi_file)
+	   echomsg "dvi file doesn't exist" 
+	   ViewOutput RevSearch
+	   return
+	endif
+
+	let options = (exists("g:atp_xdviOptions") ? g:atp_xdviOptions : "" ) . getbufvar(bufnr(""), "atp_xdviOptions")
+
+	let b:xdvi_reverse_search="xdvi " . options . 
+		\ " -editor '" . v:progname . " --servername " . v:servername . 
+		\ " --remote-wait +%l %f' -sourceposition " . 
+		\ line(".") . ":" . col(".") . fnameescape(fnamemodify(expand("%"),":p")) . 
+		\ " " . fnameescape(dvi_file)
+	call system(b:xdvi_reverse_search)
+    endfunction
+    endif
+    " Set Reverse Search Command and Map.
+    command! -buffer RevSearch 					:call RevSearch()
     map <buffer> <LocalLeader>rs				:call RevSearch()<CR>
     try
 	nmenu 550.65 &LaTeX.Reverse\ Search<Tab>:map\ <LocalLeader>rs	:RevSearch<CR>
@@ -928,9 +949,16 @@ fun! SetXpdf()
 
     let b:atp_TexCompiler	= "pdflatex"
     " We have to clear tex options (for example -src-specials set by :SetXdvi)
-    let b:atp_TexOptions	= "-synctex"
+    let b:atp_TexOptions	= ""
     let b:atp_Viewer		= "xpdf"
-
+    " Remove the maps \rs.
+    if hasmapto("RevSearch()",'n')
+	unmap <buffer> <LocalLeader>rs
+    endif
+    " Delete command.
+    if exists("RevSearch")
+	delcommand RevSearch
+    endif
     " Delete menu entry.
     try
 	silent aunmenu LaTeX.Reverse\ Search
@@ -948,7 +976,6 @@ endfun
 command! -buffer SetXpdf			:call SetXpdf()
 nnoremap <silent> <buffer> <Plug>SetXpdf	:call SetXpdf()<CR>
 " }}}
-""
 " }}}
 
 " These are functions which toggles some of the options:
@@ -1654,12 +1681,8 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 
 if !s:did_options
 
-    augroup ATP_deltmpdir
-	au VimLeave *.tex :call system("rm -rf " . b:atp_TmpDir)
-    augroup END
-
     augroup ATP_updatetime
-	au VimEnter if &l:updatetime == 4000 | let &l:updatetime = 800 | endif
+	au VimEnter if &l:updatetime == 4000 | let &l:updatetime	= 800 | endif
 	au InsertEnter *.tex let s:updatetime=&l:updatetime | let &l:updatetime = g:atp_insert_updatetime
 	au InsertLeave *.tex let &l:updatetime=s:updatetime 
     augroup END
@@ -1682,7 +1705,6 @@ if !s:did_options
 	au!
 	au FileType *tex 	let b:atp_TexFlavor = &filetype
     augroup END
-
     " Idea:
     " au 		*.log if LogBufferFileDiffer | silent execute '%g/^\s*$/d' | w! | endif
     " or maybe it is better to do that after latex made the log file in the call back

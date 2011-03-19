@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Mar 19 12:00  2011 W
+" Last Change: Fri Mar 18 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -748,31 +748,31 @@ function! s:Delete(delete_output)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     call atplib#outdir()
 
-    let atp_tex_extensions=deepcopy(g:atp_tex_extensions)
+    let l:atp_tex_extensions=deepcopy(g:atp_tex_extensions)
 
     if a:delete_output == "!"
 	if b:atp_TexCompiler == "pdftex" || b:atp_TexCompiler == "pdflatex"
-	    let ext="pdf"
+	    let l:ext="pdf"
 	else
-	    let ext="dvi"
+	    let l:ext="dvi"
 	endif
-	call add(atp_tex_extensions,ext)
+	call add(l:atp_tex_extensions,l:ext)
     endif
 
-    for ext in atp_tex_extensions
+    for l:ext in l:atp_tex_extensions
 	if executable(g:rmcommand)
 	    if g:rmcommand =~ "^\s*rm\p*" || g:rmcommand =~ "^\s*perltrash\p*"
-		if ext != "dvi" && ext != "pdf"
-		    let rm=g:rmcommand . " " . shellescape(b:atp_OutDir) . "*." . ext . " 2>/dev/null && echo Removed: ./*" . ext 
+		if l:ext != "dvi" && l:ext != "pdf"
+		    let l:rm=g:rmcommand . " " . shellescape(b:atp_OutDir) . "*." . l:ext . " 2>/dev/null && echo Removed: ./*" . l:ext 
 		else
-		    let rm=g:rmcommand . " " . shellescape(fnamemodify(atp_MainFile,":r")).".".ext . " 2>/dev/null && echo Removed: " . fnamemodify(atp_MainFile,":r").".".ext
+		    let l:rm=g:rmcommand . " " . shellescape(fnamemodify(atp_MainFile,":r")).".".l:ext . " 2>/dev/null && echo Removed: " . fnamemodify(atp_MainFile,":r").".".l:ext
 		endif
 	    endif
-	    echo system(rm)
+	    echo system(l:rm)
 	else
-	    let file=b:atp_OutDir . fnamemodify(expand("%"),":t:r") . "." . ext
+	    let file=b:atp_OutDir . fnamemodify(expand("%"),":t:r") . "." . l:ext
 	    if delete(file) == 0
-		echo "Removed " . file 
+		echo "Removed " . l:file 
 	    endif
 	endif
     endfor

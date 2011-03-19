@@ -201,12 +201,3 @@ To do: Suggest to use wdiff to get diff of pdf's with:
 	wdiff -w "\textcolor{red}{" -x "}" -y "\textcolor{blue}{" -z "}" file_rev1.tex file_rev2.tex > file_diff.tex
 	Or make a function which: removes comment lines, makes diff of \begin{document}:\end{document}, lets choose which preambule to use if they differ.
 	The problematic is making diff of math zones.
-
-Two things:
-(1) SyncTeX: Can't rename HopfGaloisTheory-field.synctex.gz(busy) to /tmp/v27Wp1j/34/HopfGaloisTheory-field.synctex.gz
-bytes).
-	Possible solution copy tex file to the tmp directory, operate there on the copy 
-	(but this is not a good solution for project files).
-	This error is only within vim, not from the command line. 
-(2) /bin/cp  how to make that it is not asking if to copy files. Is there a bash variable for that?
-	Set cp command on startup (with variable). 
