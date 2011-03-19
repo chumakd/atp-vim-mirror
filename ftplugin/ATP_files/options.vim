@@ -57,9 +57,9 @@ if !exists("g:atp_debugSIT") || g:atp_reload
     " debug <SID>SearchInTree (search.vim)
     let g:atp_debugSIT		= 0
 endif
-if !exists("g:atp_debugRS") || g:atp_reload
-    " debug <SID>RecursiveSearch() (search.vim)
-    let g:atp_debugRS		= 0
+if !exists("g:atp_debugSync") || g:atp_reload
+    " debug forward search (vim->viewer) (search.vim)
+    let g:atp_debugSync		= 0
 endif
 if !exists("g:atp_debugV") || g:atp_reload
     " debug ViewOutput() (compiler.vim)
@@ -204,6 +204,7 @@ let b:atp_running	= 0
 " these are all buffer related variables:
 let s:optionsDict= { 	
 		\ "atp_TexOptions" 		: "-synctex=1", 
+		\ "atp_okularOptions"		: "--unique",
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
@@ -273,6 +274,11 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_cpcmd")
+    " This will avoid using -i switch which might be defined in an alias file. 
+    " This doesn't make much harm, but it might be better. 
+    let g:atp_cpcmd="/bin/cp"
+endif
 " Variables for imaps, standard environment names:
     if !exists("g:atp_EnvNameTheorem")
 	let g:atp_EnvNameTheorem="theorem"
@@ -872,7 +878,7 @@ endif
 " {{{ Xpdf, Xdvi
 " xdvi - supports forward and reverse searching
 " {{{ SetXdvi
-fun! SetXdvi()
+function! <SID>SetXdvi()
 
     " Remove menu entries
     let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\S*'), 'Compiler')
@@ -902,16 +908,16 @@ fun! SetXdvi()
     execute "nmenu 550.6 &LaTeX.".Compiler."\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
     execute "nmenu 550.7 &LaTeX.".Compiler."\\ &twice<Tab>:2TEX		:2TEX<CR>"
     execute "nmenu 550.10 LaTeX.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 		:ViewOutput<CR>"
-endfun
-command! -buffer SetXdvi			:call SetXdvi()
-nnoremap <silent> <buffer> <Plug>SetXdvi	:call SetXdvi()<CR>
+endfunction
+command! -buffer SetXdvi			:call <SID>SetXdvi()
+nnoremap <silent> <buffer> <Plug>SetXdvi	:call <SID>SetXdvi()<CR>
 " }}}
 
 " xpdf - supports server option (we use the reoding mechanism, which allows to
 " copy the output file but not reload the viewer if there were errors during
 " compilation (b:atp_ReloadOnError variable)
 " {{{ SetXpdf
-fun! SetXpdf()
+function! <SID>SetPdf(viewer)
 
     " Remove menu entries.
     let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\S*'), 'Compiler')
@@ -929,7 +935,7 @@ fun! SetXpdf()
     let b:atp_TexCompiler	= "pdflatex"
     " We have to clear tex options (for example -src-specials set by :SetXdvi)
     let b:atp_TexOptions	= "-synctex"
-    let b:atp_Viewer		= "xpdf"
+    let b:atp_Viewer		= a:viewer
 
     " Delete menu entry.
     try
@@ -944,9 +950,11 @@ fun! SetXpdf()
     execute "nmenu 550.6 &LaTeX." .Compiler.	"\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
     execute "nmenu 550.7 &LaTeX." .Compiler.	"\\ &twice<Tab>:2TEX		:2TEX<CR>"
     execute "nmenu 550.10 LaTeX.&View\\ with\\ ".Viewer.	"<Tab>:ViewOutput 		:ViewOutput<CR>"
-endfun
-command! -buffer SetXpdf			:call SetXpdf()
-nnoremap <silent> <buffer> <Plug>SetXpdf	:call SetXpdf()<CR>
+endfunction
+command! -buffer SetXpdf			:call <SID>SetPdf('xpdf')
+command! -buffer SetOkular			:call <SID>SetPdf('okular')
+nnoremap <silent> <buffer> <Plug>SetXpdf	:call <SID>SetPdf('xpdf')<CR>
+nnoremap <silent> <buffer> <Plug>SetOkular	:call <SID>SetPdf('okular')<CR>
 " }}}
 ""
 " }}}
@@ -1655,7 +1663,7 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 if !s:did_options
 
     augroup ATP_deltmpdir
-	au VimLeave *.tex :call system("rm -rf " . b:atp_TmpDir)
+	au VimLeave *.tex :call system("rmdir " . b:atp_TmpDir)
     augroup END
 
     augroup ATP_updatetime

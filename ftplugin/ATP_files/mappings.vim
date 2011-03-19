@@ -122,6 +122,7 @@ nmap <C-k> <Plug>TexJMotionBackward
 
     " Fonts:
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."f		:WrapSelection '{\\usefont{".g:atp_font_encoding."}{}{}{}\\selectfont ', '}', '".(len(g:atp_font_encoding)+11)."'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."mb		:WrapSelection '\\mbox{', '}', 'begin'<CR>"
 
 
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."te	:<C-U>InteligentWrapSelection ['\\textrm{'],['\\text{']<CR>"

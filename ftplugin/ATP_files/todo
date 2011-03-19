@@ -210,3 +210,9 @@ bytes).
 	This error is only within vim, not from the command line. 
 (2) /bin/cp  how to make that it is not asking if to copy files. Is there a bash variable for that?
 	Set cp command on startup (with variable). 
+
+Todo: \a has a strange behaviour with respect to tabs. 
+
+To do: The function 'atplib#FindAndOpen' will not start gvim if it is
+	not running.
+To do: read atp-:SyncXpdf -> port this for Okular.

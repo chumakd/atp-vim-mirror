@@ -149,12 +149,15 @@ cmenu 550.50 LaTe&X.Input\ Files<Tab>:InputFiles				<C-U>InputFiles<CR>
 imenu 550.50 LaTe&X.Input\ Files<Tab>:InputFiles				<Esc>:InputFiles<CR>
 "
 menu 550.60 LaTe&X.-Viewer-							:
-menu 550.60 LaTe&X.Set\ &XPdf<Tab>:SetXpdf					:<C-U>SetXpdf<CR>
-cmenu 550.60 LaTe&X.Set\ &XPdf<Tab>:SetXpdf					<C-U>SetXpdf<CR>
-imenu 550.60 LaTe&X.Set\ &XPdf<Tab>:SetXpdf					<Esc>:SetXpdf<CR>
-menu 550.60 LaTe&X.Set\ X&Dvi\ (inverse\/reverse\ search)<Tab>:SetXdvi		:<C-U>SetXdvi<CR>
-cmenu 550.60 LaTe&X.Set\ X&Dvi\ (inverse\/reverse\ search)<Tab>:SetXdvi		<C-U>SetXdvi<CR>
-imenu 550.60 LaTe&X.Set\ X&Dvi\ (inverse\/reverse\ search)<Tab>:SetXdvi		<Esc>:SetXdvi<CR>
+menu 550.60 LaTe&X.Set\ &XPdf\ (forward\ search)<Tab>:SetXpdf			:<C-U>SetXpdf<CR>
+cmenu 550.60 LaTe&X.Set\ &XPdf\ (forward\ search)<Tab>:SetXpdf			<C-U>SetXpdf<CR>
+imenu 550.60 LaTe&X.Set\ &XPdf\ (forward\ search)<Tab>:SetXpdf			<Esc>:SetXpdf<CR>
+menu 550.60 LaTe&X.Set\ &Okular\ (forward\/reverse\ search)<Tab>:SetOkular	:<C-U>SetOkular<CR>
+cmenu 550.60 LaTe&X.Set\ &Okular\ (forward\/reverse\ search)<Tab>:SetOkular	<C-U>SetOkular<CR>
+imenu 550.60 LaTe&X.Set\ &Okular\ (forward\/reverse\ search)<Tab>:SetOkular	<Esc>:SetOkular<CR>
+menu 550.60 LaTe&X.Set\ X&Dvi\ (forward\/reverse\ search)<Tab>:SetXdvi		:<C-U>SetXdvi<CR>
+cmenu 550.60 LaTe&X.Set\ X&Dvi\ (forward\/reverse\ search)<Tab>:SetXdvi		<C-U>SetXdvi<CR>
+imenu 550.60 LaTe&X.Set\ X&Dvi\ (forward\/reverse\ search)<Tab>:SetXdvi		<Esc>:SetXdvi<CR>
 "
 menu 550.70 LaTe&X.-Editting-							:
 "
