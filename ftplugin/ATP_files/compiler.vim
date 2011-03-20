@@ -111,6 +111,9 @@ function! <SID>GetSyncData()
 	let synctex_cmd="synctex view -i ".line(".").":".col(".").":'".fnamemodify(b:atp_MainFile, ":p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"
 
 	let synctex_output=split(system(synctex_cmd), "\n")
+	if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
+	    return [ "no_sync", get(synctex_output, 1, '') ]
+	endif
 
 	if g:atp_debugSync
 	    let g:synctex_cmd=synctex_cmd
@@ -130,7 +133,7 @@ function! <SID>GetSyncData()
 	endif
 
 	if page == "no_sync"
-	    return [ "no_sync", "no synctex data" ]
+	    return [ "no_sync", "No SyncTex Data: try on another line (comments are not allowed)." ]
 	endif
 	let page_nr=matchstr(page, '^\cPage:\zs\d\+') 
 	return [ page_nr, y_coord ]
@@ -147,8 +150,8 @@ function! <SID>SyncShow( page_nr, y_coord)
 	echomsg height." of page ".a:page_nr
     else
 	echohl WarningMsg
-	echomsg "No SyncTex data error"
-	echomsg "You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
+	echomsg a:y_coord
+" 	echomsg "You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
 	echohl Normal
     endif
 endfunction
@@ -546,6 +549,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 
 	if g:atp_debugML
 	silent echo a:run . " BEGIN " . strftime("%c")
+	silent echo "TEXFILE: ".texfile
 	silent echo a:run . " logfile=" . logfile . " " . filereadable(logfile) . " auxfile=" . auxfile . " " . filereadable(auxfile). " runtex_before=" . runtex_before . " a:force=" . a:force
 	endif
 
@@ -690,10 +694,10 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID . 
 		\ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex.", 0, [".time[0].",".time[1]."], ".
 		\ a:did_firstrun.", ".(a:run+1).", \'".a:force."\'\)\""
-	let cmd	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(texfile) . " ; " . callback_cmd
+	let cmd	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
 	    if g:atp_debugML
-	    let g:ml_debug .= "First run. (make log|aux|idx file)" . " [" . b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(texfile) . " ; " . callback_cmd . "]#"
+	    let g:ml_debug .= "First run. (make log|aux|idx file)" . " [" . cmd . "]#"
 	    silent echo a:run . " Run First CMD=" . cmd 
 	    let g:debug_cmd=cmd
 	    redir END
@@ -779,7 +783,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID .
 		      \ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex." , ".did_index.", [".time[0].",".time[1]."], ".
 		      \ a:did_firstrun.", ".(a:run+1).", \'".a:force."\'\)\""
-	  let cmd	.= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(texfile) . " ; " . callback_cmd
+	  let cmd	.= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
 	      if g:atp_debugML
 	      silent echo a:run . " a:did_bibtex="a:did_bibtex . " did_bibtex=" . did_bibtex
@@ -826,14 +830,6 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     exe "lcd " . saved_cwd
     return "Proper end"
 endfunction
-function! Make()
-    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-    if &l:filetype =~ 'tex$'
-	call <SID>MakeLatex(atp_MainFile, 0,0, [],1,1,0,1)
-    endif
-    return ""
-endfunction
-
 "}}}
 
 " THE MAIN COMPILER FUNCTION:

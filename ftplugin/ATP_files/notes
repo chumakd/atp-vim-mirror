@@ -1,3 +1,5 @@
+gvim --servername GVIM --remote-expr  "atplib#FindAndOpen('%f','%l')"'
+
 s:CompleteLabels (LatexBox_complete.vim)
 s:LatexmkCallBack (LatexBox_latexmk.vim)
 

@@ -204,7 +204,6 @@ let b:atp_running	= 0
 " these are all buffer related variables:
 let s:optionsDict= { 	
 		\ "atp_TexOptions" 		: "-synctex=1", 
-		\ "atp_okularOptions"		: "--unique",
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 

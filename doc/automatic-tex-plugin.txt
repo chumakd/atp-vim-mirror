@@ -72,7 +72,7 @@ FEATURES INCLUDE:
 	|atp-editing|			Editing tools 
 	|atp-requirements|  		Requirements
 	|atp-viewers| 			Note about viewers 
-					(including inverse and reverse searching for xdvi)
+					(with HOW TO CONFIGURE REVERSE SEARCHING for Okular)
 	|atp-tips|			Some tex oriented tips
 	|atp-highlight|			Colours and syntax files
 	|atp-remarks|  			Final remarks
@@ -115,6 +115,9 @@ NEWS							*atp-news*
     |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
     |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
     -src-specials. 
+9.1:							
+  - Reverse searching in okular. Read |atp-viewers-Okular| how to install it
+    (it is easy but needs you to do that).
 							*b:atp_TmpDir*
 9.1: IMPORTANT: The default is: >
 	let b:atp_TmpDir='.tmp'
@@ -3612,18 +3615,22 @@ Evince
 	Works fine.
 								*atp-viewers-Okular*
 Okular
-	Works fine. It supports bothe forward (Vim->Okular) and inverse
+	Works fine. It supports both forward (Vim->Okular) and inverse
 	(Okular->Vim) searches. Okular supports forward searching (vim->Okular)
 	with command: |atp-:SyncTex| >
 		:SyncTex
 		map t
-<	Here is how to configure reverse searching (Okular->Vim): 
+<	Here is how to CONFIGURE REVERSE SEARCHING (Okular->Vim): 
 	open Okular and go to >
 		settings>Configure Okular>Editor
 <	and set >
 		Editor		Custom Text Editor
-		Command		gvim --servername GVIM --remote-expr "atplib#FindAndOpen('%f','%l')"
-<	Then you can use <Shift>+<Left_Mouse> in Okular to syncronize the Vim
+		Command		$HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%p' '%l'
+<	Next you have to add executable permissions to the python script
+	atp_RevSearch.py (in terminal: go to $HOME/.vim/ftplugin/ATP_files/,
+	and type: chmod 755 atp_RevSearch.py).
+
+	Then you can use <Shift>+<Left_Mouse> in Okular to synchronize the Vim
 	(gVim) with pdf. 
 								*atplib#FindAndOpen()*	
 	The function atplib#FindAndOpen() asks each running gvim server if is
@@ -3633,28 +3640,29 @@ Okular
 	- actually I'm just typing in it :) you need to set up vim server
 	  option on startup: >
  		vim --servername VIM <file>
-<
-	Alternative configuration would be to run okular from vim and
-	set the Command to >
-		Command 	gvim --servername GVIM --remote-wait +%l %f
-<	but I don't know how to set this from the command line. If you know,
-	Many Thanks for Reporting!
 
 Kpdf
 	Works fine (moves page a little bit when updates a file).
+
 EpdfView
 	This viewer does not support automatic reloads when the file changes
 	(but it seems that the work is in progress). You have to issue CTRL-R
 	yourself when the file is changed.
+
 AcroRead
 	As with epdfview (with the difference that it supports automatic
-	updates, but it do not works somehow)
-								
+	updates, but it do not works somehow). There is a way to configure
+	forward searching (Vim->AcroRead)! but it is not supported yet, if you
+	really want it, write to me.
+
 Xdvi								*atp-viewers-Xdvi*
 	Works fine. The file will be updated after a click (or use the xdvi
 	options '-watchfile 1' see man xdvi for explanations). You can set
 	forward/reverse searching by the command |SetXdvi| then use
-	|atp-:SyncTex| for forward searching (Vim->Xdvi). 
+	|atp-:SyncTex| for forward searching (Vim->Xdvi). To get reverse
+	searching Xdvi must be opened by ATP (:ViewOutput, or any other
+	command)
+
 	If you want to use Vim you have to run it with the command: >
  		vim --servername xdvi <file>
 <	You can pick any server name.
