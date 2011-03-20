@@ -922,11 +922,12 @@ map \v,map <F3>, imap <F3>
 	(inverse/reverse searching) in |atp-viewers|. 
 	You can open and sync the viewer with: >
 		:SyncTex
+		<S-LeftMouse>
 		:ViewOutput sync
 <
 
 :SyncTex						*atp-:SyncTex*
-map t
+map t, map <S-LeftMouse>
 	Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
 	Xpdf and Xdvi with this feature (Evince is not yet supported).
 
@@ -3601,6 +3602,7 @@ Xpdf								*atp-viewers-Xpdf*
 	with command: |atp-:SyncTex| >
 		:SyncTex
 		map t
+		map <S-LeftMouse>
 <	There is useful command |atp-:SetXpdf|.
 	You can set your own options of xpdf using b:XpdfOptions, for example
 >
@@ -3620,6 +3622,7 @@ Okular
 	with command: |atp-:SyncTex| >
 		:SyncTex
 		map t
+		map <S-LeftMouse>
 <	Here is how to CONFIGURE REVERSE SEARCHING (Okular->Vim): 
 	open Okular and go to >
 		settings>Configure Okular>Editor
