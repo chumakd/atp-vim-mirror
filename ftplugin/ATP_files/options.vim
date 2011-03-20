@@ -41,93 +41,93 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
-if !exists("g:atp_debugML") || g:atp_reload
+if !exists("g:atp_debugML")
     " debug MakeLatex (compiler.vim)
     let g:atp_debugML	= 0
 endif
-if !exists("g:atp_debugGAF") || g:atp_reload
+if !exists("g:atp_debugGAF")
     " debug aptlib#GrepAuxFile
     let g:atp_debugGAF	= 0
 endif
-if !exists("g:atp_debugSCP") || g:atp_reload
+if !exists("g:atp_debugSCP")
     " debug s:SelectCurrentParapgrahp (LatexBox_motion.vim)
     let g:atp_debugSCP	= 0
 endif
-if !exists("g:atp_debugSIT") || g:atp_reload
+if !exists("g:atp_debugSIT")
     " debug <SID>SearchInTree (search.vim)
     let g:atp_debugSIT		= 0
 endif
-if !exists("g:atp_debugSync") || g:atp_reload
+if !exists("g:atp_debugSync")
     " debug forward search (vim->viewer) (search.vim)
     let g:atp_debugSync		= 0
 endif
-if !exists("g:atp_debugV") || g:atp_reload
+if !exists("g:atp_debugV")
     " debug ViewOutput() (compiler.vim)
     let g:atp_debugV		= 0
 endif
-if !exists("g:atp_debugLPS") || g:atp_reload
+if !exists("g:atp_debugLPS")
     " Debug s:LoadProjectFile() (history.vim)
     " (currently it gives just the loading time info)
     let g:atp_debugLPS		= 0
 endif
-if !exists("g:atp_debugCompiler") || g:atp_reload
+if !exists("g:atp_debugCompiler")
     " Debug s:Compiler() function (compiler.vim)
     " when equal 2 output is more verbose.
     let g:atp_debugCompiler 	= 0
 endif
-if !exists("g:atp_debugST") || g:atp_reload
+if !exists("g:atp_debugST")
     " Debug <SID>CallBack() function (compiler.vim)
     let g:atp_debugCallBack	= 0
 endif
-if !exists("g:atp_debugST") || g:atp_reload
+if !exists("g:atp_debugST")
     " Debug SyncTex() (various.vim) function
     let g:atp_debugST 		= 0
 endif
-if !exists("g:atp_debugCLE") || g:atp_reload
+if !exists("g:atp_debugCLE")
     " Debug atplib#CloseLastEnvironment()
     let g:atp_debugCLE 		= 0
 endif
-if !exists("g:atp_debugMainScript") || g:atp_reload
+if !exists("g:atp_debugMainScript")
     " loading times of scripts sources by main script file: ftpluing/tex_atp.vim
     " NOTE: it is listed here for completeness, it can only be set in
     " ftplugin/tex_atp.vim script file.
     let g:atp_debugMainScript 	= 0
 endif
 
-if !exists("g:atp_debugProject") || g:atp_reload
+if !exists("g:atp_debugProject")
     " <SID>LoadScript(), <SID>LoadProjectScript(), <SID>WriteProject()
     " The value that is set in history file matters!
     let g:atp_debugProject 	= 0
 endif
-if !exists("g:atp_debugCB") || g:atp_reload
+if !exists("g:atp_debugCB")
     " atplib#CheckBracket()
     let g:atp_debugCB 		= 0
 endif
-if !exists("g:atp_debugCLB") || g:atp_reload
+if !exists("g:atp_debugCLB")
     " atplib#CloseLastBracket()
     let g:atp_debugCLB 		= 0
 endif
-if !exists("g:atp_debugTC") || g:atp_reload
+if !exists("g:atp_debugTC")
     " atplib#TabCompletion()
     let g:atp_debugTC 		= 0
 endif
-if !exists("g:atp_debugBS") || g:atp_reload
+if !exists("g:atp_debugBS")
     " atplib#searchbib()
     " atplib#showresults()
     " BibSearch() in ATP_files/search.vim
     " log file: /tmp/ATP_log 
     let g:atp_debugBS 		= 0
 endif
-if !exists("g:atp_debugToF") || g:atp_reload
+if !exists("g:atp_debugToF")
     " TreeOfFiles() ATP_files/common.vim
     let g:atp_debugToF 		= 0
 endif
-if !exists("g:atp_debgTOF") || g:atp_reload
+if !exists("g:atp_debgTOF")
     " TreeOfFiles() redirect only the output to
     " /tmp/ATP_log
     let g:atp_debugTOF 		= 0
 endif
-if !exists("g:atp_debugBabel") || g:atp_reload
+if !exists("g:atp_debugBabel")
     " echo msg if  babel language is not supported.
     let g:atp_debugBabel 	= 0
 endif
@@ -274,64 +274,64 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_cpcmd")
+if !exists("g:atp_cpcmd") || g:atp_reload
     " This will avoid using -i switch which might be defined in an alias file. 
     " This doesn't make much harm, but it might be better. 
     let g:atp_cpcmd="/bin/cp"
 endif
 " Variables for imaps, standard environment names:
-    if !exists("g:atp_EnvNameTheorem")
+    if !exists("g:atp_EnvNameTheorem") || g:atp_reload
 	let g:atp_EnvNameTheorem="theorem"
     endif
-    if !exists("g:atp_EnvNameDefinition")
+    if !exists("g:atp_EnvNameDefinition") || g:atp_reload
 	let g:atp_EnvNameDefinition="definition"
     endif
-    if !exists("g:atp_EnvNameProposition")
+    if !exists("g:atp_EnvNameProposition") || g:atp_reload
 	let g:atp_EnvNameProposition="proposition"
     endif
-    if !exists("g:atp_EnvNameObservation")
+    if !exists("g:atp_EnvNameObservation") || g:atp_reload
 	" This mapping is defined only in old layout:
 	" i.e. if g:atp_env_maps_old == 1
 	let g:atp_EnvNameObservation="observation"
     endif
-    if !exists("g:atp_EnvNameLemma")
+    if !exists("g:atp_EnvNameLemma") || g:atp_reload
 	let g:atp_EnvNameLemma="lemma"
     endif
-    if !exists("g:atp_EnvNameNote")
+    if !exists("g:atp_EnvNameNote") || g:atp_reload
 	let g:atp_EnvNameNote="note"
     endif
-    if !exists("g:atp_EnvNameCorollary")
+    if !exists("g:atp_EnvNameCorollary") || g:atp_reload
 	let g:atp_EnvNameCorollary="corollary"
     endif
-    if !exists("g:atp_EnvNameRemark")
+    if !exists("g:atp_EnvNameRemark") || g:atp_reload
 	let g:atp_EnvNameRemark="remark"
     endif
-if !exists("g:atp_StarEnvDefault")
+if !exists("g:atp_StarEnvDefault") || g:atp_reload
     " Values are "" or "*". 
     " It will be added to enrionemnt names which support it.
     let g:atp_StarEnvDefault=""
 endif
-if !exists("g:atp_StarMathEnvDefault")
+if !exists("g:atp_StarMathEnvDefault") || g:atp_reload
     " Values are "" or "*". 
     " It will be added to enrionemnt names which support it.
     let g:atp_StarMathEnvDefault=""
 endif
-if !exists("g:atp_EnvOptions_enumerate")
+if !exists("g:atp_EnvOptions_enumerate") || g:atp_reload
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
     " enumerate map <Leader>E will put \begin{enumerate}[topsep=0pt,noitemsep] Useful
     " options of enumitem to make enumerate more condenced.
     let g:atp_EnvOptions_enumerate=""
 endif
-if !exists("g:atp_EnvOptions_itemize")
+if !exists("g:atp_EnvOptions_itemize") || g:atp_reload
     " Similar to g:atp_enumerate_options.
     let g:atp_EnvOptions_itemize=""
 endif
-if !exists("g:atp_VimCompatible")
+if !exists("g:atp_VimCompatible") || g:atp_reload
     " Used by: % (s:JumpToMatch in LatexBox_motion.vim).
     let g:atp_VimCompatible = "no"
     " It can be 0/1 or yes/no.
 endif 
-if !exists("g:atp_CupsOptions")
+if !exists("g:atp_CupsOptions") || g:atp_reload
     " lpr command options for completion of SshPrint command.
     let g:atp_CupsOptions = [ 'landscape=', 'scaling=', 'media=', 'sides=', 'Collate=', 'orientation-requested=', 
 		\ 'job-sheets=', 'job-hold-until=', 'page-ragnes=', 'page-set=', 'number-up=', 'page-border=', 
@@ -339,29 +339,29 @@ if !exists("g:atp_CupsOptions")
 		\ 'page-left=', 'page-right=', 'page-top=', 'page-bottom=', 'prettyprint=', 'nowrap=', 'position=',
 		\ 'natural-scaling=', 'hue=', 'ppi=', 'saturation=', 'blackplot=', 'penwidth=']
 endif
-if !exists("g:atp_lprcommand")
+if !exists("g:atp_lprcommand") || g:atp_reload
     " Used by :SshPrint
     let g:atp_lprcommand = "lpr"
 endif 
-if !exists("g:atp_iabbrev_leader")
+if !exists("g:atp_iabbrev_leader") || g:atp_reload
     " Used for abbreviations: =theorem= (from both sides).
     let g:atp_iabbrev_leader = "="
 endif 
-if !exists("g:atp_bibrefRegister")
+if !exists("g:atp_bibrefRegister") || g:atp_reload
     " A register to which bibref obtained from AMS will be copied.
     let g:atp_bibrefRegister = "0"
 endif
-if !exists("g:atpbib_pathseparator")
+if !exists("g:atpbib_pathseparator") || g:atp_reload
     if has("win16") || has("win32") || has("win64") || has("win95")
 	let g:atpbib_pathseparator = "\\"
     else
 	let g:atpbib_pathseparator = "/"
     endif 
 endif
-if !exists("g:atpbib_WgetOutputFile")
+if !exists("g:atpbib_WgetOutputFile") || g:atp_reload
     let g:atpbib_WgetOutputFile = "amsref.html"
 endif
-if !exists("g:atpbib_wget")
+if !exists("g:atpbib_wget") || g:atp_reload
     let g:atpbib_wget="wget"
 endif
 if !exists("g:atp_vmap_text_font_leader") || g:atp_reload
@@ -922,8 +922,6 @@ function! <SID>SetPdf(viewer)
     " Remove menu entries.
     let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\S*'), 'Compiler')
     let Viewer			= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\S*'), 'View\ Output')
-    echomsg Compiler
-    let g:Compiler=Compiler
     try 
 	execute "aunmenu LaTeX.".Compiler
 	execute "aunmenu LaTeX.".Compiler."\\ debug"
@@ -934,7 +932,7 @@ function! <SID>SetPdf(viewer)
 
     let b:atp_TexCompiler	= "pdflatex"
     " We have to clear tex options (for example -src-specials set by :SetXdvi)
-    let b:atp_TexOptions	= "-synctex"
+    let b:atp_TexOptions	= "-synctex=1"
     let b:atp_Viewer		= a:viewer
 
     " Delete menu entry.

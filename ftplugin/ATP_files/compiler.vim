@@ -29,7 +29,8 @@ function! <SID>ViewOutput(...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    let rev_search	= ( a:0 == 1 && a:1 == "RevSearch" ? 1 : 0 )
+    let fwd_search	= ( a:0 == 1 && a:1 =~? 'sync' ? 1 : 0 )
+    let g:fwd_search	= fwd_search 
 
     call atplib#outdir()
 
@@ -51,18 +52,35 @@ function! <SID>ViewOutput(...)
     endif
 
     if b:atp_Viewer == "xpdf"	
-	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . getbufvar("%", b:atp_Viewer.'Options') 
+	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer)
     else
-	let viewer	= b:atp_Viewer  . " " . getbufvar("%", "atp_".b:atp_Viewer.'Options')
+	let viewer	= b:atp_Viewer
     endif
 
-    let view_cmd	= viewer . " " . global_options . " " . local_options . " " . shellescape(outfile)  . " &"
+
+    let sync_args 	= ( fwd_search ?  <SID>SyncTex(0,1) : "" )
+    let g:global_options = global_options
+    let g:local_options = local_options
+    let g:sync_args	= sync_args
+    let g:viewer	= viewer
+    if b:atp_Viewer =~ '\<okular\>'
+	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args.")&"
+    elseif b:atp_Viewer =~ '^\s*xdvi\>'
+	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args." ".shellescape(outfile).")&"
+    else
+" I couldn't get it work with okular.	
+" 	let SyncTex	= s:SidWrap('SyncTex')
+" 	let sync_cmd 	= (fwd_search ? "vim "." --servername ".v:servername." --remote-expr "."'".SyncTex."()';" : "" ) 
+" 	let g:sync_cmd=sync_cmd
+	let view_cmd	= viewer." ".global_options." ".local_options." ".shellescape(outfile)."&"
+    endif
 
     if g:atp_debugV
 	let g:view_cmd	= view_cmd
     endif
 
     if filereadable(outfile)
+	let g:debug=0
 	if b:atp_Viewer == "xpdf"	
 	    call system(view_cmd)
 	else
@@ -70,8 +88,9 @@ function! <SID>ViewOutput(...)
 	    redraw!
 	endif
     else
+	let g:debug=1
 	echomsg "Output file do not exists. Calling " . b:atp_TexCompiler
-	if rev_search
+	if fwd_search
 	    call s:Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
 	else
 	    call s:Compiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
@@ -130,44 +149,53 @@ function! <SID>SyncShow( page_nr, y_coord)
 	echohl Normal
     endif
 endfunction
-function! <SID>SyncTex() "{{{
+function! <SID>SyncTex(...) "{{{
+    let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
+    let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
+    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
+    let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
+    if !filereadable(output_file) && output_check
+       ViewOutput sync
+       return 2
+    endif
     if b:atp_Viewer == "xpdf"
-
 	let [ page_nr, y_coord ] = <SID>GetSyncData()
-	let sync_cmd = "xpdf -remote " . b:atp_XpdfServer . ' -exec gotoPage\('.page_nr.'\)'
-	let g:sync_cmd = sync_cmd
-	call system(sync_cmd)
-	call <SID>SyncShow(page_nr, y_coord)
+	let sync_cmd = "xpdf -remote " . shellescape(b:atp_XpdfServer) . ' -exec gotoPage\('.page_nr.'\)'
+	let sync_args = sync_cmd
+	if !dryrun
+	    call system(sync_cmd)
+	    call <SID>SyncShow(page_nr, y_coord)
+	endif
     elseif b:atp_Viewer == "okular"
 	let [ page_nr, y_coord ] = <SID>GetSyncData()
 	" This will not work in project files. (so where it is mostly needed.) 
 	let sync_cmd = "okular --unique ".shellescape(expand("%:p:r")).".pdf\\#src:".line(".").shellescape(expand("%:p"))." &"
-	let g:sync_output=system(sync_cmd)
-" 	exec sync_cmd
-	let g:sync_cmd = sync_cmd
-	redraw!
-	call <SID>SyncShow(page_nr, y_coord)
+	let sync_args = " ".shellescape(expand("%:p:r")).".pdf\\#src:".line(".").shellescape(expand("%:p"))." "
+	if !dryrun
+	    call system(sync_cmd)
+	    redraw!
+	    call <SID>SyncShow(page_nr, y_coord)
+	endif
 "     elseif b:atp_Viewer == "evince"
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
-    elseif b:atp_Viewer == "xdvi"
-	let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-	let dvi_file	= fnamemodify(atp_MainFile,":p:r") . ".dvi"
-	let g:dvi_file = dvi_file
-	if !filereadable(dvi_file)
-	   echomsg "dvi file doesn't exist" 
-	   ViewOutput RevSearch
-	   return
-	endif
+    elseif b:atp_Viewer =~ '^\s*xdvi\>'
 	let options = (exists("g:atp_xdviOptions") ? g:atp_xdviOptions : "" ) . getbufvar(bufnr(""), "atp_xdviOptions")
-
-	let b:xdvi_reverse_search="xdvi " . options . 
-		\ " -editor '" . v:progname . " --servername " . v:servername . 
+	let sync_cmd = "xdvi ".options.
+		\ " -editor '".v:progname." --servername ".v:servername.
 		\ " --remote-wait +%l %f' -sourceposition " . 
-		\ line(".") . ":" . col(".") . fnameescape(fnamemodify(expand("%"),":p")) . 
-		\ " " . fnameescape(dvi_file)
-	call system(b:xdvi_reverse_search)
+		\ line(".").":".col(".").shellescape(fnameescape(fnamemodify(expand("%"),":p"))). 
+		\ " " . fnameescape(output_file)
+	let sync_args = " -sourceposition ".line(".").":".col(".").shellescape(fnameescape(fnamemodify(expand("%"),":p")))." "
+	if !dryrun
+	    call system(sync_cmd)
+	endif
+    else
+	let sync_cmd=""
     endif
+    let g:sync_cmd = sync_cmd
+    return sync_args
 endfunction 
 nmap <buffer> <Plug>SyncTex		:call <SID>SyncTex()<CR>
 "}}}
@@ -924,7 +952,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		" If run through RevSearch command use source specials rather than
 		" just reload:
 		if str2nr(a:start) == 2
-		    let callback_rs_cmd = " vim " . " --servername " . v:servername . " --remote-expr " . "'RevSearch()' ; "
+		    let synctex		= s:SidWrap('SyncTex')
+		    let callback_rs_cmd = " vim " . " --servername " . v:servername . " --remote-expr " . "'".synctex."()' ; "
 		    let Reload_Viewer	= callback_rs_cmd
 		endif
 	    else
@@ -932,6 +961,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		" open it.
 		let Reload_Viewer = " "
 	    endif	
+	endif
+	if g:atp_debugCompiler
+	    let g:Reload_Viewer = Reload_Viewer
 	endif
 
 " 	IF OPENING NON EXISTING OUTPUT FILE
@@ -944,8 +976,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	endif
 
 "	SET THE COMMAND 
-	let comp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction " . s:texinteraction . " -output-directory " . shellescape(tmpdir) . " " . shellescape(a:filename)
-	let vcomp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction errorstopmode -output-directory " . shellescape(tmpdir) .  " " . shellescape(a:filename)
+	let comp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction=" . s:texinteraction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
+	let vcomp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction=errorstopmode -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
 	
 	" make function:
 " 	let make	= "vim --servername " . v:servername . " --remote-expr 'MakeLatex\(\"".tmptex."\",1,0\)'"

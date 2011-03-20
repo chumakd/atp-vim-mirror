@@ -24,9 +24,8 @@ execute "imenu 550.6 LaTe&X.".Compiler."\\ debug<Tab>:TEX\\ debug		<Esc>:DTEX<CR
 execute "menu 550.7 LaTe&X.".Compiler."\\ &twice<Tab>:2TEX			:<C-U>2TEX<CR>"
 execute "cmenu 550.7 LaTe&X.".Compiler."\\ &twice<Tab>:2TEX			<C-U>2TEX<CR>"
 execute "imenu 550.7 LaTe&X.".Compiler."\\ &twice<Tab>:2TEX			<Esc>:2TEX<CR>a"
-menu 550.8 LaTe&X.&MakeLatex<Tab>:MakeLatex					:<C-U>MakeLatex<CR>
+nmenu 550.8 LaTe&X.&MakeLatex<Tab>:MakeLatex					:<C-U>MakeLatex<CR>
 cmenu 550.8 LaTe&X.&MakeLatex<Tab>:MakeLatex					<C-U>MakeLatex<CR>
-menu 550.8 LaTe&X.&MakeLatex<Tab>:MakeLatex					<C-U>MakeLatex<CR>
 imenu 550.8 LaTe&X.&MakeLatex<Tab>:MakeLatex					<Esc>:MakeLatex<CR>a
 menu 550.9 LaTe&X.&Bibtex<Tab>:Bibtex						:<C-U>Bibtex<CR>
 cmenu 550.9 LaTe&X.&Bibtex<Tab>:Bibtex						<C-U>Bibtex<CR>

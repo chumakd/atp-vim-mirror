@@ -1,6 +1,9 @@
 		    Automatic TeX Plugin For Vim version 7.2
 		         by Marcin Szamotulski
 
+Supported OS'es: Linux, Mac OS.			 
+(It is not working on MS Windows)
+
 To install vimball (vba) file you need to have Vimball Archiver plugin (see 
 :h vimball). If you have it, just open the vba file within vim and source it
 using the command:

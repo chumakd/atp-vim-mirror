@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = _9
+VERSION = _9.1
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
 SOURCE += ftplugin/ATP_files/LatexBox_complete.vim
