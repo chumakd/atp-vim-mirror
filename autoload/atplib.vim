@@ -189,7 +189,7 @@ function! atplib#FindAndOpen(file, line)
     if use_server == "no_server"
 	let use_server=serverlist[0]
     endif
-    call system("gvim --servername " . use_server . " --remote-wait +" . a:line . " " . file . " &")
+    call system("gvim --servername " . use_server . " --remote-wait +" . a:line . " " . fnameescape(file) . " &")
     redir > /tmp/atp_debugreversesearch
 	echo "file:".file." line:".a:line. " server name:".use_server." hitch-hiking server:".v:servername 
     redir end

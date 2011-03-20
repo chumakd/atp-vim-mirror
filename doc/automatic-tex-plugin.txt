@@ -3640,6 +3640,7 @@ Okular
 
 	Then you can use <Shift>+<Left_Mouse> in Okular to synchronize the Vim
 	(gVim) with pdf. 
+
 								*atplib#FindAndOpen()*	
 	The function atplib#FindAndOpen() asks each running gvim server if is
 	is "hosting" source of the file %f. Then it uses this server to set
@@ -3648,6 +3649,10 @@ Okular
 	- actually I'm just typing in it :) you need to set up vim server
 	  option on startup: >
  		vim --servername VIM <file>
+<	{LIMITATIONS}:
+	The project files which are split into many input files are not yet
+	supported.
+	
 
 Kpdf
 	Works fine (moves page a little bit when updates a file).

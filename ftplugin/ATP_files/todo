@@ -217,3 +217,4 @@ To do: The function 'atplib#FindAndOpen' will not start gvim if it is
 	not running.
 To do: read atp-:SyncXpdf -> port this for Okular.
 To do: minimalise the number of options (for example: remove gloabl viewer options)
+To do: TOC clicable: <LeftMouse>=like enter <S-LeftMouse>=ForwardSearch
