@@ -30,7 +30,6 @@ function! <SID>ViewOutput(...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     let fwd_search	= ( a:0 == 1 && a:1 =~? 'sync' ? 1 : 0 )
-    let g:fwd_search	= fwd_search 
 
     call atplib#outdir()
 
@@ -63,7 +62,7 @@ function! <SID>ViewOutput(...)
     let g:local_options = local_options
     let g:sync_args	= sync_args
     let g:viewer	= viewer
-    if b:atp_Viewer =~ '\<okular\>'
+    if b:atp_Viewer =~ '\<okular\>' && fwd_search
 	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args.")&"
     elseif b:atp_Viewer =~ '^\s*xdvi\>'
 	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args." ".shellescape(outfile).")&"
@@ -103,6 +102,10 @@ noremap <silent> 		<Plug>ATP_ViewOutput	:call <SID>ViewOutput()<CR>
 " Forward Search
 function! <SID>GetSyncData()
 
+     	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
+	    echomsg "Calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
+ 	    call system(b:atp_TexCompiler . " -synctex=1 " . b:atp_MainFile) 
+ 	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
 	let synctex_cmd="synctex view -i ".line(".").":".col(".").":'".fnamemodify(b:atp_MainFile, ":p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"

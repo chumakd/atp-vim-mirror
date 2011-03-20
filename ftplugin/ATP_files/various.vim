@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Mar 19 09:00  2011 W
+" Last Change: Sun Mar 20 04:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -882,7 +882,7 @@ function! s:OpenLog()
 		    let g:sync = sync
 		endif 
 
-	    if sync && !g:atp_SyncLog
+	    if sync && !g:atp_LogSync
 		exe "normal! " . cwd
 		let g:debugST 	= 1
 		return

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7	Last change: 18 March 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 March 2011
 
 			An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 8.8)
 				by Marcin Szamotulski
@@ -86,7 +86,7 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 
 >
-  Changes in version 9
+  Changes in versions 9 & 9.1
 <
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
     http://sourceforge.net/projects/atp-vim/
@@ -109,7 +109,33 @@ NEWS							*atp-news*
   - There is also a new wiki page: (as for now it only includes features of
     ATP - but it looks nice :)
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
-    
+9.1:    
+  - :SyncTex, forward searching for Okular, Xdvi (they also support reverse
+    searching viewer->vim), and xpdf (only forward search). Read
+    |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
+    |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
+    -src-specials. 
+							*b:atp_TmpDir*
+9.1: IMPORTANT: The default is: >
+	let b:atp_TmpDir='.tmp'
+<   ATP will make this directory under |b:atp_OutDir|. Every latex process
+    will be run in a private directory under it. Every private directory is
+    removed when compiler ends (after copying files), the tmp directory is
+    removed when vim exists with system command 'rmdir' so if sth is in side
+    the directory will not be removed. 
+
+9.1:  
+  - :SetOkular						*atp-:SetOkular*
+    This works the same as |atp-:SetXpdf|. It sets the forward searching
+    options needed for Okular (notably this is just >
+	    b:atp_TexOptions="-synctex=1"
+<   but it also makes some changes in the menu). You can use the commands
+    |atp-:SetOkular|, |atp-:SetXdvi| in your atprc file (|atp-:SetXpdf| has
+    the default settings so it is not needed at startup): >
+    	au VimEnter *.tex :SetOkular
+	au VimEnter *.tex :SetXdvi
+<
+
   							*atp-:GotoLabel*
   - :GotoLabel[!] {pattern} 
     The command does the obvious thing. The {pattern} matches against the
@@ -187,7 +213,13 @@ NEWS							*atp-news*
     packages).
 
   - b:atp_autex file is only set to 1 for files with 'tex' extension.
-
+9.1
+  - one more wrapper: for \mbox{:} with <WrapperLeader>mb, see
+    |atp-maps-WrapSelection|.
+9.1    
+  - :SyncLog is now called |atp-:LogSync|,
+    g:atp_SyncLog is now |g:atp_LogSync|.
+    
   - Some other fixes.
     						Chears, Marcin
 >
@@ -878,22 +910,30 @@ map \b
 	This is a list of directories as g:atp_raw_texinputs with appended '**' 
 	see ':h file-searching'.
 
-:ViewOutput						*atp-:ViewOutput*
+:ViewOutput [sync]					*atp-:ViewOutput*
 map \v,map <F3>, imap <F3>  
 	You would like to see what you are editing use this function. It will
 	use the program defined in the variable b:atp_Viewer. See |b:atp_Viewer|,
 	|g:atp_XpdfServer|, |atp-xpdfOptions|. When there is no output file it will run
 	TeX and open the file. Read more about particular viewers
 	(inverse/reverse searching) in |atp-viewers|. 
+	You can open and sync the viewer with: >
+		:SyncTex
+		:ViewOutput sync
+<
 
 :SyncTex						*atp-:SyncTex*
 map t
 	Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
-	Xpdf and Xdvi with this feature (Evince is in plans).
+	Xpdf and Xdvi with this feature (Evince is not yet supported).
 
 	Note: you can also set reverse search for Okular and Xdvi, see
 	|atp-viewers-Okular| and |atp-viewers-Xdvi| for an instruction how to
 	do that. Xpdf doesn't support reverse searching.
+
+	When the output file or the synctex file (.synctex.gz) doesn't exists
+	then first it will be generated. It can also open the document if it
+	is not yet opened.
 
 :Viewer {viewer-program}				*atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
