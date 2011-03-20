@@ -3626,7 +3626,12 @@ Okular
 <	and set >
 		Editor		Custom Text Editor
 		Command		$HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%p' '%l'
-<	Next you have to add executable permissions to the python script
+<	NOTE: You must substitute $HOME directory to its value!!! It will not
+	work other way. You can also copy the script somewhere inside your
+	$PATH but then when this script will change you have to keep in mind
+	to copy it again. 
+
+	Next you have to add executable permissions to the python script
 	atp_RevSearch.py (in terminal: go to $HOME/.vim/ftplugin/ATP_files/,
 	and type: chmod 755 atp_RevSearch.py).
 
