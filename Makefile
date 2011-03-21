@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = _9.1
+VERSION = _9.1.1
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
 SOURCE += ftplugin/ATP_files/LatexBox_complete.vim
@@ -19,6 +19,7 @@ SOURCE += ftplugin/ATP_files/search.vim
 SOURCE += ftplugin/ATP_files/various.vim
 SOURCE += ftplugin/ATP_files/helpfunctions.vim
 SOURCE += ftplugin/ATP_files/vimcomplete.bst
+SOURCE += ftplugin/ATP_files/atp_RevSearch.py
 SOURCE += ftplugin/bibsearch_atp.vim
 SOURCE += ftplugin/fd_atp.vim
 SOURCE += ftplugin/plaintex_atp.vim

@@ -30,5 +30,5 @@ cmd="vim --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+sys.argv[
 subprocess.call(cmd, shell=True) 
 
 f = open('/tmp/atp_RevSearch.debug', 'w')
-f.write("\n"+sys.argv[1]+"\n"+sys.argv[2]+"\n"+server+"\n"+str(server_list)+"\n"+cmd+"\n\n")
+f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
 f.close()
