@@ -399,7 +399,7 @@ execute 'imap <buffer> '.g:atp_imap_third_leader.'I \begin{itemize}'.g:atp_EnvOp
 execute 'imap <buffer> '.g:atp_imap_third_leader.'i 	<Esc>:call InsertItem()<CR>a'
 
 
-execute 'imap <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":g:atp_StarMathEnvDefault)<CR>}<Esc>O'
 execute 'imap <buffer> '.g:atp_imap_third_leader.'q \begin{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":g:atp_StarEnvDefault)<CR>}<Esc>O'
 
 execute 'imap <buffer> '.g:atp_imap_third_leader.'c \begin{center}<CR>\end{center}<Esc>O'

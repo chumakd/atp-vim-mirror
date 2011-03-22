@@ -45,8 +45,7 @@ install:
 		rsync -Rv ${SOURCE} ${HOME}/.vim/
 
 clean:		
-		rm ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.tar.gz
-		rm ${PLUGIN}_${VERSION}.vba.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
+		rm ${PLUGIN}_${VERSION}.*
 
 test:
 		tar -tzf ${PLUGIN}${VERSION}.tar.gz

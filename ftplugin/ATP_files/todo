@@ -225,3 +225,5 @@ To do: node{\(...\)<tab>
 to do: gm (end math) gM (begin math)
 To do: SyncTex when generate .synctex.gz puts wrong name in .synctex.gz file
 To do: debug ]d
+To do: test atp with figures! input files.
+To do: test debug mode.

@@ -2893,16 +2893,19 @@ function! atplib#TabCompletion(expert_mode,...)
     let o		= strridx(l,'\')
     let s		= strridx(l,' ')
     let p		= strridx(l,'[')
+    let r		= strridx(l,'=')
     let c		= match(l, '\\cite\>\(.*\\cite\>\)\@!') 
     let a		= len(l) - stridx(join(reverse(split(l, '\zs')), ''), "=")
      
     let nr=max([n,m,o,s,p])
+    let color_nr=max([nr, r])
 
     " this matches for =...
     let abegin		= strpart(l, a-1)
 
     " this matches for \...
     let begin		= strpart(l,nr+1)
+    let color_begin	= strpart(l,color_nr+1)
     let cbegin		= strpart(l,nr)
     " and this for '\<\w*$' (beginning of last started word) -- used in
     " tikzpicture completion method 
@@ -2977,7 +2980,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	    return ''
 	endif
     "{{{3 --------- colors
-    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$'
+    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$\|\<\%(backgroundcolor\|bordercolor\|color\|linecolor\)=\s*$'
+	" this supports todonotes \todo command.
 	let completion_method='colors'
 	" DEBUG:
 	let b:comp_method='colors'
@@ -3879,9 +3883,9 @@ function! atplib#TabCompletion(expert_mode,...)
 			\ completion_method == 'colors' 	||
 			\ completion_method == 'bibfiles' 	)
 		if a:expert_mode
-		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".begin') 
+		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".color_begin') 
 		else
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
+		    let completions	= filter(deepcopy(completion_list),' v:val =~? color_begin') 
 		endif
 	    " {{{4 --------- tikz libraries, inputfiles 
 	    " match not only in the beginning
@@ -3969,7 +3973,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'tikz libraries'    || 
 		\ completion_method == 'environment_names' ||
 		\ completion_method == 'abbreviations' ||
-		\ completion_method == 'colors'	||
 		\ completion_method == 'pagestyle'	||
 		\ completion_method == 'pagenumbering'	||
 		\ completion_method == 'bibfiles' 	|| 
@@ -3984,7 +3987,9 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'missingfigure options' ||
 		\ completion_method == 'inputfiles' 
 	call complete(nr+2,completions)
-	let b:tc_return="labels,package,tikz libraries,environment_names,bibitems,bibfiles,inputfiles"
+    "{{{3 colors
+    elseif completion_method == 'colors'
+	call complete(color_nr+2,completions)
     " {{{3 bibitems
     elseif !normal_mode && completion_method == 'bibitems'
 	call complete(col+1,completion_dict)
