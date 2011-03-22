@@ -79,7 +79,6 @@ function! <SID>ViewOutput(...)
     endif
 
     if filereadable(outfile)
-	let g:debug=0
 	if b:atp_Viewer == "xpdf"	
 	    call system(view_cmd)
 	else
@@ -87,7 +86,6 @@ function! <SID>ViewOutput(...)
 	    redraw!
 	endif
     else
-	let g:debug=1
 	echomsg "Output file do not exists. Calling " . b:atp_TexCompiler
 	if fwd_search
 	    call s:Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
@@ -104,15 +102,25 @@ function! <SID>GetSyncData(line, col)
 
      	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
 	    echomsg "Calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
- 	    call system(b:atp_TexCompiler . " -synctex=1 " . b:atp_MainFile) 
+ 	    call system(b:atp_TexCompiler . " -synctex=1 " . atplib#FullPath(b:atp_MainFile)) 
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
 	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".fnamemodify(b:atp_MainFile, ":p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"
 
+	" SyncTex is fragile for the file name: if it is file name or full path, it
+	" must agree literally with what is written in .synctex.gz file
+	" first we try with full path then with file name without path.
 	let synctex_output=split(system(synctex_cmd), "\n")
-	if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
-	    return [ "no_sync", get(synctex_output, 1, '') ]
+	let  g:debug=[get(synctex_output, 1, '')]
+	if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
+	    " Write better test (above)
+	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
+	    let synctex_output=split(system(synctex_cmd), "\n")
+	    call add(g:debug,get(synctex_output, 1, ''))
+	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
+		return [ "no_sync", get(synctex_output, 1, '') ]
+	    endif
 	endif
 
 	if g:atp_debugSync
@@ -159,7 +167,6 @@ function! <SID>SyncTex(mouse, ...) "{{{
     let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
     let [ line, col ] 	= ( a:mouse ? [ v:mouse_lnum, v:mouse_col ] : [ line("."), col(".") ] )
-    echomsg "Lint=" . line
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
     let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
@@ -1564,7 +1571,7 @@ endif "}}}
 " Commands: 
 " {{{
 command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
-command! -buffer 		SyncTex			:call <SID>SyncTex()
+command! -buffer 		SyncTex			:call <SID>SyncTex(0)
 command! -buffer 		PID			:call <SID>GetPID()
 command! -buffer -bang 		MakeLatex		:call <SID>MakeLatex(( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile ), 0,0, [],1,1,<q-bang>,1)
 command! -buffer -nargs=? -bang -count=1 -complete=customlist,TEX_Comp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)

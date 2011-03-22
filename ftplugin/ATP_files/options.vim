@@ -1738,7 +1738,7 @@ if !exists("g:atp_MathVimOptions") || g:atp_reload
 endif
 
 if !exists("g:atp_MathZones") || g:atp_reload
-let g:atp_MathZones	= &l:filetype == "tex" ? [ 
+let g:atp_MathZones	= ( &l:filetype == "tex" ? [ 
 	    		\ 'texMathZoneV', 	'texMathZoneW', 
 	    		\ 'texMathZoneX', 	'texMathZoneY',
 	    		\ 'texMathZoneA', 	'texMathZoneAS',
@@ -1755,7 +1755,7 @@ let g:atp_MathZones	= &l:filetype == "tex" ? [
 	    		\ 'texMathZoneL', 	'texMathZoneLS',
 			\ 'texMathZoneT'
 			\ ]
-			\ : [ 'plaintexMath' ] 
+			\ : [ 'plaintexMath' ] )
 endif
 
 " a:0 	= 0 check if in math mode

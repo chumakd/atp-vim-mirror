@@ -218,3 +218,10 @@ To do: The function 'atplib#FindAndOpen' will not start gvim if it is
 To do: read atp-:SyncXpdf -> port this for Okular.
 To do: minimalise the number of options (for example: remove gloabl viewer options)
 To do: TOC clicable: <LeftMouse>=like enter <S-LeftMouse>=ForwardSearch
+Note: do not set b:atp_okularOptions="--unique" by default. 
+To do:
+When opening skeleton file -> the g:atp_MathZone is like it was for file type plaintex, but the file type has changed.
+To do: node{\(...\)<tab>
+to do: gm (end math) gM (begin math)
+To do: SyncTex when generate .synctex.gz puts wrong name in .synctex.gz file
+To do: debug ]d

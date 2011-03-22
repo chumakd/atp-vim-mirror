@@ -168,7 +168,7 @@ endfunction
 " just set in okular:
 " 	settings>okular settings>Editor
 " 		Editor		Custom Text Editor
-" 		Command		gvim --servername GVIM --remote-expr "atplib#FindAndOpen('%f','%l')"
+" 		Command		gvim --servername GVIM --remote-expr "atplib#FindAndOpen('%f','%l', '%c')"
 " You can also use this with vim but you should start vim with
 " 		vim --servername VIM
 " and use servername VIM in the Command above.		
@@ -190,7 +190,8 @@ function! atplib#ServerListOfFiles()
     redir end
     return file_list
 endfunction
-function! atplib#FindAndOpen(file, line)
+function! atplib#FindAndOpen(file, line, ...)
+    let col		= ( a:0 >= 1 ? a:1 : 1 )
     let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
     let server_list	= split(serverlist(), "\n")
     redir! > /tmp/atpvim_FindAndOpen.debug
@@ -210,10 +211,14 @@ function! atplib#FindAndOpen(file, line)
     if use_server == "no_server"
 	let use_server=server_list[0]
     endif
-    call system("gvim --servername " . use_server . " --remote-wait +" . a:line . " " . fnameescape(file) . " &")
-    echo "file:".file." line:".a:line. " server name:".use_server." hitch-hiking server:".v:servername 
+    echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
+    call system("vim --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
+    call remote_expr(use_server, 'cursor('.a:line.','.col.')')
+"   call system("vim --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
+"   This line is not working in DWM, but it might work in KDE (to be tested):
+"     call system("vim --servername ".use_server." --remote-exprt foreground\(\)")
     redir end
-    return "File:".file." line:".a:line. " server name:".use_server." Hitch-hiking server:".v:servername 
+    return "File:".file." line:".a:line." col:".col." server name:".use_server." Hitch-hiking server:".v:servername 
 endfunction
 "}}}1
 

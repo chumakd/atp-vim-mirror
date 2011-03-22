@@ -111,7 +111,7 @@ NEWS							*atp-news*
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
 9.1:    
   - :SyncTex, forward searching for Okular, Xdvi (they also support reverse
-    searching viewer->vim), and xpdf (only forward search). Read
+    searching viewer->Vim), and Xpdf (only forward search). Read
     |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
     |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
     -src-specials. 
@@ -124,7 +124,7 @@ NEWS							*atp-news*
 <   ATP will make this directory under |b:atp_OutDir|. Every latex process
     will be run in a private directory under it. Every private directory is
     removed when compiler ends (after copying files), the tmp directory is
-    removed when vim exists with system command 'rmdir' so if sth is in side
+    removed when Vim exists with system command 'rmdir' so if sth is in side
     the directory will not be removed. 
 
 9.1:  
@@ -176,7 +176,7 @@ NEWS							*atp-news*
     and {+, +} for \textcolor{blue}{+}. If you resolved syntactic conflicts in
     a very nice way you can change whole {=<old>=} for \textcolor{red}{<old>}
     and {+<new>+} for \textcolor{blue}{<new>}. For this you can use the
-    following vim command:
+    following Vim command:
 							*atp-:NiceDiff*
 	:NiceDiff
     (which also remaps ]s and [s and keeps the highlighted areas).
@@ -192,7 +192,7 @@ NEWS							*atp-news*
     							*atp-:SkipComment*
 							*atp-]star* *atp-[star*
 							*atp-gc* *atp-gC*
-  - :SkipCommentForward, :SkipCommentBackward with vim compatible maps ]*, [*
+  - :SkipCommentForward, :SkipCommentBackward with Vim compatible maps ]*, [*
     (they are not working as I would wish to so there are also other maps gc
     and gC). It skips also empty lines between commented lines.
 							*g:atp_StarEnvDefault*
@@ -257,7 +257,7 @@ NEWS							*atp-news*
   - New default values for: >
 	g:atp_map_forward_motion_leader 	= ">"
 	g:atp_map_backward_motion_leader 	= "<"
-<   The old values were "{" and "}" (they were interfering with vim maps).
+<   The old values were "{" and "}" (they were interfering with Vim maps).
 
 >
   Changes in version 8.5
@@ -349,7 +349,7 @@ let g:atp_iabbrev_leader = "="
     \begin{bibliography} environment. But the default is to use a bib file
     (which might be changed in the future).  The obtained bibliographic
     reference is copied to the register g:atp_bibrefRegister (the default is
-    "0" so you can paste it using vim command 'p') and also is stored in the
+    "0" so you can paste it using Vim command 'p') and also is stored in the
     variable g:atp_bibref.
 	
   - There is a new ftplugin for bib files. It only defines a small set of
@@ -444,7 +444,7 @@ let g:atp_iabbrev_leader = "="
 <
     Project Licence: General Public Licence 3.
 
-    The support of 'latexmk' program is added from LatexBox vim plugin by
+    The support of 'latexmk' program is added from LatexBox Vim plugin by
     D. Munger (http://www.vim.org/scripts/script.php?script_id=3109).
     This includes the commands: :Latexmk, :LatexmkForce, :LatemkStop,
     :LatexmkStatus, :LatexmkStatusDetailed, :LatexmkClean, :LatexmkCLeanAll.
@@ -478,7 +478,7 @@ let g:atp_iabbrev_leader = "="
 
     :BibSearch /{pattern}/ [flag]
     The command now has the same syntax as |:vimgrep| and |atp-:S|. It is now
-    possible to pass any vim pattern. Note that /.../ can be omitted if the
+    possible to pass any Vim pattern. Note that /.../ can be omitted if the
     pattern doesn't contain white spaces (you can use |/\s| instead).
     :BibSearch without any arguments still works (shows all bib files attached
     to source tex file).
@@ -725,7 +725,7 @@ forth between you |b:atp_OutDir| and the temporary directory)
 
 	When call back mechanism is set, which is by default if you run gui
 	version, if you invoke 'vim' from command line you need to add
-	'servername' variable, it might be desirable to alias vim to to >
+	'servername' variable, it might be desirable to alias Vim to to >
 			vim --servername VIM 
 < 	you have additional functionalities:
 
@@ -753,7 +753,7 @@ forth between you |b:atp_OutDir| and the temporary directory)
 			   Every compilation which is invoked by the user will
 			   be run in verbose mode as with <F5> key.
 
-	Note: the 'verbose' mode in 'vim' (in console) needs to be run, when
+	Note: the 'verbose' mode in 'Vim' (in console) needs to be run, when
 	there is no other latex instance running. Now you get a message to
 	wait until compilation ends. In future releases, a better solution
 	will be worked out. Gui version 'gvim' works better (as it doesn't  
@@ -773,8 +773,8 @@ forth between you |b:atp_OutDir| and the temporary directory)
 							*b:atp_ReloadOnError*
 The variable b:atp_ReloadOnError if set to 1 (which is the default) reload the
 file even when the exit status of compiler was non zero. If set to 0, then the
-file will not be reloaded [actually for viewers other than xpdf it will not be
-copied from the temporary directory, for xpdf it will be copied but not
+file will not be reloaded [actually for viewers other than Xpdf it will not be
+copied from the temporary directory, for Xpdf it will be copied but not
 reloaded). 
 
 There is also a variable which stores the last command which executed
@@ -939,6 +939,8 @@ map t, map <S-LeftMouse>
 	then first it will be generated. It can also open the document if it
 	is not yet opened.
 
+	Read |atp-:SyncTex_with_Okular| if you use Okular.
+
 :Viewer {viewer-program}				*atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
 
@@ -955,7 +957,7 @@ map t, map <S-LeftMouse>
 	more |atp-viewers-Xdvi|.
 :SetXpdf						*atp-:SetXpdf*
 :SetOkular						*atp-SetOkular*
-	This command sets options for xpdf viewer. Xpdf supports forward
+	This command sets options for Xpdf viewer. Xpdf supports forward
 	searching (vim->Xpdf) with command: |atp-:SyncTex|. It sets >
 	    let b:atp_TexOptions="-synctex=1"
 < 	Thus it enables the forward searching (the above is the default 
@@ -968,7 +970,7 @@ map t, map <S-LeftMouse>
 :BibSearch /{pattern}/ [flag]				see |atp-:BibSearch|
 	This function finds bib entries in bib files defined in your tex file
 	and in the variable b:atp_BibFiles (see |b:atp_BibFiles|), which match the
-	[pattern] (a vim regular expression). The output is configurable by
+	[pattern] (a Vim regular expression). The output is configurable by
 	the [flag] argument, see |atp-bibflags|. By default the pattern is
 	case insensitive.
 
@@ -1057,13 +1059,13 @@ nmap gf
 	locally): 'ruler', 'nospell', and a map 'q' to ':bd'.	
 
 	You can also use the command ':Explore' to see log, aux, ... files
-	(which is a part of 'netrw' vim plugin).
+	(which is a part of 'netrw' Vim plugin).
 
 
 In the log file there are some special tools to syncronize the tex source file
-and the Viewer (currently on xpdf is supported) with log file: |atp-:SyncTex|
-and |atp-:SyncXpdfLog|) These tools can sync tex file/xpdf automatically using
-autocommand group |CursorMoved|.
+and the Viewer (currently only Xpdf is supported) with log file:
+|atp-:SyncTex| and |atp-:SyncXpdfLog|) These tools can sync tex file/Xpdf
+automatically using autocommand group |CursorMoved|.
 							*atp-:SyncTex-(log_file)*
 :SyncTex[!]
 :nmap \g
@@ -1201,7 +1203,7 @@ map <F6>d
 
 	Puts the selected text inside {mathWrapperPair} if the cursor stands
 	in mathematics otherwise inside {textWrapperPair}.
-	{mathWrapperPair} {textWrapperPair} are vim lists of length at
+	{mathWrapperPair} {textWrapperPair} are Vim lists of length at
 	least 1, the first wrapper is the opening and the second is the
 	closing one (if not given the default '}' is used. The other arguments
 	are as for |atp-:WrapSelection|. If the opening leader in is not
@@ -1282,7 +1284,7 @@ map <F6>d
 							*atp-:TexAlign*
 :TexAlign
 map \a 
-	This is a wrapper around Align command of the great AutoAlign vim plugin:
+	This is a wrapper around Align command of the great AutoAlign Vim plugin:
 	    http://www.vim.org/scripts/script.php?script_id=884. 
 	This command sets correct align options and aligns the environment.
 	The following LaTeX environments are supported: >
@@ -1397,7 +1399,7 @@ vmap }p, vmap }c, vmap }s, vmap }S
 	*g:atp_map_forward_motion_leader* .
 
 	Note: the maps work in visual mode and operator pending mode ('d\ns'
-	will delete till the end of the section). You can use |n| and |N| vim
+	will delete till the end of the section). You can use |n| and |N| Vim
 	normal commands (also in visual mode) to go further. 
 
 	In visual mode these maps go to end of current section or, if already
@@ -1407,7 +1409,7 @@ vmap }p, vmap }c, vmap }s, vmap }S
 	should start with '.*' when you want to match somewhere in a middle of
 	the title. 
 	
-	These commands (and maps) use vim |search()| function or |atp-:S| command
+	These commands (and maps) use Vim |search()| function or |atp-:S| command
 	depending on the value of |g:atp_mapNn| (see |atp-:ToggleNn|, when
 	g:atp_mapNn=1 the |atp-:S| command is used). You can set the value
 	of |g:atp_mapNn| using the command |atp-:ToggleNn|. If 'wrapscan' is
@@ -1444,7 +1446,7 @@ vmap {p, vmap {c, vmap {s, vmap {S
 	{s		:PSec			go to previous section	
 	{S		:PSSec			go to previous subsection
 
-	These commands (and maps) use vim |search()| function or |atp-:S|
+	These commands (and maps) use Vim |search()| function or |atp-:S|
 	command depending on the value of |g:atp_mapNn| (see |atp-:ToggleNn|,
 	when g:atp_mapNn=1 the |atp-:S| command is used). If 'wrapscan' is
 	set and g:atp_mapNn=1 the search will wrap around the beginning of
@@ -1684,9 +1686,9 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
  :Undo 
  nnoremap u, nnoremap U, nnoremap g-, nnoremap g+ 
 <	You can use undo. The :Undo command will undo in the buffer under
-	the cursor (it switches to the correct window, using the vim undo
+	the cursor (it switches to the correct window, using the Vim undo
 	function, and runs :TOC command - so after all your back in ToC.). The
-	':Undo' command has one argument - the vim undo command to use, it is
+	':Undo' command has one argument - the Vim undo command to use, it is
 	one of: 'u/U/g-/g+' (the default is 'u'). They are mapped to 'u','U',
 	'g-' and 'g+'.  (only in the ToC buffer).  Note: ':Undo' command
 	doesn't changes the Section Stack.
@@ -1695,13 +1697,13 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 	stores all the deleted sections together with some information about
 	them: >
 			g:atp_SectionBackup
-<	it is a vim list (see |List|). Each entry is a list of the following format: >
+<	it is a Vim list (see |List|). Each entry is a list of the following format: >
 		[ <title>, <type>, <deleted_section>, <section_nr>, <file> ]
 <	where <title> is the section title, <type> is one of: part, chapter, 
 	section, subsection, subsubsection bibliography or abstract.  Deleted
 	section is a list of deleted lines, <section_nr> is the number of the
 	section that it had before delete, <file> is the full path to the
-	file which it comes from.  If you need to use it, you can use the vim
+	file which it comes from.  If you need to use it, you can use the Vim
 	function |append()| to put the <deleted_section> in the right place.
 
 	NOTE:
@@ -2014,7 +2016,7 @@ map c, map y, map p
 	unless the optional bang '!' is used) and all the input files (except
 	bib files).
 
-	The pattern is any vim pattern.
+	The pattern is any Vim pattern.
 
 	It works likes ]d but handles multi line definitions.
 
@@ -2083,7 +2085,7 @@ command inside mathematics.
 
 							*atp-Tab-note*
 If you prefer to not map <Tab> key then you can define g:atp_no_tab_map=1 in
-your vimrc file or atprc file |atprc|. Note that vim can add/remove
+your vimrc file or atprc file |atprc|. Note that Vim can add/remove
 tabshift width from the beginning of line in other ways: in normal mode with
 |>>| and |<<|, in insert mode: |i_CTRL-T|, |i_CTRL-D| and in visual mode with
 |>| and |<|. Also you can use |atp-g>| and |atp-g<|. The alignment of tabular
@@ -2243,7 +2245,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		front of the pattern (see below). In this case both completion modes:
 		expert and non-expert works in the same way.
 
-		You can also use vim patterns after '\cite{'.
+		You can also use Vim patterns after '\cite{'.
 
 <		Tab Completion for labels (|atp-completion|) allows to specify
 		the number of the counter, e.g. >
@@ -2568,7 +2570,7 @@ put it here).
 	g:atp_latexpackages
 	g:atp_latexclasses
 <	stores list of packages and classes in your tex distribution. They are
-	restored when you exit vim from the common history file (see |atp-history-common|).
+	restored when you exit Vim from the common history file (see |atp-history-common|).
 
 	They are used for completion of the LaTeX commands \usepackage and
 	\documentclass.
@@ -2663,7 +2665,7 @@ Then, try: >
 	\cite{Knuth 1981<CTRL-X><CTRL-O>
 	\cite{algo<CTRL-X><CTRL-O>
 
-You can also use regular expressions (or vim patterns) after '\cite{'.
+You can also use regular expressions (or Vim patterns) after '\cite{'.
 
 Associated settings:
 *atp-g:LatexBox_cite_pattern*		Default: '\\cite\(p\|t\)\?\*\?\_\s*{'
@@ -2803,7 +2805,7 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	files in input file have level 2).
 
 	There are other tools to make editing project files more easy. There
-	is search function: |atp-:S| which works better than the vim |:ijump|
+	is search function: |atp-:S| which works better than the Vim |:ijump|
 	command, which cannot go above the current file in the tree of input
 	files, but is much faster. 
 							
@@ -2816,7 +2818,7 @@ WRITING PROJECTS					*atp-ProjectFiles*
 >
  g:atp_mapNn = 0
 <	If it is set to 1 then several tools use |atp-:S| command instead of
-	vim |search()| function (which looks only in the current buffer).
+	Vim |search()| function (which looks only in the current buffer).
 	These are: 
 	|atp-:NPart|, |atp-:NChap|, |atp-:NSec|, |atp-:NSSec|, |atp-:NSSSec|, 
 	|atp-:PPart|, |atp-:PChap|, |atp-:PSec|, |atp-:PSSec|, |atp-:PSSSec|, 
@@ -2836,7 +2838,7 @@ WRITING PROJECTS					*atp-ProjectFiles*
 
 	Another good tip for LaTeX project files is to set |b:atp_TexFlavor|
 	variable to 'tex' (in your |vimrc| or |atprc| file). This will prevent
-	from situations that vim recognizes input file as a plain TeX while it
+	from situations that Vim recognizes input file as a plain TeX while it
 	is an input file into a LaTeX project. 
 	Another way is add options to 'viewoptions' (see |'viewoptions'|). And
 	set mkview and loadview via autocommands >
@@ -2855,7 +2857,7 @@ WRITING PROJECTS					*atp-ProjectFiles*
 
 PROJECT SCRIPT						*atp-ProjectScript*
 <	The file: |b:atp_MainFile| . ".project.vim", in the same directory as
-	|b:atp_MainFile| stores values of local variables saved before vim
+	|b:atp_MainFile| stores values of local variables saved before Vim
 	leaved a buffer (it is very similar to |View|. Local and global
 	variables are supported. The local variables which are cached in this
 	way are listed in >
@@ -2870,7 +2872,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 							*atp-ProjectScriptCommon*	
 	There is also file for variables for all projects. It stores values of
 	global variables (by default it is "ftplugin/ATP_files/common_var.vim". 
-	The global variables that are written in this file are given in vim
+	The global variables that are written in this file are given in Vim
 	list: >
     let g:atp_cached_common_variables = [ 'g:atp_texpackages', 	'g:atp_texclasses', 'g:atp_Library' ]
 <
@@ -2921,7 +2923,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	less than two days for example.
 
 	Note: If you delete the history file for the current buffer it will be
-	written after exiting vim, unless you turn off the history feature.
+	written after exiting Vim, unless you turn off the history feature.
 
 	The project script is disabled for files which full path matches
 	'texmf'.  With the optional bang ':LoadProjectScript common' loads the
@@ -2942,7 +2944,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 
 								*atp-:S*
 :S[!] /{pattern}/ [flags]
-	The pattern is a vim pattern (with 'magic'). With bang "!" it
+	The pattern is a Vim pattern (with 'magic'). With bang "!" it
 	regenerates the tree of input files.
 
 	This is command does the same job as |/| but is recursive in the tree
@@ -2956,7 +2958,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	Note that this means that if nothing was found the alternate file
 	before search will be lost.
 
-	The {pattern} is any vim pattern as described in |pattern| (it was only
+	The {pattern} is any Vim pattern as described in |pattern| (it was only
 	tested with 'magic' set on).
 			
 	The supported [flags] are 'bcewW'. Their meaning is the same as flags
@@ -2986,8 +2988,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	use: >
 		:S \\input
 		:S \\input b 
-<	and you can use |n| and |N| vim normal commands. Note that it if you
-	go backward, then it means that it will find the most deep line, e.g.:
+<	and you can use |n| and |N| Vim normal commands. 
+	Note that it if you go backward, then it means that it will find the
+	most deep line, e.g.:
 >
 		file.tex
 			----
@@ -3012,8 +3015,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 :PInput, nmap [gf, nmap {i
 	which finds the next/previous input line (also commented). See
 	|atp-:S_input| to find how it works. They depend on |g:atp_mapNn|, if
-	1 |atp-S:| is used if 0 vim |search()| function. To repeat search you
-	can use |n| and |N| vim normal commands. These commands omit comment
+	1 |atp-S:| is used if 0 Vim |search()| function. To repeat search you
+	can use |n| and |N| Vim normal commands. These commands omit comment
 	lines.
 
 							*b:atp_auruns*
@@ -3034,7 +3037,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 							*g:atp_MathVimOptions*
 >
  g:atp_MathVimOptions	= { 'textwidth' : '0' }
-<	This variable is a dictionary of vim settings and its values which
+<	This variable is a dictionary of Vim settings and its values which
 	will be valid when you edit mathematics inside the pairs \(:\), $:$,
 	\[:\], $$:$$ (only in plain tex files or if g:atp_TexFlavour
 	= 'plaintex').  For example, the default value will toggle between
@@ -3067,9 +3070,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	name should end with a "/".
 							*b:atp_Viewer*
 >
- let b:atp_Viewer	= "xpdf"			
-<	it was tested with xpdf, evince, epdfviewer, kpdf, okular, xdvi and
-	they all works fine. I'm using xpdf and the xpdf server options are
+ let b:atp_Viewer	= "okular"			
+<	it was tested with Xpdf, Evince, ePdfViewer, Kpdf, Okular, Xdvi and
+	they all works fine. I'm using Xpdf and the Xpdf server options are
 	supported so that the file is automatically reloaded (other viewers,
 	except epdfview, have this functionality as well. This do not works
 	for acroread. Read more about viewers in |atp-viewers|. 
@@ -3496,7 +3499,7 @@ LOG FILE MAPS						*atp-maps-log*
 	]p, [p		- go to next/previous font package message in log file 
 	]P, [P		- go to next/previous page in log file
 	%		- searchpair for (:).
-<	You can use |n| and |N| vim normal commands to repeat previous search [count] times.
+<	You can use |n| and |N| Vim normal commands to repeat previous search [count] times.
 
 ================================================================================
 DEBUGGING						*atp-errors*
@@ -3597,19 +3600,19 @@ NOTES ON VIEWERS                          			*atp-viewers*
 
 Xpdf								*atp-viewers-Xpdf*
 	It is supported. It is configured in the way that when your tex file
-	have errors, xpdf viewer will not reload your file, which I found
-	useful. Xpdf supports forward searching (vim->Xpdf)
-	with command: |atp-:SyncTex| >
+	have errors, Xpdf viewer will not reload your file, which I found
+	useful. Xpdf supports forward searching (vim->Xpdf) with command:
+	|atp-:SyncTex| >
 		:SyncTex
 		map t
 		map <S-LeftMouse>
 <	There is useful command |atp-:SetXpdf|.
-	You can set your own options of xpdf using b:XpdfOptions, for example
+	You can set your own options of Xpdf using b:XpdfOptions, for example
 >
 	    let b:atp_xpdfOptions="-bg NavajoWhite4 -fg black -mattecolor burylwood"
 <
-	will make xpdf view different. This is helpful when you edit to
-	files, and do not want to xpdf mix them. Another example:
+	will make Xpdf view different. This is helpful when you edit to
+	files, and do not want to Xpdf mix them. Another example:
 >
 	    let b:atp_xpdfOptions="-bg Grey30 -mattecolor SlateBlue2 -papercolor White"
 <
@@ -3642,6 +3645,15 @@ Okular
 	use: >
 	    gvim --remote-wait +%l "+normal %c|" %f
 <
+								*atp-:SyncTex_with_Okular*
+	NOTE: :SyncTex command uses "--unique" switch for okular. However,
+	when you do not set b:atp_okularOptions to "--unique" as well, then
+	using :SyncTex will open new instance of Okular regardless if it was
+	openned or not. You can use "--unique" as an Okular option (in
+	g:atp_okularOptins or b:atp_okularOptions), but the if you open many
+	files tex, all will use only one instance of Okular. This is
+	a limitation of using Okular. Xpdf has a server option which allows
+	for vim->Xpdf communication to the right Xpdf instance.  
 
 	Then you can use <Shift>+<Left_Mouse> in Okular to synchronize the Vim
 	(gVim) with pdf. 
@@ -3650,8 +3662,8 @@ Okular
 	The function atplib#FindAndOpen() asks each running gvim server if is
 	is "hosting" source of the file %f. Then it uses this server to set
 	the line (but it doesn't check if the cursor is in the right window!).
-	Note: if you like command line vim (which has its own beauty
-	- actually I'm just typing in it :) you need to set up vim server
+	Note: if you like command line Vim (which has its own beauty
+	- actually I'm just typing in it :) you need to set up Vim server
 	  option on startup: >
  		vim --servername VIM <file>
 <	{LIMITATIONS}:
@@ -3703,7 +3715,7 @@ Zathura
 ================================================================================
 TIPS                               				*atp-tips*
 
-If you have any nice tip on editing (La)TeX with vim or ATP :) you can share it
+If you have any nice tip on editing (La)TeX with Vim or ATP :) you can share it
 here (my email you'll find on top of the help file), or put them on the script
 web page. 
 
@@ -3849,7 +3861,7 @@ links:
     the default). If it is set to positive value then the default values of
     these variables should give the same colour as the status line has.
 
-    The variable g:atp_StatusLine is stores the value of vim option
+    The variable g:atp_StatusLine is stores the value of Vim option
     'statusline'; actually 'statusline' option is set by: >
 		set statusline=%!g:atp_StatusLine
 <

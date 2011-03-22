@@ -1,5 +1,6 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = _9.1.1
+VERSION = 9.1.1
+DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
 SOURCE += ftplugin/ATP_files/LatexBox_complete.vim
@@ -37,14 +38,19 @@ SOURCE += syntax/toc_atp.vim
 SOURCE += colors/coots-beauty-256.vim
 
 ${Plugin}_${VERSION}.vba: ${SOURCE}
-		tar -czf ${PLUGIN}${VERSION}.tar.gz ${SOURCE}
-		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}${VERSION}"' -S build.vim -cq!
+		tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
+		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 
 install:
 		rsync -Rv ${SOURCE} ${HOME}/.vim/
 
 clean:		
-		rm ${PLUGIN}${VERSION}.vba ${PLUGIN}${VERSION}.tar.gz
+		rm ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.tar.gz
+		rm ${PLUGIN}_${VERSION}.vba.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 
 test:
 		tar -tzf ${PLUGIN}${VERSION}.tar.gz
+upload:		
+	cp ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.vba.${DATE}
+	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
+	scp ${PLUGIN}_${VERSION}.vba.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
