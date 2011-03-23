@@ -2,7 +2,7 @@
 		         by Marcin Szamotulski
 
 Supported OS'es: Linux, Mac OS.			 
-(It is not working on MS Windows)
+(It is NOT WORKING ON MS wINDOWS, however I'm working on the port, give me some time :)
 
 To install vimball (vba) file you need to have Vimball Archiver plugin (see 
 :h vimball). If you have it, just open the vba file within vim and source it

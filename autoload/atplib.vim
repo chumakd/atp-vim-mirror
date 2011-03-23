@@ -2980,7 +2980,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    return ''
 	endif
     "{{{3 --------- colors
-    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$\|\<\%(backgroundcolor\|bordercolor\|color\|linecolor\)=\s*$'
+    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$\|\<\%(backgroundcolor\|bordercolor\|color\|linecolor\)=\s*\w*$'
 	" this supports todonotes \todo command.
 	let completion_method='colors'
 	" DEBUG:
@@ -3878,10 +3878,16 @@ function! atplib#TabCompletion(expert_mode,...)
 		else
 		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
 		endif
-	    " {{{4 --------- environment names, colors, bibfiles 
+	    " {{{4 --------- environment names, bibfiles 
 	    elseif ( completion_method == 'environment_names'	||
-			\ completion_method == 'colors' 	||
 			\ completion_method == 'bibfiles' 	)
+		if a:expert_mode
+		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".begin') 
+		else
+		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
+		endif
+	    " {{{4 --------- colors
+	    elseif completion_method == 'colors'
 		if a:expert_mode
 		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".color_begin') 
 		else

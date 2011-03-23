@@ -1625,9 +1625,14 @@ endif
 		    \ 'lgathered', 'rgathered' ]
 
 	let g:atp_TodoNotes_commands = [ '\todo{', '\listoftodos', '\missingfigure' ] 
-	let g:atp_TodoNotes_todo_options	= [ 'disable', 'color=', 'backgroundcolor=', 'linecolor=', 'bordercolor=', 
+	let g:atp_TodoNotes_todo_options = 
+		    \ [ 'disable', 'color=', 'backgroundcolor=', 'linecolor=', 'bordercolor=', 
 		    \ 'line', 'noline', 'inline', 'noinline', 'size=', 'list', 'nolist', 
-		    \ 'caption=', 'prepend', 'noprepend', 'fancyline']   
+		    \ 'caption=', 'prepend', 'noprepend', 'fancyline' ]   
+	"Todo: PackageOptions are not yet done.  
+	let g:atp_TodoNotes_packageOptions = [ 'textwidth', 'textsize', 
+			    \ 'prependcaption', 'shadow', 'dvistyle', 'figwidth', 'obeyDraft' ]
+
 	let g:atp_TodoNotes_missingfigure_options = [ 'figwidth=' ]
 if !exists("g:atp_MathOpened") || g:atp_reload
     let g:atp_MathOpened = 1
