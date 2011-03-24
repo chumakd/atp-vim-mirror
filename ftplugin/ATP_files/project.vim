@@ -65,6 +65,7 @@ let g:atp_cached_local_variables = [
 	    \ 'b:atp_LocalColors',
 	    \ 'b:TreeOfFiles', 			'b:ListOfFiles', 
 	    \ 'b:TypeDict', 			'b:LevelDict', 
+	    \ 'b:atp_StarEnvDefault', 		'b:atp_StarMathEnvDefault',
 	    \ ]
 " Note: b:atp_ProjectDir is not here by default by the following reason: it is
 " specific to the host, without it sharing the project file is possible.

@@ -217,7 +217,9 @@ let s:optionsDict= {
 		\ "atp_TexCompilerVariable"	: "max_print_line=2000",
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
-		\ "atp_LastBibPattern"		: "" }
+		\ "atp_LastBibPattern"		: "",
+		\ "atp_StarEnvDefault"		: "",
+		\ "atp_StarMathEnvDefault"	: ""}
 
 let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
@@ -305,16 +307,6 @@ endif
     if !exists("g:atp_EnvNameRemark") || g:atp_reload
 	let g:atp_EnvNameRemark="remark"
     endif
-if !exists("g:atp_StarEnvDefault") || g:atp_reload
-    " Values are "" or "*". 
-    " It will be added to enrionemnt names which support it.
-    let g:atp_StarEnvDefault=""
-endif
-if !exists("g:atp_StarMathEnvDefault") || g:atp_reload
-    " Values are "" or "*". 
-    " It will be added to enrionemnt names which support it.
-    let g:atp_StarMathEnvDefault=""
-endif
 if !exists("g:atp_EnvOptions_enumerate") || g:atp_reload
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
     " enumerate map <Leader>E will put \begin{enumerate}[topsep=0pt,noitemsep] Useful
@@ -682,6 +674,7 @@ endif
 "     let g:atp_complete_math_env_first=0
 " endif
 " }}}
+"
 
 " Project Settings:
 " {{{1

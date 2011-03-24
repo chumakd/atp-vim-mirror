@@ -86,7 +86,7 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 
 >
-  Changes in versions 9 & 9.1
+  Changes in versions 9 & 9.1 & 9.2
 <
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
     http://sourceforge.net/projects/atp-vim/
@@ -109,16 +109,26 @@ NEWS							*atp-news*
   - There is also a new wiki page: (as for now it only includes features of
     ATP - but it looks nice :)
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
+9.2:
+  - g:atp_StarEnvDefault and g:atp_StarEnvMathDefault are now local variables
+    |b:atp_StarEnvDefault|, |b:atp_StarEnvMathDefault|. They are remembered by
+    the local project file, see |g:atp_cached_local_variables|. 
 9.1:    
   - :SyncTex, forward searching for Okular, Xdvi (they also support reverse
     searching viewer->Vim), and Xpdf (only forward search). Read
     |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
     |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
     -src-specials. 
+9.2:
+  - Forward searching for Xpdf works better (finds the horisontal and vertical
+    position on the page). The developer of Xpdf said that Xpdf v3.03 will
+    have switches for page number, and mouse event position what will alow
+    for forward searching in Xpdf.
 9.1:							
   - Reverse searching in okular. Read |atp-viewers-Okular| how to install it
     (it is easy but needs you to do that).
-							*b:atp_TmpDir*
+9.2:    
+  - Reverse searching python script atp_RevSearch.py is slightly better now!
 9.1: IMPORTANT: The default is: >
 	let b:atp_TmpDir='.tmp'
 <   ATP will make this directory under |b:atp_OutDir|. Every latex process
@@ -195,12 +205,16 @@ NEWS							*atp-news*
   - :SkipCommentForward, :SkipCommentBackward with Vim compatible maps ]*, [*
     (they are not working as I would wish to so there are also other maps gc
     and gC). It skips also empty lines between commented lines.
-							*g:atp_StarEnvDefault*
-  - g:atp_StarEnvDefault variable with value "*" or "" (the default). This
+							*b:atp_StarEnvDefault*
+  - b:atp_StarEnvDefault variable with value "*" or "" (the default). This
     star is added to theorem like environment imaps (|atp-imap-environments|).
-    							*g:atp_StarMathEnvDefault*	
-  - g:atpStarMathEnvDefault variable with values "*" or "" (the
+    By default it will be restored by the project script. See
+    |g:atp_cached_common_variables|.
+    							*b:atp_StarMathEnvDefault*	
+  - b:atpStarMathEnvDefault variable with values "*" or "" (the
     default). It is added to align and equation imaps (|atp-imap-environments|).
+    By default it will be restored by the project script. See
+    |g:atp_cached_common_variables|.
     							*g:atp_EnvNameTheorem*
     							*g:atp_EnvNameProposition*
     							*g:atp_EnvNameLemma*
@@ -2860,20 +2874,25 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	|b:atp_MainFile| stores values of local variables saved before Vim
 	leaved a buffer (it is very similar to |View|. Local and global
 	variables are supported. The local variables which are cached in this
-	way are listed in >
+	way are listed in 
+							*g:atp_cached_local_variables*
+>
 		let g:atp_cached_local_variables = [
 		\ 'b:atp_MainFile', 		'b:atp_History',
 		\ 'b:atp_LocalCommands', 	'b:atp_LocalColors',
 		\ 'b:atp_LocalEnvironments', 	'b:TreeOfFiles', 
 		\ 'b:ListOfFiles', 		'b:TypeDict', 
-		\ 'b:LevelDict' ]
+		\ 'b:LevelDict', 
+		\ 'b:atp_StarEnvDefault', 	'b:atp_StarEnvMathDefault']
 <	The each file will have separate history file which stores the values
 	of these variables.
 							*atp-ProjectScriptCommon*	
 	There is also file for variables for all projects. It stores values of
 	global variables (by default it is "ftplugin/ATP_files/common_var.vim". 
 	The global variables that are written in this file are given in Vim
-	list: >
+	list: 
+    							*g:atp_cached_common_variables*
+>
     let g:atp_cached_common_variables = [ 'g:atp_texpackages', 	'g:atp_texclasses', 'g:atp_Library' ]
 <
 	If you want to disable this feature for some reason you can set >

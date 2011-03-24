@@ -23,23 +23,23 @@
 
 import subprocess, sys, re
 
+# Get list of vim servers.
 output = subprocess.Popen(["vim", "--serverlist"], stdout=subprocess.PIPE)
-# The output from this command has 
 servers = str(output.stdout.read())
-# TODO: it is better to match ^b'\zs\(.*\)\ze':
-servers=re.sub("^b'",'', servers)
-servers=re.sub("'$",'', servers)
+match=re.match('b\'(.*)\\\\n\'', servers)
+servers=match.group(1)
 server_list=servers.split('\\n')
-# TODO: I should test if the server is non empty (or '^\s*$'):
 server = server_list[0]
 # Get the column (it is an optional argument)
 if (len(sys.argv) >= 4 and int(sys.argv[3]) > 0):
     column = str(sys.argv[3])
 else:
     column = str(1)
+# Call atplib#FindAndOpen()     
 cmd="vim --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+sys.argv[1]+"','"+sys.argv[2]+"','"+column+"')\""
 subprocess.call(cmd, shell=True) 
 
+# Debug:
 f = open('/tmp/atp_RevSearch.debug', 'w')
 f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
 f.close()
