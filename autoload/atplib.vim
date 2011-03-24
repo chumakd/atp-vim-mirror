@@ -173,7 +173,7 @@ endfunction
 " 		vim --servername VIM
 " and use servername VIM in the Command above.		
 function! atplib#ServerListOfFiles()
-    redir! > /tmp/atpvim_ServerListOfFiles.debug
+    redir! > /tmp/atp_ServerListOfFiles.debug
     let file_list = []
     for nr in range(1, bufnr('$')-1)
 	let files 	= getbufvar(nr, "ListOfFiles")
@@ -194,7 +194,7 @@ function! atplib#FindAndOpen(file, line, ...)
     let col		= ( a:0 >= 1 ? a:1 : 1 )
     let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
     let server_list	= split(serverlist(), "\n")
-    redir! > /tmp/atpvim_FindAndOpen.debug
+    redir! > /tmp/atp_FindAndOpen.debug
     echo "server list=".string(server_list)
     if len(server_list) == 0
 	retun 1

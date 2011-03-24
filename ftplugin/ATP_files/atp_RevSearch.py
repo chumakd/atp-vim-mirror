@@ -21,11 +21,16 @@
 # DEBUG:
 # debug file : /tmp/atp_RevSearch.debug
 
-import subprocess, sys
+import subprocess, sys, re
 
 output = subprocess.Popen(["vim", "--serverlist"], stdout=subprocess.PIPE)
-servers = output.stdout.read()
-server_list = str(servers).splitlines()
+# The output from this command has 
+servers = str(output.stdout.read())
+# TODO: it is better to match ^b'\zs\(.*\)\ze':
+servers=re.sub("^b'",'', servers)
+servers=re.sub("'$",'', servers)
+server_list=servers.split('\\n')
+# TODO: I should test if the server is non empty (or '^\s*$'):
 server = server_list[0]
 # Get the column (it is an optional argument)
 if (len(sys.argv) >= 4 and int(sys.argv[3]) > 0):
