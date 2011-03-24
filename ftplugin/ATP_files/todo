@@ -228,3 +228,5 @@ To do: debug ]d
 To do: test atp with figures! input files.
 To do: test debug mode.
 To do: find a better way of dealing with g:atp_latexpackages (update them)
+To do: I can write python code using psutil to check if latex is running this
+	will be 100% accurate (not like now).

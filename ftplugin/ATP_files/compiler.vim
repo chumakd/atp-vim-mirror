@@ -112,7 +112,6 @@ function! <SID>GetSyncData(line, col)
 	" must agree literally with what is written in .synctex.gz file
 	" first we try with full path then with file name without path.
 	let synctex_output=split(system(synctex_cmd), "\n")
-	let  g:debug=[get(synctex_output, 1, '')]
 	if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
 	    " Write better test (above)
 	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
@@ -134,17 +133,21 @@ function! <SID>GetSyncData(line, col)
 	let y_coord_list=copy(synctex_output) 
 	call filter(y_coord_list, "v:val =~ '^\\cy:\\d\\+'")
 	let y_coord=matchstr(get(y_coord_list, 0, "no sync data"), 'y:\zs[0-9.]*')
+	let x_coord_list=copy(synctex_output) 
+	call filter(x_coord_list, "v:val =~ '^\\cx:\\d\\+'")
+	let x_coord=matchstr(get(x_coord_list, 0, "no sync data"), 'x:\zs[0-9.]*')
 
 	if g:atp_debugSync
 	    let g:page=page
 	    let g:y_coord=y_coord
+	    let g:x_coord=x_coord
 	endif
 
 	if page == "no_sync"
 	    return [ "no_sync", "No SyncTex Data: try on another line (comments are not allowed)." ]
 	endif
 	let page_nr=matchstr(page, '^\cPage:\zs\d\+') 
-	return [ page_nr, y_coord ]
+	return [ page_nr, y_coord, x_coord ]
 endfunction
 function! <SID>SyncShow( page_nr, y_coord)
     if a:y_coord < 325
@@ -175,15 +178,21 @@ function! <SID>SyncTex(mouse, ...) "{{{
        return 2
     endif
     if b:atp_Viewer == "xpdf"
-	let [ page_nr, y_coord ] = <SID>GetSyncData(line, col)
-	let sync_cmd = "xpdf -remote " . shellescape(b:atp_XpdfServer) . ' -exec gotoPage\('.page_nr.'\)'
-	let sync_args = sync_cmd
+	let [ page_nr, y_coord, x_coord ] = <SID>GetSyncData(line, col)
+	let sync_cmd_page = "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
+	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
+        let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
+	let sync_cmd = sync_cmd_page.";sleep 0.01s;".sync_cmd_y.";sleep 0.01s;".sync_cmd_x
 	if !dryrun
 	    call system(sync_cmd)
-	    call <SID>SyncShow(page_nr, y_coord)
+	    redraw!
 	endif
+	let g:sync_cmd_page 	= sync_cmd_page
+	let g:sync_cmd_y 	= sync_cmd_y
+        let g:sync_cmd_x 	= sync_cmd_x
+	let g:sync_cmd = sync_cmd
     elseif b:atp_Viewer == "okular"
-	let [ page_nr, y_coord ] = <SID>GetSyncData(line, col)
+	let [ page_nr, y_coord, x_coord ] = <SID>GetSyncData(line, col)
 	" This will not work in project files. (so where it is mostly needed.) 
 	let sync_cmd = "okular --unique ".shellescape(expand("%:p:r")).".pdf\\#src:".line.shellescape(expand("%:p"))." &"
 	let sync_args = " ".shellescape(expand("%:p:r")).".pdf\\#src:".line.shellescape(expand("%:p"))." "
@@ -192,6 +201,7 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	    redraw!
 	    call <SID>SyncShow(page_nr, y_coord)
 	endif
+	let g:sync_cmd = sync_cmd
 "     elseif b:atp_Viewer == "evince"
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
@@ -206,11 +216,13 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	if !dryrun
 	    call system(sync_cmd)
 	endif
+	let g:sync_cmd = sync_cmd
     else
 	let sync_cmd=""
+	let g:sync_cmd = sync_cmd
     endif
-    let g:sync_cmd = sync_cmd
-    return sync_args
+"     return sync_args
+    return
 endfunction 
 nmap <buffer> <Plug>SyncTexKeyStroke		:call <SID>SyncTex(0)<CR>
 nmap <buffer> <Plug>SyncTexMouse		:call <SID>SyncTex(1)<CR>

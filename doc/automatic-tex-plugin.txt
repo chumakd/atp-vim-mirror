@@ -965,7 +965,7 @@ map t, map <S-LeftMouse>
 	uses "-src-specials".
 
 	It reads the Xpdf viewer options from the variables
-	b:atp_xpdfOptions and g:atp_xpdfOptions. Similarly for Okular.
+	|b:atp_xpdfOptions| and g:atp_xpdfOptions. Similarly for Okular.
 						
 :BibSearch /{pattern}/ [flag]				see |atp-:BibSearch|
 	This function finds bib entries in bib files defined in your tex file
