@@ -88,9 +88,17 @@ function! <SID>ViewOutput(...)
     else
 	echomsg "Output file do not exists. Calling " . b:atp_TexCompiler
 	if fwd_search
-	    call s:Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
+	    if b:atp_Compiler == 'python'
+		call <SID>PythonCompiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
+	    else
+		call <SID>Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
+	    endif
 	else
-	    call s:Compiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
+	    if b:atp_Compiler == 'python'
+		call <SID>PythonCompiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
+	    else
+		call <SID>Compiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
+	    endif
 	endif
     endif	
 endfunction
@@ -98,6 +106,7 @@ noremap <silent> 		<Plug>ATP_ViewOutput	:call <SID>ViewOutput()<CR>
 "}}}
 
 " Forward Search
+" {{{ GetSyncData
 function! <SID>GetSyncData(line, col)
 
      	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
@@ -165,7 +174,7 @@ function! <SID>SyncShow( page_nr, y_coord)
 " 	echomsg "You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
 	echohl Normal
     endif
-endfunction
+endfunction "}}}
 function! <SID>SyncTex(mouse, ...) "{{{
     let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
@@ -250,6 +259,9 @@ endfunction
 " To check if xpdf is running we use 'ps' unix program.
 "{{{ s:xpdfpid
 function! <SID>xpdfpid() 
+" python << EOF
+" 
+" EOF
     let s:checkxpdf="ps -ef | grep -v grep | grep xpdf | grep '-remote '" . shellescape(b:atp_XpdfServer) . " | awk '{print $2}'"
     return substitute(system(s:checkxpdf),'\D','','')
 endfunction
@@ -377,77 +389,7 @@ let g:atp_compiler_SID	= { fnamemodify(expand('<sfile>'),':t') : s:compiler_SID 
 function! <SID>SidWrap(func) "{{{
     return s:compiler_SID . a:func
 endfunction "}}}
-
-" CatchStatus {{{
-function! <SID>CatchStatus(status)
-	let b:atp_TexStatus=a:status
-endfunction
 " }}}
-
-" Callback {{{
-" a:mode 	= a:verbose 	of s:compiler ( one of 'default', 'silent',
-" 				'debug', 'verbose')
-" a:commnad	= a:commmand 	of s:compiler 
-"		 		( a:commnad = 'AU' if run from background)
-"
-" Uses b:atp_TexStatus which is equal to the value returned by tex
-" compiler.
-function! <SID>CallBack(mode)
-	if g:atp_debugCallBack
-	    let b:mode	= a:mode
-	endif
-
-	for cmd in keys(g:CompilerMsg_Dict) 
-	if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
-		let Compiler 	= g:CompilerMsg_Dict[cmd]
-		break
-	    else
-		let Compiler 	= b:atp_TexCompiler
-	    endif
-	endfor
-	let b:atp_running	= b:atp_running - 1
-
-	" Read the log file
-	cg
-
-	" If the log file is open re read it / it has 'autoread' opion set /
-	checktime
-
-	" redraw the status line /for the notification to appear as fast as
-	" possible/ 
-	if a:mode != 'verbose'
-	    redrawstatus
-	endif
-
-	if b:atp_TexStatus && t:atp_DebugMode != "silent"
-	    if b:atp_ReloadOnError
-		echomsg Compiler." exited with status " . b:atp_TexStatus
-	    else
-		echomsg Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
-	    endif
-	elseif !g:atp_status_notification || !g:atp_statusline
-	    echomsg Compiler." finished"
-	endif
-
-	" End the debug mode if there are no errors
-	if b:atp_TexStatus == 0 && t:atp_DebugMode == "debug"
-	    cclose
-	    echomsg b :atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
-	    let t:atp_DebugMode == g:atp_DefaultDebugMode
-	endif
-
-	if t:atp_DebugMode == "debug" || a:mode == "debug"
-	    if !t:atp_QuickFixOpen
-		ShowErrors
-	    endif
-	    " In debug mode, go to first error. 
-	    if t:atp_DebugMode == "debug"
-		cc
-	    endif
-	endif
-endfunction
-"}}}
-"}}}
 
 " This function is called to run TeX compiler and friends as many times as necessary.
 " Makes references and bibliographies (supports bibtex), indexes.  
@@ -716,6 +658,8 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID . 
 		\ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex.", 0, [".time[0].",".time[1]."], ".
 		\ a:did_firstrun.", ".(a:run+1).", \'".a:force."\'\)\""
+
+	" COMPILATION
 	let cmd	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
 	    if g:atp_debugML
@@ -805,6 +749,8 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID .
 		      \ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex." , ".did_index.", [".time[0].",".time[1]."], ".
 		      \ a:did_firstrun.", ".(a:run+1).", \'".a:force."\'\)\""
+
+	  " COMPILATION
 	  let cmd	.= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
 	      if g:atp_debugML
@@ -855,6 +801,77 @@ endfunction
 "}}}
 
 " THE MAIN COMPILER FUNCTION:
+" {{{ s:PythonCompiler
+function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
+
+    if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
+		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
+		\ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
+	 
+	echohl WaningMsg | echomsg "Your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
+	echomsg "b:atp_TexCompiler=" . b:atp_TexCompiler	
+	echomsg "b:atp_Viewer=" . b:atp_Viewer	
+    endif
+    if !has('clientserver')
+	if has("win16") || has("win32") || has("win64") || has("win95")
+	    echohl WarningMsg
+	    echomsg "ATP needs +clientserver vim compilation option."
+	    echohl Normal
+	else
+	    echohl WarningMsg
+	    echomsg "Python compiler needs +clientserver vim compilation option."
+	    echohl Normal
+	    let b:atp_Compiler = "bash"
+	    return
+	endif
+    endif
+    let tex_options=shellescape(b:atp_TexOptions.',-interaction=nonstopmode')
+    let ext	= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
+    let ext	= substitute(ext, '\.', '', '')
+
+    let global_options 	= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
+    let local_options 	= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
+    if global_options != "" 
+	let viewer_options  = global_options.",".local_options
+    else
+	let viewer_options  = local_options
+    endif
+    let cmd=g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
+		\ ." --tex-options ".tex_options
+		\ ." --verbose ".a:verbose
+		\ ." --file ".shellescape(atplib#FullPath(a:filename))
+		\ ." --output-format ".ext
+		\ ." --runs ".a:runs
+		\ ." --servername ".v:servername
+		\ ." --view ".a:start 
+		\ ." --bibtex ".( a:bibtex ? 'True' : 'False' )
+		\ ." --viewer ".b:atp_Viewer
+		\ ." --xpdf-server ".b:atp_XpdfServer
+		\ ." --viewer-options ".shellescape(viewer_options) 
+		\ ." --reload-on-error ". ( b:atp_ReloadOnError ? 'True' : 'False' )
+		\ ." --bang ". ( a:bang == "!" ? 'True' : 'False' )
+		\ ." --keep ". shellescape(join(g:keep, ','))
+    " Write file
+    let backup=&backup
+    let writebackup=&writebackup
+    if a:command == "AU"  
+	if &backup | setlocal nobackup | endif
+	if &writebackup | setlocal nowritebackup | endif
+    endif
+    " disable WriteProjectScript
+    let eventignore = &l:eventignore
+    setl eventignore+=BufWrite
+    w
+    let &l:eventignore = eventignore
+    if a:command == "AU"  
+	let &l:backup=backup 
+	let &l:writebackup=writebackup 
+    endif
+    let b:atp_TexCommand= cmd
+    let b:atp_running	+= 1
+    echo system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
+endfunction
+" }}}
 " {{{ s:Compiler 
 " This is the MAIN FUNCTION which sets the command and calls it.
 " NOTE: the <filename> argument is not escaped!
@@ -912,7 +929,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	if exists("*mkdir")
 	    call mkdir(tmpdir, "p", 0700)
 	else
-	    echoerr 'Your vim doesn't have mkdir function'
+	    echoerr "Your vim doesn't have mkdir function"
 	endif
 
 	" SET THE NAME OF OUTPUT FILES
@@ -1040,10 +1057,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" catch the status
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
-	    let catchstatus = s:SidWrap('CatchStatus')
 	    let catchstatus_cmd = 'vim ' . ' --servername ' . v:servername . ' --remote-expr ' . 
-			\ shellescape(catchstatus)  . '\($?\) ; ' 
-
+			\ shellescape('atplib#CatchStatus')  . '\($?\) ; ' 
 	else
 	    let catchstatus_cmd = ''
 	endif
@@ -1103,9 +1118,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" Callback:
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
-	    let callback	= s:SidWrap('CallBack')
+" 	    let callback	= s:SidWrap('CallBack')
 	    let callback_cmd 	= ' vim ' . ' --servername ' . v:servername . ' --remote-expr ' . 
-				    \ shellescape(callback).'\(\"'.a:verbose.'\"\)'. " ; "
+				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
 
@@ -1214,7 +1229,11 @@ function! <SID>auTeX()
 	    
 "
 " 	if NewCompare()
-	    call s:Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	    if b:atp_Compiler == 'python'
+		call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	    else
+		call <SID>Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	    endif
 	    redraw
 	    return "compile" 
 	endif
@@ -1239,7 +1258,11 @@ function! <SID>auTeX()
 	    " This option can be set by VCSCommand plugin using VCSVimDiff command
 	    return " E382"
 	endtry
-	call s:Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	if b:atp_Compiler == 'python'
+	    call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	else
+	    call <SID>Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+	endif
 	redraw
 	return "compile for the first time"
     endif
@@ -1298,7 +1321,11 @@ function! <SID>TeX(runs, bang, ...)
 	endif
     endif
 "     echomsg "TEX_3 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
-    call s:Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
+    if b:atp_Compiler == 'python'
+	call <SID>PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
+    else
+	call <SID>Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
+    endif
 "     echomsg "TEX_4 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
 endfunction
 function! TEX_Comp(ArgLead, CmdLine, CursorPos)
@@ -1349,7 +1376,11 @@ function! <SID>Bibtex(bang,...)
 	let mode = g:atp_DefaultDebugMode
     endif
 
-    call s:Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")
+    if b:atp_Compiler == 'python'
+	call <SID>PythonCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
+    else
+	call <SID>Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")
+    endif
 endfunction
 nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("", "")<CR>
 nnoremap <silent> <Plug>BibtexSilent	:call <SID>Bibtex("", "silent")<CR>

@@ -68,6 +68,78 @@ function! atplib#FullPath(file_name) "{{{1
 endfunction
 "}}}1
 
+" Compilation Call Back Communication: 
+" (Communications with compiler script: both in compiler.vim and the python script.)
+" {{{ Compilation Call Back Communication
+" CatchStatus {{{
+function! atplib#CatchStatus(status)
+	let b:atp_TexStatus=a:status
+endfunction
+" }}}
+" Callback {{{
+" a:mode 	= a:verbose 	of s:compiler ( one of 'default', 'silent',
+" 				'debug', 'verbose')
+" a:commnad	= a:commmand 	of s:compiler 
+"		 		( a:commnad = 'AU' if run from background)
+"
+" Uses b:atp_TexStatus which is equal to the value returned by tex
+" compiler.
+function! atplib#CallBack(mode)
+    if g:atp_debugCallBack
+	let b:mode	= a:mode
+    endif
+
+    for cmd in keys(g:CompilerMsg_Dict) 
+    if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
+	    let Compiler 	= g:CompilerMsg_Dict[cmd]
+	    break
+	else
+	    let Compiler 	= b:atp_TexCompiler
+	endif
+    endfor
+    let b:atp_running	= b:atp_running - 1
+
+    " Read the log file
+    cg
+
+    " If the log file is open re read it / it has 'autoread' opion set /
+    checktime
+
+    " redraw the status line /for the notification to appear as fast as
+    " possible/ 
+    if a:mode != 'verbose'
+	redrawstatus
+    endif
+
+    if b:atp_TexStatus && t:atp_DebugMode != "silent"
+	if b:atp_ReloadOnError
+	    echomsg Compiler." exited with status " . b:atp_TexStatus
+	else
+	    echomsg Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
+	endif
+    elseif !g:atp_status_notification || !g:atp_statusline
+	echomsg Compiler." finished"
+    endif
+
+    " End the debug mode if there are no errors
+    if b:atp_TexStatus == 0 && t:atp_DebugMode == "debug"
+	cclose
+	echomsg b :atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
+	let t:atp_DebugMode == g:atp_DefaultDebugMode
+    endif
+
+    if t:atp_DebugMode == "debug" || a:mode == "debug"
+	if !t:atp_QuickFixOpen
+	    ShowErrors
+	endif
+	" In debug mode, go to first error. 
+	if t:atp_DebugMode == "debug"
+	    cc
+	endif
+    endif
+endfunction "}}}
+" }}}
+
 " Toggle On/Off Completion 
 " {{{1 atplib#OnOffComp
 function! atplib#OnOffComp(ArgLead, CmdLine, CursorPos)
