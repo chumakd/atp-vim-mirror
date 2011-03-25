@@ -803,6 +803,27 @@ endfunction
 " THE MAIN COMPILER FUNCTION:
 " {{{ s:PythonCompiler
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
+    let g:debugPC_bibtex=a:bibtex
+    let g:debugPC_start=a:start
+    let g:debugPC_runs=a:runs
+    let g:debugPC_verbose=a:verbose
+    let g:debugPC_bang=a:bang
+
+    if !executable(g:atp_PythonCompilerPath)
+	redraw!
+	echohl ErrorMsg
+	echomsg "WARNING:"
+	echohl Normal
+	echomsg "ATP has python script to compile tex documents"
+	echomsg "it is localted under ".g:atp_PythonCompilerPath
+	echohl ErrorMsg
+	echomsg "    YOU SHOULD MAKE IT EXECUTABLE!"
+	echohl Normal
+	echomsg "(Unix only:) to use old compile function let g:atp_Compiler='bash'"
+	echomsg "to see this message again, use :msg"
+	call input("Press <Enter> to continue")
+	return
+    endif
 
     if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
 		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
@@ -836,6 +857,12 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     else
 	let viewer_options  = local_options
     endif
+    let bang = ( a:bang == '!' ? ' --bang ' : '' ) 
+    let bibtex = ( a:bibtex ? ' --bibtex ' : '' )
+    let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
+    let g:bibtex=bibtex
+    let g:reload_on_error=reload_on_error
+
     let cmd=g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
 		\ ." --tex-options ".tex_options
 		\ ." --verbose ".a:verbose
@@ -844,13 +871,11 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --runs ".a:runs
 		\ ." --servername ".v:servername
 		\ ." --view ".a:start 
-		\ ." --bibtex ".( a:bibtex ? 'True' : 'False' )
 		\ ." --viewer ".b:atp_Viewer
 		\ ." --xpdf-server ".b:atp_XpdfServer
 		\ ." --viewer-options ".shellescape(viewer_options) 
-		\ ." --reload-on-error ". ( b:atp_ReloadOnError ? 'True' : 'False' )
-		\ ." --bang ". ( a:bang == "!" ? 'True' : 'False' )
 		\ ." --keep ". shellescape(join(g:keep, ','))
+		\ . bang . bibtex . reload_on_error 
     " Write file
     let backup=&backup
     let writebackup=&writebackup

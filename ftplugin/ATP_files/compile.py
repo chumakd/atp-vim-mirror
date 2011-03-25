@@ -11,7 +11,7 @@ from optparse import OptionParser
 #
 ####################################
 
-usage	= "usage: %prog [options] <file.tex>"
+usage	= "usage: %prog [options]"
 parser 	= OptionParser(usage=usage)
 parser.add_option("-c", "--command", dest="command", default="pdflatex", help="tex compiler")
 parser.add_option("--tex-options", dest="tex_options", default="-synctex=1,-interaction=nonstopmode", help="comma separeted list of tex options")
@@ -19,55 +19,69 @@ parser.add_option("--verbose", dest="verbose", help="atp verbose mode: silent/de
 parser.add_option("-f", "--file", dest="mainfile", help="full path to file to compile")
 parser.add_option("-o", "--output-format", dest="output_format", help="format od the output file: dvi or pdf (it is not checked consistency with --command", default="pdf")
 parser.add_option("-r", "--runs", dest="runs", help="how many times run tex consecutively", type="int", default=1 )
-parser.add_option("--servername", dest="servername", help="vim server to comunicate with")
+parser.add_option("--servername", dest="servername", help="vim server to communicate with")
 parser.add_option("-v", "--view", "--start", dest="start", help="start viewer: values 0,1,2", default=0, type="int")
-parser.add_option("-b", "--bibtex", dest="bibtex", help="run bibtex", action="store_false", default=False)
 parser.add_option("--viewer", dest="viewer", help="output viewer to use", default="xpdf")
 parser.add_option("--xpdf-server", dest="xpdf_server", help="xpdf_server")
-parser.add_option("--viewer-options", dest="viewer_opt", help="comma separeted list of viewer options", default="")
-parser.add_option("--reload-on-error", action="store_false", dest="reload_on_error", help="reload Xpdf if compilation had errors", default=False)
+parser.add_option("--viewer-options", dest="viewer_opt", help="comma separated list of viewer options", default="")
+parser.add_option("-k", "--keep", dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="pdf,dvi,log,aux,toc,bbl,ind,pdfsync,synctex.gz") 
+# Boolean switches:
+parser.add_option("-b", "--bibtex", action="store_false", default=False, dest="bibtex", help="run bibtex")
+parser.add_option("--reload-on-error", action="store_true", default=False, dest="reload_on_error", help="reload Xpdf if compilation had errors")
 parser.add_option("--bang", action="store_false", default=False, dest="bang", help="force reloading on error (Xpdf only)")
-parser.add_option("-k", "--keep", dest="keep", help="comma separeted list of extensions (see :help g:keep in vim)", default="pdf,dvi,log,aux,toc,bbl,ind,pdfsync,synctex.gz") 
 (options, args) = parser.parse_args()
+
+debug_file	= open("/tmp/atp_compile.py.debug", 'w+')
 
 command=options.command
 command_opt=options.tex_options.split(',')
 # command_opt=[ "-synctex="+str(options.synctex), "-interaction="+options.interaction ]
 mainfile_fp=options.mainfile
 if options.output_format == "pdf":
-	ext	= ".pdf"
+	extension = ".pdf"
 else:
-	ext	= ".dvi"
+	extension = ".dvi"
 runs=options.runs
 servername=options.servername
 start=options.start
-bibtex=options.bibtex
 viewer=options.viewer
 XpdfServer=options.xpdf_server
-viewer_opt=options.viewer_opt.split(',')
+viewer_rawopt=options.viewer_opt.split(',')
+def nonempty(string):
+	debug_file.write(str(string)+"\n")
+	if str(string) == '':
+		return False
+	else:
+		return True
+viewer_it=filter(nonempty,viewer_rawopt)
+viewer_opt=[]
+for opt in viewer_it:
+	viewer_opt.append(opt)
+viewer_rawopt=viewer_opt
 if viewer == "xpdf" and XpdfServer != None:
 	viewer_opt.extend(["-remote", XpdfServer])
-reload_on_error=options.reload_on_error
 verbose=options.verbose
-bang=options.bang
 keep=options.keep.split(',')
+# Boolean options
+bibtex=options.bibtex
+bang=options.bang
+reload_on_error=options.reload_on_error
 
-debug_file	= open("/tmp/atp_make.debug", 'w+')
 debug_file.write("COMMAND "+command+"\n")
 debug_file.write("COMMAND_OPT "+str(command_opt)+"\n")
 debug_file.write("MAINFILE_FP "+str(mainfile_fp)+"\n")
-debug_file.write("EXT "+ext+"\n")
+debug_file.write("EXT "+extension+"\n")
 debug_file.write("RUNS "+str(runs)+"\n")
 debug_file.write("VIM_SERVERNAME "+str(servername)+"\n")
 debug_file.write("START "+str(start)+"\n")
-debug_file.write("BIBTEX "+str(bibtex)+"\n")
 debug_file.write("VIEWER "+str(viewer)+"\n")
 debug_file.write("XPDF_SERVER "+str(XpdfServer)+"\n")
 debug_file.write("VIEWER_OPT "+str(viewer_opt)+"\n")
-debug_file.write("RELOAD_ON_ERROR "+str(reload_on_error)+"\n")
 debug_file.write("VERBOSE "+str(verbose)+"\n")
-debug_file.write("BANG "+str(bang)+"\n")
 debug_file.write("KEEP "+str(keep)+"\n")
+debug_file.write("*BIBTEX "+str(bibtex)+"\n")
+debug_file.write("*BANG "+str(bang)+"\n")
+debug_file.write("*RELOAD_ON_ERROR "+str(reload_on_error)+"\n")
 
 ####################################
 #
@@ -176,7 +190,7 @@ mainfile_dir	= os.path.normcase(mainfile_dir+os.sep)
 # ext		= ".pdf" # extension of the output file
 			 # this will be passed to mklatex.py
 			 # from line 908 of <SID>compiler()
-output_fp	= os.path.splitext(mainfile_fp)[0]+ext
+output_fp	= os.path.splitext(mainfile_fp)[0]+extension
 
 keep		= [ 'pdf', 'dvi', 'log', 'aux', 'toc', 'bbl', 'ind', 'pdfsync', 'synctex.gz' ]
 
@@ -218,12 +232,6 @@ for ext in keep:
 # TODO: this might cause problems when the tex file is very simple and short.
 # Can we test if xpdf started properly?
 # okular doesn't behave nicly even with --unique switch.
-if start == 1 and re.search(viewer, '^\s*xpdf\e'):
-	debug_file.write("START xpdf BEFORE"+"\n")
-	run=[viewer]
-	run.extend(viewer_opt)
-	subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
 # COMPILE
 if bibtex and os.path.exists(tmpaux):
 	os.chdir(tmpdir)
@@ -236,6 +244,7 @@ elif bibtex:
 	runs=max([runs, 3])
 	
 debug_file.write("RANGE="+str(range(1,int(runs+1)))+"\n")
+debug_file.write("RUNS="+str(runs)+"\n")
 for i in range(1, int(runs+1)):
 	#DEBUG:
 	debug_file.write("RUN="+str(i)+"\n")
@@ -245,9 +254,21 @@ for i in range(1, int(runs+1)):
 	if verbose == 'verbose' and i == runs:
 # 	<SIS>compiler() contains here ( and not bibtex )
 		debug_file.write("VERBOSE"+"\n")
-		latex_return_code=subprocess.call(latex_cmd)
+		latex=subprocess.Popen(latex_cmd)
+		pid=latex.pid
+		debug_file.write("latex pid "+str(pid)+"\n")
+		latex.wait()
+		latex_return_code=latex.returncode
+		debug_file.write("latex ret code "+str(latex_return_code)+"\n")
 	else:
-		latex_return_code=subprocess.call(latex_cmd, stdout=subprocess.PIPE)
+		# TODO: this is not getting the error code
+		latex=subprocess.Popen(latex_cmd)
+		pid=latex.pid
+		debug_file.write("latex pid "+str(pid)+"\n")
+		latex.wait()
+		latex_return_code=latex.returncode
+		debug_file.write("latex return code "+str(latex_return_code)+"\n")
+# 	latex_return_code=latex_rc_pipe.stdout.read()	
 	if bibtex and i == 1:
 		os.chdir(tmpdir)
 		debug_file.write("BIBTEX2"+"\n")
@@ -255,9 +276,9 @@ for i in range(1, int(runs+1)):
 		subprocess.Popen(['bibtex', basename+".aux"])
 		os.chdir(cwd)
 
-	debug_file.write("LaTeX ret code "+str(latex_return_code)+"\n")
-	output_pipe=subprocess.Popen(latex_cmd, stdout=subprocess.PIPE )
-	log=output_pipe.stdout.read()
+# 	debug_file.write("LaTeX ret code "+str(latex_return_code)+"\n")
+# 	output_pipe=subprocess.Popen(latex_cmd, stdout=subprocess.PIPE )
+# 	log=output_pipe.stdout.read()
 
 ####################################
 #
@@ -268,18 +289,20 @@ if re.search(viewer, '^\s*xpdf\e'):
 	# The condition tests if the server XpdfServer is running
 	xpdf_server_dict=xpdf_server_file_dict()
 	cond = xpdf_server_dict.get(XpdfServer, ['_no_file_']) != ['_no_file_']
-	debug_file.write("COND="+str(cond)+"\n")
-	debug_file.write(str(xpdf_server_dict))
+	debug_file.write("COND="+str(cond)+":"+str(reload_on_error)+":"+str(bang)+"\n")
+	debug_file.write("COND="+str( not reload_on_error or bang )+"\n")
+	debug_file.write(str(xpdf_server_dict)+"\n")
 	if start == 1:
 		run=['xpdf']
 		run.extend(viewer_opt)
 		run.append(output_fp)
-		subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		debug_file.write("D1: "+" ".join(run)+"\n")
-	elif cond and ( not reload_on_error or bang ): 
+		debug_file.write("D1: "+str(run)+"\n")
+		subprocess.Popen(run)
+# 		debug_file.write(str(pipe.stdout.read())+"\n")
+	elif cond and ( reload_on_error or latex_ret_code  == 0 or bang ): 
 		run=['xpdf', '-remote', XpdfServer, '-reload']
 		subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		debug_file.write("D2: "+" ".join(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
+		debug_file.write("D2: "+str(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
 else:		
 	if start >= 1:
 		run=[viewer]

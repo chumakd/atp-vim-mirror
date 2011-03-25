@@ -277,21 +277,7 @@ call s:SetOptions()
 " Global Variables: (almost all)
 " {{{ global variables 
 if !exists("g:atp_PythonCompilerPath")
-    let g:atp_PythonCompilerPath=globpath(&rtp, 'ftplugin/ATP_files/atp_make.py')
-    if !executable(g:atp_PythonCompilerPath)
-	redraw!
-	echohl ErrorMsg
-	echomsg "WARNING:"
-	echohl Normal
-	echomsg "ATP has python script to comopile tex documents"
-	echomsg " it is localted under ".g:atp_PythonCompilerPath
-	echohl ErrorMsg
-	echomsg " YOU SHOULD MAKE IT EXECUTABLE"
-	echohl Normal
-	echomsg " (only Unix:) to use old function let g:atp_Compiler='bash'"
-	echomsg " to see this message again, use :msg"
-	call input("Press <Enter> to continue")
-    endif
+    let g:atp_PythonCompilerPath=globpath(&rtp, 'ftplugin/ATP_files/compile.py')
 endif
 if !exists("g:atp_cpcmd") || g:atp_reload
     " This will avoid using -i switch which might be defined in an alias file. 
