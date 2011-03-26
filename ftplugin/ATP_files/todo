@@ -230,3 +230,4 @@ To do: find a better way of dealing with g:atp_latexpackages (update them)
 To do: I can write python code using psutil to check if latex is running this
 	will be 100% accurate (not like now).
 To do: g:atp_StarEnvDefault and g:atp_StarMathEnvDefault should be local variables rememered by the history feature.
+To do: delete .tmp dir after exiting vim.

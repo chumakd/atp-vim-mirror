@@ -558,6 +558,12 @@ endfunction
 " There is a copy of this variable in compiler.vim
 
 function! ATPRunning() "{{{
+
+    if !g:atp_statusNotif
+	" Do not put any message if user dosn't want it. 
+	return ""
+    endif
+
     if exists("b:atp_running") && exists("g:atp_callback") && b:atp_running && g:atp_callback
 " 	let b:atp_running	= b:atp_running < 0 ? 0 : b:atp_running
 " 	redrawstatus
@@ -669,6 +675,7 @@ endfunction
 " The main status function, it is called via autocommand defined in 'options.vim'.
 let s:errormsg = 0
 function! ATPStatus(bang) "{{{
+
     let g:status_OutDir	= a:bang == "" && g:atp_statusOutDir || a:bang == "!" && !g:atp_statusOutDir ? s:StatusOutDir() : ""
     let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? CTOC("return") : ''
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0

@@ -220,7 +220,8 @@ let s:optionsDict= {
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "",
 		\ "atp_StarEnvDefault"		: "",
-		\ "atp_StarMathEnvDefault"	: ""}
+		\ "atp_StarMathEnvDefault"	: "",
+		\ "atp_VerboseLatexInteractionMode" : "errorstopmode" }
 
 let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
@@ -276,6 +277,10 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_ReloadViewers")
+    " List of viewers which need to be reloaded after output file is updated.
+    let g:atp_ReloadViewers	= [ 'xpdf' ]
+endif
 if !exists("g:atp_PythonCompilerPath")
     let g:atp_PythonCompilerPath=globpath(&rtp, 'ftplugin/ATP_files/compile.py')
 endif
@@ -661,12 +666,12 @@ if !exists("g:atp_statusNotif") || g:atp_reload
     endif
 endif
 if !exists("g:atp_statusNotifHi") || g:atp_reload
+    " User<nr>  - highlight status notifications with highlight group User<nr>.
     let g:atp_statusNotifHi	= 0
 endif
 if !exists("g:atp_callback") || g:atp_reload
-    if exists("g:atp_status_notification") && g:atp_status_notification == 1
-	let g:atp_callback	= 1
-    elseif has('clientserver') && !empty(v:servername) 
+    if exists("g:atp_statusNotif") && g:atp_statusNotif == 1 &&
+		\ has('clientserver') && !empty(v:servername)
 	let g:atp_callback	= 1
     else
 	let g:atp_callback	= 0
@@ -1117,7 +1122,7 @@ function! ATP_ToggleDebugMode(...)
 	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 		    \ <Esc>:ToggleDebugMode<CR>a
 
-	let g:atp_callback=1
+	let g:atp_callback	= 1
 	let t:atp_DebugMode	= "debug"
 	let winnr = bufwinnr("%")
 	silent copen
@@ -1880,7 +1885,9 @@ function! s:Viewer(viewer)
 endfunction
 command! -buffer -nargs=1 -complete=customlist,ViewerComp Viewer	:call <SID>Viewer(<q-args>)
 function! ViewerComp(A,L,P)
-    let view = [ 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura' ]
+    let view = [ 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
+		\  'AcroRd32.exe', 'sumatrapdf.exe' ]
+    " The names of Windows programs (second line) might be not right [sumatrapdf.exe (?)].
     call filter(view, "v:val =~ '^' . a:A")
     call filter(view, 'executable(v:val)')
     return view

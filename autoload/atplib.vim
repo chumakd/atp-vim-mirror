@@ -112,12 +112,12 @@ function! atplib#CallBack(mode)
     endif
 
     if b:atp_TexStatus && t:atp_DebugMode != "silent"
-	if b:atp_ReloadOnError
+	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
 	    echomsg Compiler." exited with status " . b:atp_TexStatus
 	else
 	    echomsg Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
 	endif
-    elseif !g:atp_status_notification || !g:atp_statusline
+    elseif !g:atp_statusNotif || !g:atp_statusline
 	echomsg Compiler." finished"
     endif
 

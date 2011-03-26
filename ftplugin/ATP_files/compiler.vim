@@ -14,9 +14,9 @@ if !s:sourced || g:atp_reload_functions  "{{{
 " Internal Variables
 " {{{
 " This limits how many consecutive runs there can be maximally.
+" Note: compile.py script has hardcoded the same value.
 let s:runlimit		= 9
 
-let s:texinteraction	= "nonstopmode"
 compiler tex
 " }}}
 
@@ -800,7 +800,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 endfunction
 "}}}
 
-" THE MAIN COMPILER FUNCTION:
+" THE MAIN COMPILER FUNCTIONs:
 " {{{ s:PythonCompiler
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
     let g:debugPC_bibtex=a:bibtex
@@ -846,7 +846,9 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	    return
 	endif
     endif
-    let tex_options=shellescape(b:atp_TexOptions.',-interaction=nonstopmode')
+    let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
+    let tex_options=shellescape(b:atp_TexOptions.',-interaction='.interaction)
+    let g:tex_options=tex_options
     let ext	= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext	= substitute(ext, '\.', '', '')
 
@@ -860,6 +862,9 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let bang = ( a:bang == '!' ? ' --bang ' : '' ) 
     let bibtex = ( a:bibtex ? ' --bibtex ' : '' )
     let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
+    let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
+    let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer) == '-1' ? ' --reload-viewer ' : '' )
+    let g:gui_running = gui_running
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error
 
@@ -875,7 +880,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --xpdf-server ".b:atp_XpdfServer
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
-		\ . bang . bibtex . reload_on_error 
+		\ . bang . bibtex . reload_on_error . gui_running . reload_viewer
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -892,9 +897,16 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	let &l:backup=backup 
 	let &l:writebackup=writebackup 
     endif
-    let b:atp_TexCommand= cmd
-    let b:atp_running	+= 1
-    echo system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
+    unlockvar g:atp_TexCommand
+    let g:atp_TexCommand= cmd
+    lockvar g:atp_TexCommand
+
+    let b:atp_running += ( a:verbose != "verbose" ?  1 : 0 )
+    if a:verbose == "verbose"
+	exe ":!".cmd
+    else
+	echo system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
+    endif
 endfunction
 " }}}
 " {{{ s:Compiler 
@@ -991,7 +1003,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	endfor
 
 " 	HANDLE XPDF RELOAD 
-	if b:atp_Viewer =~ '^\s*xpdf\>'
+	let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer) == '-1' ? ' --reload-viewer ' : '' )
+	if b:atp_Viewer =~ '^\s*xpdf\>' && reload_viewer
 	    if a:start
 		"if xpdf is not running and we want to run it.
 		let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . shellescape(outfile) . " ; "
@@ -1009,8 +1022,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		endif
 	    endif
 	else
-	    if a:start 
+	    if a:start
 		" if b:atp_Viewer is not running and we want to open it.
+		" the name of this variable is not missleading ...
 		let Reload_Viewer = b:atp_Viewer . " " . shellescape(outfile) . " ; "
 		" If run through RevSearch command use source specials rather than
 		" just reload:
@@ -1020,7 +1034,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		    let Reload_Viewer	= callback_rs_cmd
 		endif
 	    else
-		" if b:atp_Viewer is not running then we do not want to
+		" If b:atp_Viewer is not running then we do not want to
 		" open it.
 		let Reload_Viewer = " "
 	    endif	
@@ -1039,8 +1053,10 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	endif
 
 "	SET THE COMMAND 
-	let comp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction=" . s:texinteraction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
-	let vcomp	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction=errorstopmode -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
+	let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
+	let variable	= ( a:verbose!="verbose" ? b:atp_TexCompilerVariable	: '' ) 
+	let comp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction=" . interaction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
+	let vcomp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction=". interaction . " -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
 	
 	" make function:
 " 	let make	= "vim --servername " . v:servername . " --remote-expr 'MakeLatex\(\"".tmptex."\",1,0\)'"
