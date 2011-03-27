@@ -779,6 +779,40 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 endfunction
 " }}}
 
+"{{{ GotoDestination
+function! <SID>GotoDestination(destination)
+    if b:atp_Viewer !~ '^\s*xpdf\>' 
+	echomsg "This only works for Xpdf viewer.'
+	return 0
+    endif
+    let g:dest_cmd='xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)'
+    call system('xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)')
+endfunction
+function! <SID>FindDestinations()
+    let files = [ b:atp_MainFile ]
+    for file in keys(b:TypeDict)
+	if b:TypeDict[file] == 'input'
+	    call add(files, file)
+	endif
+    endfor
+    let saved_loclist = getloclist(0)
+    exe 'lvimgrep /\\hypertarget\>/gj ' . join(map(files, 'fnameescape(v:val)'), ' ') 
+    let dests = []
+    let loclist	= copy(getloclist(0))
+    let g:loclist = loclist
+    call setloclist(0, saved_loclist)
+    for loc in loclist
+	let destname = matchstr(loc['text'], '\\hypertarget\s*{\s*\zs[^}]*\ze}')
+	call add(dests, destname)
+    endfor
+    return dests
+endfunction
+function! <SID>CompleteDestinations(ArgLead, CmdLine, CursorPos)
+    let dests=<SID>FindDestinations()
+    return join(dests, "\n")
+endfunction
+"}}}
+
 " Motion functions through environments and sections. 
 " {{{ Motion functions
 " Go to next environment "{{{
@@ -1452,6 +1486,7 @@ call s:buflist()
 
 " Commands And Maps:
 " {{{
+command! -buffer -nargs=1 -complete=custom,<SID>CompleteDestinations GotoDestination	:call <SID>GotoDestination(<f-args>)
 command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs', 'n')
 command! -buffer SkipCommentBackward 	:call <SID>SkipComment('bs', 'n')
 vmap <buffer> <Plug>SkipCommentForward	:call <SID>SkipComment('fs', 'v')<CR>

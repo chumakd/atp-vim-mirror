@@ -204,7 +204,6 @@ let b:atp_running	= 0
 " these are all buffer related variables:
 let s:optionsDict= { 	
 		\ "atp_TexOptions" 		: "-synctex=1", 
-		\ "atp_Compiler" 		: "python", 
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
@@ -221,6 +220,7 @@ let s:optionsDict= {
 		\ "atp_LastBibPattern"		: "",
 		\ "atp_StarEnvDefault"		: "",
 		\ "atp_StarMathEnvDefault"	: "",
+		\ "atp_LatexPIDs"		: [],
 		\ "atp_VerboseLatexInteractionMode" : "errorstopmode" }
 
 let g:optionsDict=deepcopy(s:optionsDict)
@@ -277,6 +277,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_Compiler") 
+    let g:atp_Compiler = "python"
+endif
 if !exists("g:atp_ReloadViewers")
     " List of viewers which need to be reloaded after output file is updated.
     let g:atp_ReloadViewers	= [ 'xpdf' ]

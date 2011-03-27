@@ -1,3 +1,13 @@
+Named Destinations:
+\hypertarget{dest_name}{text}
+
+    xpdf -remote sname -exec gotoDest\("dest_name"\)
+
+    xpdf -remote sname -exec run\("echo %f > /dev/pts/19"\)
+
+will print file name loaded in the server sname. This is how this command
+should be escaped. It will be needed for reverse search (xpdf -> vim).
+
 gvim --servername GVIM --remote-expr  "atplib#FindAndOpen('%f','%l')"'
 
 s:CompleteLabels (LatexBox_complete.vim)

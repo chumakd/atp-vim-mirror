@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os.path, shutil, sys, subprocess, re, psutil, tempfile, optparse 
+import sys, os.path, shutil, subprocess, re, psutil, tempfile, optparse 
 from os import chdir, readlink, mkdir
 from optparse import OptionParser
 # from tempfile import mkdtemp
@@ -170,14 +170,6 @@ pid	= os.getpid()
 #
 ####################################
 
-# This will change (within vim I can use vim module which can set all variables)
-# command 	= sys.argv[1]
-# command		= "pdflatex"
-# command_opt 	= sys.argv[2]
-# command_opt	= ['-synctex=1', '-interaction=nonstopmode']
-# mainfile_fp	= sys.argv[1] 
-# argv[1] should be the full path to the file
-# relative to the cwd.
 if not re.match(os.sep, mainfile_fp):
 	mainfile_fp = os.path.join(os.getcwd(),mainfile_fp)
 mainfile 	= os.path.basename(mainfile_fp)
@@ -271,6 +263,7 @@ for i in range(1, int(runs+1)):
 		# TODO: this is not getting the error code
 		latex=subprocess.Popen(latex_cmd, stdout=subprocess.PIPE)
 		pid=latex.pid
+		vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
 		debug_file.write("latex pid "+str(pid)+"\n")
 		latex.wait()
 		latex_return_code=latex.returncode

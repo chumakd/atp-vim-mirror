@@ -138,6 +138,11 @@ function! atplib#CallBack(mode)
 	endif
     endif
 endfunction "}}}
+"{{{ LatexPID
+"Store LatexPIDs in a variable
+function! atplib#LatexPID(pid)
+    call add(b:atp_LatexPIDs, a:pid)
+endfunction "}}}
 " }}}
 
 " Toggle On/Off Completion 

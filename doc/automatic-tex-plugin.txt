@@ -109,6 +109,57 @@ NEWS							*atp-news*
   - There is also a new wiki page: (as for now it only includes features of
     ATP - but it looks nice :)
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
+
+NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
+9.2:							
+							*atp-compile.py*
+  - There are two function compile which can compile your tex file: a newly
+    written in python (for portability reasons) and old one in bash. They work
+    almost the same with one small difference. First of all you need to make
+    the python script executable (it is 'ftplugin/ATP_files/compile.py' under
+    vim |'runtimepath'|).
+
+    The python code has two debug files '/tmp/atp_PythonCompiler.debug' will
+    contain all the errors issued by python, and '/tmp/atp_compile.py.debug'
+    - debugging info printed by the |compile.py| script.
+
+    If for some reason you'd like to use the old 'bash' style script there is
+    a variable:
+    							*g:atp_Compiler*
+>
+	g:atp_Compiler = "python"
+<   just switch its value to "bash" (you don't need to restart vim).
+    OK, so what is the difference: the python script uses psutil python
+    library (probably you need to install it, at least I had to.) It is for
+    two purposes: to determine if xpdf is running and secondly, more
+    importantly to check if latex is running. 
+    							*b:atp_LatexPIDs*
+    The python script |compile.py| sends PID numbers of latex processes to vim
+    variable |b:atp_LatexPIDs|. Then the function which makes the status line
+    for ATP has a python code to check if the latex PIDs are still valid
+    processes. This is more accurate than the method used with bash compiler
+    (before running latex increase variable b:atp_running and decrease after
+    getting signal that latex has ended). In many situations this was failing.
+    The new method works better, however it shows that latex is running
+    after slightly longer period of time (not that first python must run the
+    script and then run latex). >
+
+    REQUIRMENTS:
+< (1)	The script is written in python version 3.1 (and it works in python 2.6).
+	The only non standard library that it uses is psutil. You can get it from:
+	    http://code.google.com/p/psutil/
+	or (better) use your os specific instalation tools.		
+
+  (2)	Do not forget to give executable permissions to the compile.py file 
+  	it is under |'runtimepath'| ftplugin/ATP_files/compile.py
+    If you want to dive in the code it is 
+
+    							*b:atp_VerboseLatexInteractioMode*
+    There is also a small enhacment in verbose debug mode. You can decide what
+    it the value of latex '-interaction=' switch. The default now is
+    "errorstopmode". Thus this gives the classical compilation, when latex
+    stops on errors. The other possible values are: "batchmode", "nonstopmode"
+    and "scrollmode".
 9.2:
   - g:atp_StarEnvDefault and g:atp_StarEnvMathDefault are now local variables
     |b:atp_StarEnvDefault|, |b:atp_StarEnvMathDefault|. They are remembered by

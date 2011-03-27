@@ -557,6 +557,27 @@ endfunction
 
 " There is a copy of this variable in compiler.vim
 
+function! LatexRunning()
+python << EOL
+import psutil, re, sys, vim
+pids = vim.eval("b:atp_LatexPIDs")
+ps_list=psutil.get_pid_list()
+rmpids=[]
+for lp in pids:
+	run=False
+	for p in ps_list: 
+		if str(lp) == str(p):
+			run=True
+			break
+	if not run:
+		rmpids.append(lp)
+rmpids.sort()
+rmpids.reverse()
+for pid in rmpids:
+	    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
+EOL
+endfunction
+
 function! ATPRunning() "{{{
 
     if !g:atp_statusNotif
@@ -564,7 +585,16 @@ function! ATPRunning() "{{{
 	return ""
     endif
 
-    if exists("b:atp_running") && exists("g:atp_callback") && b:atp_running && g:atp_callback
+    if g:atp_Compiler == "python" 
+        " For python compiler
+	call LatexRunning()
+	let atp_running=len(b:atp_LatexPIDs)
+    else
+	" For bash compiler 
+	let atp_running=b:atp_running
+    endif
+
+    if exists("b:atp_running") && exists("g:atp_callback") && atp_running && g:atp_callback
 " 	let b:atp_running	= b:atp_running < 0 ? 0 : b:atp_running
 " 	redrawstatus
 
@@ -577,9 +607,9 @@ function! ATPRunning() "{{{
 	    endif
 	endfor
 
-	if b:atp_running >= 2
+	if atp_running >= 2
 	    return b:atp_running." ".Compiler." "
-	elseif b:atp_running >= 1
+	elseif atp_running >= 1
 	    return Compiler." "
 	else
 	    return ""

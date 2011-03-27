@@ -88,13 +88,13 @@ function! <SID>ViewOutput(...)
     else
 	echomsg "Output file do not exists. Calling " . b:atp_TexCompiler
 	if fwd_search
-	    if b:atp_Compiler == 'python'
+	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
 	    else
 		call <SID>Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
 	    endif
 	else
-	    if b:atp_Compiler == 'python'
+	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
 	    else
 		call <SID>Compiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
@@ -159,9 +159,9 @@ function! <SID>GetSyncData(line, col)
 	return [ page_nr, y_coord, x_coord ]
 endfunction
 function! <SID>SyncShow( page_nr, y_coord)
-    if a:y_coord < 325
+    if a:y_coord < 300
 	let height="Top"
-    elseif a:y_coord < 550
+    elseif a:y_coord < 500
 	let height="Middle"
     else
 	let height="Bottom"
@@ -258,10 +258,39 @@ endfunction
 
 " To check if xpdf is running we use 'ps' unix program.
 "{{{ s:xpdfpid
+function! XpdfPid() 
+python << EOF
+import psutil
+xpdf_server = vim.eval("b:atp_XpdfServer")
+# Make dictionary: xpdf_servername : file
+# to test if the server host file use:
+# basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
+ps_list=psutil.get_pid_list()
+server_running	= False
+server_file_dict={}
+for pr in ps_list:
+	try:
+		name=psutil.Process(pr).name
+		cmdline=psutil.Process(pr).cmdline
+		if name == 'xpdf': 
+			try:
+				ind=cmdline.index('-remote')
+				if cmdline[ind+1] == xpdf_server:
+				    server_running = True
+				    xpdf=pr
+				    break
+			except:
+				null=name
+	except psutil.NoSuchProcess:
+		null=pr
+
+if server_running:
+	vim.command("let s:checkxpdf="+str(xpdf))
+else:
+	vim.command("let s:checkxpdf=''") 
+EOF
+endfunction
 function! <SID>xpdfpid() 
-" python << EOF
-" 
-" EOF
     let s:checkxpdf="ps -ef | grep -v grep | grep xpdf | grep '-remote '" . shellescape(b:atp_XpdfServer) . " | awk '{print $2}'"
     return substitute(system(s:checkxpdf),'\D','','')
 endfunction
@@ -842,7 +871,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	    echohl WarningMsg
 	    echomsg "Python compiler needs +clientserver vim compilation option."
 	    echohl Normal
-	    let b:atp_Compiler = "bash"
+	    let g:atp_Compiler = "bash"
 	    return
 	endif
     endif
@@ -1010,7 +1039,12 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . shellescape(outfile) . " ; "
 	    else
 " TIME: this take 1/3 of time! 0.039
-		if <SID>xpdfpid() != ""
+		if has("python")
+		    call XpdfPid()
+		else
+		    call <SID>xpdfpid()
+		endif
+		if s:xpdfpid != ""
 		    "if xpdf is running (then we want to reload it).
 		    "This is where I use 'ps' command to check if xpdf is
 		    "running.
@@ -1270,7 +1304,7 @@ function! <SID>auTeX()
 	    
 "
 " 	if NewCompare()
-	    if b:atp_Compiler == 'python'
+	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
 	    else
 		call <SID>Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
@@ -1299,7 +1333,7 @@ function! <SID>auTeX()
 	    " This option can be set by VCSCommand plugin using VCSVimDiff command
 	    return " E382"
 	endtry
-	if b:atp_Compiler == 'python'
+	if g:atp_Compiler == 'python'
 	    call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
 	else
 	    call <SID>Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
@@ -1362,7 +1396,7 @@ function! <SID>TeX(runs, bang, ...)
 	endif
     endif
 "     echomsg "TEX_3 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
-    if b:atp_Compiler == 'python'
+    if g:atp_Compiler == 'python'
 	call <SID>PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
     else
 	call <SID>Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
@@ -1417,7 +1451,7 @@ function! <SID>Bibtex(bang,...)
 	let mode = g:atp_DefaultDebugMode
     endif
 
-    if b:atp_Compiler == 'python'
+    if g:atp_Compiler == 'python'
 	call <SID>PythonCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
     else
 	call <SID>Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")

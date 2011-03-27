@@ -229,5 +229,7 @@ To do: test debug mode.
 To do: find a better way of dealing with g:atp_latexpackages (update them)
 To do: I can write python code using psutil to check if latex is running this
 	will be 100% accurate (not like now).
-To do: g:atp_StarEnvDefault and g:atp_StarMathEnvDefault should be local variables rememered by the history feature.
-To do: delete .tmp dir after exiting vim.
+To do: statusNotifHi -> change in to a highliht group name.
+To do: xpdfpid() function should be writtine in Python.
+To do: rewrite MakeLatex in python (this will help with the screen isue)
+To do: SyncTex for (log file --> viewer) can be rewritten to use synctex (usually there is line number of error around -> we can get the position of the pdf file) - but since this is not very useful, this is not urgent.
