@@ -14,6 +14,7 @@ from optparse import OptionParser
 usage	= "usage: %prog [options]"
 parser 	= OptionParser(usage=usage)
 parser.add_option("-c", "--command", dest="command", default="pdflatex", help="tex compiler")
+parser.add_option("-a", "--aucommand", dest="aucommand", action="store_true", default=False, help="if the command was called from an autocommand (background compilation - this sets different option for call back.) ")
 parser.add_option("--tex-options", dest="tex_options", default="-synctex=1,-interaction=nonstopmode", help="comma separeted list of tex options")
 parser.add_option("--verbose", dest="verbose", help="atp verbose mode: silent/debug/verbose", default="silent")
 parser.add_option("-f", "--file", dest="mainfile", help="full path to file to compile")
@@ -37,6 +38,11 @@ parser.add_option("--gui-running", "-g", action="store_true", default=False, des
 debug_file	= open("/tmp/atp_compile.py.debug", 'w+')
 
 command		= options.command
+aucommand_bool	= options.aucommand
+if aucommand_bool:
+	aucommand="AU"
+else:
+	aucommand="COM"
 command_opt	= options.tex_options.split(',')
 # command_opt=[ "-synctex="+str(options.synctex), "-interaction="+options.interaction ]
 mainfile_fp	= options.mainfile
@@ -73,6 +79,7 @@ reload_on_error	= options.reload_on_error
 gui_running	= options.gui_running
 
 debug_file.write("COMMAND "+command+"\n")
+debug_file.write("AUCOMMAND "+aucommand+"\n")
 debug_file.write("COMMAND_OPT "+str(command_opt)+"\n")
 debug_file.write("MAINFILE_FP "+str(mainfile_fp)+"\n")
 debug_file.write("EXT "+extension+"\n")
@@ -153,16 +160,8 @@ def vim_remote_expr(servername, expr):
 	debug_file.write("vim_remote_expr "+" ".join(cmd)+"\n")
 	debug_file.write(str(out.stdout.read())+"\n")
     
-# Check if pid is running:
-def running(pid):
-	try:
-		os.kill(int(pid), 0)
-		return True
-	except:
-		return False
-
 # Send pid to vim
-pid	= os.getpid()
+# pid	= os.getpid()
 
 ####################################
 #
@@ -323,7 +322,7 @@ else:
 # make classical style of compilation which is also nice :)
 if verbose != "verbose":
 	# call back:
-	vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"')")
+	vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"','"+aucommand+"')")
 	# return code of compelation is returned before (after each compilation).
 
 

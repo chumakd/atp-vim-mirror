@@ -558,22 +558,14 @@ endfunction
 
 function! LatexRunning()
 python << EOL
-import psutil, re, sys, vim
-pids = vim.eval("b:atp_LatexPIDs")
-ps_list=psutil.get_pid_list()
-rmpids=[]
-for lp in pids:
-	run=False
-	for p in ps_list: 
-		if str(lp) == str(p):
-			run=True
-			break
-	if not run:
-		rmpids.append(lp)
-rmpids.sort()
-rmpids.reverse()
-for pid in rmpids:
-	    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
+import psutil, vim
+lpid = int(vim.eval("b:atp_LastLatexPID"))
+if lpid != -1:
+    try:
+	    name=psutil.Process(lpid).name
+    except psutil.NoSuchProcess:
+	    lpid=0
+vim.command(":let b:atp_LastLatexPID="+str(lpid))
 EOL
 endfunction
 
@@ -586,8 +578,13 @@ function! ATPRunning() "{{{
 
     if g:atp_Compiler == "python" 
         " For python compiler
+	" This is very fast:
 	call LatexRunning()
-	let atp_running=len(b:atp_LatexPIDs)
+	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 )
+	" This is slower (so the status line is updated leter)
+" 	call atplib#LatexRunning()
+" 	let atp_running= len(b:atp_LatexPIDs)
+" 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs)
     else
 	" For bash compiler 
 	let atp_running=b:atp_running

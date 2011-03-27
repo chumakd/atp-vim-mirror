@@ -85,10 +85,14 @@ endfunction
 "
 " Uses b:atp_TexStatus which is equal to the value returned by tex
 " compiler.
-function! atplib#CallBack(mode)
+function! atplib#CallBack(mode,...)
     if g:atp_debugCallBack
 	let b:mode	= a:mode
     endif
+
+    " If the compiler was called by autocommand.
+    let AU = ( a:0 >= 1 ? a:1 : 'COM' )
+    let g:AU = AU 
 
     for cmd in keys(g:CompilerMsg_Dict) 
     if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -112,45 +116,121 @@ function! atplib#CallBack(mode)
 	redrawstatus
     endif
 
-    if b:atp_TexStatus && t:atp_DebugMode != "silent"
-	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus
-	else
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
-	endif
-    elseif !g:atp_statusNotif || !g:atp_statusline
-	echomsg "[ATP:] ".Compiler." finished"
+    " redraw has values -0,1 
+    "  1 do  not redraw 
+    "  0 redraw
+    "  i.e. redraw at the end of function (this is done to not redraw twice in
+    "  this function)
+    let redraw = 1
+    if ( b:atp_TexStatus == 0 || a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && AU == "COM"
+	let &l:cmdheight=g:atp_cmdheight
+	let redraw = 0
     endif
 
-"     " End the debug mode if there are no errors
-    if b:atp_TexStatus == 0 && t:atp_DebugMode == "debug"
+    let showed_message = 0
+    let g:debugCallBack= "A"
+    if b:atp_TexStatus && ( t:atp_DebugMode != "silent" || a:mode != 'silent' )
+	redraw!
+	let redraw = 1
+	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . "."
+	else
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded."
+	endif
+	let g:debugCallBeck=5
+	let showed_message = 1
+    elseif !g:atp_statusNotif || !g:atp_statusline
+	echomsg "[ATP:] ".Compiler." finished"
+	let showed_message = 1
+	let g:debugCallBack.=4
+    endif
+
+    " End the debug mode if there are no errors
+    if b:atp_TexStatus == 0 && ( t:atp_DebugMode == 'debug' )
 	cclose
 	redraw!
 	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
-	let t:atp_DebugMode == g:atp_DefaultDebugMode
+	let redraw 		= 1
+	let showed_message 	= 1
+	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
+	let &l:cmdheight 	= g:atp_cmdheight
+
+	let g:debugCallBack	.=3
     endif
 
-    if t:atp_DebugMode == "debug" || a:mode == "debug"
+    if a:mode == 'debug'
 	if !t:atp_QuickFixOpen
-	    ShowErrors
+	    if b:atp_TexStatus
+		let &l:cmdheight 	= g:atp_DebugModeCmdHeight
+		let showed_message 	= 1
+		let redraw 		= 1
+		call ShowErrors('e', !showed_message)
+
+		let g:debugCallBack	.=2."-".showed_message."-"
+	    elseif !showed_message
+		let redraw 		= 1
+		echomsg "[ATP:] no errors :)"
+
+		let g:debugCallBack	.=2."+"
+	    endif
 	endif
+
 	" In debug mode, go to first error. 
-	if t:atp_DebugMode == "debug"
+	if t:atp_DebugMode ==# "Debug" || a:mode ==# "Debug"
+	    let g:debugCallBack	.=1
 	    cc
 	endif
     endif
-    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && t:atp_QuickFixOpen && b:atp_TexStatus == "0"
-	let t:atp_QuickFixOpen = 0
-	cclose
-	redraw!
-	echomsg "[ATP:] no errors, closing quick fix window."
+    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && b:atp_TexStatus == "0"
+	if t:atp_QuickFixOpen 
+	    let g:debugCallBack		.=0
+	    let t:atp_QuickFixOpen 	= 0
+	    cclose
+	    redraw!
+	    let redraw 			= 1
+	    echomsg "[ATP:] no errors, closing quick fix window."
+" 	else
+" 	    let redraw			= 1
+" 	    redraw!
+" 	    let g:debugCallBack		.=-1
+	endif
     endif
+
+    let g:redraw=redraw
+    if !redraw && 
+	redraw!
+    endif
+    let g:showed_message=showed_message
 endfunction "}}}
 "{{{ LatexPID
 "Store LatexPIDs in a variable
 function! atplib#LatexPID(pid)
     call add(b:atp_LatexPIDs, a:pid)
+    call atplib#LatexRunning()
+    let b:atp_LastLatexPID =a:pid
 endfunction "}}}
+function! atplib#LatexRunning()
+python << EOL
+import psutil, re, sys, vim
+pids = vim.eval("b:atp_LatexPIDs")
+if len(pids) > 0:
+	ps_list=psutil.get_pid_list()
+	rmpids=[]
+	for lp in pids:
+		run=False
+		for p in ps_list: 
+			if str(lp) == str(p):
+				run=True
+				break
+		if not run:
+			rmpids.append(lp)
+	rmpids.sort()
+	rmpids.reverse()
+	for pid in rmpids:
+		    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
+EOL
+endfunction
+
 " }}}
 
 " Toggle On/Off Completion 
@@ -4586,3 +4666,4 @@ endfunction
 " }}}1
 
 " vim:fdm=marker:ff=unix:noet:ts=8:sw=4:fdc=1
+

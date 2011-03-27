@@ -221,6 +221,7 @@ let s:optionsDict= {
 		\ "atp_StarEnvDefault"		: "",
 		\ "atp_StarMathEnvDefault"	: "",
 		\ "atp_LatexPIDs"		: [],
+		\ "atp_LastLatexPID"		: 0,
 		\ "atp_VerboseLatexInteractionMode" : "errorstopmode" }
 
 let g:optionsDict=deepcopy(s:optionsDict)
@@ -277,6 +278,10 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+let g:atp_cmdheight = &l:cmdheight
+if !exists("g:atp_DebugModeCmdHeight") 
+    let g:atp_DebugModeCmdHeight = 5
+endif
 if !exists("g:atp_Compiler") 
     let g:atp_Compiler = "python"
 endif
@@ -1079,9 +1084,9 @@ endfunction
 " TODO: it would be nice to have this command (and the map) in quickflist (FileType qf)
 " describe DEBUG MODE in doc properly.
 function! ATP_ToggleDebugMode(...)
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) :  t:atp_DebugMode != "debug" )
+    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) :  t:atp_DebugMode !~? '^debug$' )
     if !on
-	echomsg "[ATP:] debug mode is off"
+	echomsg "[ATP:] Debug mode is off"
 
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]
@@ -1104,7 +1109,7 @@ function! ATP_ToggleDebugMode(...)
 	let t:atp_DebugMode	= g:atp_DefaultDebugMode
 	silent cclose
     else
-	echomsg "[ATP:] debug mode is on"
+	echomsg "[ATP:] Debug mode is on"
 
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
@@ -1125,7 +1130,7 @@ function! ATP_ToggleDebugMode(...)
 		    \ <Esc>:ToggleDebugMode<CR>a
 
 	let g:atp_callback	= 1
-	let t:atp_DebugMode	= "debug"
+	let t:atp_DebugMode	= "Debug"
 	let winnr = bufwinnr("%")
 	silent copen
 	silent! cg
@@ -1932,7 +1937,7 @@ endfunction
 
 command! -buffer -nargs=1 -complete=customlist,DebugComp DebugMode	:let t:atp_DebugMode=<q-args>
 function! DebugComp(A,L,P)
-    let modes = [ 'silent', 'debug', 'verbose']
+    let modes = [ 'silent', 'debug', 'Debug', 'verbose']
     call filter(modes, "v:val =~ '^' . a:A")
     return modes
 endfunction

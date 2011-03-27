@@ -230,8 +230,8 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
     nmap  <buffer> <F2> 			<Plug>ToggleSpace
     nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
-    " Todo: to doc:
-    nmap  <buffer> <LocalLeader>D		<Plug>ToggleDebugMode
+
+    nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggleDebugMode
     nmap  <buffer> <F4>				<Plug>ChangeEnv
     nmap  <buffer> <S-F4>			<Plug>ToggleEnvForward
 "     nmap  <buffer> <S-F4>			<Plug>ToggleEnvBackward
@@ -246,7 +246,8 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <buffer> <LocalLeader>t		<Plug>ATP_TOC
     nmap  <buffer> <LocalLeader>L		<Plug>ATP_Labels
     nmap  <buffer> <LocalLeader>l 		<Plug>ATP_TeXCurrent
-    nmap  <buffer> <LocalLeader>d 		<Plug>ATP_TeXDebug
+    nmap  <buffer> <LocalLeader>d 		<Plug>ATP_TeXdebug
+    nmap  <buffer> <LocalLeader>D 		<Plug>ATP_TeXDebug
     "ToDo: imaps!
     nmap  <buffer> <F5> 			<Plug>ATP_TeXVerbose
     nmap  <buffer> <s-F5> 			<Plug>ToggleAuTeX

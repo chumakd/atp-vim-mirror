@@ -276,13 +276,22 @@ else:
 EOF
 endfunction
 function! <SID>GetPID()
+    if g:atp_Compiler == "bash"
 	let s:var=s:getpid()
 	if s:var != ""
-	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid " . s:var 
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . s:var 
 	else
 	    let b:atp_running	= 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
 	endif
+    else
+	call atplib#LatexRunning()
+	if len(b:atp_LatexPIDs) > 0
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ",") 
+	else
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
+	endif
+    endif
 endfunction
 "}}}
 
@@ -828,6 +837,8 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let g:debugPC_verbose=a:verbose
     let g:debugPC_bang=a:bang
 
+    let b:atp_LastLatexPID = -1
+    
     if !executable(g:atp_PythonCompilerPath)
 	redraw!
 	echohl ErrorMsg
@@ -883,6 +894,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
     let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
     let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer) == '-1' ? ' --reload-viewer ' : '' )
+    let aucommand = ( a:command == "AU" ? '--aucommand ' : '' )
     let g:gui_running = gui_running
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error
@@ -899,7 +911,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --xpdf-server ".b:atp_XpdfServer
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
-		\ . bang . bibtex . reload_on_error . gui_running . reload_viewer
+		\ . bang . bibtex . reload_on_error . gui_running . reload_viewer . aucommand
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -910,7 +922,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     " disable WriteProjectScript
     let eventignore = &l:eventignore
     setl eventignore+=BufWrite
-    w
+    silent! w
     let &l:eventignore = eventignore
     if a:command == "AU"  
 	let &l:backup=backup 
@@ -1183,7 +1195,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
 " 	    let callback	= s:SidWrap('CallBack')
 	    let callback_cmd 	= ' vim ' . ' --servername ' . v:servername . ' --remote-expr ' . 
-				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\"\)'. " ; "
+				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
 
@@ -1214,7 +1226,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" disable WriteProjectScript
 	let eventignore = &l:eventignore
 	setl eventignore+=BufWrite
-	w
+	silent! w
 	let &l:eventignore = eventignore
 " 	let b:atp_changedtick += 1
     if g:atp_debugCompiler
@@ -1396,7 +1408,8 @@ endfunction
 noremap <silent> <Plug>ATP_TeXCurrent		:<C-U>call <SID>TeX(v:count1, "", t:atp_DebugMode)<CR>
 noremap <silent> <Plug>ATP_TeXDefault		:<C-U>call <SID>TeX(v:count1, "", 'default')<CR>
 noremap <silent> <Plug>ATP_TeXSilent		:<C-U>call <SID>TeX(v:count1, "", 'silent')<CR>
-noremap <silent> <Plug>ATP_TeXDebug		:<C-U>call <SID>TeX(v:count1, "", 'debug')<CR>
+noremap <silent> <Plug>ATP_TeXDebug		:<C-U>call <SID>TeX(v:count1, "", 'Debug')<CR>
+noremap <silent> <Plug>ATP_TeXdebug		:<C-U>call <SID>TeX(v:count1, "", 'debug')<CR>
 noremap <silent> <Plug>ATP_TeXVerbose		:<C-U>call <SID>TeX(v:count1, "", 'verbose')<CR>
 inoremap <silent> <Plug>iATP_TeXVerbose		<Esc>:<C-U>call <SID>TeX(v:count1, "", 'verbose')<CR>
 "}}}
@@ -1608,12 +1621,13 @@ function! <SID>SetErrorFormat(...)
     endif
 endfunction
 "}}}
-"{{{ s:ShowErrors
+"{{{ ShowErrors
 " each argument can be a word in flags as for s:SetErrorFormat (except the
 " word 'whole') + two other flags: all (include all errors) and ALL (include
 " all errors and don't ignore any line - this overrides the variables
 " g:atp_ignore_unmatched and g:atp_show_all_lines.
-function! <SID>ShowErrors(...)
+function! ShowErrors(...)
+    " It is not <SID> because it is run from atplib#CallBack()
 
     let errorfile	= &l:errorfile
     " read the log file and merge warning lines 
@@ -1641,20 +1655,20 @@ function! <SID>ShowErrors(...)
     
     " set errorformat 
     let l:arg = ( a:0 > 0 ? a:1 : "e" )
+
     if l:arg =~ 'o'
 	OpenLog
 	return
     endif
     call s:SetErrorFormat(l:arg)
-
-    let l:show_message = ( a:0 >= 2 ? a:2 : 1 )
+    let show_message = ( a:0 >= 2 ? a:2 : 1 )
 
     " read the log file
     cg
 
     " final stuff
     if len(getqflist()) == 0 
-	if l:show_message
+	if show_message
 	    echomsg "[ATP:] no errors :)"
 	endif
 	return ":)"
@@ -1683,6 +1697,6 @@ command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug')
 command! -buffer -bang -nargs=? Bibtex			:call <SID>Bibtex(<q-bang>, <f-args>)
 command! -buffer -nargs=? 	SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
 command! -buffer -nargs=? 	SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
-command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call <SID>ShowErrors(<f-args>)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call ShowErrors(<f-args>)
 " }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
