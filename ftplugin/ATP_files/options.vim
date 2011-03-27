@@ -75,7 +75,7 @@ if !exists("g:atp_debugCompiler")
     " when equal 2 output is more verbose.
     let g:atp_debugCompiler 	= 0
 endif
-if !exists("g:atp_debugST")
+if !exists("g:atp_debugCallBack")
     " Debug <SID>CallBack() function (compiler.vim)
     let g:atp_debugCallBack	= 0
 endif
@@ -280,7 +280,13 @@ call s:SetOptions()
 " {{{ global variables 
 let g:atp_cmdheight = &l:cmdheight
 if !exists("g:atp_DebugModeCmdHeight") 
-    let g:atp_DebugModeCmdHeight = 5
+    let g:atp_DebugModeCmdHeight = &l:cmdheight
+endif
+if !exists("g:atp_DebugMode_AU_change_cmdheight")
+    " Background Compilation will change the 'cmdheight' option
+    " when the compilation was without errors.
+    " AU - autocommand compilation
+    let g:atp_DebugMode_AU_change_cmdheight = 1
 endif
 if !exists("g:atp_Compiler") 
     let g:atp_Compiler = "python"
@@ -1680,6 +1686,11 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 
 
 if !s:did_options
+
+    augroup ATP_cmdheight
+	" update g:atp_cmdheight when user writes the buffer
+	au BufWrite *.tex :let g:atp_cmdheight = &l:atp_cmdheight
+    augroup END
 
     augroup ATP_deltmpdir
 	au VimLeave *.tex :call system("rmdir " . b:atp_TmpDir)

@@ -26,22 +26,25 @@ import subprocess, sys, re
 # Get list of vim servers.
 output = subprocess.Popen(["gvim", "--serverlist"], stdout=subprocess.PIPE)
 servers = str(output.stdout.read())
-match=re.match('b\'(.*)\\\\n\'', servers)
-if match != None
-	servers=match.group(1)
+match=re.match('(b\')?(.*)(\\\\n\')?', servers)
+# Get the column (it is an optional argument)
+if (len(sys.argv) >= 4 and int(sys.argv[3]) > 0):
+	column = str(sys.argv[3])
+else:
+	column = str(1)
+
+if match != None:
+	servers=match.group(2)
 	server_list=servers.split('\\n')
 	server = server_list[0]
-	# Get the column (it is an optional argument)
-	if (len(sys.argv) >= 4 and int(sys.argv[3]) > 0):
-    		column = str(sys.argv[3])
-	else:
-		column = str(1)
 	# Call atplib#FindAndOpen()     
 	cmd="gvim --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+sys.argv[1]+"','"+sys.argv[2]+"','"+column+"')\""
 	subprocess.call(cmd, shell=True) 
-
 # Debug:
 f = open('/tmp/atp_RevSearch.debug', 'w')
-f.write(">>> output      "+str(output))
-f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
+f.write(">>> output      "+str(servers))
+if match != None:
+	f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
+else:
+	f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server       not found\n")
 f.close()

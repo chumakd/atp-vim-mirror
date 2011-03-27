@@ -234,3 +234,4 @@ To do: xpdfpid() function should be writtine in Python.
 To do: rewrite MakeLatex in python (this will help with the screen isue)
 To do: SyncTex for (log file --> viewer) can be rewritten to use synctex (usually there is line number of error around -> we can get the position of the pdf file) - but since this is not very useful, this is not urgent.
 To do: write python script to parse log file and return list of dictionaries { file : '', line : '', page : '', errormsg : '', errortype : '' )
+Check: check from time to time if atp_RevSearch.py (/tmp/atp_RevSearch.py) in output has byte strings ( b'...'\n ) maybe I do not need matching them (now they disapeard!, Ivo Lopez is reporting that he doesn't have them.).

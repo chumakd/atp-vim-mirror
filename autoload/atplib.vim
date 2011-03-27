@@ -122,7 +122,7 @@ function! atplib#CallBack(mode,...)
     "  i.e. redraw at the end of function (this is done to not redraw twice in
     "  this function)
     let redraw = 1
-    if ( b:atp_TexStatus == 0 || a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && AU == "COM"
+    if b:atp_TexStatus == 0 && ( a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && g:atp_DebugMode_AU_change_cmdheight 
 	let &l:cmdheight=g:atp_cmdheight
 	let redraw = 0
     endif
@@ -379,6 +379,7 @@ function! atplib#FindAndOpen(file, line, ...)
     echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
     call system("vim --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
     call remote_expr(use_server, 'cursor('.a:line.','.col.')')
+    call remote_expr(use_server, 'redraw!')
 "   call system("vim --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
 "   This line is not working in DWM, but it might work in KDE (to be tested):
 "     call system("vim --servername ".use_server." --remote-exprt foreground\(\)")

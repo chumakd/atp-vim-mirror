@@ -3722,15 +3722,16 @@ Okular
 		settings>Configure Okular>Editor
 <	and set >
 		Editor		Custom Text Editor
-		Command		$HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%f' '%l'
+		Command		python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%f' '%l'
 <	NOTE: You must substitute $HOME directory to its value!!! It will not
 	work other way. You can also copy the script somewhere inside your
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again. 
 
-	Next you have to add executable permissions to the python script
-	atp_RevSearch.py (in terminal: go to $HOME/.vim/ftplugin/ATP_files/,
-	and type: chmod 755 atp_RevSearch.py).
+	If you set the command as above (with python befor the path to
+	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
+	Note, that otherwise whenever you update ATP you will have to make the
+	script executable!
 
 	If it is not working for you, please report it, you can also
 	use: >

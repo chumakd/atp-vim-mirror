@@ -289,6 +289,7 @@ function! <SID>GetPID()
 	if len(b:atp_LatexPIDs) > 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ",") 
 	else
+	    let b:atp_LastLatexPID = 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
 	endif
     endif
