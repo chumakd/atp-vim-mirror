@@ -4,7 +4,7 @@
 " URL:	       https://launchpad.net/automatictexplugin	
 " BUG Trucer:  https://bugs.launchpad.net/automatictexplugin
 " Language:    bib
-" Last Change: Sat Mar 12 01:00  2011 W
+" Last Change: Sun Mar 27 02:00  2011 W
 " Copyright Statement: 
 " 	  This file is part of Automatic Tex Plugin for Vim.
 "
@@ -186,7 +186,7 @@ function! <SID>GetAMSRef(what)
     endtry
     if len(getloclist(0))
 	echohl WarningMsg
-	echomsg "No Unique Match Found"
+	echomsg "[ATP:] No Unique Match Found"
 	echohl None
 	return [0]
     endif
@@ -199,7 +199,7 @@ function! <SID>GetAMSRef(what)
     call setloclist(0, loclist)
     if !len(data) 
 	echohl WarningMsg
-	echomsg "Nothing found."
+	echomsg "[ATP:] nothing found."
 	echohl None
 	return [0]
     endif

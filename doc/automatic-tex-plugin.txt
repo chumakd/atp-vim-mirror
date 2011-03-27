@@ -152,7 +152,6 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 
   (2)	Do not forget to give executable permissions to the compile.py file 
   	it is under |'runtimepath'| ftplugin/ATP_files/compile.py
-    If you want to dive in the code it is 
 
     							*b:atp_VerboseLatexInteractioMode*
     There is also a small enhacment in verbose debug mode. You can decide what
@@ -160,6 +159,16 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     "errorstopmode". Thus this gives the classical compilation, when latex
     stops on errors. The other possible values are: "batchmode", "nonstopmode"
     and "scrollmode".
+							*atp-:GotoNamedDest*
+9.2:
+  :GotoNamedDest <destination_name>
+  - Using '\hypertarget{<destination_name>}{<text>}' from hyperref package you
+    can insert into PDF named destinations. This command will set the position
+    of PDF file in Xpdf to this destination. There is a completion for
+    destination names. This command solely works with Xpdf. Using: >
+	:%s/\\label{\([^}]*\)}/\hypertarget{\1}{}/gc
+<   you can turned labels into named destinations.
+
 9.2:
   - g:atp_StarEnvDefault and g:atp_StarEnvMathDefault are now local variables
     |b:atp_StarEnvDefault|, |b:atp_StarEnvMathDefault|. They are remembered by
@@ -784,8 +793,8 @@ directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
 forth between you |b:atp_OutDir| and the temporary directory)
 
-							|atp-callback|
-							|atp-debug-mode|
+							*atp-callback*
+							*atp-debug-mode*
 	By default the call back mechanism is turned on (g:atp_callback=1)
 
 	When call back mechanism is set, which is by default if you run gui
@@ -812,11 +821,16 @@ forth between you |b:atp_OutDir| and the temporary directory)
 			   If you open the error window with :copen or with
 			   the menu option ToggleDebugMode then it will be
 			   automatically closed after first compilation with
-			   exist status 0. 
+			   exist status 0 (both in 'silent' and 'debug' debug
+			   mode). If the debug mode was 'debug'
+			   |t:atp_DebugMode| will be set to |g:atp_DefaultDebugMode|.
 
 			   	= 'verbose'
 			   Every compilation which is invoked by the user will
-			   be run in verbose mode as with <F5> key.
+			   be run in verbose mode (this mode is mapped to <F5> key). 
+			   In this mode latex '-interaction=' switch is set
+			   from the variable |b:atp_VerboseLatexInteractioMode|
+			   (the default value is errorstop mode).
 
 	Note: the 'verbose' mode in 'Vim' (in console) needs to be run, when
 	there is no other latex instance running. Now you get a message to
@@ -824,11 +838,18 @@ forth between you |b:atp_OutDir| and the temporary directory)
 	will be worked out. Gui version 'gvim' works better (as it doesn't  
 	suspend the editor).
 
-	 The background compilation is always done in g:atp_DefaultDebugMode.
+	 The background compilation is always done in |g:atp_DefaultDebugMode|.
 	 Unless it is set to 'verbose' in which case 'debug' mode is used. 
 
 	 You can invoke compiler in the 'debug' mode with '<LocalLeader>d',
 	 '<LocalLeader>l' uses the default mode.
+	 						*g:atp_DefaultDebugMode*
+> 
+ let g:atp_DefaultDebugMode = 'silent'
+< 	This is the default debug mode in which background compilation will
+	run. It can be set to 'debug', setting it to 'verbose' will have the
+	same efect as setting it to 'debug'. ATP will come back to this debug
+	mode if compilation ends with exit status 0.
 
 :DebugMode {debug-mode}					*atp-:DebugMode*
 	Command which help to set b:atp_DebugMode variable (has nice completion).
@@ -877,7 +898,7 @@ map \l, map \d
 	number).
 
 	The optional argument [debug_mode] has possible values: '', 'silent',
-	'debug', 'verbose'. When '' the value of g:atp_DefaultDebugMode is
+	'debug', 'verbose'. When '' the value of |g:atp_DefaultDebugMode| is
 	used. See the description of |atp-debug-mode|.
 
 	\d is mapped to :TEX debug and \l to :TEX (thus it uses your default

@@ -260,7 +260,6 @@ function! s:showtoc(toc)
 "     let t:atp_winnr=winnr()	 these are already set by TOC()
     let bname="__ToC__"
     let tocwinnr=bufwinnr("^" . bname . "$") 
-"     echomsg "DEBUG a " . tocwinnr
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
@@ -688,7 +687,7 @@ function! <SID>Labels(bang)
     if error
 	echohl WarningMsg
 	redraw
-	echomsg "The compelation contains errors, aux file might be not appriopriate for labels window."
+	echomsg "[ATP:] the compelation contains errors, aux file might be not appriopriate for labels window."
 	echohl Normal
     endif
 endfunction
@@ -724,7 +723,7 @@ function! GotoLabel(bang,...)
     if len(matches) == 0
 	redraw
 	echohl WarningMsg
-	echomsg "No matching label"
+	echomsg "[ATP:] no matching label"
 	echohl Normal
 	return 1
     elseif len(matches) == 1
@@ -780,9 +779,9 @@ endfunction
 " }}}
 
 "{{{ GotoDestination
-function! <SID>GotoDestination(destination)
+function! <SID>GotoNamedDestination(destination)
     if b:atp_Viewer !~ '^\s*xpdf\>' 
-	echomsg "This only works for Xpdf viewer.'
+	echomsg "[ATP:] this only works with Xpdf viewer.'
 	return 0
     endif
     let g:dest_cmd='xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)'
@@ -790,6 +789,9 @@ function! <SID>GotoDestination(destination)
 endfunction
 function! <SID>FindDestinations()
     let files = [ b:atp_MainFile ]
+    if !exists("b:TypeDict")
+	call TreeOfFiles(b:atp_MainFile)
+    endif
     for file in keys(b:TypeDict)
 	if b:TypeDict[file] == 'input'
 	    call add(files, file)
@@ -1292,7 +1294,6 @@ function! TexSyntaxMotion(forward, how, ...)
 	setl ww+=h
     endif
 
-"     echomsg "________"
     " before we use <Esc> 
     let line=line(".")
     if in_imap && len(getline(".")) > col(".")
@@ -1425,7 +1426,6 @@ function! TexSyntaxMotion(forward, how, ...)
 	for syn in syntax
 	    let true += count(synstack, syn)
 	endfor
-" 	echomsg string(synstack) . " " . string(syntax) . " " . true
     endwhile
     while getline(".")[col(".")] =~ '^{\|}\|(\|)\|\[\|\]$'
 	exe "normal l"
@@ -1486,7 +1486,7 @@ call s:buflist()
 
 " Commands And Maps:
 " {{{
-command! -buffer -nargs=1 -complete=custom,<SID>CompleteDestinations GotoDestination	:call <SID>GotoDestination(<f-args>)
+command! -buffer -nargs=1 -complete=custom,<SID>CompleteDestinations GotoNamedDest	:call <SID>GotoNamedDestination(<f-args>)
 command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs', 'n')
 command! -buffer SkipCommentBackward 	:call <SID>SkipComment('bs', 'n')
 vmap <buffer> <Plug>SkipCommentForward	:call <SID>SkipComment('fs', 'v')<CR>
@@ -1568,5 +1568,4 @@ command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete GotoF
 command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete EditInputFile :call GotoFile(<q-bang>,<q-args>, 0)
 " }}}
 " vimeif data[0]['text'] =~ 'No Unique Match Found'	    echohl WarningMsg
-" echomsg "No Unique Match Found"	    echohl None	    returnfdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
 command! -bang -nargs=? -complete=customlist,GotoLabelCompletion GotoLabel  		:call GotoLabel(<f-bang>, <f-args>)

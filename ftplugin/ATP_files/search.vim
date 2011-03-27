@@ -179,7 +179,6 @@ function! LocalCommands(...)
     let b:atp_LocalCommands		= atp_LocalCommands
     let b:atp_LocalEnvironments		= atp_LocalEnvironments
     let b:atp_LocalColors		= atp_LocalColors
-"     echomsg reltimestr(reltime(time))
     return [ atp_LocalEnvironments, atp_LocalCommands, atp_LocalColors ]
 
 endfunction
@@ -243,13 +242,13 @@ function! DefiSearch(bang,...)
 	    :bw
 	    redraw
 	    echohl ErrorMsg
-	    echomsg "Definition not found."
+	    echomsg "[ATP:] definition not found."
 	    echohl Normal
 	endif
     else
 	redraw
 	echohl ErrorMsg
-	echomsg "Definition not found."
+	echomsg "[ATP:] definition not found."
 	echohl Normal
     endif
 endfunction
@@ -417,7 +416,7 @@ function! <SID>RecursiveSearch(main_file, start_file, maketree, tree, cur_branch
 	if flags_supplied =~# 'p'
 	    let flags_supplied = substitute(flags_supplied, 'p', '', 'g')
 	    echohl WarningMsg
-	    echomsg "Searching flag 'p' is not supported, filtering it out."
+	    echomsg "[ATP:] searching flag 'p' is not supported, filtering it out."
 	    echohl Normal
 	endif
 
@@ -874,7 +873,7 @@ function! <SID>RecursiveSearch(main_file, start_file, maketree, tree, cur_branch
 
 	    if g:ATP_branch == "nobranch"
 		echohl ErrorMsg
-		echomsg "This probably happend while searching for \\input, it is not yet supported, if not it is a bug"
+		echomsg "[ATP:] this probably happend while searching for \\input, it is not yet supported, if not it is a bug"
 		echohl Normal
 
 		silent! echomsg "Tree=" . string(l:tree)
@@ -955,7 +954,7 @@ function! <SID>RecursiveSearch(main_file, start_file, maketree, tree, cur_branch
 	" when REJECT
 	elseif goto_s == 'REJECT'
 	    echohl ErrorMsg
-	    echomsg "Pattern not found"
+	    echomsg "[ATP:] pattern not found"
 	    echohl Normal
 
 	    if g:atp_debugRS > 1
@@ -988,7 +987,7 @@ function! <SID>RecursiveSearch(main_file, start_file, maketree, tree, cur_branch
 	" when ERROR
 	elseif
 	    echohl ErrorMsg
-	    echomsg "This is a bug in ATP."
+	    echomsg "[ATP:] this is a bug in ATP."
 	    echohl
 	    
 	    " restore vim options 
@@ -1037,11 +1036,10 @@ function! Search(Bang, Arg)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let [ pattern, flag ] = s:GetSearchArgs(a:Arg, 'bceswW')
-"   echomsg " pattern " . pattern . " flag " . flag 
 
     if pattern == ""
 	echohl ErrorMsg
-	echomsg "Enclose the pattern with /.../"
+	echomsg "[ATP:] enclose the pattern with /.../"
 	echohl Normal
 	return
     endif
@@ -1068,7 +1066,7 @@ function! ATP_ToggleNn(...) " {{{
 	    nmenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		:ToggleNn<CR>
 	    imenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		<Esc>:ToggleNn<CR>a
 	    tmenu LaTeX.Toggle\ Nn\ [off] atp maps to n,N.
-	    echomsg "vim nN maps"  
+	    echomsg "[ATP:] vim nN maps"  
 	else
 	    silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
 	    silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
@@ -1077,7 +1075,7 @@ function! ATP_ToggleNn(...) " {{{
 	    nmenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			:ToggleNn<CR>
 	    imenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			<Esc>:ToggleNn<CR>a
 	    tmenu LaTeX.Toggle\ Nn\ [on] n,N vim normal commands.
-	    echomsg "atp nN maps"
+	    echomsg "[ATP:] atp nN maps"
 	endif
 endfunction
 function! SearchHistCompletion(ArgLead, CmdLine, CursorPos)

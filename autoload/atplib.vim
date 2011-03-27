@@ -69,6 +69,7 @@ endfunction
 "}}}1
 
 " Compilation Call Back Communication: 
+" with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
 " {{{ Compilation Call Back Communication
 " CatchStatus {{{
@@ -113,18 +114,19 @@ function! atplib#CallBack(mode)
 
     if b:atp_TexStatus && t:atp_DebugMode != "silent"
 	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
-	    echomsg Compiler." exited with status " . b:atp_TexStatus
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus
 	else
-	    echomsg Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded"
 	endif
     elseif !g:atp_statusNotif || !g:atp_statusline
-	echomsg Compiler." finished"
+	echomsg "[ATP:] ".Compiler." finished"
     endif
 
-    " End the debug mode if there are no errors
+"     " End the debug mode if there are no errors
     if b:atp_TexStatus == 0 && t:atp_DebugMode == "debug"
 	cclose
-	echomsg b :atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
+	redraw!
+	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
 	let t:atp_DebugMode == g:atp_DefaultDebugMode
     endif
 
@@ -136,6 +138,12 @@ function! atplib#CallBack(mode)
 	if t:atp_DebugMode == "debug"
 	    cc
 	endif
+    endif
+    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && t:atp_QuickFixOpen && b:atp_TexStatus == "0"
+	let t:atp_QuickFixOpen = 0
+	cclose
+	redraw!
+	echomsg "[ATP:] no errors, closing quick fix window."
     endif
 endfunction "}}}
 "{{{ LatexPID
@@ -201,7 +209,7 @@ function! atplib#Open(bang, dir, TypeDict, ...)
 	    let file = found[0]
 	else
 	    echohl WarningMsg
-	    echomsg "Nothing found."
+	    echomsg "[ATP:] Nothing found."
 	    echohl None
 	    return
 	endif
@@ -212,7 +220,7 @@ function! atplib#Open(bang, dir, TypeDict, ...)
 
     if viewer == '0'
 	echomsg "\n"
-	echomsg "Filetype: " . ext . " is not supported, add an entry to g:atp_OpenTypeDict" 
+	echomsg "[ATP:] filetype: " . ext . " is not supported, add an entry to g:atp_OpenTypeDict" 
 	return
     endif
     if viewer !~ '^\s*cat\s*$' && viewer !~ '^\s*g\=vim\s*$' && viewer !~ '^\s*edit\s*$' && viewer !~ '^\s*tabe\s*$' && viewer !~ '^\s*split\s*$'
@@ -314,7 +322,7 @@ silent! function! atplib#GrepAuxFile(...)
 	" We should worn the user that there is no aux file
 	" /this is not visible ! only after using the command 'mes'/
 	echohl WarningMsg
-	echomsg "There is no aux file. Run ".b:atp_TexCompiler." first."
+	echomsg "[ATP:] there is no aux file. Run ".b:atp_TexCompiler." first."
 	echohl Normal
 	return []
 	" CALL BACK is not working
@@ -1773,7 +1781,7 @@ function! atplib#SearchPackage(name,...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     if !filereadable(atp_MainFile)
-	silent echomsg "atp_MainFile : " . atp_MainFile . " is not readable "
+	silent echomsg "[ATP:] atp_MainFile : " . atp_MainFile . " is not readable "
 	return
     endif
     let cwd = getcwd()
@@ -2022,7 +2030,6 @@ function! atplib#KpsewhichGlobPath(format, path, name, ...)
 
     let list	= split(globpath(path, a:name),'\n') 
     call map(list, 'fnamemodify(v:val, modifiers)')
-"     echomsg "TIME:" . join(reltime(time), ".")
     return list
 endfunction
 " }}}1
@@ -2095,7 +2102,6 @@ function! atplib#KpsewhichFindFile(format, name, ...)
     elseif l:count < 0 && modifiers != ""
 	call map(result, 'fnamemodify(v:val, modifiers)')
     endif
-"     echomsg "TIME:" . join(reltime(time), ".")
 
     let &l:sua	= saved_sua
     return result
@@ -2331,8 +2337,8 @@ if l:close == "0" || l:close == 'math' && !exists("begin_line")
 endif
 if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4") && math_4 )
     echohl ErrorMsg
-    echomsg "$$:$$ in LaTeX are deprecated (this breaks some LaTeX packages)" 
-    echomsg "You can set b:atp_TexFlavor = 'plaintex', and ATP will ignore this. "
+    echomsg "[ATP:] $$:$$ in LaTeX are deprecated (this breaks some LaTeX packages)" 
+    echomsg "       You can set b:atp_TexFlavor = 'plaintex', and ATP will ignore this. "
     echohl Normal
     return 
 endif
@@ -2357,7 +2363,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
     if l:close == 'environment'
 	" Info message
 	redraw
-" 	silent echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0]
+" 	silent echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0]
 
 	" Rules:
 	" env & \[ \]: close in the same line 
@@ -2526,32 +2532,32 @@ let l:eindent=atplib#CopyIndentation(l:line)
 				if line(".") <= l:max
 				    if line(".") <= l:end
 					call append(l:max, l:eindent . l:str)
-					echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end+1  
+					echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end+1  
 					call setpos(".",[0,l:max+1,len(l:eindent.l:str)+1,0])
 				    else
 					call append(l:end-1, l:eindent . l:str)
-					echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end+1 
+					echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end+1 
 					call setpos(".",[0,l:end,len(l:eindent.l:str)+1,0])
 				    endif
 				elseif line(".") < l:end
 				    let [ lineNr, pos_lineNr ]	= getline(".") =~ '^\s*$' ? [ line(".")-1, line(".")] : [ line("."), line(".")+1 ]
 				    call append(lineNr, l:eindent . l:str)
-				    echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . line(".")+1  
+				    echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . line(".")+1  
 				    call setpos(".",[0, pos_lineNr,len(l:eindent.l:str)+1,0])
 				elseif line(".") >= l:end
 				    call append(l:end-1, l:eindent . l:str)
-				    echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end
+				    echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:end
 				    call setpos(".",[0,l:end,len(l:eindent.l:str)+1,0])
 				endif
 			else
 			    if line(".") >= l:max
 				call append(l:pos_saved[1], l:eindent . l:str)
 				keepjumps call setpos(".",l:pos_saved)
-				echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . line(".")+1
+				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . line(".")+1
 				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 			    elseif line(".") < l:max
 				call append(l:max, l:eindent . l:str)
-				echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:max+1
+				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:max+1
 				call setpos(".",[0,l:max+1,len(l:eindent.l:str)+1,0])
 			    endif
 			endif
@@ -2567,23 +2573,23 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			let l:iline=searchpair('\\begin{','','\\end{','nW')
 			if l:iline > l:line_nr && l:iline <= l:pos_saved[1]
 			    call append(l:iline-1, l:eindent . l:str)
-			    echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:iline
+			    echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:iline
 			    let l:pos_saved[2]+=len(l:str)
 			    call setpos(".",[0,l:iline,len(l:eindent.l:str)+1,0])
 			else
 			    if l:cline =~ '\\begin{\%('.l:uenv.'\)\@!'
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
-				echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
+				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1],len(l:eindent.l:str)+1,0])
 			    elseif l:cline =~ '^\s*$'
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
-				echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
+				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 			    else
 				call append(l:pos_saved[1], l:eindent . l:str)
-				echomsg "Closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]+1
+				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]+1
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 			    endif
@@ -2605,7 +2611,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
     "{{{2 close math: texMathZoneV, texMathZoneW, texMathZoneX, texMathZoneY 
     else
 	"{{{3 Close math in the current line
-	echomsg "Closing math from line " . l:begin_line
+	echomsg "[ATP:] closing math from line " . l:begin_line
 	if    math_mode == 'texMathZoneV' && l:line !~ '^\s*\\(\s*$' 	||
 	    \ math_mode == 'texMathZoneW' && l:line !~ '^\s*\\\[\s*$' 	||
 	    \ math_mode == 'texMathZoneX' && l:line !~ '^\s*\$\s*$' 	||
@@ -2656,7 +2662,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    let l:iline-=1
 		endif
 		call append(l:iline, l:eindent . '\]')
-		echomsg "\[ closed in line " . l:iline
+		echomsg "[ATP:] \[ closed in line " . l:iline
 " 		let b:cle_return=2 . " dispalyed math " . l:iline  . " indent " . len(l:eindent) " DEBUG
 	    elseif math_mode == 'texMathZoneV'
 		let l:iline=line(".")
@@ -2665,7 +2671,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    let l:iline-=1
 		endif
 		call append(l:iline, l:eindent . '\)')
-		echomsg "\( closed in line " . l:iline
+		echomsg "[ATP:] \( closed in line " . l:iline
 " 		let b:cle_return=2 . " inline math " . l:iline . " indent " .len(l:eindent) " DEBUG
 	    elseif math_mode == 'texMathZoneX'
 		let l:iline=line(".")
@@ -2675,7 +2681,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		endif
 		let sindent=atplib#CopyIndentation(getline(search('\$', 'bnW')))
 		call append(l:iline, sindent . '$')
-		echomsg "$ closed in line " . l:iline
+		echomsg "[ATP:] $ closed in line " . l:iline
 	    elseif math_mode == 'texMathZoneY'
 		let l:iline=line(".")
 		" if the current line is empty append before it.
@@ -2684,7 +2690,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		endif
 		let sindent=atplib#CopyIndentation(getline(search('\$\$', 'bnW')))
 		call append(l:iline, sindent . '$$')
-		echomsg "$ closed in line " . l:iline
+		echomsg "[ATP:] $ closed in line " . l:iline
 	    endif
 	endif "}}3
     endif
@@ -2861,7 +2867,7 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 	    endif
 	endif
 
-	echomsg "Closing " . opening_size . opening_bracket . " from line " . open_line
+	echomsg "[ATP:] closing " . opening_size . opening_bracket . " from line " . open_line
 
 	" DEBUG:
 	if g:atp_debugCLB
@@ -3530,9 +3536,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		call extend(completion_list,g:atp_tikz_library_{lib}_keywords)
 	    endif   
 	endfor
-	if searchpair('\\\@<!{', '', '\\\@<!}', 'bnW', "", max([ 1, (line(".")-g:atp_completion_limits[0])]))
-	    call extend(completion_list, g:atp_Commands)
-	endif
     " {{{3 ------------ COMMANDS
     elseif completion_method == 'command'
 	"{{{4 
@@ -3565,6 +3568,13 @@ function! atplib#TabCompletion(expert_mode,...)
 	if searchpair('\\begin\s*{picture}','','\\end\s*{picture}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
 	    call extend(completion_list,g:atp_picture_commands)
 	endif 
+   	"{{{4 -------------------- hyperref
+	if searchpair('\\\@<!{', '', '\\\@<!}', 'bnW', "", max([ 1, (line(".")-g:atp_completion_limits[0])]))
+	    call extend(completion_list, g:atp_Commands)
+	    if atplib#SearchPackage('herref')
+		call extend(completion_list, g:atp_hyperref_commands)
+	    endif
+	endif
 	" {{{4 -------------------- MATH commands 
 	" if we are in math mode or if we do not check for it.
 	if g:atp_no_math_command_completion != 1 &&  ( !g:atp_MathOpened || math_is_opened )
@@ -4233,7 +4243,7 @@ function! atplib#FontSearch(method,...)
     let g:fd_matches=[]
     if len(s:fd_matches) > 0
 	echohl WarningMsg
-	echomsg "Found " . len(s:fd_matches) . " files."
+	echomsg "[ATP:] found " . len(s:fd_matches) . " files."
 	echohl None
 	" wipe out the old buffer and open new one instead
 	if buflisted(fnameescape(l:tmp_dir . "/" . l:fd_bufname))
@@ -4272,9 +4282,9 @@ function! atplib#FontSearch(method,...)
     else
 	echohl WarningMsg
 	if !l:method
-	    echomsg "No fd file found, try :FontSearch!"
+	    echomsg "[ATP:] no fd file found, try :FontSearch!"
 	else
-	    echomsg "No fd file found."
+	    echomsg "[ATP:] no fd file found."
 	endif
 	echohl None
     endif

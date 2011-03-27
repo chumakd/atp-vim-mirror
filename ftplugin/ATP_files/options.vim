@@ -266,7 +266,7 @@ function! s:SetOptions()
 	    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 	    call TreeOfFiles(atp_MainFile)
 	else
-	    echomsg "b:atp_MainFile " . "doesn't exists."
+	    echomsg "[ATP:] b:atp_MainFile: ".b:atp_MainFile." doesn't exists."
 	endif
     endif
 endfunction
@@ -405,7 +405,7 @@ endif
 	    else
 		let g:atp_LogSync = !g:atp_LogSync
 	    endif
-	    echomsg "g:atp_LogSync = " . g:atp_LogSync
+	    echomsg "[ATP:] g:atp_LogSync = " . g:atp_LogSync
 	endfunction
 	command! -buffer -nargs=? -complete=customlist,s:SyncComp LogSync :call s:Sync(<f-args>)
 	function! s:SyncComp(ArgLead, CmdLine, CursorPos)
@@ -429,7 +429,6 @@ endif
 	" atplib#CloseLastBracket() (autoload/atplib.vim)
 	lockvar g:atp_closebracket_checkenv
     catch /E741:/
-" 	echomsg "Changing this variable is not supported"
     endtry
 " endif
 " if !exists("g:atp_ProjectScript") || g:atp_reload
@@ -854,7 +853,7 @@ function! <SID>Babel()
     endif
     let default_language 	= get(languages, '-1', '') 
 	if g:atp_debugBabel
-	    echomsg "Babel : defualt language:" . default_language
+	    echomsg "[Babel:] defualt language:" . default_language
 	endif
     let keymap 			= get(g:atp_keymaps, default_language, '')
 
@@ -993,7 +992,7 @@ let s:special_space="[off]"
 function! ATP_ToggleSpace(...)
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>','c') == "" )
     if on
-	echomsg "special space is on"
+	echomsg "[ATP:] special space is on"
 	cmap <Space> \_s\+
 	let s:special_space="[on]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [off]
@@ -1003,7 +1002,7 @@ function! ATP_ToggleSpace(...)
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
     else
-	echomsg "special space is off"
+	echomsg "[ATP:] special space is off"
  	cunmap <Space>
 	let s:special_space="[off]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [on]
@@ -1024,7 +1023,7 @@ function! ATP_ToggleCheckMathOpened(...)
 "     if g:atp_MathOpened
     if !on
 	let g:atp_MathOpened = 0
-	echomsg "check if in math environment is off"
+	echomsg "[ATP:] check if in math environment is off"
 	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [on]
 	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
 	menu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
@@ -1035,7 +1034,7 @@ function! ATP_ToggleCheckMathOpened(...)
 		    \ <Esc>:ToggleCheckMathOpened<CR>a
     else
 	let g:atp_MathOpened = 1
-	echomsg "check if in math environment is on"
+	echomsg "[ATP:] check if in math environment is on"
 	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
 	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
 	menu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
@@ -1052,7 +1051,7 @@ function! ATP_ToggleCallBack(...)
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) :  !g:atp_callback )
     if !on
 	let g:atp_callback	= 0
-	echomsg "call back is off"
+	echomsg "[ATP:] call back is off"
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
 	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
@@ -1063,7 +1062,7 @@ function! ATP_ToggleCallBack(...)
 		    \ <Esc>:call ToggleCallBack()<CR>a
     else
 	let g:atp_callback	= 1
-	echomsg "call back is on"
+	echomsg "[ATP:] call back is on"
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
 	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
@@ -1082,7 +1081,7 @@ endfunction
 function! ATP_ToggleDebugMode(...)
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) :  t:atp_DebugMode != "debug" )
     if !on
-	echomsg "debug mode is off"
+	echomsg "[ATP:] debug mode is off"
 
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]
@@ -1105,7 +1104,7 @@ function! ATP_ToggleDebugMode(...)
 	let t:atp_DebugMode	= g:atp_DefaultDebugMode
 	silent cclose
     else
-	echomsg "debug mode is on"
+	echomsg "[ATP:] debug mode is on"
 
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
@@ -1129,6 +1128,7 @@ function! ATP_ToggleDebugMode(...)
 	let t:atp_DebugMode	= "debug"
 	let winnr = bufwinnr("%")
 	silent copen
+	silent! cg
 	exe winnr . " wincmd w"
     endif
 endfunction
@@ -1353,7 +1353,14 @@ endif
 		    \"\\framebox(", "\\line(", "\\linethickness{",
 		    \ "\\makebox(", "\\\multiput(", "\\oval(", "\\put", 
 		    \ "\\shortstack", "\\vector(" ]
-
+	let g:atp_hyperref_commands=[ '\hypersetup{', '\hypertarget{', '\url{', '\nolinkurl{', '\hyperbaseurl{', 
+		    \ '\hyperdef{', '\hyperref', '\hyperlink{', '\phantomsection', '\autoref{', '\autopageref{', 
+		    \ '\ref*{', '\autoref*{', '\autopageref*{', '\pdfstringdef{', '\pdfbookmark', 
+		    \ '\curretnpdfbookmark{', '\subpdfbookmark{', '\subpdfbookmark{', '\belowpdfbookmark{',
+		    \ '\texorpdfstring{', '\hypercalcbp', '\Acrobatmenu{', 
+		    \ '\textField', '\CheckBox', '\ChoiceMenu', '\PushButton', '\Submit', '\Reset',
+		    \ '\LayoutTextField', '\LayoutChoiceField', '\LayoutCheckField', '\MakeRadioField{', 
+		    \ '\MakeCheckField{', '\MakeTextField{', '\MakeChoiceField{', '\MakeButtonField{' ]
 	" ToDo: end writting layout commands. 
 	" ToDo: MAKE COMMANDS FOR PREAMBULE.
 

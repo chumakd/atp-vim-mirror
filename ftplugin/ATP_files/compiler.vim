@@ -86,7 +86,7 @@ function! <SID>ViewOutput(...)
 	    redraw!
 	endif
     else
-	echomsg "Output file do not exists. Calling " . b:atp_TexCompiler
+	echomsg "[ATP:] output file do not exists. Calling " . b:atp_TexCompiler
 	if fwd_search
 	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
@@ -110,7 +110,7 @@ noremap <silent> 		<Plug>ATP_ViewOutput	:call <SID>ViewOutput()<CR>
 function! <SID>GetSyncData(line, col)
 
      	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
-	    echomsg "Calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
+	    echomsg "[ATP:] calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
  	    call system(b:atp_TexCompiler . " -synctex=1 " . atplib#FullPath(b:atp_MainFile)) 
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
@@ -127,7 +127,7 @@ function! <SID>GetSyncData(line, col)
 	    let synctex_output=split(system(synctex_cmd), "\n")
 	    call add(g:debug,get(synctex_output, 1, ''))
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
-		return [ "no_sync", get(synctex_output, 1, '') ]
+		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
 	    endif
 	endif
 
@@ -141,10 +141,12 @@ function! <SID>GetSyncData(line, col)
 	let page=get(page_list, 0, "no_sync") 
 	let y_coord_list=copy(synctex_output) 
 	call filter(y_coord_list, "v:val =~ '^\\cy:\\d\\+'")
-	let y_coord=matchstr(get(y_coord_list, 0, "no sync data"), 'y:\zs[0-9.]*')
+	let y_coord=get(y_coord_list, 0, "no sync data")
+	let y_coord= ( y_coord != "no sync data" ? matchstr(y_coord, 'y:\zs[0-9.]*') : y_coord )
 	let x_coord_list=copy(synctex_output) 
 	call filter(x_coord_list, "v:val =~ '^\\cx:\\d\\+'")
-	let x_coord=matchstr(get(x_coord_list, 0, "no sync data"), 'x:\zs[0-9.]*')
+	let x_coord=get(x_coord_list, 0, "no sync data")
+	let x_coord= ( x_coord != "no sync data" ? matchstr(x_coord, 'y:\zs[0-9.]*') : x_coord )
 
 	if g:atp_debugSync
 	    let g:page=page
@@ -167,11 +169,11 @@ function! <SID>SyncShow( page_nr, y_coord)
 	let height="Bottom"
     endif
     if a:page_nr != "no_sync"
-	echomsg height." of page ".a:page_nr
+	echomsg "[ATP:] ".height." of page ".a:page_nr
     else
 	echohl WarningMsg
-	echomsg a:y_coord
-" 	echomsg "You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
+	echomsg "[ATP:] ".a:y_coord
+" 	echomsg "       You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
 	echohl Normal
     endif
 endfunction "}}}
@@ -245,55 +247,45 @@ function! <SID>getpid()
 	let s:var	= system(s:command)
 	return s:var
 endfunction
-function! <SID>GetPID()
-	let s:var=s:getpid()
-	if s:var != ""
-	    echomsg b:atp_TexCompiler . " pid " . s:var 
-	else
-	    let b:atp_running	= 0
-	    echomsg b:atp_TexCompiler . " is not running"
-	endif
-endfunction
-"}}}
-
-" To check if xpdf is running we use 'ps' unix program.
-"{{{ s:xpdfpid
-function! XpdfPid() 
+" The same but using python (it is not used)
+" TODO: end this.
+function! <SID>Pythongetpid() 
 python << EOF
 import psutil
-xpdf_server = vim.eval("b:atp_XpdfServer")
+latex = vim.eval("b:atp_TexCompiler")
 # Make dictionary: xpdf_servername : file
 # to test if the server host file use:
 # basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
 ps_list=psutil.get_pid_list()
-server_running	= False
-server_file_dict={}
+latex_running	= False
 for pr in ps_list:
 	try:
 		name=psutil.Process(pr).name
 		cmdline=psutil.Process(pr).cmdline
-		if name == 'xpdf': 
-			try:
-				ind=cmdline.index('-remote')
-				if cmdline[ind+1] == xpdf_server:
-				    server_running = True
-				    xpdf=pr
-				    break
-			except:
-				null=name
+		if name == latex: 
+			latex_pid=pr
+			latex_running=True
+			break
 	except psutil.NoSuchProcess:
 		null=pr
 
-if server_running:
-	vim.command("let s:checkxpdf="+str(xpdf))
+if latex_running:
+	vim.command("let s:var="+str(latex_pid))
 else:
-	vim.command("let s:checkxpdf=''") 
+	vim.command("let s:var=''") 
 EOF
 endfunction
-function! <SID>xpdfpid() 
-    let s:checkxpdf="ps -ef | grep -v grep | grep xpdf | grep '-remote '" . shellescape(b:atp_XpdfServer) . " | awk '{print $2}'"
-    return substitute(system(s:checkxpdf),'\D','','')
+function! <SID>GetPID()
+	let s:var=s:getpid()
+	if s:var != ""
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid " . s:var 
+	else
+	    let b:atp_running	= 0
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
+	endif
 endfunction
+"}}}
+
 "}}}
 
 " This function compares two files: file written on the disk a:file and the current
@@ -403,9 +395,7 @@ function! <SID>copy(input,output)
 endfunction
 "}}}
 
-" CALL BACK:
-" (with the help of David Munger - LatexBox) 
-"{{{ call back
+"{{{ GetSid, SidWrap
 function! <SID>GetSid() "{{{
     return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
 endfunction 
@@ -699,7 +689,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	    endif
 
 	redraw
-	echomsg "[MakeLatex] Updating files [".Compiler."]."
+	echomsg "[MakeLatex:] Updating files [".Compiler."]."
 	call system("(" . cmd . " )&")
 	exe "lcd " . fnameescape(saved_cwd)
 	return "Making log file or aux file"
@@ -788,7 +778,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	      redir END
 	      endif
 
-	  echomsg "[MakeLatex] " . message
+	  echomsg "[MakeLatex:] " . message
 	  call system("(" . cmd . ")&")
 	  exe "lcd " . fnameescape(saved_cwd)
 	  return "Making references|cross-references|index."
@@ -808,9 +798,9 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     endif
 
     if max([(a:run-1), 0]) == 1
-	echomsg "[MakeLatex] " . max([(a:run-1), 0]) . " time in " . show_time . "sec."
+	echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " time in " . show_time . "sec."
     else
-	echomsg "[MakeLatex] " . max([(a:run-1), 0]) . " times in " . show_time . "sec."
+	echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " times in " . show_time . "sec."
     endif
 
     if b:atp_running >= 1
@@ -841,16 +831,16 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     if !executable(g:atp_PythonCompilerPath)
 	redraw!
 	echohl ErrorMsg
-	echomsg "WARNING:"
+	echomsg "[ATP:] WARNING:"
 	echohl Normal
-	echomsg "ATP has python script to compile tex documents"
-	echomsg "it is localted under ".g:atp_PythonCompilerPath
+	echomsg "       ATP has python script to compile tex documents"
+	echomsg "       it is localted under ".g:atp_PythonCompilerPath
 	echohl ErrorMsg
-	echomsg "    YOU SHOULD MAKE IT EXECUTABLE!"
+	echomsg "             YOU SHOULD MAKE IT EXECUTABLE!"
 	echohl Normal
-	echomsg "(Unix only:) to use old compile function let g:atp_Compiler='bash'"
-	echomsg "to see this message again, use :msg"
-	call input("Press <Enter> to continue")
+	echomsg "       (Unix only:) to use old compile function let g:atp_Compiler='bash'"
+	echomsg "       to see this message again, use :msg"
+	call input("       Press <Enter> to continue")
 	return
     endif
 
@@ -858,18 +848,18 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
 		\ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
 	 
-	echohl WaningMsg | echomsg "Your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
-	echomsg "b:atp_TexCompiler=" . b:atp_TexCompiler	
-	echomsg "b:atp_Viewer=" . b:atp_Viewer	
+	echohl WaningMsg | echomsg "[ATP:] your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
+	echomsg "       b:atp_TexCompiler=" . b:atp_TexCompiler	
+	echomsg "       b:atp_Viewer=" . b:atp_Viewer	
     endif
     if !has('clientserver')
 	if has("win16") || has("win32") || has("win64") || has("win95")
 	    echohl WarningMsg
-	    echomsg "ATP needs +clientserver vim compilation option."
+	    echomsg "[ATP:] ATP needs +clientserver vim compilation option."
 	    echohl Normal
 	else
 	    echohl WarningMsg
-	    echomsg "Python compiler needs +clientserver vim compilation option."
+	    echomsg "[ATP:] python compiler needs +clientserver vim compilation option."
 	    echohl Normal
 	    let g:atp_Compiler = "bash"
 	    return
@@ -953,7 +943,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
     if !has('gui') && a:verbose == 'verbose' && b:atp_running > 0
 	redraw!
-	echomsg "Please wait until compilation stops."
+	echomsg "[ATP:] please wait until compilation stops."
 	return
     endif
 
@@ -976,9 +966,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		    \ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
 		    \ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
 	     
-	    echohl WaningMsg | echomsg "Your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
-	    echomsg "b:atp_TexCompiler=" . b:atp_TexCompiler	
-	    echomsg "b:atp_Viewer=" . b:atp_Viewer	
+	    echohl WaningMsg | echomsg "[ATP:] your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
+	    echomsg "       b:atp_TexCompiler=" . b:atp_TexCompiler	
+	    echomsg "       b:atp_Viewer=" . b:atp_Viewer	
 	endif
 
 	" there is no need to run more than s:runlimit (=5) consecutive runs
@@ -1039,11 +1029,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . shellescape(outfile) . " ; "
 	    else
 " TIME: this take 1/3 of time! 0.039
-		if has("python")
-		    call XpdfPid()
-		else
-		    call <SID>xpdfpid()
-		endif
+		call <SID>xpdfpid()
+		" I could use here <SID>XpdPid(), the reason to not use it is that
+		" then there is a way to run ATP without python.
 		if s:xpdfpid != ""
 		    "if xpdf is running (then we want to reload it).
 		    "This is where I use 'ps' command to check if xpdf is
@@ -1386,22 +1374,20 @@ function! <SID>TeX(runs, bang, ...)
 
     if l:mode != 'silent'
 	if a:runs > 2 && a:runs <= 5
-	    echomsg Compiler . " will run " . a:1 . " times."
+	    echomsg "[ATP:] ".Compiler . " will run " . a:1 . " times."
 	elseif a:runs == 2
-	    echomsg Compiler . " will run twice."
+	    echomsg "[ATP:] ".Compiler . " will run twice."
 	elseif a:runs == 1
-	    echomsg Compiler . " will run once."
+	    echomsg "[ATP:] ".Compiler . " will run once."
 	elseif a:runs > 5
-	    echomsg Compiler . " will run " . s:runlimit . " times."
+	    echomsg "[ATP:] ".Compiler . " will run " . s:runlimit . " times."
 	endif
     endif
-"     echomsg "TEX_3 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
     if g:atp_Compiler == 'python'
 	call <SID>PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
     else
 	call <SID>Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
     endif
-"     echomsg "TEX_4 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
 endfunction
 function! TEX_Comp(ArgLead, CmdLine, CursorPos)
     return filter(['silent', 'debug', 'verbose'], "v:val =~ '^' . a:ArgLead")
@@ -1431,7 +1417,7 @@ function! <SID>SimpleBibtex()
 	let g:command	= command
 	echo system(command)
     else
-	echomsg "aux file " . auxfile . " not readable."
+	echomsg "[ATP:] aux file " . auxfile . " not readable."
     endif
     exe "lcd " . fnameescape(saved_cwd)
 endfunction
@@ -1635,7 +1621,7 @@ function! <SID>ShowErrors(...)
     " The same for readfile() and writefile()  built in functions.
     if !filereadable( errorfile)
 	echohl WarningMsg
-	echomsg "No error file: " . errorfile  
+	echomsg "[ATP:] no error file: " . errorfile  
 	echohl Normal
 	return
     endif
@@ -1669,7 +1655,7 @@ function! <SID>ShowErrors(...)
     " final stuff
     if len(getqflist()) == 0 
 	if l:show_message
-	    echomsg "no errors"
+	    echomsg "[ATP:] no errors :)"
 	endif
 	return ":)"
     else

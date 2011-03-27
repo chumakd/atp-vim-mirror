@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun Mar 20 04:00  2011 W
+" Last Change: Sun Mar 27 02:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -509,7 +509,7 @@ function! s:ToggleStar()
 	    call setline(open_pos[0],substitute(getline(open_pos[0]),'\(\\begin\s*{\)'.env_name.'\*}','\1'.env_name.'}',''))
 	    call setline(close_pos[0],substitute(getline(close_pos[0]),
 			\ '\(\\end\s*{\)'.env_name.'\*}','\1'.env_name.'}',''))
-	    echomsg "Star removed from '".env_name."*' at lines: " .open_pos[0]." and ".close_pos[0]
+	    echomsg "[ATP:] star removed from '".env_name."*' at lines: " .open_pos[0]." and ".close_pos[0]
 	endif
     else
 	let close_pos=searchpairpos('\\begin\s{'.env_name.'}','','\\end\s*{'.env_name.'}\zs','cnW',"",to_line)
@@ -518,7 +518,7 @@ function! s:ToggleStar()
 		    \ '\(\\begin\s*{\)'.env_name.'}','\1'.env_name.'\*}',''))
 	    call setline(close_pos[0],substitute(getline(close_pos[0]),
 			\ '\(\\end\s*{\)'.env_name.'}','\1'.env_name.'\*}',''))
-	    echomsg "Star added to '".env_name."' at lines: " .open_pos[0]." and ".close_pos[0]
+	    echomsg "[ATP:] star added to '".env_name."' at lines: " .open_pos[0]." and ".close_pos[0]
 	endif
     endif
 
@@ -600,7 +600,7 @@ function! s:ToggleEnvironment(ask, ...)
 	if l:add == 1
 	    let l:new_env_name=input("What is the new name for " . l:env_name . "? type and hit <Enter> ", "", "customlist,<SID>EnvCompletion" )
 	    if l:new_env_name == ""
-		echomsg "Environment name not changed"
+		echomsg "[ATP:] environment name not changed"
 		return
 	    endif
 	else
@@ -621,7 +621,7 @@ function! s:ToggleEnvironment(ask, ...)
 	call setline(l:open_pos[0],substitute(getline(l:open_pos[0]),'\(\\begin\s*{\)'.l:env_name.'}','\1'.l:new_env_name.'}',''))
 	call setline(l:close_pos[0],substitute(getline(l:close_pos[0]),
 		    \ '\(\\end\s*{\)'.l:env_name.'}','\1'.l:new_env_name.'}',''))
-	echomsg "Environment toggeled at lines: " .l:open_pos[0]." and ".l:close_pos[0]
+	echomsg "[ATP:] environment toggeled at lines: " .l:open_pos[0]." and ".l:close_pos[0]
     endif
 
     if l:label != "" && g:atp_toggle_labels
@@ -673,7 +673,7 @@ function! s:ToggleEnvironment(ask, ...)
 	    let &hidden = hidden
 	elseif n != 0 && l:new_label != l:label
 	    echohl WarningMsg
-	    echomsg "Labels not changed, new label: ".l:new_label." is in use!"
+	    echomsg "[ATP:] labels not changed, new label: ".l:new_label." is in use!"
 	    echohl Normal
 	endif
     endif
@@ -1167,7 +1167,7 @@ endfunction
 	let ext = get(g:atp_CompilersDict, b:atp_TexCompiler, "not present")
 	if ext == "not present"
 	    echohl WarningMsg
-	    echomsg b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
 	    echohl Normal
 	    return "extension not found"
 	endif
@@ -1195,21 +1195,21 @@ endfunction
     " the default is to print locally (g:atp_ssh=`whoami`@localhost)
     let server	= ( exists("g:atp_ssh") ? strpart(g:atp_ssh,stridx(g:atp_ssh,"@")+1) : "localhost" )
 
-    echomsg "Server " . server
-    echomsg "File   " . pfile
+    echomsg "[ATP:] server " . server
+    echomsg "[ATP:] file   " . pfile
 
     if server =~ 'localhost'
 	let com	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
 
 	redraw!
-	echomsg "Printing ...  " . com
+	echomsg "[ATP:] printing ...  " . com
 	let b:com=com " DEBUG
 " 	call system(com)
     " print over ssh on the server g:atp_ssh with the printer a:1 (or the
     " default system printer if a:0 == 0
     else 
 	let com="cat " . fnameescape(pfile) . " | ssh " . g:atp_ssh . " " . lprcommand . " " . print_options
-	echomsg "Printing ...  " . com
+	echomsg "[ATP:] printing ...  " . com
 	let b:com=com " DEBUG
 " 	call system(com)
     endif
@@ -1224,7 +1224,7 @@ function! <SID>Lpr(...)
 	let ext = get(g:atp_CompilersDict, b:atp_TexCompiler, "not present")
 	if ext == "not present"
 	    echohl WarningMsg
-	    echomsg b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
 	    echohl Normal
 	    return "extension not found"
 	endif
@@ -1250,7 +1250,7 @@ function! <SID>Lpr(...)
 	let com	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
 
 	redraw!
-	echomsg "Printing ...  " . com
+	echomsg "[ATP:] printing ...  " . com
 	let b:com=com " DEBUG
 " 	call system(com)
 endfunction
@@ -1379,10 +1379,10 @@ function! ToDo(keyword,stop,...)
     " Show ToDos
     echohl atp_Todo
     if len(keys(todo)) == 0
-	echomsg " List for '%.*" . a:keyword . "' in '" . bufname . "' is empty."
+	echomsg "[ATP:] list for '%.*" . a:keyword . "' in '" . bufname . "' is empty."
 	return
     endif
-    echomsg " List for '%.*" . a:keyword . "' in '" . bufname . "':"
+    echomsg "[ATP:] list for '%.*" . a:keyword . "' in '" . bufname . "':"
     let sortedkeys=sort(keys(todo), "atplib#CompareNumbers")
     for key in sortedkeys
 	" echo the todo line.
@@ -1558,7 +1558,7 @@ function! Preambule()
 	endif
 	call winrestview(winview)
     else	
-	echomsg " Not found \begin{document}."
+	echomsg "[ATP:] not found \begin{document}."
     endif
 endfunction
 " }}}
@@ -1614,7 +1614,7 @@ function! <SID>GetAMSRef(what, bibfile)
 
 	if !len(data) 
 	    echohl WarningMsg
-	    echomsg "Nothing found."
+	    echomsg "[ATP:] nothing found."
 	    echohl None
 	    return [0]
 	endif
@@ -1649,7 +1649,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	call append(line('$'), bibdata)
 	normal GG
 	echohl WarningMsg
-	echomsg "Bibkey " . bibkey . " appended to: " . a:bibfile 
+	echomsg "[ATP:] bibkey " . bibkey . " appended to: " . a:bibfile 
 	echohl Normal
     else
 	" If the user is using \begin{bibliography} environment.
@@ -1661,7 +1661,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	let data = getloclist(0)
 	if !len(data) 
 	    echohl WarningMsg
-	    echomsg "Nothing found."
+	    echomsg "[ATP:] nothing found."
 	    echohl None
 	    return [0]
 	elseif len(data) > 1
@@ -1701,12 +1701,12 @@ function! AMSRef(bang, what)
     elseif bibfile == "nobibfile" && return != [0] && return != ['NoUniqueMatch']
 	redraw
 	echohl WarningMsg
-	echomsg "Found bib data is in register " . g:atp_bibrefRegister
+	echomsg "[ATP:] found bib data is in register " . g:atp_bibrefRegister
 	echohl Normal
     elseif return[0] == 'NoUniqueMatch' 
 	redraw
 	echohl WarningMsg
-	echomsg "No Unique Match Found"
+	echomsg "[ATP:] no Unique Match Found"
 	echohl None
     endif
 endfunction
@@ -1769,14 +1769,14 @@ function! <SID>Wdiff(new_file, old_file)
 	let new_file	= readfile(a:new_file)
     catch /E484/
 	echohl ErrorMsg
-	echomsg "Can't open file " . a:new_file
+	echomsg "[ATP:] can't open file " . a:new_file
 	return 1
     endtry
     try
 	let old_file	= readfile(a:old_file)
     catch /E484/
 	echohl ErrorMsg
-	echomsg "Can't open file " . a:old_file
+	echomsg "[ATP:] can't open file " . a:old_file
 	return 1
     endtry
 

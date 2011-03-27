@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Sun Feb 27 11:00  2011 W
+" Last Change: Sun Mar 27 02:00  2011 W
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 
@@ -202,7 +202,7 @@ function! <SID>yank(arg) " {{{
     if choice	== "nokey"
 	" in TOC, if there is a key we will give it back if not:
 	au! CursorHold __ToC__
-	echomsg "There is no key."
+	echomsg "[ATP:] there is no key."
 	sleep 750m
 	au CursorHold __ToC__ :call EchoLine()
 	return ""
@@ -502,7 +502,7 @@ if expand("%") == "__ToC__"
 	endfor
 
 	if end_line == -1 && &l:filetype == "plaintex"
-	    echomsg "ATP can not delete last section in plain tex files :/"
+	    echomsg "[ATP:] can not delete last section in plain tex files :/"
 	    sleep 750m
 	    return
 	endif
@@ -574,7 +574,7 @@ if expand("%") == "__ToC__"
 
 	if !len(t:atp_SectionStack)
 	    sleep 750m
-	    echomsg "The stack of deleted sections is empty"
+	    echomsg "[ATP:] the stack of deleted sections is empty"
 	    return
 	endif
 
@@ -639,7 +639,7 @@ if expand("%") == "__ToC__"
     " Lists title of sections in the t:atp_SectionStack
     function! s:SectionStack()
 	if len(t:atp_SectionStack) == 0
-	    echomsg "Section stack is empty"
+	    echomsg "[ATP:] section stack is empty"
 	    sleep 750m
 	    return
 	endif

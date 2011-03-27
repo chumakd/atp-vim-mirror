@@ -274,6 +274,9 @@ for i in range(1, int(runs+1)):
 		debug_file.write(os.getcwd()+"\n")
 		subprocess.Popen(['bibtex', basename+".aux"])
 		os.chdir(cwd)
+	# Return code of compilation:
+	if verbose != "verbose":
+		vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex_return_code)+"')")
 
 ####################################
 #
@@ -319,10 +322,9 @@ else:
 # verbose mode can we add interaction as an option for verbose mode this would
 # make classical style of compilation which is also nice :)
 if verbose != "verbose":
-	# (1) return code of compilation:
-	vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex_return_code)+"')")
-	# (2) call back:
+	# call back:
 	vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"')")
+	# return code of compelation is returned before (after each compilation).
 
 
 ####################################
