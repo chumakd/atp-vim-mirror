@@ -14,6 +14,7 @@ from optparse import OptionParser
 usage	= "usage: %prog [options]"
 parser 	= OptionParser(usage=usage)
 parser.add_option("-c", "--command", dest="command", default="pdflatex", help="tex compiler")
+parser.add_option("--progname", dest="progname", default="gvim", help="vim v:progname")
 parser.add_option("-a", "--aucommand", dest="aucommand", action="store_true", default=False, help="if the command was called from an autocommand (background compilation - this sets different option for call back.) ")
 parser.add_option("--tex-options", dest="tex_options", default="-synctex=1,-interaction=nonstopmode", help="comma separeted list of tex options")
 parser.add_option("--verbose", dest="verbose", help="atp verbose mode: silent/debug/verbose", default="silent")
@@ -38,6 +39,7 @@ parser.add_option("--gui-running", "-g", action="store_true", default=False, des
 debug_file	= open("/tmp/atp_compile.py.debug", 'w+')
 
 command		= options.command
+progname	= options.progname
 aucommand_bool	= options.aucommand
 if aucommand_bool:
 	aucommand="AU"
@@ -80,6 +82,7 @@ gui_running	= options.gui_running
 
 debug_file.write("COMMAND "+command+"\n")
 debug_file.write("AUCOMMAND "+aucommand+"\n")
+debug_file.write("PROGNAME "+progname+"\n")
 debug_file.write("COMMAND_OPT "+str(command_opt)+"\n")
 debug_file.write("MAINFILE_FP "+str(mainfile_fp)+"\n")
 debug_file.write("EXT "+extension+"\n")
@@ -141,13 +144,13 @@ def xpdf_server_file_dict():
 
 # Send <keys> to vim server
 def vim_remote_send(servername, keys):
-	cmd=['vim', '--servername', servername, '--remote-send', keys]
+	cmd=[progname, '--servername', servername, '--remote-send', keys]
 	subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 # Send message to vim server
 #    vim_echo(<message>, <echo\|echomsg>, <servername>, <highlightgroup>
 def vim_echo(message, command, servername, highlight):
-	cmd=['vim', '--servername', servername, '--remote-send', ':echohl '+highlight+'|'+command+' "'+message+'"|echohl Normal<CR>' ]
+	cmd=[progname, '--servername', servername, '--remote-send', ':echohl '+highlight+'|'+command+' "'+message+'"|echohl Normal<CR>' ]
 	subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 # Send <expr> to vim server 
@@ -155,7 +158,7 @@ def vim_echo(message, command, servername, highlight):
 # 	vim_remote_expr('GVIM', "atplib#CatchStatus()")
 # (this is the only way it works)
 def vim_remote_expr(servername, expr):
-	cmd=['vim', '--servername', servername, '--remote-expr', expr]
+	cmd=[progname, '--servername', servername, '--remote-expr', expr]
 	out=subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	debug_file.write("vim_remote_expr "+" ".join(cmd)+"\n")
 	debug_file.write(str(out.stdout.read())+"\n")

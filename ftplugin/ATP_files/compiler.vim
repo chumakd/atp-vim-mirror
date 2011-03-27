@@ -839,22 +839,6 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 
     let b:atp_LastLatexPID = -1
     
-    if !executable(g:atp_PythonCompilerPath)
-	redraw!
-	echohl ErrorMsg
-	echomsg "[ATP:] WARNING:"
-	echohl Normal
-	echomsg "       ATP has python script to compile tex documents"
-	echomsg "       it is localted under ".g:atp_PythonCompilerPath
-	echohl ErrorMsg
-	echomsg "             YOU SHOULD MAKE IT EXECUTABLE!"
-	echohl Normal
-	echomsg "       (Unix only:) to use old compile function let g:atp_Compiler='bash'"
-	echomsg "       to see this message again, use :msg"
-	call input("       Press <Enter> to continue")
-	return
-    endif
-
     if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
 		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
 		\ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
@@ -899,7 +883,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error
 
-    let cmd=g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
+    let cmd="python ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
 		\ ." --tex-options ".tex_options
 		\ ." --verbose ".a:verbose
 		\ ." --file ".shellescape(atplib#FullPath(a:filename))
@@ -911,6 +895,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --xpdf-server ".b:atp_XpdfServer
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
+		\ ." --progname ". v:progname
 		\ . bang . bibtex . reload_on_error . gui_running . reload_viewer . aucommand
     " Write file
     let backup=&backup
@@ -1064,7 +1049,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 		" just reload:
 		if str2nr(a:start) == 2
 		    let synctex		= s:SidWrap('SyncTex')
-		    let callback_rs_cmd = " vim " . " --servername " . v:servername . " --remote-expr " . "'".synctex."()' ; "
+		    let callback_rs_cmd = v:progname . " --servername " . v:servername . " --remote-expr " . "'".synctex."()' ; "
 		    let Reload_Viewer	= callback_rs_cmd
 		endif
 	    else
@@ -1132,7 +1117,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" catch the status
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
-	    let catchstatus_cmd = 'vim ' . ' --servername ' . v:servername . ' --remote-expr ' . 
+	    let catchstatus_cmd = v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
 			\ shellescape('atplib#CatchStatus')  . '\($?\) ; ' 
 	else
 	    let catchstatus_cmd = ''
@@ -1194,7 +1179,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
 " 	    let callback	= s:SidWrap('CallBack')
-	    let callback_cmd 	= ' vim ' . ' --servername ' . v:servername . ' --remote-expr ' . 
+	    let callback_cmd 	= v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
 				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
