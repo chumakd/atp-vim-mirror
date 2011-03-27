@@ -781,11 +781,12 @@ endfunction
 "{{{ GotoDestination
 function! <SID>GotoNamedDestination(destination)
     if b:atp_Viewer !~ '^\s*xpdf\>' 
-	echomsg "[ATP:] this only works with Xpdf viewer.'
+	echomsg "[ATP:] this only works with Xpdf viewer."
 	return 0
     endif
-    let g:dest_cmd='xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)'
-    call system('xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)')
+    let cmd='xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)'
+"     let g:cmd=cmd
+    call system(cmd)
 endfunction
 function! <SID>FindDestinations()
     let files = [ b:atp_MainFile ]
