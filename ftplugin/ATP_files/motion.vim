@@ -926,7 +926,7 @@ function! Env_compl(A,P,L)
 		\ 'corollary', 'enumerate', 'examples\=', 'itemize', 'remark', 
 		\ 'notation', 'center', 'quotation', 'quote', 'tabbing', 
 		\ 'picture', 'math', 'displaymath', 'minipage', 'list', 'flushright', 'flushleft', 
-		\ 'figure', 'eqnarray', 'thebibliography', 'titlepage', 
+		\ 'frame', 'figure', 'eqnarray', 'thebibliography', 'titlepage', 
 		\ 'verbatim', 'verse', 'inlinemath', 'displayedmath', 'subequations' ])
     let returnlist=[]
     for env in envlist

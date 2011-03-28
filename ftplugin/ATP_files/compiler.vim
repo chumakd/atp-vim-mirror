@@ -110,8 +110,10 @@ noremap <silent> 		<Plug>ATP_ViewOutput	:call <SID>ViewOutput()<CR>
 function! <SID>GetSyncData(line, col)
 
      	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
-	    echomsg "[ATP:] calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
- 	    call system(b:atp_TexCompiler . " -synctex=1 " . atplib#FullPath(b:atp_MainFile)) 
+	    redraw!
+	    echomsg "[SyncTex:] calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
+	    let cmd=b:atp_TexCompiler . " -synctex=1 " . shellescape(atplib#FullPath(b:atp_MainFile))
+ 	    call system(cmd) 
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
@@ -155,31 +157,33 @@ function! <SID>GetSyncData(line, col)
 	endif
 
 	if page == "no_sync"
-	    return [ "no_sync", "No SyncTex Data: try on another line (comments are not allowed)." ]
+	    return [ "no_sync", "No SyncTex Data: try on another line (comments are not allowed).", 0 ]
 	endif
 	let page_nr=matchstr(page, '^\cPage:\zs\d\+') 
+	let [ b:atp_synctex_pagenr, b:atp_synctex_ycoord, b:atp_synctex_xcoord ] = [ page_nr, y_coord, x_coord ]
 	return [ page_nr, y_coord, x_coord ]
 endfunction
 function! <SID>SyncShow( page_nr, y_coord)
     if a:y_coord < 300
-	let height="Top"
+	let height="top"
     elseif a:y_coord < 500
-	let height="Middle"
+	let height="middle"
     else
-	let height="Bottom"
+	let height="bottom"
     endif
     if a:page_nr != "no_sync"
-	echomsg "[ATP:] ".height." of page ".a:page_nr
+	echomsg "[SyncTex:] ".height." of page ".a:page_nr
     else
 	echohl WarningMsg
-	echomsg "[ATP:] ".a:y_coord
+	echomsg "[SyncTex:] ".a:y_coord
 " 	echomsg "       You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
 	echohl Normal
     endif
 endfunction "}}}
 function! <SID>SyncTex(mouse, ...) "{{{
-    let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
+    let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
+    let g:dryrun	= dryrun
     let [ line, col ] 	= ( a:mouse ? [ v:mouse_lnum, v:mouse_col ] : [ line("."), col(".") ] )
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
@@ -196,7 +200,8 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd = sync_cmd_page.";sleep 0.01s;".sync_cmd_y.";sleep 0.01s;".sync_cmd_x
 	if !dryrun
 	    call system(sync_cmd)
-	    redraw!
+" 	    redraw!
+	    call <SID>SyncShow(page_nr, y_coord)
 	endif
 	let g:sync_cmd_page 	= sync_cmd_page
 	let g:sync_cmd_y 	= sync_cmd_y
@@ -209,7 +214,7 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_args = " ".shellescape(expand("%:p:r")).".pdf\\#src:".line.shellescape(expand("%:p"))." "
 	if !dryrun
 	    call system(sync_cmd)
-	    redraw!
+" 	    redraw!
 	    call <SID>SyncShow(page_nr, y_coord)
 	endif
 	let g:sync_cmd = sync_cmd
@@ -879,7 +884,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
     let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
     let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer) == '-1' ? ' --reload-viewer ' : '' )
-    let aucommand = ( a:command == "AU" ? '--aucommand ' : '' )
+    let aucommand = ( a:command == "AU" ? ' --aucommand ' : '' )
     let g:gui_running = gui_running
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error

@@ -145,13 +145,13 @@ def xpdf_server_file_dict():
 # Send <keys> to vim server
 def vim_remote_send(servername, keys):
 	cmd=[progname, '--servername', servername, '--remote-send', keys]
-	subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file)
 
 # Send message to vim server
 #    vim_echo(<message>, <echo\|echomsg>, <servername>, <highlightgroup>
 def vim_echo(message, command, servername, highlight):
 	cmd=[progname, '--servername', servername, '--remote-send', ':echohl '+highlight+'|'+command+' "'+message+'"|echohl Normal<CR>' ]
-	subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file)
 
 # Send <expr> to vim server 
 # expr must be well quoted:
@@ -159,9 +159,8 @@ def vim_echo(message, command, servername, highlight):
 # (this is the only way it works)
 def vim_remote_expr(servername, expr):
 	cmd=[progname, '--servername', servername, '--remote-expr', expr]
-	out=subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file)
 	debug_file.write("vim_remote_expr "+" ".join(cmd)+"\n")
-	debug_file.write(str(out.stdout.read())+"\n")
     
 # Send pid to vim
 # pid	= os.getpid()
@@ -249,13 +248,13 @@ debug_file.write("RUNS="+str(runs)+"\n")
 for i in range(1, int(runs+1)):
 	#DEBUG:
 	debug_file.write("RUN="+str(i)+"\n")
-	ls_pipe=subprocess.Popen(['ls', tmpdir], stdout=subprocess.PIPE)
-	debug_file.write(str(ls_pipe.stdout.read())+"\n")
+	subprocess.Popen(['ls', tmpdir], stdout=debug_file)
+# 	debug_file.write(str(ls_pipe.stdout.read())+"\n")
 	debug_file.write("BIBTEX="+str(bibtex)+"\n")
 	if verbose == 'verbose' and i == runs:
 # 	<SIS>compiler() contains here ( and not bibtex )
 		debug_file.write("VERBOSE"+"\n")
-		latex=subprocess.Popen(latex_cmd,)
+		latex=subprocess.Popen(latex_cmd)
 		pid=latex.pid
 		debug_file.write("latex pid "+str(pid)+"\n")
 		latex.wait()
@@ -299,7 +298,7 @@ if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
 		debug_file.write("D1: "+str(run)+"\n")
 		subprocess.Popen(run)
 # 		debug_file.write(str(pipe.stdout.read())+"\n")
-	elif cond and ( reload_on_error or latex_ret_code  == 0 or bang ): 
+	elif cond and ( reload_on_error or latex_return_code  == 0 or bang ): 
 		run=['xpdf', '-remote', XpdfServer, '-reload']
 		subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		debug_file.write("D2: "+str(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
