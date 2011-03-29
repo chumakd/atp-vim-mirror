@@ -469,7 +469,7 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type)
 		endif
 		let cond += cond_A
 		if cond_A
-		    let {lvar} = {var}
+		    let {var} = {lvar}
 		endif
 	    elseif !exists(var) && exists(lvar)
 		if g:atp_debugProject

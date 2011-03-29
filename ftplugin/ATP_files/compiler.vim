@@ -43,7 +43,7 @@ function! <SID>ViewOutput(...)
 "     let g:options	= global_options ." ". local_options
 
     " Follow the symbolic link
-    let link=system("readlink " . shellescape(atp_MainFile))
+    let link=resolve(atp_MainFile)
     if link != ""
 	let outfile	= fnamemodify(link,":r") . ext
     else
@@ -135,20 +135,22 @@ function! <SID>GetSyncData(line, col)
 
 	if g:atp_debugSync
 	    let g:synctex_cmd=synctex_cmd
-	    let g:synctex_ouput=copy(synctex_output)
+	    let g:synctex_output=copy(synctex_output)
 	endif
 
 	let page_list=copy(synctex_output)
 	call filter(page_list, "v:val =~ '^\\cpage:\\d\\+'")
 	let page=get(page_list, 0, "no_sync") 
+
 	let y_coord_list=copy(synctex_output) 
 	call filter(y_coord_list, "v:val =~ '^\\cy:\\d\\+'")
 	let y_coord=get(y_coord_list, 0, "no sync data")
 	let y_coord= ( y_coord != "no sync data" ? matchstr(y_coord, 'y:\zs[0-9.]*') : y_coord )
+
 	let x_coord_list=copy(synctex_output) 
 	call filter(x_coord_list, "v:val =~ '^\\cx:\\d\\+'")
 	let x_coord=get(x_coord_list, 0, "no sync data")
-	let x_coord= ( x_coord != "no sync data" ? matchstr(x_coord, 'y:\zs[0-9.]*') : x_coord )
+	let x_coord= ( x_coord != "no sync data" ? matchstr(x_coord, 'x:\zs[0-9.]*') : x_coord )
 
 	if g:atp_debugSync
 	    let g:page=page
@@ -197,7 +199,10 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd_page = "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
 	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
-	let sync_cmd = sync_cmd_page.";sleep 0.01s;".sync_cmd_y.";sleep 0.01s;".sync_cmd_x
+	"There is a bug in xpdf. We need to sleep between sending commands to it.:
+	let sleep	= 'sleep 0.1s;'
+	let sync_cmd = sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x
+" 	let sync_cmd = sync_cmd_page.";".sync_cmd_y.";".sync_cmd_x
 	if !dryrun
 	    call system(sync_cmd)
 " 	    redraw!
@@ -272,7 +277,7 @@ for pr in ps_list:
 			latex_running=True
 			break
 	except psutil.NoSuchProcess:
-		null=pr
+		pass
 
 if latex_running:
 	vim.command("let s:var="+str(latex_pid))
@@ -292,7 +297,7 @@ function! <SID>GetPID()
     else
 	call atplib#LatexRunning()
 	if len(b:atp_LatexPIDs) > 0
-	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ",") 
+	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ", ") 
 	else
 	    let b:atp_LastLatexPID = 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
@@ -301,7 +306,6 @@ function! <SID>GetPID()
 endfunction
 "}}}
 
-"}}}
 
 " This function compares two files: file written on the disk a:file and the current
 " buffer

@@ -559,13 +559,16 @@ endfunction
 function! LatexRunning()
 python << EOL
 import psutil, vim
-lpid = int(vim.eval("b:atp_LastLatexPID"))
-if lpid != -1:
-    try:
-	    name=psutil.Process(lpid).name
-    except psutil.NoSuchProcess:
-	    lpid=0
-vim.command(":let b:atp_LastLatexPID="+str(lpid))
+if vim.eval("exists('b:atp_LastLatexPID')"):
+	lpid = int(vim.eval("b:atp_LastLatexPID"))
+	if lpid != -1:
+    		try:
+			name=psutil.Process(lpid).name
+    		except psutil.NoSuchProcess:
+			lpid=0
+	vim.command(":let b:atp_LastLatexPID="+str(lpid))
+else:
+	vim.command(":let b:atp_LastLatexPID=0")
 EOL
 endfunction
 

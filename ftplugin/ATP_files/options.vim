@@ -611,7 +611,8 @@ if !exists("g:keep") || g:atp_reload
     let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync", "synctex.gz" ]
 endif
 if !exists("g:atp_ssh") || g:atp_reload
-    let g:atp_ssh=substitute(system("whoami"),'\n','','') . "@localhost"
+    " WINDOWS NOT COMPATIBLE
+    let g:atp_ssh=$USER . "@localhost"
 endif
 " opens bibsearch results in vertically split window.
 if !exists("g:vertical") || g:atp_reload
@@ -1245,7 +1246,7 @@ endif
 		\ 'proof', 'proposition', 'picture', 'theorem', 'tikzpicture',  
 		\ 'tabular', 'table', 'tabbing', 'thebibliography', 'titlepage',
 		\ 'quotation', 'quote',
-		\ 'remark', 'verbatim', 'verse' ]
+		\ 'remark', 'verbatim', 'verse', 'frame' ]
 
 	let g:atp_amsmath_environments=['align', 'alignat', 'equation', 'gather',
 		\ 'multline', 'split', 'substack', 'flalign', 'smallmatrix', 'subeqations',
@@ -1316,7 +1317,7 @@ endif
 	\ "\\bfseries", "\\mdseries", "\\bigskip", "\\bibitem",
 	\ "\\tiny",  "\\scriptsize", "\\footnotesize", "\\small",
 	\ "\\noindent", "\\normalfont", "\normalsize", "\\normalsize", "\\normal", 
-	\ "\\hfill", "\\hspace","\\hline",  
+	\ "\hfil", "\\hfill", "\\hspace","\\hline", 
 	\ "\\large", "\\Large", "\\LARGE", "\\huge", "\\HUGE",
 	\ "\\overline", 
 	\ "\\usefont{", "\\fontsize{", "\\selectfont", "\\fontencoding{", "\\fontfamiliy{", "\\fontseries{", "\\fontshape{",
@@ -1326,8 +1327,8 @@ endif
 	\ "\\input", "\\include", "\\includeonly", "\\includegraphics",  
 	\ "\\savebox", "\\sbox", "\\usebox", "\\rule", "\\raisebox{", 
 	\ "\\parbox{", "\\mbox{", "\\makebox{", "\\framebox{", "\\fbox{",
-	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", 
-	\ "\\hrulefill", "\hfil", "\\dotfill",
+	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", "\\vbox",
+	\ "\\hrulefill", "\\dotfill", "\\hbox",
 	\ "\\thispagestyle{", "\\mathnormal", "\\markright{", "\\markleft{", "\\pagestyle{", "\\pagenumbering{",
 	\ "\\author{", "\\date{", "\\thanks{", "\\title{",
 	\ "\\maketitle",
@@ -1341,7 +1342,7 @@ endif
 	\ "\\newcounter{", "\\refstepcounter{", 
 	\ "\\roman{", "\\Roman{", "\\stepcounter{", "\\setcounter{", 
 	\ "\\usecounter{", "\\value{", 
-	\ "\\newlength{", "\\setlength{", "\\addtolength{", "\\settodepth{", 
+	\ "\\newlength{", "\\setlength{", "\\addtolength{", "\\settodepth{", "\\nointerlineskip", 
 	\ "\\settoheight{", "\\settowidth{", "\\stretch{",
 	\ "\\width", "\\height", "\\depth", "\\totalheight",
 	\ "\\footnote{", "\\footnotemark", "\\footnotetetext", 
@@ -1681,6 +1682,7 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 " }}}
 "
 
+" AUTOCOMMANDS:
 " Some of the autocommands (Status Line, LocalCommands, Log File):
 " {{{ Autocommands:
 
@@ -1689,11 +1691,24 @@ if !s:did_options
 
     augroup ATP_cmdheight
 	" update g:atp_cmdheight when user writes the buffer
-	au BufWrite *.tex :let g:atp_cmdheight = &l:atp_cmdheight
+	au BufWrite *.tex :let g:atp_cmdheight = &l:cmdheight
     augroup END
 
+function! <SID>Python_rmdir(dir)
+python << EOF
+import shutil, errno
+dir=vim.eval('a:dir')
+try:
+	shutil.rmtree(dir)
+except OSError, e:
+ 	if errno.errorcode[e.errno] == 'ENOENT':
+		pass
+EOF
+endfunction
+
     augroup ATP_deltmpdir
-	au VimLeave *.tex :call system("rmdir " . b:atp_TmpDir)
+	" WINDOWS NOT COMPATIBLE
+	au VimLeave *.tex :call <SID>Python_rmdir(b:atp_TmpDir)
     augroup END
 
     augroup ATP_updatetime
@@ -1892,10 +1907,16 @@ augroup END
 "}}}1
 
 " {{{1 :Viewer, :Compiler, :DebugMode
-function! s:Viewer(viewer) 
+function! <SID>Viewer(...) 
+    if a:0 == 0 || a:1 =~ '^\s*$'
+	echomsg "[ATP:] current viewer: ".b:atp_Viewer
+	return
+    else
+	let new_viewer = a:1
+    endif
     let old_viewer	= b:atp_Viewer
     let oldViewer	= get(g:ViewerMsg_Dict, matchstr(old_viewer, '^\s*\zs\S*'), "")
-    let b:atp_Viewer	= a:viewer
+    let b:atp_Viewer	= new_viewer
     let Viewer		= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\zs\S*'), "")
     silent! execute "aunmenu LaTeX.View\\ with\\ ".oldViewer
     silent! execute "aunmenu LaTeX.View\\ Output"
@@ -1909,7 +1930,7 @@ function! s:Viewer(viewer)
 	execute "imenu 550.10 LaTe&X.&View\\ Output\\ <Tab>:ViewOutput 		<Esc>:ViewOutput<CR>a"
     endif
 endfunction
-command! -buffer -nargs=1 -complete=customlist,ViewerComp Viewer	:call <SID>Viewer(<q-args>)
+command! -buffer -nargs=? -complete=customlist,ViewerComp Viewer	:call <SID>Viewer(<q-args>)
 function! ViewerComp(A,L,P)
     let view = [ 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
 		\  'AcroRd32.exe', 'sumatrapdf.exe' ]

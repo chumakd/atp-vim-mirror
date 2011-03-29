@@ -4,7 +4,7 @@
 " URL:	       https://launchpad.net/automatictexplugin	
 " BUG Trucer:  https://bugs.launchpad.net/automatictexplugin
 " Language:    bib
-" Last Change: Sun Mar 27 02:00  2011 W
+" Last Change: Mon Mar 28 11:00  2011 W
 " Copyright Statement: 
 " 	  This file is part of Automatic Tex Plugin for Vim.
 "
@@ -177,6 +177,7 @@ function! <SID>GetAMSRef(what)
 
     " Note: Quoting a:what works not as good.
     let cmd = g:atpbib_wget . " -O " . atpbib_WgetOutputFile . ' "http://www.ams.org/mathscinet-mref?ref='.what.'&dataType=bibtex"'
+    " WINDOWS NOT COMPATIBLE
     call system(cmd)
     let loclist = getloclist(0)
 
@@ -242,6 +243,7 @@ function! <SID>GetAMSRef(what)
     let bibdata = extend(bibdata, [''])
     call append(line('.'), bibdata)
     let g:atp_bibdata = bibdata
+    " WINDOWS NOT COMPATIBLE
     call system("rm -rf " . fnamemodify(atpbib_WgetOutputFile, ":h"))
     return bibdata
 endfunction

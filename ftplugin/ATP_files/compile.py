@@ -136,7 +136,7 @@ def xpdf_server_file_dict():
 				if ind != 0 and len(cmdline) >= 1:	
 					server_file_dict[cmdline[ind+1]]=[cmdline[len(cmdline)-1], pr]
 		except psutil.NoSuchProcess:
-			null=pr
+			pass
 			# python sais: I want to have sth to do here 
 			# this is the most simple thing I can think of,
 			# but there should be a better solution. 

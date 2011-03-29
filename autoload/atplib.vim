@@ -5,32 +5,6 @@
 " URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 
-" Table:
-function! atplib#Table(list,spaces) " {{{
-" take a list of lists and make a list which is nicly formated (to echo it)
-" spaces = list of spaces between columns.
-    "maximal length of columns:
-    let max_list=[]
-    let new_list=[]
-    for i in range(len(a:list[0]))
-	let max=max(map(deepcopy(a:list), "len(v:val[i])"))
-	call add(max_list, max)
-    endfor
-
-    for row in a:list
-	let new_row=[]
-	let i=0
-	for el in row
-	    let new_el=el.join(map(range(max([0,max_list[i]-len(el)+get(a:spaces,i,0)])), "' '"), "")
-	    call add(new_row, new_el)
-	    let i+=1
-	endfor
-	call add(new_list, new_row)
-    endfor
-
-    return map(new_list, "join(v:val, '')")
-endfunction 
-"}}}
 " Outdir: append to '/' to b:atp_OutDir if it is not present. 
 function! atplib#outdir() "{{{1
     if has("win16") || has("win32") || has("win64") || has("win95")
@@ -67,7 +41,68 @@ function! atplib#FullPath(file_name) "{{{1
     return file_path
 endfunction
 "}}}1
+" Table:
+function! atplib#Table(list, spaces) " {{{
+" take a list of lists and make a list which is nicely formated (to echo it)
+" spaces = list of spaces between columns.
+    "maximal length of columns:
+    let max_list=[]
+    let new_list=[]
+    for i in range(len(a:list[0]))
+	let max=max(map(deepcopy(a:list), "len(v:val[i])"))
+	call add(max_list, max)
+    endfor
 
+    for row in a:list
+	let new_row=[]
+	let i=0
+	for el in row
+	    let new_el=el.join(map(range(max([0,max_list[i]-len(el)+get(a:spaces,i,0)])), "' '"), "")
+	    call add(new_row, new_el)
+	    let i+=1
+	endfor
+	call add(new_list, new_row)
+    endfor
+
+    return map(new_list, "join(v:val, '')")
+endfunction 
+"}}}
+function! atplib#FormatListinColumns(list,s)
+    " take a list and reformat it into many columns
+    " a:s is the number of spaces between columns
+    " for example of usage see atplib#PrintTable
+    let max_len=max(map(copy(a:list), 'len(v:val)'))
+    let g:list=a:list
+    let g:max_len=max_len+a:s
+    let new_list=[]
+    let k=&l:columns/(max_len+a:s)
+    let g:k=k
+    let len=len(a:list)
+    let column_len=len/k
+    for i in range(0, column_len)
+	let entry=[]
+	for j in range(0,k-1)
+	    call add(entry, get(a:list, i+j*column_len, ""))
+	endfor
+	call add(new_list,entry)
+    endfor
+    return new_list
+endfunction 
+" Take list format it with atplib#FormatListinColumns and then with
+" atplib#Table (which makes columns of equal width)
+function! atplib#PrintTable(list, spaces)
+    " a:list 	- list to print
+    " a:spaces 	- nr of spaces between columns 
+
+    let list = atplib#FormatListinColumns(a:list, a:spaces)
+    let nr_of_columns = max(map(copy(list), 'len(v:val)'))
+    let spaces_list = ( nr_of_columns == 1 ? [0] : map(range(1,nr_of_columns-1), 'a:spaces') )
+
+    let g:spaces_list=spaces_list
+    let g:nr_of_columns=nr_of_columns
+    
+    return atplib#Table(list, spaces_list)
+endfunction
 " Compilation Call Back Communication: 
 " with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
@@ -209,7 +244,7 @@ function! atplib#LatexPID(pid)
     call atplib#LatexRunning()
     let b:atp_LastLatexPID =a:pid
 endfunction "}}}
-function! atplib#LatexRunning()
+function! atplib#LatexRunning() "{{{
 python << EOL
 import psutil, re, sys, vim
 pids = vim.eval("b:atp_LatexPIDs")
@@ -229,7 +264,7 @@ if len(pids) > 0:
 	for pid in rmpids:
 		    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
 EOL
-endfunction
+endfunction "}}}
 
 " }}}
 
@@ -377,12 +412,12 @@ function! atplib#FindAndOpen(file, line, ...)
 	let use_server=server_list[0]
     endif
     echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
-    call system("vim --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
+    call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
     call remote_expr(use_server, 'cursor('.a:line.','.col.')')
     call remote_expr(use_server, 'redraw!')
-"   call system("vim --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
+"   call system(v:progname." --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
 "   This line is not working in DWM, but it might work in KDE (to be tested):
-"     call system("vim --servername ".use_server." --remote-exprt foreground\(\)")
+"     call system(v:progname." --servername ".use_server." --remote-exprt foreground\(\)")
     redir end
     return "File:".file." line:".a:line." col:".col." server name:".use_server." Hitch-hiking server:".v:servername 
 endfunction
@@ -3847,6 +3882,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list = g:atp_BeamerFontThemes
     "{{{3 ------------ FONT FAMILY
     elseif completion_method == 'font family'
+	let g:debug =1
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
 	let epos=searchpos('\\selectfont','nW',line("."))[1]-1
 	if epos == -1
@@ -4444,6 +4480,7 @@ function! atplib#Preview(fd_files,keep_tex)
 	call mkdir(l:tmp_dir)
     endif
     if a:fd_files == ["buffer"]
+	" WINDOWS NOT COMPATIBLE
 	let l:testfont_file=l:tmp_dir . "/" . fnamemodify(bufname("%"),":t:r") . ".tex"
     else
 	" the name could be taken from the pattern
@@ -4451,7 +4488,8 @@ function! atplib#Preview(fd_files,keep_tex)
 	" though it can be quite a long name.
 	let l:testfont_file=l:tmp_dir . "/" . fnamemodify(a:fd_files[0],":t:r") . ".tex"
     endif
-    call system("touch " . l:testfont_file)
+    " WINDOWS NOT COMPATIBLE
+"     call system("touch " . l:testfont_file)
     
     let l:fd_bufnr=bufnr("%")
 
@@ -4487,6 +4525,7 @@ function! atplib#Preview(fd_files,keep_tex)
 	let l:openbuffer="topleft split!"
     endif
     execute l:openbuffer . " +setlocal\\ ft=tex\\ modifiable\\ noro " . l:testfont_file 
+    let b:atp_ProjectScript = 0
     map <buffer> q :bd!<CR>
 
     call setline(1,'\documentclass{article}')
@@ -4593,6 +4632,7 @@ function! atplib#FontPreview(method, fd_file,...)
 	endif
 
 	let l:fd=atplib#FdSearch(a:fd_file, l:method)
+	let g:fd=l:fd
 	if !empty(l:enc)
 	    call filter(l:fd, "fnamemodify(v:val, ':t') =~ '^' . l:enc")
 	endif

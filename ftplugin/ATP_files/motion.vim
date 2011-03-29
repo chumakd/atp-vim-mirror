@@ -825,13 +825,54 @@ function! <SID>GotoEnvironment(flag,...)
 
     " Options :
     let env_name 	= ( a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*' )
+    if env_name == 'part'
+	if a:flag =~ 'b'
+	    :NPart
+	    return
+	else
+	    :PPart
+	    return
+	endif
+    elseif env_name  == 'chapter' 
+	if a:flag =~ 'b'
+	    :NChap
+	    return
+	else
+	    :PChap
+	    return
+	endif
+    elseif env_name == 'section' 
+	if a:flag =~ 'b'
+	    :NSec
+	    return
+	else
+	    :PSec
+	    return
+	endif
+    elseif env_name == 'subsection' 
+	if a:flag =~ 'b'
+	    :NSSec
+	    return
+	else
+	    :PSSec
+	    return
+	endif
+    elseif env_name == 'subsubsection' 
+	if a:flag =~ 'b'
+	    :NSSSec
+	    return
+	else
+	    :PSSSec
+	    return
+	endif
+    endif
 
     " Set the search tool :
     if g:atp_mapNn
 	let search_cmd 	= "S /"
 	let search_cmd_e= "/ " . a:flag
     else
-	let search_cmd	= "call search('"
+	let search_cmd	= "silent! call search('"
 	let search_cmd_e= "','" . a:flag . "')"
     endif
     " Set the pattern : 
@@ -846,7 +887,7 @@ function! <SID>GotoEnvironment(flag,...)
     endif
 
     " Search (twise if needed)
-    silent execute  search_cmd . pattern . search_cmd_e 
+    silent! execute  search_cmd . pattern . search_cmd_e 
     if a:flag !~# 'b'
 	if getline(".")[col(".")-1] == "$" 
 	    if ( get(split(getline("."), '\zs'), col(".")-1, '') == "$" && get(split(getline("."), '\zs'), col("."), '') == "$" )
@@ -857,7 +898,7 @@ function! <SID>GotoEnvironment(flag,...)
 		let rerun = !atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".") )
 	    endif
 	    if rerun
-		silent execute search_cmd . pattern . search_cmd_e
+		silent! execute search_cmd . pattern . search_cmd_e
 	    endif
 	endif
     else " a:flag =~# 'b'
@@ -870,18 +911,13 @@ function! <SID>GotoEnvironment(flag,...)
 		let rerun = atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".")-2 )
 	    endif
 	    if rerun
-		silent execute search_cmd . pattern . search_cmd_e
+		silent! execute search_cmd . pattern . search_cmd_e
 	    endif
 	endif
     endif
 
-    call histadd("search", pattern)
-    let @/ 	 = pattern
-"     if env_name == "math" && getline(".")[col(".")-1] == '$' && col(".") > 1 && 
-" 		\ ( count(map(synstack(line("."),col(".")-1), 'synIDattr(v:val, "name")'), 'texMathZoneX') == 0 ||
-" 		\ 	count(map(synstack(line("."),col(".")-1), 'synIDattr(v:val, "name")'), 'texMathZoneY') == 0 )
-" 	silent call search(pattern, a:flag) 
-"     endif
+    silent! call histadd("search", pattern)
+    silent! let @/ 	 = pattern
     return ""
 endfunction "}}}
 " Go to next section {{{ 
@@ -927,7 +963,8 @@ function! Env_compl(A,P,L)
 		\ 'notation', 'center', 'quotation', 'quote', 'tabbing', 
 		\ 'picture', 'math', 'displaymath', 'minipage', 'list', 'flushright', 'flushleft', 
 		\ 'frame', 'figure', 'eqnarray', 'thebibliography', 'titlepage', 
-		\ 'verbatim', 'verse', 'inlinemath', 'displayedmath', 'subequations' ])
+		\ 'verbatim', 'verse', 'inlinemath', 'displayedmath', 'subequations',
+		\ 'part', 'section', 'subsection', 'subsubsection' ])
     let returnlist=[]
     for env in envlist
 	if env =~ '^' . a:A 
@@ -1505,22 +1542,25 @@ nmap <Plug>TexJMotionBackward	:call JMotion('b')<CR>
 
 command! -buffer -nargs=1 -complete=buffer MakeToc	:echo s:maketoc(fnamemodify(<f-args>, ":p"))[fnamemodify(<f-args>, ":p")] 
 command! -buffer -bang -nargs=? TOC	:call <SID>TOC(<q-bang>)
-command! -buffer CTOC		:call CTOC()
+command! -buffer CTOC			:call CTOC()
 command! -buffer -bang Labels		:call <SID>Labels(<q-bang>)
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl NEnv	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl PEnv	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl Nenv	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
+command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl Penv	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+"TODO: These two commands should also work with sections.
+command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl F	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
+command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl B	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
 
-nnoremap <silent> <buffer> <Plug>GotoNextEnvironment			:NEnv <CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousEnvironment		:PEnv <CR>
+nnoremap <silent> <buffer> <Plug>GotoNextEnvironment			:Nenv <CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousEnvironment		:Penv <CR>
 
-nnoremap <silent> <buffer> <Plug>GotoNextMath				:NEnv math<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousMath			:PEnv math<CR>
+nnoremap <silent> <buffer> <Plug>GotoNextMath				:Nenv math<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousMath			:Penv math<CR>
 
 nnoremap <silent> <buffer> <Plug>GotoNextInlineMath			:Nenv inlinemath<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousInlineMath			:PEnv inlinemath<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousInlineMath			:Penv inlinemath<CR>
 
-nnoremap <silent> <buffer> <Plug>GotoNextDisplayedMath	 		:NEnv displayedmath<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousDisplayedMath		:PEnv displayedmath<CR>
+nnoremap <silent> <buffer> <Plug>GotoNextDisplayedMath	 		:Nenv displayedmath<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousDisplayedMath		:Penv displayedmath<CR>
 nnoremap <silent> <Plug>GotoNextSubSection	:call <SID>GotoSection("", "s", '"\\\\\\%(subsection\\\\|section\\\\|chapter\\\\|part\\)\\s*{", ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', '')<CR>
 onoremap <silent> <Plug>GotoNextSubSection	:call <SID>GotoSection("", "s","\\\\\\%(subsection\\\\|section\\\\|chapter\\\\|part\\)\\s*{", 'vim')<CR>
 vnoremap <silent> <Plug>vGotoNextSubSection	m':<C-U>exe "normal! gv"<Bar>exe "normal! w"<Bar>call search('^\([^%]\|\\\@<!\\%\)*\\\%(subsection\\|section\\|chapter\\|part\)\s*{\\|\\end\s*{\s*document\s*}', 'W')<Bar>exe "normal! b"<CR>

@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun Mar 27 02:00  2011 W
+" Last Change: Tue Mar 29 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -216,6 +216,38 @@ function! s:InteligentWrapSelection(text_wrapper, math_wrapper, ...)
     call s:WrapSelection(begin_wrapper, end_wrapper, cursor_pos, new_line) 
 endfunction
 "}}}
+" WrapEnvironment "{{{
+" a:1 = 0 (or not present) called by a command
+" a:1 = 1 called by a key map (ask for env)
+function! WrapEnvironment(env_name,...)
+    let map = ( a:0 == 0 ? 0 : a:1 ) 
+    if !map
+	'<,'>WrapSelection '\begin{'.a:env_name.'}','\end{'.a:env_name.'}','0', '1'
+    else
+	let envs=sort(filter(EnvCompletion("","",""), "v:val !~ '\*$' && v:val != 'thebibliography'"))
+	let g:envs=envs
+	" adjust the list - it is too long.
+	let envs_a=copy(envs)
+	call map(envs_a, "index(envs_a, v:val)+1.'. '.v:val")
+	for line in atplib#PrintTable(envs_a,3)
+	    echo line
+	endfor
+	let envs_a=['Which environment to use:']+envs_a
+	let env=input("Which environment to use? type number and press <enter> or type environemnt name, <tab> to complete, <none> for exit:\n","","customlist,EnvCompletion")
+	let g:env=env
+	if env == ""
+	    return
+	elseif env =~ '^\d\+$'
+	    let env_name=get(envs, env-1, '')
+	    if env_name == ''
+		return
+	    endif
+	else
+	    let env_name=env
+	endif
+	'<,'>WrapSelection '\begin{'.env_name.'}','\end{'.env_name.'}','0', '1'
+    endif
+endfunction "}}}
 
 " Inteligent Aling
 " TexAlign {{{
@@ -598,7 +630,7 @@ function! s:ToggleEnvironment(ask, ...)
 	endif
     else
 	if l:add == 1
-	    let l:new_env_name=input("What is the new name for " . l:env_name . "? type and hit <Enter> ", "", "customlist,<SID>EnvCompletion" )
+	    let l:new_env_name=input("What is the new name for " . l:env_name . "? type and hit <Enter> ", "", "customlist,EnvCompletion" )
 	    if l:new_env_name == ""
 		echomsg "[ATP:] environment name not changed"
 		return
@@ -684,7 +716,7 @@ endtry "}}}
 
 " This is completion for input() inside ToggleEnvironment which uses
 " b:atp_LocalEnvironments variable.
-function! <SID>EnvCompletion(ArgLead, CmdLine, CursorPos)
+function! EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
     if !exists("b:atp_LocalEnvironments")
 	LocalCommands
     endif
@@ -695,9 +727,9 @@ function! <SID>EnvCompletion(ArgLead, CmdLine, CursorPos)
     if atplib#SearchPackage('amsmath')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
-    call filter(env_list, "v:val =~ '^' .a:ArgLead")
+    call filter(env_list, "v:val =~# '^' .a:ArgLead")
     return env_list
-endfunction
+endfunction "}}}
 " TexDoc commanand and its completion
 " {{{ TexDoc 
 " This is non interactive !, use :!texdoc for interactive command.
@@ -757,10 +789,13 @@ function! s:Delete(delete_output)
 	    let ext="dvi"
 	endif
 	call add(atp_tex_extensions,ext)
+    else
+	call filter(atp_tex_extensions, "v:val != 'synctex.gz'")
     endif
 
     for ext in atp_tex_extensions
 	if executable(g:rmcommand)
+	    " WINDOWS NOT COMPATIBLE (at least I'm not sure).
 	    if g:rmcommand =~ "^\s*rm\p*" || g:rmcommand =~ "^\s*perltrash\p*"
 		if ext != "dvi" && ext != "pdf"
 		    let rm=g:rmcommand . " " . shellescape(b:atp_OutDir) . "*." . ext . " 2>/dev/null && echo Removed: ./*" . ext 
@@ -1199,19 +1234,16 @@ endfunction
     echomsg "[ATP:] file   " . pfile
 
     if server =~ 'localhost'
-	let com	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
+	let cmd	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
 
 	redraw!
-	echomsg "[ATP:] printing ...  " . com
-	let b:com=com " DEBUG
-" 	call system(com)
-    " print over ssh on the server g:atp_ssh with the printer a:1 (or the
+	echomsg "[ATP:] printing ...  " . cmd
+	call system(cmd)
+"     " print over ssh on the server g:atp_ssh with the printer a:1 (or the
     " default system printer if a:0 == 0
     else 
-	let com="cat " . fnameescape(pfile) . " | ssh " . g:atp_ssh . " " . lprcommand . " " . print_options
-	echomsg "[ATP:] printing ...  " . com
-	let b:com=com " DEBUG
-" 	call system(com)
+	let cmd="cat " . fnameescape(pfile) . " | ssh " . g:atp_ssh . " " . lprcommand . " " . print_options
+	call system(cmd)
     endif
 endfunction
 
@@ -1247,12 +1279,11 @@ function! <SID>Lpr(...)
 	let print_options	= join(arg_list, " ")
     endif
 
-	let com	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
+    let cmd	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
 
-	redraw!
-	echomsg "[ATP:] printing ...  " . com
-	let b:com=com " DEBUG
-" 	call system(com)
+    redraw!
+    echomsg "[ATP:] printing ...  " . cmd
+    call system(cmd)
 endfunction
 " The command only prints the output file.
 fun! s:Lpstat()
@@ -1271,16 +1302,16 @@ endfunction
 " This function is used for completetion of the command SshPrint
 function! s:ListPrinters(A,L,P)
     if exists("g:atp_ssh") && g:atp_ssh !~ '@localhost' && g:atp_ssh != ""
-	let com="ssh -q " . g:atp_ssh . " lpstat -a | awk '{print $1}'"
+	let cmd="ssh -q " . g:atp_ssh . " lpstat -a | awk '{print $1}'"
     else
-	let com="lpstat -a | awk '{print $1}'"
+	let cmd="lpstat -a | awk '{print $1}'"
     endif
-    return system(com)
+    return system(cmd)
 endfunction
 
 function! s:ListLocalPrinters(A,L,P)
-    let com="lpstat -a | awk '{print $1}'"
-    return system(com)
+    let cmd="lpstat -a | awk '{print $1}'"
+    return system(cmd)
 endfunction
 
 " custom style completion
@@ -1587,12 +1618,12 @@ function! <SID>GetAMSRef(what, bibfile)
     let atpbib_WgetOutputFile = tmpdir . g:atpbib_pathseparator . "amsref.html"
  
     if a:bibfile != "nobibfile"
+	" WINDOWS NOT COMPATIBLE
 	let cmd = g:atpbib_wget . " -O " . atpbib_WgetOutputFile . ' "http://www.ams.org/mathscinet-mref?ref='.what.'&dataType=bibtex"'
     else
 	let cmd = g:atpbib_wget . " -O " . atpbib_WgetOutputFile . ' "http://www.ams.org/mathscinet-mref?ref='.what.'&dataType=tex"'
     endif
     call system(cmd)
-    let g:cmd=cmd
     let loclist = getloclist(0)
 
     try
@@ -1673,6 +1704,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	let bibdata = [ bibref ]
     endif
     let g:atp_bibdata = bibdata
+    " WINDOWS NOT COMPATIBLE
     call system("rm -rf " . fnamemodify(atpbib_WgetOutputFile, ":h"))
     return bibdata
 endfunction
@@ -1889,11 +1921,12 @@ nnoremap <silent> <buffer> 	<Plug>TexDoc			:TexDoc
 " Commands: "{{{1
 command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
 command! -buffer -nargs=? -range WrapSelection			:call <SID>WrapSelection(<args>)
+command! -buffer -nargs=? -complete=customlist,EnvCompletion -range WrapEnvironment		:call <SID>WrapEnvironment(<f-args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
 command! -buffer	TexAlign				:call TexAlign()
 command! -buffer 	ToggleStar   				:call <SID>ToggleStar()<CR>
 command! -buffer -nargs=? ToggleEnv	   			:call <SID>ToggleEnvironment(0, <f-args>)
-command! -buffer -nargs=* -complete=customlist,<SID>EnvCompletion ChangeEnv				:call <SID>ToggleEnvironment(1, <f-args>)
+command! -buffer -nargs=* -complete=customlist,EnvCompletion ChangeEnv				:call <SID>ToggleEnvironment(1, <f-args>)
 command! -buffer -nargs=* -complete=customlist,<SID>TeXdoc_complete TexDoc 	:call <SID>TexDoc(<f-args>)
 command! -buffer -bang 	Delete					:call <SID>Delete(<q-bang>)
 nmap <silent> <buffer>	 <Plug>Delete				:call <SID>Delete("")<CR>

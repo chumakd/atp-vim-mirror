@@ -296,7 +296,9 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 9.1    
   - :SyncLog is now called |atp-:LogSync|,
     g:atp_SyncLog is now |g:atp_LogSync|.
-    
+9.2
+  - a section on mupdf viewer in |atp-Viewers|.
+
   - Some other fixes.
     						Chears, Marcin
 >
@@ -2944,9 +2946,17 @@ WRITING PROJECTS					*atp-ProjectFiles*
 PROJECT SCRIPT						*atp-ProjectScript*
 <	The file: |b:atp_MainFile| . ".project.vim", in the same directory as
 	|b:atp_MainFile| stores values of local variables saved before Vim
-	leaved a buffer (it is very similar to |View|. Local and global
-	variables are supported. The local variables which are cached in this
-	way are listed in 
+	leaved a buffer (it is very similar to |View|. 
+							*b:atp_ProjectScript*
+							*g:atp_ProjectScript*
+	Setting one of the variables |b:atp_ProjectScript| or
+	|g:atp_ProjectScript| to 0 the feature will be turned off. Local
+	variable, i.e. b: has precedence over the global one g:. So you can
+	turned off the feature for only specific files. The global variable
+	will turn it off for all files.
+	
+	Local and global variables are supported. The local variables which
+	are cached in this way are listed in 
 							*g:atp_cached_local_variables*
 >
 		let g:atp_cached_local_variables = [
@@ -3172,7 +3182,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	b:atp_{b:atp_Viewer}Options to set the options, for example if b:atp_Viewer="xpdf"
 	then you might use:
 
-							*atp-Viewer_Options*
+							*atp-Viewers_Options*
 							*b:xdviOptions*
     							*b:xpdfOptions*
     							*b:okularOptions*
@@ -3686,10 +3696,11 @@ Another good programs are: texloganalyzer (which is now not used by ATP) and pdf
 There is a map to use pdffonts, see: |pdffonts|.
 
 ================================================================================
-NOTES ON VIEWERS                          			*atp-viewers*
+NOTES ON VIEWERS                          			*atp-Viewers*
 
+See the section |atp-Viewers_Options| how to set options for viewer programs.
 
-Xpdf								*atp-viewers-Xpdf*
+Xpdf								*atp-Viewers-Xpdf*
 	It is supported. It is configured in the way that when your tex file
 	have errors, Xpdf viewer will not reload your file, which I found
 	useful. Xpdf supports forward searching (vim->Xpdf) with command:
@@ -3709,7 +3720,7 @@ Xpdf								*atp-viewers-Xpdf*
 <
 Evince
 	Works fine.
-								*atp-viewers-Okular*
+								*atp-Viewers-Okular*
 Okular
 	Works fine. It supports both forward (Vim->Okular) and inverse
 	(Okular->Vim) searches. Okular supports forward searching (vim->Okular)
@@ -3777,7 +3788,7 @@ AcroRead
 	forward searching (Vim->AcroRead)! but it is not supported yet, if you
 	really want it, write to me.
 
-Xdvi								*atp-viewers-Xdvi*
+Xdvi								*atp-Viewers-Xdvi*
 	Works fine. The file will be updated after a click (or use the xdvi
 	options '-watchfile 1' see man xdvi for explanations). You can set
 	forward/reverse searching by the command |SetXdvi| then use
@@ -3803,6 +3814,14 @@ Xdvi								*atp-viewers-Xdvi*
 
 Zathura							
 	Perfectly works.
+
+Mupdf
+	It is the fastest pdf viewer program ever made, why? because it
+	renders only one page :). But it can be nicly set with ATP: via
+	autocommands and :SyncTex you can load a page where the cursor is
+	located (for example with autocmd event |CursorHold|). This might be
+	nice on a big enough monitor on which you can see both vim and mupdf
+	on one screen.
 
 ================================================================================
 TIPS                               				*atp-tips*

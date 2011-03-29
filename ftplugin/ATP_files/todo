@@ -235,3 +235,16 @@ To do: rewrite MakeLatex in python (this will help with the screen isue)
 To do: SyncTex for (log file --> viewer) can be rewritten to use synctex (usually there is line number of error around -> we can get the position of the pdf file) - but since this is not very useful, this is not urgent.
 To do: write python script to parse log file and return list of dictionaries { file : '', line : '', page : '', errormsg : '', errortype : '' )
 Check: check from time to time if atp_RevSearch.py (/tmp/atp_RevSearch.py) in output has byte strings ( b'...'\n ) maybe I do not need matching them (now they disapeard!, Ivo Lopez is reporting that he doesn't have them.).
+To do: write completion for \includegraphics{}
+To do: TabComp input files \include{...} \com<Tab> -> comp_method=inputfiles (one cannot complete commands).
+Fixed: Open every time sth changes I have to use Open! it is strange!
+	I think WriteProjectScript global is not saving the variable.
+(?)To do: map t :SyncTex is not working 
+To do: only in beamer: GotoFrame <frame: number, title matched by pattern>
+To do:(simple and nice) in GotoEnvironemt: (THIS IS NOT POSSIBLE it is a feature of n/N in vim)
+	    There is no way to make this searches silent wiht :S and /
+	    its better to silently call the functions Search() and search()
+To do: for Okular users switch document loaded in okular when changing buffers (handsome).
+	for Xpdf it is easy to set: just put b:atp_XpdfServer="tex_files" in atprc.
+Done!: add :WrapEnvironment <env_name> command. (this will be mapped to <F4> and <F4> will be remapped to <S-F4> and <S-F4> will not be mapped).
+To do: Showerrors w when there are no warnings should say no warnings :)
