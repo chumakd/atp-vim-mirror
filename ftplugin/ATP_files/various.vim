@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Tue Mar 29 10:00  2011 W
+" Last Change: Wed Mar 30 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -219,7 +219,7 @@ endfunction
 " WrapEnvironment "{{{
 " a:1 = 0 (or not present) called by a command
 " a:1 = 1 called by a key map (ask for env)
-function! WrapEnvironment(env_name,...)
+function! <SID>WrapEnvironment(env_name,...)
     let map = ( a:0 == 0 ? 0 : a:1 ) 
     if !map
 	'<,'>WrapSelection '\begin{'.a:env_name.'}','\end{'.a:env_name.'}','0', '1'
@@ -248,6 +248,7 @@ function! WrapEnvironment(env_name,...)
 	'<,'>WrapSelection '\begin{'.env_name.'}','\end{'.env_name.'}','0', '1'
     endif
 endfunction "}}}
+vmap <buffer> <silent> <Plug>WrapEnvironment		:<C-U>call <SID>WrapEnvironment('', 1)<CR>
 
 " Inteligent Aling
 " TexAlign {{{
@@ -728,6 +729,36 @@ function! EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
     call filter(env_list, "v:val =~# '^' .a:ArgLead")
+    return env_list
+endfunction "}}}
+function! EnvCompletionWithoutStarEnvs(ArgLead, CmdLine, CursorPos) "{{{
+    if !exists("b:atp_LocalEnvironments")
+	LocalCommands
+    endif
+
+    let env_list = copy(b:atp_LocalEnvironments)
+    " add standard and ams environment if not present.
+    let env_list=atplib#Extend(env_list, g:atp_Environments)
+    if atplib#SearchPackage('amsmath')
+	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
+    endif
+    call filter(env_list, "v:val =~# '^' .a:ArgLead")
+    return env_list
+endfunction "}}}
+function! F_compl(ArgLead, CmdLine, CursorPos) "{{{
+    " This is like EnvCompletion but without stared environments and with: chapter, section, ...
+    if !exists("b:atp_LocalEnvironments")
+	LocalCommands
+    endif
+
+    let env_list = copy(b:atp_LocalEnvironments)
+    " add standard and ams environment if not present.
+    let env_list=atplib#Extend(env_list, g:atp_Environments)
+    let env_list=atplib#Extend(env_list, ['part', 'chapter', 'section', 'subsection', 'subsubsection'])
+    if atplib#SearchPackage('amsmath')
+	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
+    endif
+    call filter(env_list, "v:val =~# '^' .a:ArgLead && v:val !~ '\*$'")
     return env_list
 endfunction "}}}
 " TexDoc commanand and its completion
@@ -1596,6 +1627,7 @@ endfunction
 
 " Get bibdata from ams
 " {{{ AMSGet
+
 try
 function! <SID>GetAMSRef(what, bibfile)
     let what = substitute(a:what, '\s\+', ' ',	'g') 
@@ -1613,16 +1645,16 @@ function! <SID>GetAMSRef(what, bibfile)
     let what = substitute(what, '@',	'%40',	'g')
     let what = substitute(what, ' ',	'+',	'g')
 
-    let tmpdir=tempname()
-    call mkdir(tmpdir, "p")
-    let atpbib_WgetOutputFile = tmpdir . g:atpbib_pathseparator . "amsref.html"
  
+    " Get data from AMS web site.
+    let atpbib_WgetOutputFile = tempname()
+    let URLquery_path = globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
     if a:bibfile != "nobibfile"
-	" WINDOWS NOT COMPATIBLE
-	let cmd = g:atpbib_wget . " -O " . atpbib_WgetOutputFile . ' "http://www.ams.org/mathscinet-mref?ref='.what.'&dataType=bibtex"'
+	let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=bibtex"
     else
-	let cmd = g:atpbib_wget . " -O " . atpbib_WgetOutputFile . ' "http://www.ams.org/mathscinet-mref?ref='.what.'&dataType=tex"'
+	let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=tex"
     endif
+    let cmd="python ".URLquery_path." ".shellescape(url)." ".shellescape(atpbib_WgetOutputFile)
     call system(cmd)
     let loclist = getloclist(0)
 
@@ -1704,8 +1736,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	let bibdata = [ bibref ]
     endif
     let g:atp_bibdata = bibdata
-    " WINDOWS NOT COMPATIBLE
-    call system("rm -rf " . fnamemodify(atpbib_WgetOutputFile, ":h"))
+    call delete(atpbib_WgetOutputFile)
     return bibdata
 endfunction
 catch /E127/

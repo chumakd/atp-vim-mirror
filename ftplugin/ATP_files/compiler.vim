@@ -709,6 +709,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 
 	redraw
 	echomsg "[MakeLatex:] Updating files [".Compiler."]."
+	" WINDOWS NOT COMPATIBLE
 	call system("(" . cmd . " )&")
 	exe "lcd " . fnameescape(saved_cwd)
 	return "Making log file or aux file"
@@ -887,7 +888,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let bibtex = ( a:bibtex ? ' --bibtex ' : '' )
     let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
     let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
-    let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer) == '-1' ? ' --reload-viewer ' : '' )
+    let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
     let aucommand = ( a:command == "AU" ? ' --aucommand ' : '' )
     let g:gui_running = gui_running
     let g:bibtex=bibtex
@@ -906,7 +907,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ". v:progname
-		\ . bang . bibtex . reload_on_error . gui_running . reload_viewer . aucommand
+		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -930,8 +931,10 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let b:atp_running += ( a:verbose != "verbose" ?  1 : 0 )
     if a:verbose == "verbose"
 	exe ":!".cmd
+    elseif g:atp_debugPythonCompiler && has("unix") 
+	call system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
     else
-	echo system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
+	call system(cmd." &")
     endif
 endfunction
 " }}}

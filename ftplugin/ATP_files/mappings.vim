@@ -232,7 +232,7 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
 
     nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggleDebugMode
-    vmap  <buffer> <F4>				:<C-U>call WrapEnvironment('', 1)<CR>
+    vmap  <buffer> <F4>				<Plug>WrapEnvironment
     nmap  <buffer> <F4>				<Plug>ChangeEnv
     nmap  <buffer> <S-F4>			<Plug>ToggleEnvForward
 "     nmap  <buffer> <S-F4>			<Plug>ToggleEnvBackward

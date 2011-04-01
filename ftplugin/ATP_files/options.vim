@@ -41,6 +41,10 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugPythonCompiler")
+    " debug MakeLatex (compiler.vim)
+    let g:atp_debugPythonCompiler = 0
+endif
 if !exists("g:atp_debugML")
     " debug MakeLatex (compiler.vim)
     let g:atp_debugML	= 0
@@ -211,6 +215,7 @@ let s:optionsDict= {
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
+		\ "atp_okularOptions"		: "--unique",
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
@@ -283,10 +288,10 @@ if !exists("g:atp_DebugModeCmdHeight")
     let g:atp_DebugModeCmdHeight = &l:cmdheight
 endif
 if !exists("g:atp_DebugMode_AU_change_cmdheight")
-    " Background Compilation will change the 'cmdheight' option
-    " when the compilation was without errors.
-    " AU - autocommand compilation
-    let g:atp_DebugMode_AU_change_cmdheight = 1
+    " Background Compilation will change the 'cmdheight' option when the compilation
+    " was without errors. AU - autocommand compilation
+    let g:atp_DebugMode_AU_change_cmdheight = 0
+    " This is the 'stay out of my way' solution. 
 endif
 if !exists("g:atp_Compiler") 
     let g:atp_Compiler = "python"
@@ -1319,7 +1324,7 @@ endif
 	\ "\\noindent", "\\normalfont", "\normalsize", "\\normalsize", "\\normal", 
 	\ "\hfil", "\\hfill", "\\hspace","\\hline", 
 	\ "\\large", "\\Large", "\\LARGE", "\\huge", "\\HUGE",
-	\ "\\overline", 
+	\ "\\overline{", "\\underline{", 
 	\ "\\usefont{", "\\fontsize{", "\\selectfont", "\\fontencoding{", "\\fontfamiliy{", "\\fontseries{", "\\fontshape{",
 	\ "\\rmdefault", "\\sfdefault", "\\ttdefault", "\\bfdefault", "\\mddefault", "\\itdefault",
 	\ "\\sldefault", "\\scdefault", "\\updefault",  "\\renewcommand{", "\\newcommand{",
@@ -1606,7 +1611,7 @@ endif
 		    \ 'beamerboxesrounded', 'columns', 'semiverbatim' ]
 
 	let g:atp_BeamerCommands = ["\\alert{", "\\frametitle{", "\\framesubtitle", "\\titlepage", "\\setbeamercolor{", 
-		    \ "\\pauze", "\\onslide", "\\only", "\\uncover", "\\visible", "\\invisible", "\\temporal", "\\alt",
+		    \ "\\pause", "\\onslide", "\\only", "\\uncover", "\\visible", "\\invisible", "\\temporal", "\\alt",
 		    \ "\\usebeamercolor{", "\\usetheme{", "\\includeonlyframes{", "\\againframe", "\\setbeamersize{",
 		    \ "\\action{", "\\inserttocsection", "\\inserttocsectionumber", "\\lecture", "\\AtBeginLecture{",
 		    \ "\\appendix", "\\hypertarget", "\\beamerbutton", "\\beamerskipbutton", "\\beamerreturnbutton", 

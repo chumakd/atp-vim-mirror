@@ -150,9 +150,6 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 	    http://code.google.com/p/psutil/
 	or (better) use your os specific instalation tools.		
 
-  (2)	Do not forget to give executable permissions to the compile.py file 
-  	it is under |'runtimepath'| ftplugin/ATP_files/compile.py
-
     							*b:atp_VerboseLatexInteractioMode*
     There is also a small enhacment in verbose debug mode. You can decide what
     it the value of latex '-interaction=' switch. The default now is
@@ -196,6 +193,9 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     removed when compiler ends (after copying files), the tmp directory is
     removed when Vim exists with system command 'rmdir' so if sth is in side
     the directory will not be removed. 
+							*atp-:WrapEnvironment*
+9.2:
+  - :WrapEnvironment command wra
 
 9.1:  
   - :SetOkular						*atp-:SetOkular*
@@ -298,7 +298,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     g:atp_SyncLog is now |g:atp_LogSync|.
 9.2
   - a section on mupdf viewer in |atp-Viewers|.
-
+9.2    
+  - :YankSection
   - Some other fixes.
     						Chears, Marcin
 >
@@ -1736,9 +1737,20 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 
 	You can also delete and paste sections using the Table of Contents
 	window:
+							*atp-:YankSection*
 							*atp-:DeleteSection*
 							*atp-:PasteSection*
 							*atp-:SectionStack*
+
+	These commands are available in table of contents. They act on
+	parts/chapters/sections/subsections/subsubsections.
+>
+    :YankSection [register]
+<	Yank the section under the cursor (in table of contents) to the given
+	register. If the register is not specified use the unnamed register
+	(|registers|).
+	 
+	 The other commands do not use registers but an internal stack.
 >
     :DeleteSection
     :PasteSection
@@ -3183,10 +3195,10 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	then you might use:
 
 							*atp-Viewers_Options*
-							*b:xdviOptions*
-    							*b:xpdfOptions*
-    							*b:okularOptions*
-    							*b:evinceOptions*
+							*b:atp_xdviOptions*
+    							*b:atp_xpdfOptions*
+    							*b:atp_okularOptions*
+    							*b:atp_evinceOptions*
     b:atp_xpdfOptions					
     b:atp_xdviOptions
     b:atp_okularOptions

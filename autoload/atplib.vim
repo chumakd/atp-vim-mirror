@@ -42,7 +42,8 @@ function! atplib#FullPath(file_name) "{{{1
 endfunction
 "}}}1
 " Table:
-function! atplib#Table(list, spaces) " {{{
+"{{{ atplibTable, atplib#FormatListinColumns, atplib#PrintTable
+function! atplib#Table(list, spaces)
 " take a list of lists and make a list which is nicely formated (to echo it)
 " spaces = list of spaces between columns.
     "maximal length of columns:
@@ -66,7 +67,6 @@ function! atplib#Table(list, spaces) " {{{
 
     return map(new_list, "join(v:val, '')")
 endfunction 
-"}}}
 function! atplib#FormatListinColumns(list,s)
     " take a list and reformat it into many columns
     " a:s is the number of spaces between columns
@@ -103,6 +103,8 @@ function! atplib#PrintTable(list, spaces)
     
     return atplib#Table(list, spaces_list)
 endfunction
+"}}}
+
 " Compilation Call Back Communication: 
 " with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
@@ -265,7 +267,6 @@ if len(pids) > 0:
 		    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
 EOL
 endfunction "}}}
-
 " }}}
 
 " Toggle On/Off Completion 
@@ -1542,6 +1543,21 @@ function! atplib#showresults(bibresults, flags, pattern)
 endfunction
 "}}}
 "}}}
+" URL query: (by some strange reason this is not working moved to URLquery.py)
+" function! atplib#URLquery(url) "{{{
+" python << EOF
+" import urllib2, tempfile, vim
+" url  = vim.eval("a:url") 
+" print(url)
+" temp = tempfile.mkstemp("", "atp_ams_")
+" 
+" f    = open(temp[1], "w+")
+" data = urllib2.urlopen(url)
+" f.write(data.read())
+" vim.command("return '"+temp[1]+"'")
+" EOF
+" endfunction "}}}
+
 
 " This function sets the window options common for toc and bibsearch windows.
 "{{{1 atplib#setwindow
@@ -3146,7 +3162,7 @@ function! atplib#TabCompletion(expert_mode,...)
 " {{{2 SET COMPLETION METHOD
     " {{{3 --------- command
     if o > n && o > s && 
-	\ pline !~ '\%(input\|include\%(only\)\?\|[^\\]\\\\[^\\]$\)' &&
+	\ pline !~ '\%(input\s*{[^}]*$\|include\%(only\)\=\s*{[^}]*$\|[^\\]\\\\[^\\]$\)' &&
 	\ pline !~ '\\\@<!\\$' &&
 	\ begin !~ '{\|}\|,\|-\|\^\|\$\|(\|)\|&\|-\|+\|=\|#\|:\|;\|\.\|,\||\|?$' &&
 	\ begin !~ '^\[\|\]\|-\|{\|}\|(\|)' &&
@@ -3270,9 +3286,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	    return ''
 	endif
     "{{{3 --------- inputfiles
-    elseif ((pline =~ '\\input' || begin =~ 'input') ||
-	  \ (pline =~ '\\include' || begin =~ 'include') ||
-	  \ (pline =~ '\\includeonly' || begin =~ 'includeonly') ) && !normal_mode 
+    elseif (l =~ '\\input\%([^{}]*\|\s*{[^}]*\)$'||
+	  \ l =~ '\\include\s*{[^}]*$' ||
+	  \ l =~ '\\includeonly\s*{[^}]*$') && !normal_mode 
 	if begin =~ 'input'
 	    let begin=substitute(begin,'.*\%(input\|include\%(only\)\?\)\s\?','','')
 	endif

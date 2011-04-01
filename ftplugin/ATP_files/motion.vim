@@ -471,6 +471,7 @@ function! s:showtoc(toc)
 		\ 'y or c  yank label', 	
 		\ 'p       paste label', 
 		\ 'q       close', 		
+		\ ':YankSection', 
 		\ ':DeleteSection', 
 		\ ':PasteSection', 		
 		\ ':SectionStack', 
@@ -825,44 +826,45 @@ function! <SID>GotoEnvironment(flag,...)
 
     " Options :
     let env_name 	= ( a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*' )
+    let g:flag=a:flag
     if env_name == 'part'
 	if a:flag =~ 'b'
-	    :NPart
+	    :PPart
 	    return
 	else
-	    :PPart
+	    :NPart
 	    return
 	endif
     elseif env_name  == 'chapter' 
 	if a:flag =~ 'b'
-	    :NChap
+	    :PChap
 	    return
 	else
-	    :PChap
+	    :NChap
 	    return
 	endif
     elseif env_name == 'section' 
 	if a:flag =~ 'b'
-	    :NSec
+	    :PSec
 	    return
 	else
-	    :PSec
+	    :NSec
 	    return
 	endif
     elseif env_name == 'subsection' 
 	if a:flag =~ 'b'
-	    :NSSec
+	    :PSSec
 	    return
 	else
-	    :PSSec
+	    :NSSec
 	    return
 	endif
     elseif env_name == 'subsubsection' 
 	if a:flag =~ 'b'
-	    :NSSSec
+	    :PSSSec
 	    return
 	else
-	    :PSSSec
+	    :NSSSec
 	    return
 	endif
     endif
@@ -1230,6 +1232,8 @@ function! GotoFile(bang,file,...)
 	" So that bib, cls, sty files will have their file type (bib/plaintex).
 	let filetype	= &l:filetype
 	let old_file	= expand("%:p")
+	let atp_LastLatexPID 	= ( exists("b:atp_LastLatexPID") ? b:atp_LastLatexPID : 0 )
+	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") ? b:atp_LatexPIDs : [] )
 	execute "edit " . fnameescape(file)
 	if &l:filetype =~ 'tex$' && file =~ '\.tex$' && &l:filetype != filetype  
 	    let &l:filetype	= filetype
@@ -1245,6 +1249,7 @@ function! GotoFile(bang,file,...)
 	" buffer.
 	call RestoreProjectVariables(projectVarDict)
 	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]	= deepcopy([tree_d, file_l_orig, type_d, level_d ])
+	let [ b:atp_LastLatexPID, b:atp_LatexPIDs ] = [ atp_LastLatexPID, atp_LatexPIDs ]
 	if !&l:autochdir
 	    exe "lcd " . fnameescape(cwd)
 	endif
@@ -1544,11 +1549,11 @@ command! -buffer -nargs=1 -complete=buffer MakeToc	:echo s:maketoc(fnamemodify(<
 command! -buffer -bang -nargs=? TOC	:call <SID>TOC(<q-bang>)
 command! -buffer CTOC			:call CTOC()
 command! -buffer -bang Labels		:call <SID>Labels(<q-bang>)
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl Nenv	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl Penv	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Nenv	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
+command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Penv	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
 "TODO: These two commands should also work with sections.
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl F	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
-command! -buffer -count=1 -nargs=? -complete=customlist,Env_compl B	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+command! -buffer -count=1 -nargs=? -complete=customlist,F_compl F	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
+command! -buffer -count=1 -nargs=? -complete=customlist,F_compl B	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
 
 nnoremap <silent> <buffer> <Plug>GotoNextEnvironment			:Nenv <CR>
 nnoremap <silent> <buffer> <Plug>GotoPreviousEnvironment		:Penv <CR>

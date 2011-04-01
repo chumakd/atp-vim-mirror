@@ -42,7 +42,7 @@ if match != None:
 	subprocess.call(cmd, shell=True) 
 # Debug:
 f = open('/tmp/atp_RevSearch.debug', 'w')
-f.write(">>> output      "+str(servers))
+f.write(">>> output      "+str(servers)+"\n")
 if match != None:
 	f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
 else:
