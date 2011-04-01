@@ -26,7 +26,7 @@ parser.add_option("-v", "--view", "--start", dest="start", help="start viewer: v
 parser.add_option("--viewer", dest="viewer", help="output viewer to use", default="xpdf")
 parser.add_option("--xpdf-server", dest="xpdf_server", help="xpdf_server")
 parser.add_option("--viewer-options", dest="viewer_opt", help="comma separated list of viewer options", default="")
-parser.add_option("-k", "--keep", dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="pdf,dvi,log,aux,toc,bbl,ind,pdfsync,synctex.gz") 
+parser.add_option("-k", "--keep", dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz") 
 # Boolean switches:
 parser.add_option("--reload-viewer", action="store_true", default=False, dest="reload_viewer")
 parser.add_option("-b", "--bibtex", action="store_false", default=False, dest="bibtex", help="run bibtex")
@@ -48,7 +48,8 @@ else:
 command_opt     = options.tex_options.split(',')
 # command_opt=[ "-synctex="+str(options.synctex), "-interaction="+options.interaction ]
 mainfile_fp     = options.mainfile
-if options.output_format == "pdf":
+output_format   = options.output_format
+if output_format == "pdf":
     extension = ".pdf"
 else:
     extension = ".dvi"
@@ -59,7 +60,6 @@ viewer          = options.viewer
 XpdfServer      = options.xpdf_server
 viewer_rawopt   = options.viewer_opt.split(',')
 def nonempty(string):
-    debug_file.write(str(string)+"\n")
     if str(string) == '':
         return False
     else:
@@ -73,13 +73,24 @@ if viewer == "xpdf" and XpdfServer != None:
     viewer_opt.extend(["-remote", XpdfServer])
 verbose         = options.verbose
 keep            = options.keep.split(',')
+def keep_filter_aux(string):
+    if string == 'aux':
+        return False
+    else:
+        return True
+def keep_filter_log(string):
+    if string == 'log':
+        return False
+    else:
+        return True
+
 # Boolean options
 reload_viewer   = options.reload_viewer
 bibtex          = options.bibtex
 bang            = options.bang
 reload_on_error = options.reload_on_error
 gui_running     = options.gui_running
-progress_bar     = options.progress_bar
+progress_bar    = options.progress_bar
 
 debug_file.write("COMMAND "+command+"\n")
 debug_file.write("AUCOMMAND "+aucommand+"\n")
@@ -212,8 +223,6 @@ mainfile_dir    = os.path.normcase(mainfile_dir+os.sep)
                          # from line 908 of <SID>compiler()
 output_fp       = os.path.splitext(mainfile_fp)[0]+extension
 
-keep            = [ 'pdf', 'dvi', 'log', 'aux', 'toc', 'bbl', 'ind', 'pdfsync', 'synctex.gz' ]
-
 
 ####################################
 #
@@ -236,7 +245,8 @@ latex_cmd      = [command]+command_opt+[mainfile_fp]
 debug_file.write("COMMAND "+" ".join(latex_cmd)+"\n")
 
 # Copy important files to output directory:
-for ext in keep:
+# except log and aux files
+for ext in filter(keep_filter_log,keep):
     file_cp=basename+"."+ext
     if os.path.exists(file_cp):
         shutil.copy(file_cp, tmpdir)
@@ -317,7 +327,7 @@ if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         run.append(output_fp)
         debug_file.write("D1: "+str(run)+"\n")
         subprocess.Popen(run)
-    elif cond and ( reload_on_error or latex_return_code  == 0 or bang ): 
+    elif cond and ( reload_on_error or latex_return_code == 0 or bang ): 
         run=['xpdf', '-remote', XpdfServer, '-reload']
         subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         debug_file.write("D2: "+str(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
@@ -355,8 +365,14 @@ if verbose != "verbose":
 
 # Copy files:
 os.chdir(tmpdir)
-for ext in keep:
+for ext in filter(keep_filter_aux,keep)+[output_format]:
     file_cp=basename+"."+ext
+    if os.path.exists(file_cp):
+        debug_file.write(ext+' ')
+        shutil.copy(file_cp, mainfile_dir)
+# Copy aux file if there were no compilation errors.
+if latex_return_code == 0:
+    file_cp=basename+".aux"
     if os.path.exists(file_cp):
         shutil.copy(file_cp, mainfile_dir)
 os.chdir(cwd)

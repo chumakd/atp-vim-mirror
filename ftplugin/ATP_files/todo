@@ -264,3 +264,4 @@ To do: debug why sometimes generating g:atp_latexpackages takes so much time.
 To do: adjust the height of window in which DefiSearch prints its results. 
 To do: make a default flag for :ShowErrors 
 To do: progress bar for project files (project variables).
+To do: bash compiler is not reloading Xpdf.

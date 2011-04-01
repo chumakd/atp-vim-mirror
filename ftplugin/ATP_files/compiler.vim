@@ -1024,7 +1024,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 "	COPY IMPORTANT FILES TO TEMP DIRECTORY WITH CORRECT NAME 
 "	except log and aux files.
 	let list	= copy(g:keep)
-	call filter(list, 'v:val != "log" && v:val != "aux"')
+	call filter(list, 'v:val != "log"')
 	for i in list
 	    let ftc	= b:atp_OutDir . fnamemodify(basename,":t:r") . "." . i
 	    if filereadable(ftc)
