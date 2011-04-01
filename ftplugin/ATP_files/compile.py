@@ -3,6 +3,7 @@
 import sys, os.path, shutil, subprocess, re, psutil, tempfile, optparse 
 from os import chdir, readlink, mkdir
 from optparse import OptionParser
+from collections import deque
 
 ####################################
 #
@@ -32,6 +33,7 @@ parser.add_option("-b", "--bibtex", action="store_false", default=False, dest="b
 parser.add_option("--reload-on-error", action="store_true", default=False, dest="reload_on_error", help="reload Xpdf if compilation had errors")
 parser.add_option("--bang", action="store_false", default=False, dest="bang", help="force reloading on error (Xpdf only)")
 parser.add_option("--gui-running", "-g", action="store_true", default=False, dest="gui_running", help="if vim gui is running (has('gui_running'))") 
+parser.add_option("--no-progress-bar", action="store_false", default=True, dest="progress_bar", help="send progress info back to gvim") 
 (options, args) = parser.parse_args()
 
 debug_file      = open("/tmp/atp_compile.py.debug", 'w+')
@@ -77,6 +79,7 @@ bibtex          = options.bibtex
 bang            = options.bang
 reload_on_error = options.reload_on_error
 gui_running     = options.gui_running
+progress_bar     = options.progress_bar
 
 debug_file.write("COMMAND "+command+"\n")
 debug_file.write("AUCOMMAND "+aucommand+"\n")
@@ -97,6 +100,7 @@ debug_file.write("*BANG "+str(bang)+"\n")
 debug_file.write("*RELOAD_VIEWER "+str(reload_viewer)+"\n")
 debug_file.write("*RELOAD_ON_ERROR "+str(reload_on_error)+"\n")
 debug_file.write("*GUI_RUNNING "+str(gui_running)+"\n")
+debug_file.write("*PROGRESS_BAR "+str(progress_bar)+"\n")
 
 ####################################
 #
@@ -104,9 +108,32 @@ debug_file.write("*GUI_RUNNING "+str(gui_running)+"\n")
 #
 ####################################
    
+def latex_progress_bar(cmd):
+# Run latex and send data for progress bar,
+
+    child = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    pid   =child.pid
+    vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
+    debug_file.write("latex pid "+str(pid)+"\n")
+    stack = deque([])
+    while True:
+        out = child.stdout.read(1)
+        if out == '' and child.poll() != None:
+            break
+        if out != '':
+            stack.append(out)
+
+            if len(stack)>10:
+                stack.popleft()
+            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))        
+            if match:
+                vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+")")
+    child.wait() 
+    vim_remote_expr(servername, "atplib#ProgressBar('')")        
+    return child           
 
 def xpdf_server_file_dict():
-# Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] }  
+# Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
     
 # to test if the server host file use:
 # basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
@@ -157,7 +184,6 @@ def vim_remote_expr(servername, expr):
 # (this is the only way it works)
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
     subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file)
-    debug_file.write("vim_remote_expr "+" ".join(cmd)+"\n")
 
 ####################################
 #
@@ -252,12 +278,14 @@ for i in range(1, int(runs+1)):
         latex_return_code=latex.returncode
         debug_file.write("latex ret code "+str(latex_return_code)+"\n")
     else:
-        # TODO: this is not getting the error code
-        latex=subprocess.Popen(latex_cmd, stdout=subprocess.PIPE)
-        pid=latex.pid
-        vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
-        debug_file.write("latex pid "+str(pid)+"\n")
-        latex.wait()
+        if progress_bar:
+            latex=latex_progress_bar(latex_cmd)
+        else:
+            latex = subprocess.Popen(latex_cmd, stdout=subprocess.PIPE)
+            pid   = latex.pid
+            vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
+            debug_file.write("latex pid "+str(pid)+"\n")
+            latex.wait()
         latex_return_code=latex.returncode
         debug_file.write("latex return code "+str(latex_return_code)+"\n")
     if bibtex and i == 1:

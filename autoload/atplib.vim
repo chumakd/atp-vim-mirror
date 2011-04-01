@@ -246,7 +246,8 @@ function! atplib#LatexPID(pid)
     call atplib#LatexRunning()
     let b:atp_LastLatexPID =a:pid
 endfunction "}}}
-function! atplib#LatexRunning() "{{{
+"{{{ LatexRunning
+function! atplib#LatexRunning()
 python << EOL
 import psutil, re, sys, vim
 pids = vim.eval("b:atp_LatexPIDs")
@@ -266,6 +267,15 @@ if len(pids) > 0:
 	for pid in rmpids:
 		    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
 EOL
+endfunction "}}}
+"{{{ ProgressBar
+function! atplib#ProgressBar(value)
+    unlockvar b:atp_ProgressBar
+    let b:atp_ProgressBar=a:value
+    lockvar b:atp_ProgressBar
+    redrawstatus
+"     redraw
+"     echomsg a:value
 endfunction "}}}
 " }}}
 

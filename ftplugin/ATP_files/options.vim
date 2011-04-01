@@ -283,6 +283,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_ProgressBar")
+    let g:atp_ProgressBar = 1
+endif
 let g:atp_cmdheight = &l:cmdheight
 if !exists("g:atp_DebugModeCmdHeight") 
     let g:atp_DebugModeCmdHeight = &l:cmdheight

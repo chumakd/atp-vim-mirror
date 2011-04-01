@@ -156,6 +156,15 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     "errorstopmode". Thus this gives the classical compilation, when latex
     stops on errors. The other possible values are: "batchmode", "nonstopmode"
     and "scrollmode".
+							*g:atp_ProgressBar*
+9.2!!:
+>
+ g:atp_ProgressBar = 1  
+<   By default, when using the python compiler you will get progress message
+    in your status line. The number indicates the last page number compiled by
+    LaTeX. If by some reason, you want to switch this off, set
+    g:atp_ProgressBar to 0 (use |let|).
+	
 							*atp-:GotoNamedDest*
 9.2:
   :GotoNamedDest <destination_name>

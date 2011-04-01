@@ -890,6 +890,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
     let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
     let aucommand = ( a:command == "AU" ? ' --aucommand ' : '' )
+    let progress_bar = ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
     let g:gui_running = gui_running
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error
@@ -907,7 +908,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ". v:progname
-		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand
+		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -1493,7 +1494,7 @@ function! <SID>SetErrorFormat(...)
 	    let &l:errorformat= &l:errorformat . ",%E!\ LaTeX\ %trror:\ %m,\%E!\ %m,%E!pdfTeX %trror:\ %m"
 	endif
     endif
-    if a:0>0 &&  a:1 =~ 'w'
+    if a:0>0 &&  ( a:1 =~ 'w' || a:1 =~# 'all' )
 	if &l:errorformat == ""
 	    let &l:errorformat='%WLaTeX\ %tarning:\ %m\ on\ input\ line\ %l%.,
 			\%WLaTeX\ %.%#Warning:\ %m,
@@ -1509,7 +1510,7 @@ function! <SID>SetErrorFormat(...)
 " 			\%+W%.%#\ at\ lines\ %l--%*\\d'
 	endif
     endif
-    if a:0>0 && a:1 =~ '\Cc'
+    if ( a:0>0 && a:1 =~ '\Cc' || a:1 =~# 'all' )
 " NOTE:
 " I would like to include 'Reference/Citation' as an error message (into %m)
 " but not include the 'LaTeX Warning:'. I don't see how to do that actually. 
@@ -1521,7 +1522,7 @@ function! <SID>SetErrorFormat(...)
 	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Warning:\ Citation\ %m\ on\ input\ line\ %l%.%#"
 	endif
     endif
-    if a:0>0 && a:1 =~ '\Cr'
+    if ( a:0>0 && a:1 =~ '\Cr' || a:1 =~# 'all' )
 	if &l:errorformat == ""
 	    let &l:errorformat = "%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
 	else
@@ -1567,7 +1568,7 @@ function! <SID>SetErrorFormat(...)
 	let pm = ( g:atp_show_all_lines == 1 ? '+' : '-' )
 
 	let l:dont_ignore = 0
-	if a:0 >= 1 && a:1 =~ '\cALL'
+	if a:0 >= 1 && a:1 =~ '\CA\cll'
 	    let l:dont_ignore = 1
 	    let pm = '+'
 	endif
@@ -1631,25 +1632,25 @@ function! ShowErrors(...)
     " read the log file and merge warning lines 
     " filereadable doesn't like shellescaped file names not fnameescaped. 
     " The same for readfile() and writefile()  built in functions.
-    if !filereadable( errorfile)
+    if !filereadable(errorfile)
 	echohl WarningMsg
 	echomsg "[ATP:] no error file: " . errorfile  
 	echohl Normal
 	return
     endif
 
-    let l:log=readfile(errorfile)
+    let log=readfile(errorfile)
 
-    let l:nr=1
-    for l:line in l:log
-	if l:line =~ "LaTeX Warning:" && l:log[l:nr] !~ "^$" 
-	    let l:newline=l:line . l:log[l:nr]
-	    let l:log[l:nr-1]=l:newline
-	    call remove(l:log,l:nr)
+    let nr=1
+    for line in log
+	if line =~ "LaTeX Warning:" && log[nr] !~ "^$" 
+	    let newline=line . log[nr]
+	    let log[nr-1]=newline
+	    call remove(log,nr)
 	endif
-	let l:nr+=1
+	let nr+=1
     endfor
-    call writefile(l:log, errorfile)
+    call writefile(log, errorfile)
     
     " set errorformat 
     let l:arg = ( a:0 > 0 ? a:1 : "e" )
@@ -1678,7 +1679,7 @@ endfunction
 "}}}
 if !exists("*ListErrorsFlags")
 function! ListErrorsFlags(A,L,P)
-	return "all\nc\ne\nF\nf\nfi\no\nr\nw"
+	return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw"
 endfunction
 endif
 "}}}

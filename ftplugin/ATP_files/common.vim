@@ -606,10 +606,16 @@ function! ATPRunning() "{{{
 	    endif
 	endfor
 
+	if exists("b:atp_ProgressBar") && b:atp_ProgressBar != ''
+	    let progress_bar="[".b:atp_ProgressBar."]"
+	else
+	    let progress_bar=""
+	endif
+
 	if atp_running >= 2
-	    return b:atp_running." ".Compiler." "
+	    return b:atp_running." ".Compiler." ".progress_bar
 	elseif atp_running >= 1
-	    return Compiler." "
+	    return Compiler." ".progress_bar
 	else
 	    return ""
 	endif
