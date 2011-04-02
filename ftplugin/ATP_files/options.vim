@@ -283,6 +283,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_DefiSearchMaxWindowHeight")
+    let g:atp_DefiSearchMaxWindowHeight=15
+endif
 if !exists("g:atp_ProgressBar")
     let g:atp_ProgressBar = 1
 endif

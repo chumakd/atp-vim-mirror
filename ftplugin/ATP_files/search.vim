@@ -194,12 +194,19 @@ function! DefiSearch(bang,...)
 
     let defi_dict	= s:make_defi_dict(a:bang, atp_MainFile, '\\def\|\\newcommand')
 
+    let len=0
+    for f in keys(defi_dict)
+	let len+=len(defi_dict[f])
+    endfor
+
+    let window_height= min([g:atp_DefiSearchMaxWindowHeight, len])
+
     " open new buffer
     let openbuffer=" +setl\\ buftype=nofile\\ nospell " . fnameescape("DefiSearch")
     if g:vertical ==1
 	let openbuffer="keepalt vsplit " . openbuffer 
     else
-	let openbuffer="keepalt split " . openbuffer 
+	let openbuffer="keepalt ".window_height."split " . openbuffer 
     endif
 
     if len(defi_dict) > 0
@@ -239,7 +246,7 @@ function! DefiSearch(bang,...)
 	    endfor
 	endfor
 	if getbufline("DefiSearch",'1','$') == ['']
-	    :bw
+	    bw
 	    redraw
 	    echohl ErrorMsg
 	    echomsg "[ATP:] definition not found."

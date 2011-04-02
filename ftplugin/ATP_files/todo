@@ -221,6 +221,7 @@ To do: TOC clicable: <LeftMouse>=like enter <S-LeftMouse>=ForwardSearch
 Note: do not set b:atp_okularOptions="--unique" by default. 
 To do:
 When opening skeleton file -> the g:atp_MathZone is like it was for file type plaintex, but the file type has changed.
+The only solution is to set the variable g:tex_flavor="tex"
 To do: node{\(...\)<tab>
 to do: gm (end math) gM (begin math)
 To do: debug ]d
@@ -246,22 +247,26 @@ To do:(simple and nice) in GotoEnvironemt: (THIS IS NOT POSSIBLE it is a feature
 To do: for Okular users switch document loaded in okular when changing buffers (handsome).
 	for Xpdf it is easy to set: just put b:atp_XpdfServer="tex_files" in atprc.
 Done!: add :WrapEnvironment <env_name> command. (this will be mapped to <F4> and <F4> will be remapped to <S-F4> and <S-F4> will not be mapped).
-To do: Showerrors w when there are no warnings should say no warnings :)
+To do: ShowErrors w when there are no warnings should say no warnings :)
 To do: There are three completion function for environment names: Env_compl (motion.vim, GotoSection, Nenv, ...) and EnvCompletion and EnvCompletionWithoutStarEnvs (various.vim, :WrapEnvironment, :ChangeEnv), F_compl (:F, :B)
 	Make them more dependent on LocalEnvironments (to appear only what is defined!)
 To do: MakeLatex is not WINDOWS COMPATIBLE (because it uses bash syntax, I need python code to execute commands)
+	If MakeLatex would be done in Python -> progress bar could be made.
+	(at least it can call Python compiler)
+
 To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
 		THIS IS BECAUSE: skeleton file opens as a tex file and the variables are not reloaded. 
 Done: b:atp_ReloadOnError is not working (when 1 it is not reloading on error).
-COOL: make progress bar for compelation (read from log the last page numbers: [4] :) )
+Done: make progress bar for compelation (read from log the last page numbers: [4] :) )
 	This can be tested with beamer + overlays => lots of pages to process.
 To do: inner paragraph should be (?) ended with \pause (beamer)
 To do: \{:} are matched as brackets.
-To do: :YankSection (like :DeleteSection in ToC)
+Done: :YankSection (like :DeleteSection in ToC)
 Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
 To do: :WrapSelection make better interface.
 To do: debug why sometimes generating g:atp_latexpackages takes so much time.
-To do: adjust the height of window in which DefiSearch prints its results. 
 To do: make a default flag for :ShowErrors 
 To do: progress bar for project files (project variables).
 To do: bash compiler is not reloading Xpdf.
+To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
+	Debug: MakeLatex.

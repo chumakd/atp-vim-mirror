@@ -526,7 +526,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     let g:ml_debug 	= ""
 
     let mode 		= ( g:atp_DefaultDebugMode == 'verbose' ? 'debug' : g:atp_DefaultDebugMode )
-    let tex_options	= " -interaction nonstopmode -output-directory=" . fnameescape(b:atp_OutDir) . " " . b:atp_TexOptions . " "
+    let tex_options	= " -interaction=nonstopmode -output-directory=" . fnameescape(b:atp_OutDir) . " " . b:atp_TexOptions . " "
 
     " This supports b:atp_OutDir
     let saved_cwd	= getcwd()
@@ -568,8 +568,12 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     " 'Citation .* undefined\|Rerun to get cross-references right\|Writing index file'
     let saved_llist	= getloclist(0)
 "     execute "silent! lvimgrep /Citation\\_s\\_.*\\_sundefined\\|Label(s)\\_smay\\_shave\\_schanged.\\|Writing\\_sindex\\_sfile/j " . fnameescape(logfile)
-    execute "silent! lvimgrep /C\\n\\=i\\n\\=t\\n\\=a\\n\\=t\\n\\=i\\n\\=o\\n\\=n\\_s\\_.*\\_su\\n\\=n\\n\\=d\\n\\=e\\n\\=f\\n\\=i\\n\\=n\\n\\=e\\n\\=d\\|L\\n\\=a\\n\\=b\\n\\=e\\n\\=l\\n\\=(\\n\\=s\\n\\=)\\_sm\\n\\=a\\n\\=y\\_sh\\n\\=a\\n\\=v\\n\\=e\\_sc\\n\\=h\\n\\=a\\n\\=n\\n\\=g\\n\\=e\\n\\=d\\n\\=.\\|W\\n\\=r\\n\\=i\\n\\=t\\n\\=i\\n\\=n\\n\\=g\\_si\\n\\=n\\n\\=d\\n\\=e\\n\\=x\\_sf\\n\\=i\\n\\=l\\n\\=e/j " . fnameescape(logfile)
-    let location_list	= copy(getloclist(0))
+    try
+	execute "silent! lvimgrep /C\\n\\=i\\n\\=t\\n\\=a\\n\\=t\\n\\=i\\n\\=o\\n\\=n\\_s\\_.*\\_su\\n\\=n\\n\\=d\\n\\=e\\n\\=f\\n\\=i\\n\\=n\\n\\=e\\n\\=d\\|L\\n\\=a\\n\\=b\\n\\=e\\n\\=l\\n\\=(\\n\\=s\\n\\=)\\_sm\\n\\=a\\n\\=y\\_sh\\n\\=a\\n\\=v\\n\\=e\\_sc\\n\\=h\\n\\=a\\n\\=n\\n\\=g\\n\\=e\\n\\=d\\n\\=.\\|W\\n\\=r\\n\\=i\\n\\=t\\n\\=i\\n\\=n\\n\\=g\\_si\\n\\=n\\n\\=d\\n\\=e\\n\\=x\\_sf\\n\\=i\\n\\=l\\n\\=e/j " . fnameescape(logfile)
+	let location_list	= copy(getloclist(0))
+    catch E480:
+	let location_list	= []
+    endtry
     call setloclist(0, saved_llist)
 
     " Check references:
@@ -693,24 +697,46 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	    endif
 	endif
 	let did_bibtex	= 0
+	let did_index	= 0
 	let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID . 
-		\ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex.", 0, [".time[0].",".time[1]."], ".
+		\ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex.", ".did_index.", [".time[0].",".time[1]."], ".
 		\ a:did_firstrun.", ".(a:run+1).", \'".a:force."\'\)\""
 
 	" COMPILATION
 	let cmd	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
+	redraw
+	echomsg "[MakeLatex:] Updating files [".Compiler."]."
+	if g:atp_Compiler == 'python'
+	    let p_force= (a:force == "!" ? " --force" : " " )
+	    let python_cmd1="python ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")). 
+			\ " --cmd ".shellescape(b:atp_TexCompiler).
+			\ " --file ".shellescape(atplib#FullPath(texfile)).
+			\ " --outdir ".shellescape(b:atp_OutDir).
+			\ " --run ".a:run." ".p_force.
+			\ " --progname ".shellescape(v:progname).
+			\ " --servername ".shellescape(v:servername).
+			\ " --sid ".shellescape(compiler_SID).
+			\ " --time_0 ".shellescape(string(time[0])).
+			\ " --time_1 ".shellescape(string(time[1])).
+			\ " --nobibtex ".
+			\ " --noindex ".
+			\ " &"
 	    if g:atp_debugML
-	    let g:ml_debug .= "First run. (make log|aux|idx file)" . " [" . cmd . "]#"
-	    silent echo a:run . " Run First CMD=" . cmd 
-	    let g:debug_cmd=cmd
+	    silent echo a:run . " PYTHON_CMD1=".python_cmd1
 	    redir END
 	    endif
 
-	redraw
-	echomsg "[MakeLatex:] Updating files [".Compiler."]."
+	    call system(python_cmd1)
+	else
 	" WINDOWS NOT COMPATIBLE
-	call system("(" . cmd . " )&")
+	    if g:atp_debugML
+	    silent echo a:run . " BASH_CMD1=".cmd
+	    redir END
+	    endif
+
+	    call system("(" . cmd . " )&")
+	endif
 	exe "lcd " . fnameescape(saved_cwd)
 	return "Making log file or aux file"
     endif
@@ -764,26 +790,31 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	      let message	.= " index [makeindex]." 
 	  endif
 	  let message	= substitute(message, ',\s*$', '.', '') 
+	  let make_bibtex	= " "
 	  if !did_bibtex && auxfile_readable && bibtex
 	      let cmd		.= bib_cmd . " "
 	      let did_bibtex 	+= 1  
+	      let make_bibtex	= " --bibtex "
 	  else
 	      let did_bibtex	+= 1
+	  else
 	  endif
 	  " If index was done:
+	  let make_index	= " "
 	  if a:did_index
-	      let did_index	=  1
+	      let did_index	= 1
 	  " If not and should be and the idx_file is readable
 	  elseif index && idxfile_readable
 	      let cmd		.= idx_cmd . " "
-	      let did_index 	=  1
+	      let did_index 	= 1
+	      let make_index	= " --index "
 	  " If index should be done, wasn't but the idx_file is not readable (we need
 	  " to make it first)
 	  elseif index
-	      let did_index	=  0
+	      let did_index	= 0
 	  " If the index should not be done:
 	  else
-	      let did_index	=  1
+	      let did_index	= 1
 	  endif
 	  let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID .
 		      \ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex." , ".did_index.", [".time[0].",".time[1]."], ".
@@ -792,14 +823,44 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  " COMPILATION
 	  let cmd	.= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
+	  echomsg "[MakeLatex:] " . message
+	  if g:atp_Compiler == 'python'
+	      let p_force= (a:force == "!" ? " --force" : " " )
+	      let python_cmd2="python ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")).
+			  \ " --cmd ".shellescape(b:atp_TexCompiler).
+			  \ " --file ".shellescape(atplib#FullPath(texfile)).
+			  \ " --outdir ".shellescape(b:atp_OutDir).
+			  \ " --run ".a:run.
+			  \ " ".p_force.
+			  \ " --progname ".shellescape(v:progname).
+			  \ " --servername ".shellescape(v:servername).
+			  \ " --sid ".shellescape(compiler_SID).
+			  \ " --time_0 ".shellescape(string(time[0])).
+			  \ " --time_1 ".shellescape(string(time[1])).
+			  \ " --did_bibtex ".did_bibtex.
+			  \ " --did_index " .did_index." ".
+			  \ make_bibtex.
+			  \ make_index.
+			  \ " &"
+
 	      if g:atp_debugML
 	      silent echo a:run . " a:did_bibtex="a:did_bibtex . " did_bibtex=" . did_bibtex
-	      silent echo a:run . " Run Second CMD=" . cmd
+	      silent echo a:run . " make_bib=".make_bib. " make_index=" . make_index
+	      silent echo a:run . " PYTHON_CMD2=".python_cmd2
 	      redir END
 	      endif
 
-	  echomsg "[MakeLatex:] " . message
-	  call system("(" . cmd . ")&")
+	      call system(python_cmd2)
+
+	  else
+	      if g:atp_debugML
+	      silent echo a:run . " a:did_bibtex="a:did_bibtex . " did_bibtex=" . did_bibtex
+	      silent echo a:run . " BASH_CMD2=" . cmd
+	      redir END
+	      endif
+
+	      call system("(" . cmd . ")&")
+	  endif
 	  exe "lcd " . fnameescape(saved_cwd)
 	  return "Making references|cross-references|index."
     endif
@@ -810,9 +871,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	redir END
 	endif
 
-    redraw
-
-
+"     redraw
     if time != [] && len(time) == 2
 	let show_time	= matchstr(reltimestr(reltime(time)), '\d\+\.\d\d')
     endif

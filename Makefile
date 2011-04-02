@@ -22,6 +22,7 @@ SOURCE += ftplugin/ATP_files/helpfunctions.vim
 SOURCE += ftplugin/ATP_files/vimcomplete.bst
 SOURCE += ftplugin/ATP_files/atp_RevSearch.py
 SOURCE += ftplugin/ATP_files/compile.py
+SOURCE += ftplugin/ATP_files/compile_ml.py
 SOURCE += ftplugin/ATP_files/url_query.py
 SOURCE += ftplugin/bibsearch_atp.vim
 SOURCE += ftplugin/fd_atp.vim

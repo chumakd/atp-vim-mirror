@@ -1233,7 +1233,8 @@ function! GotoFile(bang,file,...)
 	let filetype	= &l:filetype
 	let old_file	= expand("%:p")
 	let atp_LastLatexPID 	= ( exists("b:atp_LastLatexPID") ? b:atp_LastLatexPID : 0 )
-	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") ? b:atp_LatexPIDs : [] )
+	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") 	? b:atp_LatexPIDs : [] )
+	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") ? b:atp_ProgressBar : '' )
 	execute "edit " . fnameescape(file)
 	if &l:filetype =~ 'tex$' && file =~ '\.tex$' && &l:filetype != filetype  
 	    let &l:filetype	= filetype
@@ -1249,7 +1250,11 @@ function! GotoFile(bang,file,...)
 	" buffer.
 	call RestoreProjectVariables(projectVarDict)
 	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]	= deepcopy([tree_d, file_l_orig, type_d, level_d ])
-	let [ b:atp_LastLatexPID, b:atp_LatexPIDs ] = [ atp_LastLatexPID, atp_LatexPIDs ]
+	if exists("b:atp_ProgressBar")
+	    unlockvar b:atp_ProgressBar
+	endif
+	let [ b:atp_LastLatexPID, b:atp_LatexPIDs, b:atp_ProgressBar ] = [ atp_LastLatexPID, atp_LatexPIDs, atp_ProgressBar ]
+	lockvar b:atp_ProgressBar
 	if !&l:autochdir
 	    exe "lcd " . fnameescape(cwd)
 	endif
