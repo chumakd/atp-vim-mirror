@@ -47,7 +47,6 @@ if aucommand_bool:
 else:
     aucommand="COM"
 command_opt     = options.tex_options.split(',')
-# command_opt=[ "-synctex="+str(options.synctex), "-interaction="+options.interaction ]
 mainfile_fp     = options.mainfile
 output_format   = options.output_format
 if output_format == "pdf":
@@ -248,6 +247,7 @@ debug_file.write("COMMAND "+" ".join(latex_cmd)+"\n")
 
 # Copy important files to output directory:
 # except log and aux files
+os.chdir(mainfile_dir)
 for ext in filter(keep_filter_log,keep):
     file_cp=basename+"."+ext
     if os.path.exists(file_cp):

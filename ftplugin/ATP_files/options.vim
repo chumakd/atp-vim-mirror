@@ -1108,11 +1108,11 @@ function! ATP_ToggleDebugMode(...)
 
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>t:atp_DebugMode			
+	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>t:atp_DebugMode			
+	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>t:atp_DebugMode			
+	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ <Esc>:ToggleDebugMode<CR>a
 
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
@@ -1131,11 +1131,11 @@ function! ATP_ToggleDebugMode(...)
 
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>t:atp_DebugMode
+	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>t:atp_DebugMode
+	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>t:atp_DebugMode
+	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ <Esc>:ToggleDebugMode<CR>a
 
 	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]

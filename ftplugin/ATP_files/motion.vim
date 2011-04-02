@@ -480,6 +480,7 @@ function! s:showtoc(toc)
     lockvar 3 b:atp_Toc
 endfunction
 "}}}2
+" }}}
 
 " This is User Front End Function 
 "{{{2 TOC
@@ -709,7 +710,7 @@ function! GotoLabel(bang,...)
     endif
 
     let matches = []
-    let g:matches=matches
+    let g:matches=copy(matches)
 
     for file in keys(t:atp_labels)
 	if index(b:ListOfFiles, fnamemodify(file, ":t")) != -1 || index(b:ListOfFiles, file) != -1
@@ -727,22 +728,32 @@ function! GotoLabel(bang,...)
 	echomsg "[ATP:] no matching label"
 	echohl Normal
 	return 1
-    elseif len(matches) == 1
-	let file=matches[0][0]
-	let line=matches[0][1]
+"     elseif len(matches) == 1
+" 	let file=matches[0][0]
+" 	let line=matches[0][1]
     else
-	if len(keys(filter(copy(b:TypeDict), 'v:val == "input"'))) == 0
-	    let mlabels=map(copy(matches), "['('.(index(matches, v:val)+1).')', v:val[2],v:val[3]]")
-	    let file=0
-	else
-	    let mlabels=map(copy(matches), "['('.(index(matches, v:val)+1).')', v:val[2], v:val[3], fnamemodify(v:val[0], ':t')]")
-	    let file=1 
-	endif
+" 	if len(keys(filter(copy(b:TypeDict), 'v:val == "input"'))) == 0
+	    let mlabels=map(copy(matches), "[(index(matches, v:val)+1).'.', v:val[2],v:val[3]]")
+" 	else
+" 	Show File from which label comes
+" 	The reason to not use this is as follows: 
+" 		it only matters for project files, which probably have many
+" 		labels, so it's better to make the list as concise as possible
+" 	    let mlabels=map(copy(matches), "[(index(matches, v:val)+1).'.', v:val[2], v:val[3], fnamemodify(v:val[0], ':t')]")
+" 	    let file=1 
+" 	endif
 	echohl Title
 	echo "Which label to choose?"
 	echohl Normal
-	let mlabels= ( file ? extend([[' nr', 'LABEL', 'LABEL NR', 'FILE']], mlabels) : extend([[' nr', 'LABEL', 'LABEL NR']], mlabels) )
-	let nr = inputlist(atplib#Table(mlabels, [1,2,5]))-1
+" 	let mlabels= ( file ? extend([[' nr', 'LABEL', 'LABEL NR', 'FILE']], mlabels) : extend([[' nr', 'LABEL', 'LABEL NR']], mlabels) )
+	let g:mlabels=copy(mlabels)
+	for row in atplib#FormatListinColumns(atplib#Table(mlabels, [1,2]),2)
+	    echo join(row)
+	endfor
+	let nr = input("Which label to choose? type number and press <Enter> ")-1
+	if nr < 0 || nr >= len(matches)
+	    return
+	endif
 	let file=matches[nr][0]
 	let line=matches[nr][1]
     endif

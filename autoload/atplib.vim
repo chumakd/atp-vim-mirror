@@ -81,8 +81,8 @@ function! atplib#FormatListinColumns(list,s)
     let column_len=len/k
     for i in range(0, column_len)
 	let entry=[]
-	for j in range(0,k-1)
-	    call add(entry, get(a:list, i+j*column_len, ""))
+	for j in range(0,k)
+	    call add(entry, get(a:list, i+j*(column_len+1), ""))
 	endfor
 	call add(new_list,entry)
     endfor

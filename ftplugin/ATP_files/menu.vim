@@ -104,6 +104,12 @@ imenu 550.30 LaTe&X.L&abels<Tab>:Labels						<Esc>:Labels<CR>
 menu 550.40 LaTe&X.&Go\ to.&GotoFile<Tab>:GotoFile				:GotoFile<CR>
 cmenu 550.40 LaTe&X.&Go\ to.&GotoFile<Tab>:GotoFile				GotoFile<CR>
 imenu 550.40 LaTe&X.&Go\ to.&GotoFile<Tab>:GotoFile				<Esc>:GotoFile<CR>
+menu 550.40 LaTe&X.&Go\ to.&GotoLabel<Tab>:GotoLabel				:GotoLabel<CR>
+cmenu 550.40 LaTe&X.&Go\ to.&GotoLabel<Tab>:GotoLabel				GotoLabel<CR>
+imenu 550.40 LaTe&X.&Go\ to.&GotoLabel<Tab>:GotoLabel				<Esc>:GotoLabel<CR>
+menu 550.40 LaTe&X.&Go\ to.&GotoNamedDest<Tab>(Xpdf\ only)			:GotoNamedDest 
+cmenu 550.40 LaTe&X.&Go\ to.&GotoNamedDest<Tab>(Xpdf\ only)			GotoNamedDest 
+imenu 550.40 LaTe&X.&Go\ to.&GotoNamedDest<Tab>(Xpdf\ only)			<Esc>:GotoNamedDest 
 "
 menu 550.40 LaTe&X.&Go\ to.-Environment- 					:
 menu 550.40 LaTe&X.&Go\ to.Next\ Definition<Tab>:NEnv\ definition		:<C-U>NEnv definition<CR>
