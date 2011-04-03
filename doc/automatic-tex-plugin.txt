@@ -164,6 +164,15 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     in your status line. The number indicates the last page number compiled by
     LaTeX. If by some reason, you want to switch this off, set
     g:atp_ProgressBar to 0 (use |let|).
+
+    You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature to work.
+    You can also use the variable: 
+    							*b:atp_ProgressBar*
+>
+ b:atp_ProgressBar
+<   This is read only variable. It is equal to empty string '' if compilation
+    is not going on, and while compilation it stores the page number which
+    LaTeX is processing.
 	
 							*atp-:GotoNamedDest*
 9.2:
@@ -455,271 +464,9 @@ let g:atp_iabbrev_leader = "="
 		<LocalLeader>pr		proceedings
 		<LocalLeader>tr		techreport
 		<LocalLeader>un		unpublished
-  - <F1> in bib filetype is mapped to texdoc bibtex
   - vmaps A,E (using g:atp_vmap_environment_leader with default value "")
     which wraps selection into \begin{align}:\end{align} and
     \begin{equation}:\end{equation}
-  - if one of the imap leaders
-    (|g:atp_imap_first_leader|,...,|g:atp_imap_fourth_leader|) is equal to "_"
-    then an imap with left hand side __ for _{} (and ^^ for ^{}) is used
-    rather than autex function (which has this nice feature that it puts _{}
-    when you type __ disregarding the time between first '_' and second '_',
-    which is not the case for imap '__' .  By default none of imap leaders is
-    equal to '_'.
-  - Completion for |:ToggleEnv|
-  - <Ctrl-j>, <Ctrl-k> motions redesigned: their purpose is to make it easy to
-    go to an argument of a latex command or environment not leaving insert
-    mode. It adds one <space> after a closing bracket at the end of a line.
-  - Small fixed in bracket closing now: \((<Tab> will work!    
-  - There is |g:atp_CompilersDict| variable. This is dictionary with entry:
-    latex program (like latex, pdflatex) and the associated extension of the
-    output which it makes. The default value is: >
-    let g:atp_CompilersDict 	= { 
-		    \ "pdflatex": ".pdf", 	"pdftex" 	: ".pdf", 
-		    \ "xetex" 	: ".pdf", 	"latex" 	: ".dvi", 
-		    \ "tex" 	: ".dvi",	"elatex"	: ".dvi",
-		    \ "etex"	: ".dvi", 	"luatex"	: ".pdf"}
-<   It is used be ViewOutput (|atp-:ViewOutput|), Compiler (|atp-:TEX|) and
-    SshPrint (|atp-:SshPrint|) functions (commands).
-  - MakeLatex : if aux or log files are loaded in a buffer then they will be
-    deleted - this is a requirement of vimgrep internal grep command (other
-    wise vimgrep will search in the buffer not the hard disk version and they
-    may differ). 
-  - MakeLatex : returns with error message if log contains '! Emergency stop.'
-  - vip : is not stopping inside a math zone (|g:atp_MathZones|).
-  - 'errorformat' includes pdfTeX error type messages (|atp-:ShowErrors|).
->
-  Changes in version 7.7.2
-<
-  - Alternate buffer is kept by :Labels, :TOC, and :S commands.
-  - :S works slightly faster. 
-  - if subfiles.sty is loaded in main file, g:atp_inputfile_pattern is set
-    accordingly. There is no need to reload ATP if you add this package. The
-    TreeOfFiles function will automatically change g:atp_inputfile_pattern.
-  							*atp-:ReloadATP*
-  - :ReloadATP[!] with out bang it just reload all variables (atprc.vim,
-    common.vim and options.vim - but not your $VIMRC file). With bang it
-    reloads also the functions (this is done mainly for development).
-  - :DefiSearch[!] [pattern] - the command respects the options: 'ignorecase'
-    and 'smartcase'. You can override them with '\C' (match case what follows)
-    and '\c' (ignore case in what follows).
->
-  Changes in version 7.7
-<
-  - ATP is published on the rights of GLP v3 or higher.
-
-
-  imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)
-  which help to navigate thought brackets (but not only) in insert mode.
-   
-  map <Ctrl-j>, map <Ctrl-k> 	- as above but in normal mode.
-
-  These motions emulate the behaviour of latex-suite place holder system <++>.
-
-
-  - A bug fixed so that the script should now work in any locale (thanks to the
-  user report).
-
-  - If g:atp_babel is set to 1 the keymap name is shown in the status line.
-
-  - Project script is written via BufWrite autocommand group (it used to be
-    VimLeave). Both <SID>Compiler() (map \l) and <SID>MakeLatex() (:MakeLatex)
-    functions do not write project file while saving the buffer to the disk.
->
-  Changes in version 7.6
-<
-    Project Licence: General Public Licence 3.
-
-    The support of 'latexmk' program is added from LatexBox Vim plugin by
-    D. Munger (http://www.vim.org/scripts/script.php?script_id=3109).
-    This includes the commands: :Latexmk, :LatexmkForce, :LatemkStop,
-    :LatexmkStatus, :LatexmkStatusDetailed, :LatexmkClean, :LatexmkCLeanAll.
-    (Now whole, LatexBox plugin is included in ATP - note that some tools have
-    been extended). You can pass options to latexmk using the variable
-    g:LatexBox_latexmk_options. Output type is set by g:LatexBox_output_type
-    (default value is 'pdf').
-
-    Maps |atp-]]|, |atp-[[|, |atp-][|, |atp-[]| and |atp-]%|, |atp-[%|.
-
-    Maps |atp-}p|, |atp-{p|, |atp-}c|, |atp-{c|, |atp-}s|, |atp-{s|, |atp-}S|,
-    |atp-{S| which nicely work in visual mode. Previously these maps were
-    <LocalLeader>np, <LocalLeader>pp. {:} are configurable with two variables:
-    |g:atp_map_forward_motion_leader| and |g:atp_map_backward_motion_leader|. 
-
-    Maps |atp-}i| and |atp-{i| (the same as |atp-]gf| and |atp-[gf|, but
-    shorter). Note that }} mapped to } (the same with {{ and {).
-
-    Maps |atp-}e| and |atp-{e| to go o next/previous environment.
-
-    |atp-:NInput|, |atp-:PInput| depends on |g:atp_mapNn| (and thus also the
-    above maps).
-
-    |atp-:NSec|, |atp-:NSSec|, |atp-:NChap|, |atp-:NPart|
-    |atp-:PSec|, |atp-:PSSec|, |atp-:PChap|, |atp-:PPart|
-    admits bang "!" (see |:command-bang|). Without bang it skips sections
-    which are commented with bang it doesn't skip them. The 'wrapscan' option
-    applies to these commands (and corresponding maps).
-    
-    vMap ip (see |atp-vip|)	also \newline starts/ends inner paragraph.  
-
-    :BibSearch /{pattern}/ [flag]
-    The command now has the same syntax as |:vimgrep| and |atp-:S|. It is now
-    possible to pass any Vim pattern. Note that /.../ can be omitted if the
-    pattern doesn't contain white spaces (you can use |/\s| instead).
-    :BibSearch without any arguments still works (shows all bib files attached
-    to source tex file).
-
-    The pattern to highlight matching string is made better and is passed to
-    @/ hence you can use |n| and |N| in the BibSearch buffer.
-
-    *g:atp_RelativePath*
-	If set to 1 (the default is 1), project variables: b:atp_MainFile,
-	b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict will store path
-	relative to |b:atp_ProjectDir| (which is the same as path to
-	your main file, however if the file is a symbolic link it will hint
-	to the resolved path). The |atp-:S| will use correctly these values. 
-	This is particularly useful if you want to share the project file.
-	 
-	If you run into problems with |atp-:S| you can set this variable to
-	0 and use |atp-:InputFiles| to regenerate the variables - they will
-	now store the full path (the other way around also works).
-
-    *b:atp_ProjectDir*
-	Stores the project directory, by default where |b:atp_MainFile| is
-	located (the filename is resolved if it is a symbolic link). It is not
-	written to the |atp-ProjectScript| (this makes the |atp-ProjectScript|
-	independent of the host when |g:atp_RelativePath| is set). This
-	variable is mainly for internal purposes. If you want to set the
-	output directory use |b:atp_OutDir|.
-
-    |atp-:PasteSection|
-    	By default it puts the section after the current one.
->
-  Changes in version 7.5.3
-<
- 							*atp-:ShowPackages*
-    :ShowPackages	Command list LaTeX packages defined in the preambule.
-
-    Completion for Labels, and :Lables command supports subequation
-    environment, which produces labels : 1a, 1b, etc.  Syntax group
-    atp_Labels_SectionNr is renamed to atp_Labels_CounterValue.
-
-    Completion for pseudo algorithms: in algorithmic environment \IF{}:\ENDIF,
-    \FOR{}:\ENDFOR, \WHILE{}:\ENDWHILE are treated as bracket pairs and can be
-    closed using Tab Completion (|atp-completion|).
-
-    Small change in |atp-:NSec|: it goes to next section, chapter or part,
-    similarly with the other commands.
-
-    The command |atp-:ToggleEnv| supports project files
-    (see |g:atp_toggle_labels| for details.)
-
-    |b:atp_ReloadOnError| works in project files.
-
-    There is |atp-:ListPrinters| which does what it says. (It uses |g:atp_ssh|
-    variable to get the host name to which printers are connected).
-
-    New wrappers: \overline{:} and \underline{:} (vmaps <LocalLeader>ov and
-    <LocalLeader>un).
-
-    <HISTORY_FEATURE> changed into <PROJECT_SCRIPT>
-    Note: you can remove whole directory ~/.vim/ftplugin/ATP_files/history/
-    It is not used any more.
-
-    As suggested by user its better to store local history file in the project
-    directory. The project script file which stores local buffer variables is
-    named '<tex_file_name>.project.vim'. The currently used script is stored
-    in the variable b:atp_ProjectScript. 
-
-    Loading procedure searches for files which ends with .project.vim. There
-    might be many such files in one directory. The file is used which contains
-    the current buffer in the list b:ListOfFiles. If none of the files project
-    scripts was containing the current buffer name in b:ListOfFiles then new
-    project script will be written for the current buffer. Before writing the
-    project script file if b:ListOfFiles doesn't exists it will be generated
-    and written.
-
-    If you want to disable a project script, you can: 
-	 (1) write in its first line 'finish', or
-	 (2) include in it 'let b:atp_History = 0'.
-
-   If the project script is stored locally the it is easier to include it in
-   a revision system (bzr, svn, etc.) and share it with collaborators.
-
-   The common history file (which stores two global variables:
-   g:atp_latexpackages, g:atp_latexclasses) is now
-   ~/.vim/ftplugin/ATP_files/common_var.vim 
-
-   If you want to disable project script file and common history file set
-   g:atp_History=0 in your |vimrc| file or |atprc| file. 
-
-   |atprc| file is executed before project script file (with local
-   variables) and common_var.vim files are sourced. Thus the history files
-   will override the settings in |vimrc| and |atprc| files. 
-
-	Variables and command has changed:
-    b:atp_ProjectScritp, g:atp_ProjectScript ( old b:atp_History, g:atp_History) 
-    	turn on/off Project Script (loading and writing)
-    b:atp_ProjectScriptFile
-    	the project script file name which is in use.
-    :LoadProjectScript		( old :LoadHistory)
-    :LoadCommonScript		( old :LoadCommonHistory)
-    :WriteProjectScript 	( old :WriteHistory)
-    :WriteCommonScript		( old :WriteTexDistroHistory)
-
-    g:atp_cached_common_variables and g:atp_cached_local_variables should
-    contain variable names which contain the prefix 'b:' for local buffer
-    variables, 'g:' or '' for global variables, etc... (see
-    |internal-variables|).
-
-    You can also read |atp-ProjectScript|.
-
-    <Tab_Completion>
-    Tab completion supports all tikz libraries (as written in pgfmanual.pdf).
-
-    <Toggle_Commands>
-    All toggle commands: |atp-:ToggleAuTex|, |atp-:ToggleSpace|,
-    |atp-:ToggleCheckMathOpened|, |atp-:ToggleCallBack|,
-    |atp-:ToggleDebugMode|, |atp-:ToggleTab|, |atp-:ToggleNn| have an optional
-    argument with value "on" or "off". If not given they toggles the feature.
->
-    Changes in version 7.5
-<	Tags in help file for variable are now just the variable names, without
-	the 'atp-' prefix (after all almost every variable starts with atp).
-	There is one exception: the LatexBox variables. 
-
-	Other changes in |atp-]m|, |g:atp_mapNn|, |atp-:NSec|, |atp-:Open|, |atp-:Babel|, |atp-Compare|,
-	|atp-:SynxTex|, |atp-item| (updated help tags).
->
-    Changes in version 7.4
-<	See |atp-:NSec|, |atp-visual|(mappings has changed), |atp-:TexDoc|
-	(updated help tags)
->
-    Changes in version 7.3.7
-<	Numerous Fixes + |atp-:DeleteSection|, |atp-:PasteSection|,
-	|atp-:SectionStack| and |atp-:Undo|, |atp-highlight-notification|
-	(updated help tags).
->
-    Changes in version 7.3.4 and 7.3.6 
-<	Changes in: |atp-:DefiSearch|, |b:atp_running|, |atp-visual|,
-	|atp-gw|, |atp-g<|, |atp-g>|, |g:atp_sort_completion_list| .
-
-	See |atp-:GotoFile|, |atp-:S|, |atp-:BibSearch| (updated help tags).
->
-    New Features in version 7.3.1 (some changes after version 7.3)
-<	Some things works faster in this version: generating the labels and
-	recursive looking for input files (using vimgrep). 
-
-	See: |atp-:GotoFile|, |atp-:MakeLatex|, |atp-:S|, |atp-:ToggleNn|
-	(updated help tags)
->
-    New Features in version 7.2.1
-<	See: |atp-completion-labels|, |atprc|, |atp-debug-mode|,
-	|b:atp_TexFlavor| (updated help tags).
->
-    New Features in version 7.1
-<	See: |g:atp_MathVimOptions| (updated help tag).
-
 
 ================================================================================
 INSTALLATION                               		*atp-installation*
@@ -928,6 +675,17 @@ map <F5>,imap <F5>
 	algorithms. ':MakeLatex!' should be used when an entry in the
 	bibliography was deleted (when 'bibtex' is involved this is when you
 	delete last citation command of a bib entry).
+
+	If aux or log files are loaded in a buffer then they will be deleted
+	- this is a requirement of vimgrep internal grep command (other wise
+	vimgrep will search in the buffer not the hard disk version and they
+	may differ). 
+
+	Returns with error message if log contains '! Emergency stop.'
+
+	If |g:atp_Compiler| = 'python' it uses the python script to compile
+	document, if |g:atp_Compiler| = 'bash' it uses a bash command (UNIX
+	only).
 
 :ShowErrors [flag]					*atp-:ShowErrors*
 	This command shows error/warning messages. It sets the |'errorformat'|
@@ -1242,6 +1000,9 @@ map <F6>d
 	ATP will set the |'keymap'| option according to the default babel
 	language (which is the last language passed to babel as optional
 	argument [lang_list] in \usepackage[lang_list]{babel}). 
+  
+	If g:atp_babel is set to 1 the keymap name is shown in the status
+	line (if you use the |atp-status-line|.
 							*g:atp_keymaps*
 	The |g:atp_kemaps| variable is used to translate babel language name
 	to 'keymap' value. The default is something like: >
@@ -1446,6 +1207,7 @@ map \L
 
 							*atp-:NEnv* *atp-}e*
 :NEnv {environment}
+:F {environment}
 map }e
 	Move to next environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
@@ -1460,6 +1222,7 @@ map }e
 
 							*atp-:PEnv* *atp-{e*
 :PEnv {environment}
+:B {environment}
 map {e
 	Move to previous environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
@@ -1479,6 +1242,7 @@ map {e
 							*atp-:NSSec*	*atp-}S*
 							*atp-:NSSSec*
 :NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]
+:F {section}
  map }p,  map }c,  map }s,  map }S
 vmap }p, vmap }c, vmap }s, vmap }S
 
@@ -1486,6 +1250,9 @@ vmap }p, vmap }c, vmap }s, vmap }S
 	matches optionally given [title_pattern]. With bang "!" the command
 	doesn't skip commented sections. Maps skip them. The search will wrap
 	around the end of a file if 'wrapscan' is set.
+
+	The {section} argument for :F is one off:
+	    part/chapter/section/subsection/subsubsection.
 
 	Map  		Command			Meaning
 	}p		:NPart			go to next part
@@ -1525,6 +1292,7 @@ vmap }p, vmap }c, vmap }s, vmap }S
 							*atp-:PSSec*	*atp-{S*
 							*atp-:PSSSec*
 :PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]
+:B {section}
  map {p,  map {c,  map {s,  map {S
 vmap {p, vmap {c, vmap {s, vmap {S
 
@@ -1535,6 +1303,9 @@ vmap {p, vmap {c, vmap {s, vmap {S
 
 	The leader { can be changed by setting the variable
 	*g:atp_map_backward_motion_leader* .
+
+	The {section} argument for :B is one off:
+	    part/chapter/section/subsection/subsubsection.
 
 	For description of arguments read |atp-:NextSection| just above.
 
@@ -1625,17 +1396,21 @@ map <F4>		environment name
 	|'errorfile'| option use this command. It will show you the value to
 	which |'errorfile'| was set. 
 
-:Status[!]						*atp-:ATPStatus*
+							*atp-status-line*
+:Status[!]						*atp-:Status*
+(:ATPStatus[!])						*atp-:ATPStatus*
 	This function (command) sets the status line, which include: the name
 	of currently edited chapter (or section) the value of |b:atp_OutDir|
 	(unless used with bang!) and it will warn you if |b:atp_OutDir|
 	variable is not set. This function is called at startup unless the
-	variable 'g:atp_statusline=0' is set. The status is set by the
+	variable '|g:atp_statusline|=0' is set. The status is set by the
 	autocommand: >
 		au BufWinEnter *.tex :call Status()
 <	In this way every opened window with a '*.tex' file will get the correct
 	status line.
 
+	If there was a command with name 'Status', atp is not overwriting it,
+	it uses ATPStatus name.
 
 :FontSearch[!] [pattern]				*atp-:FontSearch*
 	
@@ -1717,6 +1492,15 @@ map <F4>		environment name
 :PID 							*atp-:PID*
 	Prints PIDs of all running instances of |b:atp_TexComopiler|.
 
+ 							*atp-:ShowPackages*
+:ShowPackages	lists LaTeX packages defined in the preambule.
+							*atp-:Preambule*
+:Preambule	echos the preambule to vim pager.							
+
+  							*atp-:ReloadATP*
+:ReloadATP 
+    Reloads ATP plugin, both variables and functions (this is done mainly for
+    development).
 ================================================================================
 TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 
@@ -1845,7 +1629,7 @@ SEARCHING IN BIB FILES 		                       		 *atp-bibsearch*
 		Naming Conventions:	
 
 		@article{<label>,					\	
-			author = { .... },		<-- bib entry    | 
+			author = { .... },		<-- bib entry   | 
 			title  = { .... },				 > bib field
 			journal= " .... ",				|
 		}							/	
@@ -2095,7 +1879,10 @@ map c, map y, map p
 	which do what you expect. The arguments should not be quoted and
 	separated by a white spaces (if you want to include a white space use
 	'\ '), for more see |f-args|. If you do not provide any argument then
-	all entries of all bib files will be shown. Examples:
+	all entries of all bib files will be shown. 
+	
+	The pattern to highlight matching string is passed to |@/| hence you can
+	use |n| and |N| in the BibSearch buffer.
 
 	Some examples:						*atp-bibflags:examples*
 >
@@ -2123,11 +1910,17 @@ map c, map y, map p
 	The [pattern] argument is optional. Finds all definitions which
 	matches the pattern. It looks in the main file (only in the preambule,
 	unless the optional bang '!' is used) and all the input files (except
-	bib files).
+	bib files). This command respects the options: 'ignorecase' and
+	'smartcase'. You can override them with '\C' (match case what follows)
+	and '\c' (ignore case in what follows).
 
 	The pattern is any Vim pattern.
 
 	It works likes ]d but handles multi line definitions.
+
+*g:atp_DefiSearchMaxWindowHeight* = 15
+	You can set the maximal hieght of the window wich shows the results of
+	|atp-:DefiSearch| (default is 15).
 
 								*atp-bibsearch-variables*
 								*atp-variables-bib*	
@@ -2916,17 +2709,36 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	There are other tools to make editing project files more easy. There
 	is search function: |atp-:S| which works better than the Vim |:ijump|
 	command, which cannot go above the current file in the tree of input
-	files, but is much faster. 
-							
+	files /but is much faster/. 
+
+*b:atp_ProjectDir*
+	Stores the project directory, by default where |b:atp_MainFile| is
+	located (the filename is resolved if it is a symbolic link). It is not
+	written to the |atp-ProjectScript| (this makes the |atp-ProjectScript|
+	independent of the host when |g:atp_RelativePath| is set). This
+	variable is mainly for internal purposes. If you want to set the
+	output directory use |b:atp_OutDir|.
+
+*g:atp_RelativePath*
+	If set to 1 (which is the default), project variables: b:atp_MainFile,
+	b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict will store path
+	relative to |b:atp_ProjectDir| (which is the same as path to your main
+	file, however if the file is a symbolic link it will hint to the
+	resolved path). The |atp-:S| will use correctly these values. This is
+	particularly useful if you want to share the project file.
+	 
+	If you run into problems with |atp-:S| you can set this variable to
+	0 and use |atp-:InputFiles| to regenerate the variables - they will
+	now store the full path (the other way around also works).
+
 :ToggleNn [on]						*atp-:ToggleNn*
 	The command |atp-:ToggleNn| toggles the value of |g:atp_mapNn| variable.
 	The optional argument [on] has three possible values: "",  "on" or
 	"off".  The default "", toggles the value of |g:atp_mapNn|, "on" sets
 	g:atp_mapNn to 1 and "off" sets it to 0.
 							*g:atp_mapNn*
->
- g:atp_mapNn = 0
-<	If it is set to 1 then several tools use |atp-:S| command instead of
+g:atp_mapNn = 0
+	If it is set to 1 then several tools use |atp-:S| command instead of
 	Vim |search()| function (which looks only in the current buffer).
 	These are: 
 	|atp-:NPart|, |atp-:NChap|, |atp-:NSec|, |atp-:NSSec|, |atp-:NSSSec|, 
@@ -2967,7 +2779,29 @@ WRITING PROJECTS					*atp-ProjectFiles*
 PROJECT SCRIPT						*atp-ProjectScript*
 <	The file: |b:atp_MainFile| . ".project.vim", in the same directory as
 	|b:atp_MainFile| stores values of local variables saved before Vim
-	leaved a buffer (it is very similar to |View|. 
+	leaved a buffer (it is very similar to |View|). Also values of some global 
+	variables are stored in a seprate file (oine for all tex files).
+
+	Loading procedure searches for files which ends with .project.vim. There
+	might be many such files in one directory. The file is used which contains
+	the current buffer in the list b:ListOfFiles. If none of the project
+	scripts was containing the current buffer name in b:ListOfFiles then new
+	project script will be written for the current buffer. Before writing the
+	project script file if b:ListOfFiles doesn't exists it will be generated
+	and written.
+
+       If the project script is stored locally the it is easier to include it
+       in a revision system (bzr, svn, etc.) and share it with collaborators.
+
+       The common history file (which stores two global variables:
+       g:atp_latexpackages, g:atp_latexclasses) is now
+       ~/.vim/ftplugin/ATP_files/common_var.vim 
+
+       |atprc| file is executed before project script file (with local
+       variables) and common_var.vim (with global variables) files are
+       sourced. Thus this files will override the settings in |vimrc|
+       and |atprc| files. 
+
 							*b:atp_ProjectScript*
 							*g:atp_ProjectScript*
 	Setting one of the variables |b:atp_ProjectScript| or
@@ -2985,8 +2819,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		\ 'b:atp_LocalCommands', 	'b:atp_LocalColors',
 		\ 'b:atp_LocalEnvironments', 	'b:TreeOfFiles', 
 		\ 'b:ListOfFiles', 		'b:TypeDict', 
-		\ 'b:LevelDict', 
-		\ 'b:atp_StarEnvDefault', 	'b:atp_StarEnvMathDefault']
+		\ 'b:LevelDict', 		'b:atp_StarEnvMathDefault'
+		\ 'b:atp_StarEnvDefault', ]
 <	The each file will have separate history file which stores the values
 	of these variables.
 							*atp-ProjectScriptCommon*	
@@ -2996,30 +2830,35 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	list: 
     							*g:atp_cached_common_variables*
 >
-    let g:atp_cached_common_variables = [ 'g:atp_texpackages', 	'g:atp_texclasses', 'g:atp_Library' ]
+		let g:atp_cached_common_variables = [ 
+			\ 'g:atp_texpackages', 	
+			\ 'g:atp_texclasses', 
+			\ 'g:atp_Library' ]
 <
-	If you want to disable this feature for some reason you can set >
+	If you want to disable this feature for some reason you can set: >
 		let g:atp_ProjectScript = 0
 <	or >
 		let b:atp_ProjectScript = 0
-<	If you want to disable this feature only for a given buffer. 
+<	if you want to disable this feature only for a given buffer. 
 	(The value of local variable overrides the value of global one!). 
 	Hint: (if you want to disable loading history for one file): 
 	    In your .vimrc file you can set the local variable via
 	    autocommand group BufEnter or you can put an if statement in your
 	    |atprc| file: >
-	    if expand("%:p") == <path_to_file>
-		let b:atp_History = 0
-	    endif
-<	If you want to turn off history file for all buffers use: >
-	    au FileType tex let b:atp_History=0
-<	in |vimrc| file or 'let b:atp_History = 0' in |atprc| file. 
-	There are these commands: >
-	    :LoadProjectScript[!] [local/common]
-	    :WriteProjectScript[!] [local/common]
-	    :DeleteProjectScript[!] [local/common]
-	    :ToggleProjectScript[!] [on/off]
-<	which do the obvious thing (if g:atp_History=0 or b:atp_History=0 they
+		if expand("%:p") == <path_to_file>
+		    let b:atp_History = 0
+		endif
+<	    or you can add to the project scrpit: 
+		 (1) write in its first line 'finish', or
+		 (2) include in it 'let |b:atp_ProjectScript| = 0'.
+
+	There are these commands:
+:LoadProjectScript[!] [local/common]			*atp-:LoadProjectScript*
+:WriteProjectScript[!] [local/common]			*atp-:WriteProjectScript*
+:DeleteProjectScript[!] [local/common]			*atp-:DeleteProjectScript*
+:ToggleProjectScript[!] [on/off]			*atp-:ToggleProjectScript*
+
+	which do the obvious thing (if g:atp_History=0 or b:atp_History=0 they
 	will not work). The default value of the optional argument is "local".
 	:DeleteHistory [local] command (with optional argument [local]) deletes
 	the history file for the current buffer (only the local one), with
@@ -3032,7 +2871,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	given it will toggle the value. With bang it also sets the global
 	variable.  |b:atp_ProjectScript| is by default in the >
 	    g:atp_cached_local_variables 
-<	so it will be restored afterwards. |b:atp_ProjectScript|if defined
+<	so it will be restored afterwards. |b:atp_ProjectScript| if defined
 	overrides the value of global variable g:atp_History. So you can set
 	in your atp file g:atp_ProjectScript = 0 and for some files using the
 	if-construction: >
@@ -3048,17 +2887,17 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	written after exiting Vim, unless you turn off the history feature.
 
 	The project script is disabled for files which full path matches
-	'texmf'.  With the optional bang ':LoadProjectScript common' loads the
+	"texmf".  With the optional bang ':LoadProjectScript common' loads the
 	common project script also for them. :WriteHistory command will write
 	the history disregarding if the file is under texmf directory or not.
 
-	Note: If you use this feature, you might need to use some times the
-	commands: |atp-:LocalCommands| and |atp-:InputFiles| which will update
+	Note: If you use this feature, you might need to use the commands:
+	|atp-:LocalCommands| and |atp-:InputFiles| which will update
 	b:atp_LocalCommands, b:atp_LocalColors, b:atp_LocalEnvironments and
-	b:TreeOfFiles, b:ListOfFiles, b:TypeDict and b:LevelDict. Then use
-	these commands |atp-:LocalCommands| (with bang "!"), and
-	|atp-:InputFiles|. The second set of variables is also updated by |atp-:S|
-	(also with "!") and and |atp-:GotoFile| (with "!" as well).
+	b:TreeOfFiles, b:ListOfFiles, b:TypeDict and b:LevelDict. Use
+	these commands with a bang "!". The second set of variables is also
+	updated by |atp-:S| (also with "!") and and |atp-:GotoFile| (with "!"
+	as well).
 
 	Note: Also when you add a package to tex you should remove the common
 	history file, so that the new packages will be added to completion
@@ -3308,7 +3147,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 							*g:atp_CompilersDict*
 >
  let g:atp_CompilersDict 	= { 
-		\ "pdflatex": ".pdf", 	"pdftex" 	: ".pdf", 
+		\ "pdflatex": ".pdf", 		"pdftex" 	: ".pdf", 
 		\ "xetex" 	: ".pdf", 	"latex" 	: ".dvi", 
 		\ "tex" 	: ".dvi",	"elatex"	: ".dvi",
 		\ "etex"	: ".dvi", 	"luatex"	: ".pdf"}
@@ -3341,8 +3180,8 @@ s:notreadablebibfiles
 >
 	let g:atp_statusline=0
 <
-	in your $VIMRC file if you do not want the status line provided by this
-	plugin. (See |atp-:ATPStatus|).
+	in your |vimrc| or |atprc| file if you do not want the status line provided by this
+	plugin. (See |atp-:Status|).
 >
  let b:atp_TruncateStatuSection=40
 <	This variable sets how many characters of the section/subsection title
@@ -3385,6 +3224,13 @@ using the variables:
 	    g:atp_imap_fourth_leader == "["
 <	    	for extra environments in the old layout.
 
+If one of the imap leaders |g:atp_imap_first_leader|, ...
+,|g:atp_imap_fourth_leader| is equal to "_" then an imap with left hand side
+__ for _{} (and ^^ for ^{}) is used rather than autex function (which has this
+nice feature that it puts _{} when you type __ disregarding the time between
+first '_' and second '_', which is not the case for imap '__' .  By default
+none of imap leaders is equal to '_'.
+
 You can list imaps with |atp-:HelpMathIMaps| and |atp-:HelpEnvIMaps|.
 
 All other mappings (map, vmap, nmap, ...) are using <LocalLeader> which can be
@@ -3408,6 +3254,15 @@ Note: in all mappings "\" is set to your <LocalLeader> (and thus, in fact, the
 map can differ).
 
 Note: The list of commands might not be complete.
+
+						*atp-j_motion* *atp-k_motion*
+imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)
+which help to navigate thought brackets (but not only) in insert mode.
+   
+map <Ctrl-j>, map <Ctrl-k> 	- as above but in normal mode.
+
+	These motions emulate the behaviour of latex-suite place holder system <++>,
+	without putting the placeholder into tex file.
 
 :ShowOptions[!]
 

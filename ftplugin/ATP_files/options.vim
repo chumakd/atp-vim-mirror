@@ -227,7 +227,9 @@ let s:optionsDict= {
 		\ "atp_StarMathEnvDefault"	: "",
 		\ "atp_LatexPIDs"		: [],
 		\ "atp_LastLatexPID"		: 0,
-		\ "atp_VerboseLatexInteractionMode" : "errorstopmode" }
+		\ "atp_VerboseLatexInteractionMode" : "errorstopmode",
+		\ "atp_BibtexReturnCode"	: 0,
+		\ "atp_BibtexOutput"		: ""}
 
 let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
@@ -1102,9 +1104,36 @@ endfunction
 " TODO: it would be nice to have this command (and the map) in quickflist (FileType qf)
 " describe DEBUG MODE in doc properly.
 function! ATP_ToggleDebugMode(...)
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) :  t:atp_DebugMode !~? '^debug$' )
+    let new_debugmode	= ""
+    if a:0 >= 1 && a:1 =~ '^on\|off$'
+	let [ on, new_debugmode ]	= ( a:1 == 'on'  ? [ 1, 'Debug' ] : [0, g:atp_DefaultDebugMode] )
+	let set_default=1
+	let copen = 1
+    elseif a:0 >= 1
+	let t:atp_DebugMode	= a:1
+	let new_debugmode 	= a:1
+	let set_default		= 0
+	if a:1 == 'silent'
+	    let on		= 0
+	    let copen		= 0
+	elseif a:1 == 'debug'
+	    let on		= 1 
+	    let copen		= ( a:1 =~# 'Debug' ? 1 : 0 )
+	else
+	    " for verbose mode
+	    let on		= 0
+	    let copen		= 0
+	endif
+    else
+	let set_default = 1
+	let [ on, new_debugmode ] = ( t:atp_DebugMode =~? '^\%(debug\|verbose\)$' ? [ 0, g:atp_DefaultDebugMode ] : [ 1, 'Debug' ] )
+	let copen 		= 1
+    endif
+    let g:set_defualt=set_default
+    let g:on=on
+    let g:copen=copen
     if !on
-	echomsg "[ATP:] Debug mode is off"
+	echomsg "[ATP:] debug mode is ".new_debugmode
 
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]
@@ -1124,10 +1153,12 @@ function! ATP_ToggleDebugMode(...)
 	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ <Esc>:ToggleDebugMode<CR>a
 
-	let t:atp_DebugMode	= g:atp_DefaultDebugMode
+	if set_default
+	    let t:atp_DebugMode	= g:atp_DefaultDebugMode
+	endif
 	silent cclose
     else
-	echomsg "[ATP:] Debug mode is on"
+	echomsg "[ATP:] debug mode is ".new_debugmode
 
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
 	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
@@ -1148,12 +1179,19 @@ function! ATP_ToggleDebugMode(...)
 		    \ <Esc>:ToggleDebugMode<CR>a
 
 	let g:atp_callback	= 1
-	let t:atp_DebugMode	= "Debug"
+	if set_default
+	    let t:atp_DebugMode	= "Debug"
+	endif
 	let winnr = bufwinnr("%")
-	silent copen
-	silent! cg
-	exe winnr . " wincmd w"
+	if copen
+	    silent copen
+	    silent! cg
+	    exe winnr . " wincmd w"
+	endif
     endif
+endfunction
+function! ToggleDebugModeCompl(A,B,C)
+    return "silent\ndebug\nDebug\nverbose\non\noff"
 endfunction
 augroup ATP_DebugModeCommandsAndMaps
     au!
@@ -1191,7 +1229,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleCheckMathOpened	:call ATP_ToggleCheckMat
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleCallBack 		:call ATP_ToggleCallBack(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleCallBack		:call ATP_ToggleCallBack()<CR>
 
-command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleDebugMode 	:call ATP_ToggleDebugMode(<f-args>)
+command! -buffer -nargs=? -complete=custom,ToggleDebugModeCompl	ToggleDebugMode 	:call ATP_ToggleDebugMode(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleDebugMode		:call ATP_ToggleDebugMode()<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleTab	 	:call ATP_ToggleTab(<f-args>)

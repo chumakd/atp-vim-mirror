@@ -116,6 +116,7 @@ if bibtex:
     bibtex=subprocess.Popen(['bibtex', auxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     bibtex.wait()
     bibtex_returncode=bibtex.returncode
+    vim_remote_expr(servername, "atplib#Bibtex('"+str(bibtex_returncode)+"')")
 
 if index:
     idxfile     = basename+".idx"

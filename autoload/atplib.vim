@@ -109,9 +109,14 @@ endfunction
 " with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
 " {{{ Compilation Call Back Communication
-" CatchStatus {{{
-function! atplib#CatchStatus(status)
-	let b:atp_TexStatus=a:status
+" TexReturnCode {{{
+function! atplib#TexReturnCode(returncode)
+	let b:atp_TexReturnCode=a:returncode
+endfunction "}}}
+" BibtexReturnCode {{{
+function! atplib#BibtexReturnCode(returncode,...)
+	let b:atp_BibtexReturnCode=a:returncode
+	let b:atp_BibtexOutput= ( a:0 >= 1 ? a:1 : "" )
 endfunction
 " }}}
 " Callback {{{
@@ -120,7 +125,7 @@ endfunction
 " a:commnad	= a:commmand 	of s:compiler 
 "		 		( a:commnad = 'AU' if run from background)
 "
-" Uses b:atp_TexStatus which is equal to the value returned by tex
+" Uses b:atp_TexReturnCode which is equal to the value returned by tex
 " compiler.
 function! atplib#CallBack(mode,...)
     if g:atp_debugCallBack
@@ -159,66 +164,62 @@ function! atplib#CallBack(mode,...)
     "  i.e. redraw at the end of function (this is done to not redraw twice in
     "  this function)
     let redraw = 1
-    if b:atp_TexStatus == 0 && ( a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && g:atp_DebugMode_AU_change_cmdheight 
+    let atp_DebugMode = t:atp_DebugMode
+    if b:atp_TexReturnCode == 0 && ( a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && g:atp_DebugMode_AU_change_cmdheight 
 	let &l:cmdheight=g:atp_cmdheight
 	let redraw = 0
     endif
 
     let showed_message = 0
     let g:debugCallBack= "A"
-    if b:atp_TexStatus && ( t:atp_DebugMode != "silent" || a:mode != 'silent' )
+    if b:atp_TexReturnCode && ( t:atp_DebugMode != "silent" || a:mode != 'silent' )
 	redraw!
 	let redraw = 1
 	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . "."
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexReturnCode . "."
 	else
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexStatus . " output file not reloaded."
+	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexReturnCode . " output file not reloaded."
 	endif
 	let g:debugCallBeck=5
 	let showed_message = 1
     elseif !g:atp_statusNotif || !g:atp_statusline
 	echomsg "[ATP:] ".Compiler." finished"
 	let showed_message = 1
-	let g:debugCallBack.=4
     endif
 
     " End the debug mode if there are no errors
-    if b:atp_TexStatus == 0 && ( t:atp_DebugMode == 'debug' )
+    if b:atp_TexReturnCode == 0 && ( t:atp_DebugMode ==? 'debug' )
 	cclose
 	redraw!
-	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexStatus . " going out of debuging mode."
+	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexReturnCode . " going out of debuging mode."
 	let redraw 		= 1
 	let showed_message 	= 1
 	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
 	let &l:cmdheight 	= g:atp_cmdheight
 
-	let g:debugCallBack	.=3
     endif
 
     if a:mode == 'debug'
 	if !t:atp_QuickFixOpen
-	    if b:atp_TexStatus
+	    if b:atp_TexReturnCode
 		let &l:cmdheight 	= g:atp_DebugModeCmdHeight
 		let showed_message 	= 1
 		let redraw 		= 1
 		call ShowErrors('e', !showed_message)
 
-		let g:debugCallBack	.=2."-".showed_message."-"
 	    elseif !showed_message
 		let redraw 		= 1
 		echomsg "[ATP:] no errors :)"
 
-		let g:debugCallBack	.=2."+"
 	    endif
 	endif
 
 	" In debug mode, go to first error. 
 	if t:atp_DebugMode ==# "Debug" || a:mode ==# "Debug"
-	    let g:debugCallBack	.=1
 	    cc
 	endif
     endif
-    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && b:atp_TexStatus == "0"
+    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && b:atp_TexReturnCode == "0"
 	if t:atp_QuickFixOpen 
 	    let g:debugCallBack		.=0
 	    let t:atp_QuickFixOpen 	= 0
@@ -229,11 +230,16 @@ function! atplib#CallBack(mode,...)
 " 	else
 " 	    let redraw			= 1
 " 	    redraw!
-" 	    let g:debugCallBack		.=-1
 	endif
     endif
 
-    let g:redraw=redraw
+    if atp_DebugMode != 'silent' && b:atp_BibtexReturnCode
+	redraw!
+	let redraw			= 1
+	let g:debug=1
+	echo b:atp_BibtexOutput 
+    endif
+
     if !redraw && 
 	redraw!
     endif

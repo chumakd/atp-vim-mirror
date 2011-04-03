@@ -30,7 +30,7 @@ parser.add_option("--viewer-options",   dest="viewer_opt",      default="", help
 parser.add_option("-k", "--keep",       dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz") 
 # Boolean switches:
 parser.add_option("--reload-viewer",    action="store_true",    default=False,  dest="reload_viewer")
-parser.add_option("-b", "--bibtex",     action="store_false",   default=False,  dest="bibtex", help="run bibtex")
+parser.add_option("-b", "--bibtex",     action="store_true",    default=False,  dest="bibtex", help="run bibtex")
 parser.add_option("--reload-on-error",  action="store_true",    default=False,  dest="reload_on_error", help="reload Xpdf if compilation had errors")
 parser.add_option("--bang",             action="store_false",   default=False,  dest="bang", help="force reloading on error (Xpdf only)")
 parser.add_option("--gui-running", "-g", action="store_true",   default=False,  dest="gui_running", help="if vim gui is running (has('gui_running'))") 
@@ -191,7 +191,7 @@ def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
 
 # expr must be well quoted:
-#       vim_remote_expr('GVIM', "atplib#CatchStatus()")
+#       vim_remote_expr('GVIM', "atplib#TexReturnCode()")
 # (this is the only way it works)
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
     subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file)
@@ -264,14 +264,26 @@ for ext in filter(keep_filter_log,keep):
 # Can we test if xpdf started properly?
 # okular doesn't behave nicly even with --unique switch.
 # COMPILE
+
+# Latex might not run this might happedn with bibtex (?)
+latex_returncode=0
 if bibtex and os.path.exists(tmpaux):
     os.chdir(tmpdir)
     debug_file.write("BIBTEX1"+"\n")
-    subprocess.Popen(['bibtex', basename+".aux"])
+    bibtex=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
+    bibtex.wait()
+    bibtex_returncode=bibtex.returncode
+    bibtex_output=re.sub('"', '\\"', bibtex.stdout.read())
+    vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
     os.chdir(cwd)
     bibtex=False
-    runs=max([runs, 2])
+    # we need run latex at least 2 times
+    if not bibtex_returncode:
+        runs=max([runs, 2])
+    else:
+        runs=1
 elif bibtex:
+    # we need run latex at least 3 times
     runs=max([runs, 3])
 
 debug_file.write("RANGE="+str(range(1,int(runs+1)))+"\n")
@@ -280,6 +292,7 @@ for i in range(1, int(runs+1)):
     debug_file.write("RUN="+str(i)+"\n")
     subprocess.Popen(['ls', tmpdir], stdout=debug_file)
     debug_file.write("BIBTEX="+str(bibtex)+"\n")
+
     if verbose == 'verbose' and i == runs:
 #       <SIS>compiler() contains here ( and not bibtex )
         debug_file.write("VERBOSE"+"\n")
@@ -287,8 +300,8 @@ for i in range(1, int(runs+1)):
         pid=latex.pid
         debug_file.write("latex pid "+str(pid)+"\n")
         latex.wait()
-        latex_return_code=latex.returncode
-        debug_file.write("latex ret code "+str(latex_return_code)+"\n")
+        latex_returncode=latex.returncode
+        debug_file.write("latex ret code "+str(latex_returncode)+"\n")
     else:
         if progress_bar:
             latex=latex_progress_bar(latex_cmd)
@@ -298,17 +311,25 @@ for i in range(1, int(runs+1)):
             vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
             debug_file.write("latex pid "+str(pid)+"\n")
             latex.wait()
-        latex_return_code=latex.returncode
-        debug_file.write("latex return code "+str(latex_return_code)+"\n")
+        latex_returncode=latex.returncode
+        debug_file.write("latex return code "+str(latex_returncode)+"\n")
     if bibtex and i == 1:
         os.chdir(tmpdir)
         debug_file.write("BIBTEX2"+"\n")
         debug_file.write(os.getcwd()+"\n")
-        subprocess.Popen(['bibtex', basename+".aux"])
+        bibtex=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
+        bibtex.wait()
+        bibtex_returncode=bibtex.returncode
+        bibtex_output=re.sub('"', '\\"', bibtex.stdout.read())
+        if bibtex_returncode:
+# If bibtex had errors we stop, 
+# at this point tex file was compiled at least once.
+            break
+        vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"','"+str(bibitex_output)+"')")
         os.chdir(cwd)
         # Return code of compilation:
     if verbose != "verbose":
-        vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex_return_code)+"')")
+        vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_returncode)+"')")
 
 ####################################
 #
@@ -329,7 +350,7 @@ if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         run.append(output_fp)
         debug_file.write("D1: "+str(run)+"\n")
         subprocess.Popen(run)
-    elif cond and ( reload_on_error or latex_return_code == 0 or bang ): 
+    elif cond and ( reload_on_error or latex_returncode == 0 or bang ): 
         run=['xpdf', '-remote', XpdfServer, '-reload']
         subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         debug_file.write("D2: "+str(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
@@ -373,7 +394,7 @@ for ext in filter(keep_filter_aux,keep)+[output_format]:
         debug_file.write(ext+' ')
         shutil.copy(file_cp, mainfile_dir)
 # Copy aux file if there were no compilation errors.
-if latex_return_code == 0:
+if latex_returncode == 0:
     file_cp=basename+".aux"
     if os.path.exists(file_cp):
         shutil.copy(file_cp, mainfile_dir)

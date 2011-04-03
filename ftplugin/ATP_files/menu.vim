@@ -46,7 +46,7 @@ imenu 550.20.1 LaTe&X.&Errors<Tab>:ShowErrors					<Esc>:ShowErrors<CR>
 menu 550.20.1 LaTe&X.&Log.&Open\ Log\ File<Tab>:ShowErrors\ o			:<C-U>ShowErrors\ o<CR>
 cmenu 550.20.1 LaTe&X.&Log.&Open\ Log\ File<Tab>:ShowErrors\ o			<C-U>ShowErrors\ o<CR>
 imenu 550.20.1 LaTe&X.&Log.&Open\ Log\ File<Tab>:ShowErrors\ o			<Esc>:ShowErrors\ o<CR>
-if t:atp_DebugMode == "debug"
+if t:atp_DebugMode ==? "debug"
     menu 550.20.5 LaTe&X.&Log.Toggle\ &Debug\ Mode\ [on]			:<C-U>ToggleDebugMode<CR>
     cmenu 550.20.5 LaTe&X.&Log.Toggle\ &Debug\ Mode\ [on]			<C-U>ToggleDebugMode<CR>
     imenu 550.20.5 LaTe&X.&Log.Toggle\ &Debug\ Mode\ [on]			<Esc>:ToggleDebugMode<CR>a

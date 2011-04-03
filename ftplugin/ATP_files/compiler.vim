@@ -569,7 +569,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     let saved_llist	= getloclist(0)
 "     execute "silent! lvimgrep /Citation\\_s\\_.*\\_sundefined\\|Label(s)\\_smay\\_shave\\_schanged.\\|Writing\\_sindex\\_sfile/j " . fnameescape(logfile)
     try
-	execute "silent! lvimgrep /C\\n\\=i\\n\\=t\\n\\=a\\n\\=t\\n\\=i\\n\\=o\\n\\=n\\_s\\_.*\\_su\\n\\=n\\n\\=d\\n\\=e\\n\\=f\\n\\=i\\n\\=n\\n\\=e\\n\\=d\\|L\\n\\=a\\n\\=b\\n\\=e\\n\\=l\\n\\=(\\n\\=s\\n\\=)\\_sm\\n\\=a\\n\\=y\\_sh\\n\\=a\\n\\=v\\n\\=e\\_sc\\n\\=h\\n\\=a\\n\\=n\\n\\=g\\n\\=e\\n\\=d\\n\\=.\\|W\\n\\=r\\n\\=i\\n\\=t\\n\\=i\\n\\=n\\n\\=g\\_si\\n\\=n\\n\\=d\\n\\=e\\n\\=x\\_sf\\n\\=i\\n\\=l\\n\\=e/j " . fnameescape(logfile)
+	execute "silent! lvimgrep /C\\n\\=i\\n\\=t\\n\\=a\\n\\=t\\n\\=i\\n\\=o\\n\\=n\\_s\\_.*\\_su\\n\\=n\\n\\=d\\n\\=e\\n\\=f\\n\\=i\\n\\=n\\n\\=e\\n\\=d\\|L\\n\\=a\\n\\=b\\n\\=e\\n\\=l\\n\\=(\\n\\=s\\n\\=)\\_sm\\n\\=a\\n\\=y\\_sh\\n\\=a\\n\\=v\\n\\=e\\_sc\\n\\=h\\n\\=a\\n\\=n\\n\\=g\\n\\=e\\n\\=d\\n\\=.\\|W\\n\\=r\\n\\=i\\n\\=t\\n\\=i\\n\\=n\\n\\=g\\_si\\n\\=n\\n\\=d\\n\\=e\\n\\=x\\_sf\\n\\=i\\n\\=l\\n\\=e/j ".fnameescape(logfile)
 	let location_list	= copy(getloclist(0))
     catch E480:
 	let location_list	= []
@@ -871,11 +871,11 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	redir END
 	endif
 
-"     redraw
     if time != [] && len(time) == 2
 	let show_time	= matchstr(reltimestr(reltime(time)), '\d\+\.\d\d')
     endif
 
+    redraw
     if max([(a:run-1), 0]) == 1
 	echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " time in " . show_time . "sec."
     else
@@ -932,7 +932,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     endif
     let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
     let tex_options=shellescape(b:atp_TexOptions.',-interaction='.interaction)
-    let g:tex_options=tex_options
+"     let g:tex_options=tex_options
     let ext	= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext	= substitute(ext, '\.', '', '')
 
@@ -966,8 +966,9 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --xpdf-server ".b:atp_XpdfServer
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
-		\ ." --progname ". v:progname
+		\ ." --progname ".v:progname
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
+    let g:cmd=cmd
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -1032,7 +1033,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
     	" IF b:atp_TexCompiler is not compatible with the viewer
 	" ToDo: (move this in a better place). (luatex can produce both pdf and dvi
 	" files according to options so this is not the right approach.) 
-	if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
+	if t:atp_DebugMode !=? "silent" && b:atp_TexCompiler !~? "luatex" &&
 		    \ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
 		    \ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
 	     
@@ -1191,7 +1192,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
 	    let catchstatus_cmd = v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
-			\ shellescape('atplib#CatchStatus')  . '\($?\) ; ' 
+			\ shellescape('atplib#TexReturnCode')  . '\($?\) ; ' 
 	else
 	    let catchstatus_cmd = ''
 	endif
@@ -1485,8 +1486,9 @@ function! <SID>SimpleBibtex()
     let g:cwd = getcwd()
     if filereadable(auxfile)
 	let command	= bibcommand . shellescape(l:auxfile)
-	let g:command	= command
-	echo system(command)
+	let b:atp_BibtexOutput=system(command)
+	let b:atp_BibtexReturnCode=v:shell_error
+	echo b:atp_BibtexOutput
     else
 	echomsg "[ATP:] aux file " . auxfile . " not readable."
     endif
@@ -1717,6 +1719,9 @@ function! ShowErrors(...)
     if l:arg =~ 'o'
 	OpenLog
 	return
+    elseif l:arg =~ 'b'
+	echo b:atp_BibtexOutput
+	return
     endif
     call s:SetErrorFormat(l:arg)
     let show_message = ( a:0 >= 2 ? a:2 : 1 )
@@ -1738,7 +1743,7 @@ endfunction
 "}}}
 if !exists("*ListErrorsFlags")
 function! ListErrorsFlags(A,L,P)
-	return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw"
+	return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw\nb"
 endfunction
 endif
 "}}}
