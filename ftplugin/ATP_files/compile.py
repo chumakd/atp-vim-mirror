@@ -30,6 +30,7 @@ parser.add_option("--viewer",           dest="viewer",          default="xpdf", 
 parser.add_option("--xpdf-server",      dest="xpdf_server", help="xpdf_server")
 parser.add_option("--viewer-options",   dest="viewer_opt",      default="", help="comma separated list of viewer options")
 parser.add_option("-k", "--keep",       dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz") 
+parser.add_option("--env",              dest="env", help="a comma separated list environment variables and its values: var1=val1,var2=val2")
 # Boolean switches:
 parser.add_option("--reload-viewer",    action="store_true",    default=False,  dest="reload_viewer")
 parser.add_option("-b", "--bibtex",     action="store_true",    default=False,  dest="bibtex", help="run bibtex")
@@ -39,6 +40,8 @@ parser.add_option("--gui-running", "-g", action="store_true",   default=False,  
 parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar", help="send progress info back to gvim") 
 (options, args) = parser.parse_args()
 
+# Debug file should be changed for sth platform independent
+# There should be a switch to get debug info.
 debug_file      = open("/tmp/atp_compile.py.debug", 'w+')
 
 command         = options.command
@@ -85,6 +88,11 @@ def keep_filter_log(string):
         return False
     else:
         return True
+
+def mysplit(string):
+        return string.split('=')
+env             = map(mysplit,re.split('\s+',options.env))
+debug_file.write("ENV "+str(env)+"\n")
 
 # Boolean options
 reload_viewer   = options.reload_viewer
@@ -236,7 +244,7 @@ if not os.path.exists(str(mainfile_dir)+".tmp"+os.sep):
         # This is the main tmp dir (./.tmp) 
         # it will not be deleted by this script
         # as another instance might be using it.
-        # it can be removed by Vim.
+        # it is removed by Vim on exit.
     os.mkdir(str(mainfile_dir)+".tmp"+os.sep)
 tmpdir  = tempfile.mkdtemp(prefix=str(mainfile_dir)+".tmp"+os.sep)
 debug_file.write("TMPDIR: "+tmpdir+"\n")
@@ -248,7 +256,7 @@ debug_file.write("COMMAND "+str(latex_cmd)+"\n")
 debug_file.write("COMMAND "+" ".join(latex_cmd)+"\n")
 
 # Copy important files to output directory:
-# except log and aux files
+# except log file
 os.chdir(mainfile_dir)
 for ext in filter(keep_filter_log,keep):
     file_cp=basename+"."+ext
@@ -265,21 +273,21 @@ for ext in filter(keep_filter_log,keep):
 # TODO: this might cause problems when the tex file is very simple and short.
 # Can we test if xpdf started properly?
 # okular doesn't behave nicly even with --unique switch.
-# COMPILE
 
-os.putenv("max_print_line", "2000")
+# Set environment
+for var in env:
+    os.putenv(var[0], var[1])
 
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0
+os.chdir(tmpdir)
 if bibtex and os.path.exists(tmpaux):
-    os.chdir(tmpdir)
-    debug_file.write("BIBTEX1"+"\n")
+    debug_file.write("BIBTEX1"+str(['bibtex', basename+".aux"])+"\n")
     bibtex=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
     bibtex.wait()
     bibtex_returncode=bibtex.returncode
     bibtex_output=re.sub('"', '\\"', bibtex.stdout.read())
     vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
-    os.chdir(cwd)
     bibtex=False
     # we need run latex at least 2 times
     if not bibtex_returncode:
@@ -294,6 +302,7 @@ debug_file.write("RANGE="+str(range(1,int(runs+1)))+"\n")
 debug_file.write("RUNS="+str(runs)+"\n")
 for i in range(1, int(runs+1)):
     debug_file.write("RUN="+str(i)+"\n")
+    debug_file.write("DIR="+str(os.getcwd())+"\n")
     subprocess.Popen(['ls', tmpdir], stdout=debug_file)
     debug_file.write("BIBTEX="+str(bibtex)+"\n")
 
@@ -317,23 +326,22 @@ for i in range(1, int(runs+1)):
             latex.wait()
         latex_returncode=latex.returncode
         debug_file.write("latex return code "+str(latex_returncode)+"\n")
+    # Return code of compilation:
+    if verbose != "verbose":
+        vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_returncode)+"')")
     if bibtex and i == 1:
-        os.chdir(tmpdir)
-        debug_file.write("BIBTEX2"+"\n")
+        debug_file.write("BIBTEX2 "+str(['bibtex', basename+".aux"])+"\n")
         debug_file.write(os.getcwd()+"\n")
         bibtex=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
         bibtex.wait()
         bibtex_returncode=bibtex.returncode
         bibtex_output=re.sub('"', '\\"', bibtex.stdout.read())
+        vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"','"+str(bibtex_output)+"')")
         if bibtex_returncode:
 # If bibtex had errors we stop, 
 # at this point tex file was compiled at least once.
+            output_file.write("BIBTEX BREAKE "+str(bibtex_returncode))
             break
-        vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"','"+str(bibitex_output)+"')")
-        os.chdir(cwd)
-        # Return code of compilation:
-    if verbose != "verbose":
-        vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_returncode)+"')")
 
 ####################################
 #
@@ -391,7 +399,6 @@ if verbose != "verbose":
 ####################################
 
 # Copy files:
-os.chdir(tmpdir)
 for ext in filter(keep_filter_aux,keep)+[output_format]:
     file_cp=basename+"."+ext
     if os.path.exists(file_cp):

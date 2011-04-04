@@ -110,8 +110,11 @@ changes:
 
   							*atp-wiki-page*
   - There is also a new wiki page: (as for now it only includes features of
-    ATP - but it looks nice :)
+    ATP - it looks nice :)
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
+
+  - For detailed list of changes you can look at:
+    http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/trunk/?sortby=rev&view=log
 
 NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 9.2:
@@ -2721,6 +2724,10 @@ let b:atp_TexCompilerVariable = "max_print_line=2000" 	*b:atp_TexCompilerVariabl
 	You can use it to set an environment variables for the compiler. The
 	"max_print_line" sets the maximal length of a line in the log file.
 	The value 2000 is high enough to prevent line breaking.
+
+	The gramar for this variable: it should be a white space separated list of
+	variables and values, i.e. 'variable_1=value_1 variable_2=value_2'
+	(the white spaces matters!)
 
 							*b:atp_TexFlavor*
 let b:atp_TexFlavor	= "tex"	

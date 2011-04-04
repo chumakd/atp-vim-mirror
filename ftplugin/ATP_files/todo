@@ -265,9 +265,10 @@ Done: :YankSection (like :DeleteSection in ToC)
 Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
 To do: :WrapSelection make better interface.
 To do: debug why sometimes generating g:atp_latexpackages takes so much time.
-To do: make a default flag for :ShowErrors 
+Done: make a default flag for :ShowErrors 
 To do: progress bar for project files (project variables).
 To do: bash compiler is not reloading Xpdf.
 To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
 	Debug: MakeLatex.
-To do[important]: QuickFixWindow is closing automativally when there are no errors, it should close automatically if there are no stuff to show so this would differ depending on SetErrorFormat! and not only latex exit code.
+Done[important]: QuickFixWindow is closing automativally when there are no errors, it should close automatically if there are no stuff to show so this would differ depending on SetErrorFormat! and not only latex exit code.
+To do: 'formatexpr'

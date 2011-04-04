@@ -967,6 +967,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
+		\ ." --env ".b:atp_TexCompilerVariable
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     let g:cmd=cmd
     " Write file
