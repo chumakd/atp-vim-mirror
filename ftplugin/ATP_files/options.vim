@@ -295,6 +295,9 @@ if !exists("g:atp_ProgressBar")
     let g:atp_ProgressBar = 1
 endif
 let g:atp_cmdheight = &l:cmdheight
+if !exists("g:atp_DebugModeQuickFixHeight") 
+    let g:atp_DebugModeQuickFixHeight = 8 
+endif
 if !exists("g:atp_DebugModeCmdHeight") 
     let g:atp_DebugModeCmdHeight = &l:cmdheight
 endif
@@ -1743,6 +1746,7 @@ if !s:did_options
 
     augroup ATP_cmdheight
 	" update g:atp_cmdheight when user writes the buffer
+	au!
 	au BufWrite *.tex :let g:atp_cmdheight = &l:cmdheight
     augroup END
 
@@ -1758,12 +1762,19 @@ except OSError, e:
 EOF
 endfunction
 
+    augroup ATP_QuickFixCmds_2
+	au!
+	au FileType qf command! -bang -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
+    augroup END
+
     augroup ATP_deltmpdir
 	" WINDOWS NOT COMPATIBLE
+	au!
 	au VimLeave *.tex :call <SID>Python_rmdir(b:atp_TmpDir)
     augroup END
 
     augroup ATP_updatetime
+	au!
 	au VimEnter if &l:updatetime == 4000 | let &l:updatetime = 800 | endif
 	au InsertEnter *.tex let s:updatetime=&l:updatetime | let &l:updatetime = g:atp_insert_updatetime
 	au InsertLeave *.tex let &l:updatetime=s:updatetime 
@@ -2019,14 +2030,38 @@ function! CompilerComp(A,L,P)
     return compilers
 endfunction
 
-function! <SID>SetDebugMode(...)
+function! <SID>SetDebugMode(bang,...)
     if a:0 == 0
 	echo t:atp_DebugMode
+	return
     else
 	let t:atp_DebugMode=a:1
     endif
+    if a:1 == 'silent'
+	let winnr=winnr()
+	if t:atp_QuickFixOpen
+	    cclose
+	else
+	    cgetfile
+	    if a:bang == "!"
+		exe "cwindow " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+		exe winnr . "wincmd w"
+	    endif
+	endif
+    elseif a:1 ==# 'debug'
+	let winnr=winnr()
+	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+	exe winnr . "wincmd w"
+	cgetfile
+    elseif a:1 ==# 'Debug'
+	let winnr=winnr()
+	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+	exe winnr . "wincmd w"
+	cgetfile
+	cc
+    endif
 endfunction
-command! -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<f-args>)
+command! -buffer -bang -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
 function! DebugComp(A,L,P)
     return "silent\ndebug\nDebug\nverbose"
 endfunction

@@ -30,7 +30,7 @@ parser.add_option("--viewer",           dest="viewer",          default="xpdf", 
 parser.add_option("--xpdf-server",      dest="xpdf_server", help="xpdf_server")
 parser.add_option("--viewer-options",   dest="viewer_opt",      default="", help="comma separated list of viewer options")
 parser.add_option("-k", "--keep",       dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz") 
-parser.add_option("--env",              dest="env", help="a comma separated list environment variables and its values: var1=val1,var2=val2")
+parser.add_option("--env",              dest="env", default="default", help="a comma separated list environment variables and its values: var1=val1,var2=val2")
 # Boolean switches:
 parser.add_option("--reload-viewer",    action="store_true",    default=False,  dest="reload_viewer")
 parser.add_option("-b", "--bibtex",     action="store_true",    default=False,  dest="bibtex", help="run bibtex")
@@ -91,8 +91,9 @@ def keep_filter_log(string):
 
 def mysplit(string):
         return string.split('=')
-env             = map(mysplit,re.split('\s+',options.env))
-debug_file.write("ENV "+str(env)+"\n")
+if options.env != "default":
+    env         = map(mysplit,re.split('\s+',options.env))
+    debug_file.write("ENV "+str(env)+"\n")
 
 # Boolean options
 reload_viewer   = options.reload_viewer
@@ -275,8 +276,9 @@ for ext in filter(keep_filter_log,keep):
 # okular doesn't behave nicly even with --unique switch.
 
 # Set environment
-for var in env:
-    os.putenv(var[0], var[1])
+if options.env != "default":
+    for var in env:
+        os.putenv(var[0], var[1])
 
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0

@@ -169,8 +169,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     and "scrollmode".
 9.2:
   - Debug modes has changed: |atp-debug-mode-debug|, |atp-debug-mode-Debug|
-    and are more usable now. See also |g:atp_DefaultDebugMode| and
-    |atp-:DebugMode|.
+    and are more usable now. See also |g:atp_DefaultDebugMode|,
+    |atp-:DebugMode| and |g:atp_DebugModeQuickFixHeight|.
 							*g:atp_ProgressBar*
 9.2!!:
 >
@@ -617,7 +617,7 @@ forth between you |b:atp_OutDir| and the temporary directory)
 <		If unset you will get a message when compiler ends.
 		If set the number next to the name of your compiler indicates
 		how many instances are currently running.
-	* The LOG FILE will be automatically read after compilation.
+	* The LOG FILE will be automatically read after compilation (|cgetfile|).
 
 							*atp-debug-mode-silent*
 	* if t:atp_DebugMode 	= 'silent'
@@ -661,7 +661,13 @@ forth between you |b:atp_OutDir| and the temporary directory)
 	 The background compilation is always done in |g:atp_DefaultDebugMode|.
 	 Unless it is set to 'verbose' in which case 'debug' mode is used. 
 
+						    	*g:atp_DebugModeQuickFixHeight*
+g:atp_DebugModeQuickFixHeight = 8
+	This is the maximal height of |quickfix| window when opened by ATP.
+
+	 						*atp-debug-mode-maps*
 	 You can invoke compiler in the 'debug' mode with '<LocalLeader>d',
+	 '<LocalLeader>D' for 'Debug' mode (jump to first error),
 	 '<LocalLeader>l' uses the default mode.
 	 						*g:atp_DefaultDebugMode*
 > 
@@ -675,6 +681,26 @@ forth between you |b:atp_OutDir| and the temporary directory)
 	Command which help to set |t:atp_DebugMode| variable (has nice completion).
 	{debug-mode} is one of "silent", "debug", "Debug", "verbose". If now
 	argument is given it shows the current debug mode.
+
+	:DebugMode[!] silent
+		It will load error file (|cgetfile|) with bang "!" it will
+		open |quickfix| window if there are errors (|cwindow|). If
+		|quickfix| window was opened it will be closed.
+		Sets |t:atp_DebugMode|='silent'.
+	:DebugMode debug	
+		It will load error file (|cgetfile|) and open |quickfix|
+		window with |copen|.
+		Sets |t:atp_DebugMode|='debug'
+	:DebugMode Debug	
+		It will load error file (|cgetfile|) and open |quickfix|
+		window with |copen|.
+		Sets |t:atp_DebugMode|='Debug'
+	:DebugMode verbose	
+		Sets |t:atp_DebugMode|='verbose'
+
+	The height of the |quickfix| window will be one more than the length
+	of quick fix list (|getqflist()|) but nor more than
+	|g:atp_DebugModeQuickFixHeight|.
 							
 
 							*b:atp_ReloadOnError*

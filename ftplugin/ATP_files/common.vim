@@ -607,7 +607,7 @@ function! ATPRunning() "{{{
 	endfor
 
 	if exists("b:atp_ProgressBar") && b:atp_ProgressBar != ''
-	    let progress_bar="[".b:atp_ProgressBar."]"
+	    let progress_bar="[".b:atp_ProgressBar."]".( g:atp_statusOutDir ? " " : "" )
 	else
 	    let progress_bar=""
 	endif

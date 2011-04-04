@@ -907,7 +907,9 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let g:debugPC_verbose=a:verbose
     let g:debugPC_bang=a:bang
 
-    let b:atp_LastLatexPID = -1
+    if t:atp_DebugMode != 'verbose'
+	let b:atp_LastLatexPID = -1
+    endif
     
     if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
 		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
@@ -967,7 +969,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
-		\ ." --env ".b:atp_TexCompilerVariable
+		\ .(t:atp_DebugMode == 'verbose' ? '--env default' : " --env ".b:atp_TexCompilerVariable)
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     let g:cmd=cmd
     " Write file
@@ -1544,6 +1546,7 @@ nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("", "verbose")<CR>
 function! <SID>SetErrorFormat(...)
 
     let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+"     let l:cgetfile = ( a:0 >=2 ? a:2 : 1 )
 
     let &l:errorformat=""
     if ( carg =~ 'e' || carg =~# 'all' ) 
@@ -1676,6 +1679,9 @@ function! <SID>SetErrorFormat(...)
 " 			    removed after GType
 " 			    \%-G\ ...%.%#,
     endif
+"     if l:cgetfile
+" 	cgetfile
+"     endif
 endfunction
 "}}}
 "{{{ ShowErrors
@@ -1756,7 +1762,8 @@ command! -buffer -nargs=? -bang -count=1 -complete=customlist,TEX_Comp TEX	:call
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? Bibtex			:call <SID>Bibtex(<q-bang>, <f-args>)
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
-augroup ATP_QuickFixCmds
+augroup ATP_QuickFixCmds_1
+    au!
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat :call <SID>SetErrorFormat(<f-args>) | cg
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags ShowErrors :call <SID>SetErrorFormat(<f-args>) | cg
     au FileType qf :call <SID>SetErrorFormat(g:atp_DefaultErrorFormat)
