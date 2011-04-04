@@ -134,7 +134,6 @@ function! atplib#CallBack(mode,...)
 
     " If the compiler was called by autocommand.
     let AU = ( a:0 >= 1 ? a:1 : 'COM' )
-    let g:AU = AU 
 
     for cmd in keys(g:CompilerMsg_Dict) 
     if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -148,6 +147,7 @@ function! atplib#CallBack(mode,...)
 
     " Read the log file
     cg
+    error=len(getqflist())
 
     " If the log file is open re read it / it has 'autoread' opion set /
     checktime
@@ -171,7 +171,6 @@ function! atplib#CallBack(mode,...)
     endif
 
     let showed_message = 0
-    let g:debugCallBack= "A"
     if b:atp_TexReturnCode && ( t:atp_DebugMode != "silent" || a:mode != 'silent' )
 	redraw!
 	let redraw = 1
@@ -180,7 +179,6 @@ function! atplib#CallBack(mode,...)
 	else
 	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexReturnCode . " output file not reloaded."
 	endif
-	let g:debugCallBeck=5
 	let showed_message = 1
     elseif !g:atp_statusNotif || !g:atp_statusline
 	echomsg "[ATP:] ".Compiler." finished"
@@ -188,7 +186,7 @@ function! atplib#CallBack(mode,...)
     endif
 
     " End the debug mode if there are no errors
-    if b:atp_TexReturnCode == 0 && ( t:atp_DebugMode ==? 'debug' )
+    if !error && ( t:atp_DebugMode ==? 'debug' )
 	cclose
 	redraw!
 	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexReturnCode . " going out of debuging mode."
@@ -219,9 +217,8 @@ function! atplib#CallBack(mode,...)
 	    cc
 	endif
     endif
-    if ( t:atp_DebugMode == "silent" || a:mode == "silent" ) && b:atp_TexReturnCode == "0"
+    if  !error && ( t:atp_DebugMode == "silent" || a:mode == "silent" )
 	if t:atp_QuickFixOpen 
-	    let g:debugCallBack		.=0
 	    let t:atp_QuickFixOpen 	= 0
 	    cclose
 	    redraw!
@@ -234,9 +231,10 @@ function! atplib#CallBack(mode,...)
     endif
 
     if atp_DebugMode != 'silent' && b:atp_BibtexReturnCode
-	redraw!
-	let redraw			= 1
-	let g:debug=1
+	if !redraw
+	    redraw!
+	    let redraw			= 1
+	endif
 	echo b:atp_BibtexOutput 
     endif
 
@@ -4739,4 +4737,3 @@ endfunction
 " }}}1
 
 " vim:fdm=marker:ff=unix:noet:ts=8:sw=4:fdc=1
-

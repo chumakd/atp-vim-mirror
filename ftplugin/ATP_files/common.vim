@@ -777,7 +777,8 @@ command! -buffer InputFiles 		:call UpdateMainFile() | :call FindInputFiles(atpl
 command! -buffer SetNotificationColor :call s:SetNotificationColor()
 augroup ATP_SetStatusLineNotificationColor
     au!
-    au BufEnter 	*tex 	:call s:SetNotificationColor()
+    au VimEnter 	*.tex 	:call s:SetNotificationColor()
+    au BufEnter 	*.tex 	:call s:SetNotificationColor()
     au ColorScheme 	* 	:call s:SetNotificationColor()
 augroup END
 "}}}

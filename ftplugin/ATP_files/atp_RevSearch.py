@@ -1,6 +1,7 @@
 #!/usr/bin/python
-# This file is a part of ATP plugin to vim.
-# AUTHOR: Marcin Szamotulski
+# Author: Marcin Szamotulski <mszamot[@]gmail[.]com>
+# This script is a part of Automatic TeX Plugin for Vim.
+# It can be destributed seprately under General Public Licence ver.3 or higher.
 
 # SYNTAX:
 # atp_RevSearch.py <file> <line_nr> [<col_nr>]

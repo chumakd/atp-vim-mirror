@@ -4,8 +4,8 @@
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " 
 " Language:	    tex
-" Last Change: Sun Mar 20 05:00  2011 W
-" GetLatestVimScripts: 2945 61 :AutoInstall: tex_atp.vim
+" Last Change: Sun Apr 03 07:00  2011 W
+" GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
 " 	  This file is a part of Automatic Tex Plugin for Vim.

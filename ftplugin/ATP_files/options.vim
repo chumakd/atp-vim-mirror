@@ -285,6 +285,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_DefaultErrorFormat")
+    let g:atp_DefaultErrorFormat = "erc"
+endif
 if !exists("g:atp_DefiSearchMaxWindowHeight")
     let g:atp_DefiSearchMaxWindowHeight=15
 endif
@@ -2016,11 +2019,16 @@ function! CompilerComp(A,L,P)
     return compilers
 endfunction
 
-command! -buffer -nargs=1 -complete=customlist,DebugComp DebugMode	:let t:atp_DebugMode=<q-args>
+function! <SID>SetDebugMode(...)
+    if a:0 == 0
+	echo t:atp_DebugMode
+    else
+	let t:atp_DebugMode=a:1
+    endif
+endfunction
+command! -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<f-args>)
 function! DebugComp(A,L,P)
-    let modes = [ 'silent', 'debug', 'Debug', 'verbose']
-    call filter(modes, "v:val =~ '^' . a:A")
-    return modes
+    return "silent\ndebug\nDebug\nverbose"
 endfunction
 "}}}1
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

@@ -1,7 +1,9 @@
 #!/usr/bin/python
+# Author: Marcin Szamotulski <mszamot[@]gmail[.]com>
+# This file is a part of Automatic TeX Plugin for Vim.
 
 import sys, os.path, shutil, subprocess, re, psutil, tempfile, optparse 
-from os import chdir, readlink, mkdir
+from os import chdir, readlink, mkdir, putenv
 from optparse import OptionParser
 from collections import deque
 
@@ -264,6 +266,8 @@ for ext in filter(keep_filter_log,keep):
 # Can we test if xpdf started properly?
 # okular doesn't behave nicly even with --unique switch.
 # COMPILE
+
+os.putenv("max_print_line", "2000")
 
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0

@@ -1541,21 +1541,18 @@ nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("", "verbose")<CR>
 " first argument is a word in flags 
 " the default is a:1=e /show only error messages/
 function! <SID>SetErrorFormat(...)
-    if a:0 > 0
-	let b:arg1=a:1
-	if a:0 > 1
-	    let b:arg1.=" ".a:2
-	endif
-    endif
+
+    let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+
     let &l:errorformat=""
-    if a:0 == 0 || a:0 > 0 && a:1 =~ 'e'
+    if ( carg =~ 'e' || carg =~# 'all' ) 
 	if &l:errorformat == ""
 	    let &l:errorformat= "%E!\ LaTeX\ %trror:\ %m,\%E!\ %m,%E!pdfTeX %trror:\ %m"
 	else
 	    let &l:errorformat= &l:errorformat . ",%E!\ LaTeX\ %trror:\ %m,\%E!\ %m,%E!pdfTeX %trror:\ %m"
 	endif
     endif
-    if a:0>0 &&  ( a:1 =~ 'w' || a:1 =~# 'all' )
+    if ( carg =~ 'w' || carg =~# 'all' )
 	if &l:errorformat == ""
 	    let &l:errorformat='%WLaTeX\ %tarning:\ %m\ on\ input\ line\ %l%.,
 			\%WLaTeX\ %.%#Warning:\ %m,
@@ -1571,7 +1568,7 @@ function! <SID>SetErrorFormat(...)
 " 			\%+W%.%#\ at\ lines\ %l--%*\\d'
 	endif
     endif
-    if ( a:0>0 && a:1 =~ '\Cc' || a:1 =~# 'all' )
+    if ( carg =~ '\Cc' || carg =~# 'all' )
 " NOTE:
 " I would like to include 'Reference/Citation' as an error message (into %m)
 " but not include the 'LaTeX Warning:'. I don't see how to do that actually. 
@@ -1583,21 +1580,21 @@ function! <SID>SetErrorFormat(...)
 	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Warning:\ Citation\ %m\ on\ input\ line\ %l%.%#"
 	endif
     endif
-    if ( a:0>0 && a:1 =~ '\Cr' || a:1 =~# 'all' )
+    if ( carg =~ '\Cr' || carg =~# 'all' )
 	if &l:errorformat == ""
 	    let &l:errorformat = "%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
 	else
 	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
 	endif
     endif
-    if a:0>0 && a:1 =~ '\Cf'
+    if carg =~ '\Cf'
 	if &l:errorformat == ""
 	    let &l:errorformat = "%WLaTeX\ Font\ Warning:\ %m,%Z(Font) %m on input line %l%.%#"
 	else
 	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Font\ Warning:\ %m,%Z(Font) %m on input line %l%.%#"
 	endif
     endif
-    if a:0>0 && a:1 =~ '\Cfi'
+    if carg =~ '\Cfi'
 	if &l:errorformat == ""
 	    let &l:errorformat = '%ILatex\ Font\ Info:\ %m on input line %l%.%#,
 			\%ILatex\ Font\ Info:\ %m,
@@ -1610,14 +1607,14 @@ function! <SID>SetErrorFormat(...)
 			\%C\ %m on input line %l%.%#'
 	endif
     endif
-    if a:0>0 && a:1 =~ '\CF'
+    if carg =~ '\CF'
 	if &l:errorformat == ""
 	    let &l:errorformat = 'File: %m'
 	else
 	    let &l:errorformat = &l:errorformat . ',File: %m'
 	endif
     endif
-    if a:0>0 && a:1 =~ '\Cp'
+    if carg =~ '\Cp'
 	if &l:errorformat == ""
 	    let &l:errorformat = 'Package: %m'
 	else
@@ -1629,11 +1626,10 @@ function! <SID>SetErrorFormat(...)
 	let pm = ( g:atp_show_all_lines == 1 ? '+' : '-' )
 
 	let l:dont_ignore = 0
-	if a:0 >= 1 && a:1 =~ '\CA\cll'
+	if carg =~ '\CA\cll'
 	    let l:dont_ignore = 1
 	    let pm = '+'
 	endif
-	let b:dont_ignore=l:dont_ignore.a:0
 
 	let &l:errorformat = &l:errorformat.",
 		    	    \%Cl.%l\ %m,
@@ -1714,7 +1710,7 @@ function! ShowErrors(...)
     call writefile(log, errorfile)
     
     " set errorformat 
-    let l:arg = ( a:0 > 0 ? a:1 : "e" )
+    let l:arg = ( a:0 >= 1 ? a:1 : g:atp_DefaultErrorFormat )
 
     if l:arg =~ 'o'
 	OpenLog
@@ -1758,8 +1754,14 @@ command! -buffer -bang 		MakeLatex		:call <SID>MakeLatex(( g:atp_RelativePath ? 
 command! -buffer -nargs=? -bang -count=1 -complete=customlist,TEX_Comp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? Bibtex			:call <SID>Bibtex(<q-bang>, <f-args>)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
+augroup ATP_QuickFixCmds
+    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat :call <SID>SetErrorFormat(<f-args>) | cg
+    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags ShowErrors :call <SID>SetErrorFormat(<f-args>) | cg
+    au FileType qf :call <SID>SetErrorFormat(g:atp_DefaultErrorFormat)
+augroup END
 command! -buffer -nargs=? 	SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
-command! -buffer -nargs=? 	SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
+exe "SetErrorFormat ".g:atp_DefaultErrorFormat
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call ShowErrors(<f-args>)
 " }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

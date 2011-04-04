@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 March 2011
 
-			An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 8.8)
+			An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2)
 				by Marcin Szamotulski
 			    mszamot [AT] gmail [DOT] com
 			----------------------------------------
@@ -85,6 +85,9 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 ================================================================================
 NEWS							*atp-news*
 
+This was quite active time for ATP, there are a lot of nice (I hope useful)
+changes:
+
 >
   Changes in versions 9 & 9.1 & 9.2
 <
@@ -111,6 +114,9 @@ NEWS							*atp-news*
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
 
 NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
+9.2:
+  - This is a very handy change: unified way to goto next section/environment
+    with the commads |atp-:F| (forward) and |atp-:B| (backward).
 9.2:							
 							*atp-compile.py*
   - There are two function compile which can compile your tex file: a newly
@@ -142,20 +148,26 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     getting signal that latex has ended). In many situations this was failing.
     The new method works better, however it shows that latex is running
     after slightly longer period of time (not that first python must run the
-    script and then run latex). >
-
+    script and then run latex). 
+							*b:atp_TexReturnCode*	
+    The variable |b:atp_TexReturnCode| stores the return code of compilation.
+>
     REQUIRMENTS:
 < (1)	The script is written in python version 3.1 (and it works in python 2.6).
 	The only non standard library that it uses is psutil. You can get it from:
 	    http://code.google.com/p/psutil/
 	or (better) use your os specific instalation tools.		
 
-    							*b:atp_VerboseLatexInteractioMode*
+    							*b:atp_VerboseLatexInteractionMode*
     There is also a small enhacment in verbose debug mode. You can decide what
     it the value of latex '-interaction=' switch. The default now is
     "errorstopmode". Thus this gives the classical compilation, when latex
     stops on errors. The other possible values are: "batchmode", "nonstopmode"
     and "scrollmode".
+9.2:
+  - Debug modes has changed: |atp-debug-mode-debug|, |atp-debug-mode-Debug|
+    and are more usable now. See also |g:atp_DefaultDebugMode| and
+    |atp-:DebugMode|.
 							*g:atp_ProgressBar*
 9.2!!:
 >
@@ -167,7 +179,13 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 
     You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature to work.
     You can also use the variable: 
-    							*b:atp_ProgressBar*
+9.2
+  - if you use python compiler (the default new compiler |g:atp_Compiler|)
+    the command |atp-:Bibtex|! (with bang) will show you bibtex output while
+    you're in debug mode. You can access retrun code of bibtex via
+    b:atp_BibtexReturnCode, and bibtex output via b:atp_BibtexOutput. 
+    Note: However the fasted way to see the bibtex output is to use |atp-:Bibtex|
+    (without a bang "!").
 >
  b:atp_ProgressBar
 <   This is read only variable. It is equal to empty string '' if compilation
@@ -204,7 +222,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     (it is easy but needs you to do that).
 9.2:    
   - Reverse searching python script atp_RevSearch.py is slightly better now!
-9.1: IMPORTANT: The default is: >
+
+9.1!!: IMPORTANT: The default is: >
 	let b:atp_TmpDir='.tmp'
 <   ATP will make this directory under |b:atp_OutDir|. Every latex process
     will be run in a private directory under it. Every private directory is
@@ -213,7 +232,31 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     the directory will not be removed. 
 							*atp-:WrapEnvironment*
 9.2:
-  - :WrapEnvironment command wra
+  - :WrapEnvironment {environment} command, mark part of the text and wrap it into
+    anvironment given as the argument.
+
+9.2:
+  - :SetErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
+    they set error format and reloads the errorfile.
+9.2:
+  - There is new flag for |atp-:ShowErrors| and |atp-:SetErrorFormat|: "all"
+    and "All" - "all" is used to filter using all the flags, "All" to not
+    filter at All ;).
+							|g:atp_DefaltErrorFormat|
+9.2:    
+  - g:atp_DefaultErrorFormat = "erc". The value is the  same as argument to
+    |atp-:ShowErrors| and |atp-:SetErrorFormat|. This is the default argument
+    for these commands when they are used without any argument. Corresponding
+    'errorformat' is set at startup.
+							*g:atp_DefaultCmdHeight*
+9.2:
+  - g:atp_DefaultCmdHeight - the default cmd height (see |cmdheight|) for the
+    debug mode. ATP will switch to it back and forth if needed. By default it
+    is set to |cmdheigh| value (thus unless you set it to sth else you will
+    not see the difference). 
+
+    Note: if you change |cmdheight| you should also change g:atp_DefaultCmdHeight, 
+    unfortunatelly vim has not autocommand group evnet to do that automatically.
 
 9.1:  
   - :SetOkular						*atp-:SetOkular*
@@ -308,17 +351,21 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     packages).
 
   - b:atp_autex file is only set to 1 for files with 'tex' extension.
-9.1
+9.1:
   - one more wrapper: for \mbox{:} with <WrapperLeader>mb, see
     |atp-maps-WrapSelection|.
-9.1    
+9.1:    
   - :SyncLog is now called |atp-:LogSync|,
     g:atp_SyncLog is now |g:atp_LogSync|.
-9.2
+9.2:
   - a section on mupdf viewer in |atp-Viewers|.
-9.2    
-  - :YankSection
+9.2:    
+  - |atp-:YankSection|
   - Some other fixes.
+9.2:
+  - |atp-:AMSRef| command is using pyhon code to get the data from AMS web
+    interface (this makes it portable). wget is no longer used.
+
     						Chears, Marcin
 >
   Changes in version 8.7
@@ -569,9 +616,11 @@ forth between you |b:atp_OutDir| and the temporary directory)
 		how many instances are currently running.
 	* The LOG FILE will be automatically read after compilation.
 
+							*atp-debug-mode-silent*
 	* if t:atp_DebugMode 	= 'silent'
 			   You will not get any message from compilation. 
 
+							*atp-debug-mode-debug*
 				= 'debug'
 			   After the end of compilation (invoked by the user
 			   or autocommand) you will get a message with the
@@ -580,15 +629,24 @@ forth between you |b:atp_OutDir| and the temporary directory)
 			   If you open the error window with :copen or with
 			   the menu option ToggleDebugMode then it will be
 			   automatically closed after first compilation with
-			   exist status 0 (both in 'silent' and 'debug' debug
-			   mode). If the debug mode was 'debug'
-			   |t:atp_DebugMode| will be set to |g:atp_DefaultDebugMode|.
+			   no errors (both in 'silent' and 'debug' debug
+			   mode); This depends on |errorformat| which you can
+			   set with |atp-:SetErrorFormat| and |atp-:ShowErrors| 
+			   - ATP test for no errors is len(|getqflist()|). If
+			   the debug mode was 'debug' |t:atp_DebugMode| will
+			   be set to |g:atp_DefaultDebugMode|.
 
+							*atp-debug-mode-Debug*
+				= 'Debug'
+			   This mode is the same as 'debug' + after
+			   compilation ATP jumps to first error.	
+
+							*atp-debug-mode-verbose*
 			   	= 'verbose'
 			   Every compilation which is invoked by the user will
 			   be run in verbose mode (this mode is mapped to <F5> key). 
 			   In this mode latex '-interaction=' switch is set
-			   from the variable |b:atp_VerboseLatexInteractioMode|
+			   from the variable |b:atp_VerboseLatexInteractionMode|
 			   (the default value is errorstop mode).
 
 	Note: the 'verbose' mode in 'Vim' (in console) needs to be run, when
@@ -611,8 +669,9 @@ forth between you |b:atp_OutDir| and the temporary directory)
 	mode if compilation ends with exit status 0.
 
 :DebugMode {debug-mode}					*atp-:DebugMode*
-	Command which help to set b:atp_DebugMode variable (has nice completion).
-	{debug-mode} is one of "silent", "debug", "verbose".
+	Command which help to set |t:atp_DebugMode| variable (has nice completion).
+	{debug-mode} is one of "silent", "debug", "Debug", "verbose". If now
+	argument is given it shows the current debug mode.
 							
 
 							*b:atp_ReloadOnError*
@@ -704,14 +763,22 @@ map <F5>,imap <F5>
 					for example fd files that LaTeX is using
 		p		- show packages loaded by tex 
 				    (messages which start with 'Package: ')
-		all		- show all the log file		    
+		all		- show all above,
+		All		- show All the log file,
 		o		- open the log file in a new buffer (split).
 <
-	If none flag is given 'e' is used.  If 'o' flag is used the split
-	buffer with log message has a map 'q' to ':bd'.  
-	Example: >
+	If none flag is given |g:atp_DefaultErrorFormat| value is used.  If
+	'o' flag is used the split buffer with log message has a map 'q' to
+	':bd'.  Example: >
 		:ShowErrors rc
 <	will show all reference and citation warnings.
+
+							*g:atp_DefaultErrorFormat*
+g:atp_DefaultErrorFormat = 'erc' 
+    The value is the  same as argument to |atp-:ShowErrors| and
+    |atp-:SetErrorFormat|. This is the default argument for these commands
+    when they are used without any argument. Also corresponding 'errorformat'
+    is set up at startup.
 
 ShowErrors maps:					*atp-:ShowErrors-maps* 
 
@@ -726,12 +793,12 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 			this is a mapping to the |atp-:OpenLog|.
 
 :SetErrorFormat {flag} 					*atp-:SetErrorFormat*
-	This command has the same syntax as :ShowErrors. It only sets the
+	This command has the same syntax as |atp-:ShowErrors|. It only sets the
 	|'erroformat'| variable.
 						 
 
 :Compiler {compiler-program}				*atp-:Compiler*
-	Command which help to set b:atp_TexCompiler variable (with
+	Command which help to set |b:atp_TexCompiler| variable (with
 	completion).
 
 :Bibtex[!] [debug_mode]					*atp-:Bibtex*
@@ -1204,6 +1271,17 @@ map \L
 	Without bang "!" the labels data base will not be generated.
 	Difference of \t and \L  is that \L regenerates the database (which is
 	quite fast).
+
+							*atp-:F*
+:F {arg}							
+	Go (forward) to {arg}, {arg} might be: part, section, subsection,
+	subsubsection, and defined environment. You can use command completion
+	which uses all the locally defined environments.
+
+							*atp-:B*
+:B {arg}
+	Go (backward) to {arg}, like above |atp-:F|.
+
 
 							*atp-:NEnv* *atp-}e*
 :NEnv {environment}
