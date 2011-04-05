@@ -907,7 +907,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let g:debugPC_verbose=a:verbose
     let g:debugPC_bang=a:bang
 
-    if t:atp_DebugMode != 'verbose'
+    if t:atp_DebugMode != 'verbose' && a:verbose != 'verbose'
 	let b:atp_LastLatexPID = -1
     endif
     
@@ -969,7 +969,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
-		\ .(t:atp_DebugMode == 'verbose' ? '--env default' : " --env ".b:atp_TexCompilerVariable)
+		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".b:atp_TexCompilerVariable)
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     let g:cmd=cmd
     " Write file
@@ -1430,9 +1430,21 @@ function! <SID>TeX(runs, bang, ...)
 "     echomsg "TEX_1 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
 
     if a:0 >= 1
-	let mode = ( a:1 != 'default' ? a:1 : g:atp_DefaultDebugMode )
+	let mode = ( a:1 != 'default' ? a:1 : t:atp_DebugMode )
     else
-	let mode = g:atp_DefaultDebugMode
+	let mode = t:atp_DebugMode
+    endif
+
+    if mode =~# '^s\%[ilent]$'
+	let mode = 'silent'
+    elseif mode =~# '^d\%[ebug]$'
+	let mode = '^debug'
+    elseif mode =~# 'D\%[ebug]$'
+	let mode = 'Debug'
+    elseif mode =~#  '^v\%[erbose]$'
+	let mode = 'verbose'
+    else
+	let mode = t:atp_DebugMode
     endif
 
     for cmd in keys(g:CompilerMsg_Dict) 
@@ -1462,9 +1474,6 @@ function! <SID>TeX(runs, bang, ...)
     else
 	call <SID>Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
     endif
-endfunction
-function! TEX_Comp(ArgLead, CmdLine, CursorPos)
-    return filter(['silent', 'debug', 'verbose'], "v:val =~ '^' . a:ArgLead")
 endfunction
 " command! -buffer -count=1	VTEX		:call <SID>TeX(<count>, 'verbose') 
 noremap <silent> <Plug>ATP_TeXCurrent		:<C-U>call <SID>TeX(v:count1, "", t:atp_DebugMode)<CR>
@@ -1499,19 +1508,36 @@ function! <SID>SimpleBibtex()
 endfunction
 nnoremap <silent> <Plug>SimpleBibtex	:call <SID>SimpleBibtex()<CR>
 
-function! <SID>Bibtex(bang,...)
+function! <SID>Bibtex(bang, ...)
     if a:bang == ""
 	call <SID>SimpleBibtex()
 	return
     endif
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let g:a=a:0
 
     if a:0 >= 1
-	let mode = ( a:1 != 'default' ? a:1 : g:atp_DefaultDebugMode )
+	let mode = ( a:1 != 'default' ? a:1 : t:atp_DebugMode )
     else
-	let mode = g:atp_DefaultDebugMode
+	let mode = t:atp_DebugMode
     endif
+
+    let g:mode0 = mode
+
+    if mode =~# '^s\%[ilent]$'
+	let mode = 'silent'
+    elseif mode =~# '^d\%[ebug]$'
+	let mode = '^debug'
+    elseif mode =~# 'D\%[ebug]$'
+	let mode = 'Debug'
+    elseif mode =~#  '^v\%[erbose]$'
+	let mode = 'verbose'
+    else
+	let mode = t:atp_DebugMode
+    endif
+
+    let g:mode = mode
 
     if g:atp_Compiler == 'python'
 	call <SID>PythonCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
@@ -1519,9 +1545,10 @@ function! <SID>Bibtex(bang,...)
 	call <SID>Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")
     endif
 endfunction
-nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("", "")<CR>
+nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("", "default")<CR>
 nnoremap <silent> <Plug>BibtexSilent	:call <SID>Bibtex("", "silent")<CR>
-nnoremap <silent> <Plug>BibtexDebug	:call <SID>Bibtex("", "debug")<CR>
+nnoremap <silent> <Plug>Bibtexdebug	:call <SID>Bibtex("", "debug")<CR>
+nnoremap <silent> <Plug>BibtexDebug	:call <SID>Bibtex("", "Debug")<CR>
 nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("", "verbose")<CR>
 "}}}
 
@@ -1758,10 +1785,10 @@ command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
 command! -buffer 		SyncTex			:call <SID>SyncTex(0)
 command! -buffer 		PID			:call <SID>GetPID()
 command! -buffer -bang 		MakeLatex		:call <SID>MakeLatex(( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile ), 0,0, [],1,1,<q-bang>,1)
-command! -buffer -nargs=? -bang -count=1 -complete=customlist,TEX_Comp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
+command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
-command! -buffer -bang -nargs=? Bibtex			:call <SID>Bibtex(<q-bang>, <f-args>)
-command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
+command! -buffer -bang -nargs=? -complete=custom,DebugComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>)
 augroup ATP_QuickFixCmds_1
     au!
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat :call <SID>SetErrorFormat(<f-args>) | cg

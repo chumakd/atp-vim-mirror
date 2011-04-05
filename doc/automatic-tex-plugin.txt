@@ -180,13 +180,13 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     LaTeX. If by some reason, you want to switch this off, set
     g:atp_ProgressBar to 0 (use |let|).
 
-    You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature to work.
-    You can also use the variable: 
+    You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature
+    to work (see also |laststatus|).
 9.2
   - if you use python compiler (the default new compiler |g:atp_Compiler|)
     the command |atp-:Bibtex|! (with bang) will show you bibtex output while
     you're in debug mode. You can access retrun code of bibtex via
-    b:atp_BibtexReturnCode, and bibtex output via b:atp_BibtexOutput. 
+    b:atp_BibtexReturnCode, and bibtex output via |b:atp_BibtexOutput|. 
     Note: However the fasted way to see the bibtex output is to use |atp-:Bibtex|
     (without a bang "!").
 >
@@ -679,23 +679,28 @@ g:atp_DebugModeQuickFixHeight = 8
 
 :DebugMode {debug-mode}					*atp-:DebugMode*
 	Command which help to set |t:atp_DebugMode| variable (has nice completion).
-	{debug-mode} is one of "silent", "debug", "Debug", "verbose". If now
-	argument is given it shows the current debug mode.
+	{debug-mode} is one of "silent", "debug", "Debug", "verbose" (they can
+	be suppressed to 's', 'd', 'D' or 'v' (or "si"/"sil"/"sile"/... etc).
+	If no argument is given it shows the current debug mode.
 
 	:DebugMode[!] silent
+	(:DebugMode[!] s)
 		It will load error file (|cgetfile|) with bang "!" it will
 		open |quickfix| window if there are errors (|cwindow|). If
 		|quickfix| window was opened it will be closed.
 		Sets |t:atp_DebugMode|='silent'.
 	:DebugMode debug	
+	(:DebugMode[!] d)
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |copen|.
 		Sets |t:atp_DebugMode|='debug'
 	:DebugMode Debug	
+	(:DebugMode[!] D)
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |copen|.
 		Sets |t:atp_DebugMode|='Debug'
 	:DebugMode verbose	
+	(:DebugMode[!] v)
 		Sets |t:atp_DebugMode|='verbose'
 
 	The height of the |quickfix| window will be one more than the length
@@ -745,8 +750,10 @@ map \l, map \d
 	number).
 
 	The optional argument [debug_mode] has possible values: '', 'silent',
-	'debug', 'verbose'. When '' the value of |g:atp_DefaultDebugMode| is
-	used. See the description of |atp-debug-mode|.
+	'debug', 'Debug', 'verbose'. When '' the current debug mode is used
+	(|t:atp_DebugMode|). ( [debug_mode] can be suppressed to 's', 'd',
+	'D', 'v' or "si"/"sil"/"sile"/... etc.) See the description of
+	|atp-debug-mode|.
 
 	\d is mapped to :TEX debug and \l to :TEX (thus it uses your default
 	debug mode).
@@ -832,16 +839,24 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 
 :Bibtex[!] [debug_mode]					*atp-:Bibtex*
 map \b
+    With BANG "!":
 	This function will call bibtex to produce the bibliography file
 	(.bbl). If in |b:atp_OutDir| there is no 'aux' file it first calls tex
 	compiler. After the 'bbl' file is produced two consecutive runs of tex
 	compiler are called to make the bibliography.
 
-	If you specify any value to the [debug_mode] option then then this function
-	will be called in verbose mode (only the last time tex compiler will
-	run in errorstop mode). This gives you the chance to see the output of
-	bibtex command for a second. The command :Bibtex v is associated to
-	this behaviour. If you want to just run bibtex see the next function.
+	If you specify any value to the [debug_mode] option (for the values
+	see |atp-:TEX|) In verbose mode (only the last time tex compiler will
+	run in errorstop mode and echoed to the console). This gives you the
+	chance to see the output of bibtex command (it will be also printed
+	when latex ends). 
+	
+	If bibtex returns with non zero exit code, latex will not be run
+	afterwards. 
+	
+    Wihtout BANG "!"
+	If you want to just run bibtex use :Bibtex without
+	bang.
 
 	The command :Bibtex  will :call Bibtex(), while :Bibtex v
 	(and :Bibtex [debug_mode]) will :call Bibtex(1)
@@ -3387,7 +3402,10 @@ map <F5>,imap <F5>, :VTEX
 map \v,map <F3>, imap \v, imap <F3>  
 
 :Bibtex[!]	run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX
-map \b
+map \b		if you use |g:atp_Compiler|='python' and BibTeX returned with 
+		errors the compilation will stop. In the debug mode you will 
+		also get BibTeX output. It is stored in |b:atp_BibtexOutput|,
+		BibTeX return code is in |b:atp_BibtexReturnCode|.
 
 :OpenLog, :ShowErrors o
 map <F6>l, imap <F6>l

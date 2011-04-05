@@ -128,12 +128,16 @@ endfunction
 " Uses b:atp_TexReturnCode which is equal to the value returned by tex
 " compiler.
 function! atplib#CallBack(mode,...)
-    if g:atp_debugCallBack
-	let b:mode	= a:mode
-    endif
 
     " If the compiler was called by autocommand.
     let AU = ( a:0 >= 1 ? a:1 : 'COM' )
+    " Was compiler called to make bibtex
+    let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
+    if g:atp_debugCB
+	redir! > /tmp/atp_callback
+	let g:BIBTEX=BIBTEX
+	silent echo "BIBTEX =".BIBTEX
+    endif
 
     for cmd in keys(g:CompilerMsg_Dict) 
     if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -147,7 +151,7 @@ function! atplib#CallBack(mode,...)
 
     " Read the log file
     cg
-    error=len(getqflist())
+    error=len(getqflist()) + (BIBTEX == "True" ? b:atp_BibtexReturnCode : 0)
 
     " If the log file is open re read it / it has 'autoread' opion set /
     checktime
@@ -194,21 +198,23 @@ function! atplib#CallBack(mode,...)
 	let showed_message 	= 1
 	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
 	let &l:cmdheight 	= g:atp_cmdheight
-
     endif
 
     if a:mode == 'debug'
 	if !t:atp_QuickFixOpen
-	    if b:atp_TexReturnCode
+	    if len(getqflist())
 		let &l:cmdheight 	= g:atp_DebugModeCmdHeight
 		let showed_message 	= 1
 		let redraw 		= 1
-		call ShowErrors('e', !showed_message)
+		call ShowErrors(g:atp_DefaultErrorFormat, !showed_message)
 
 	    elseif !showed_message
 		let redraw 		= 1
-		echomsg "[ATP:] no errors :)"
-
+		if BIBTEX == "False" || BIBTEX == "True" && !b:atp_BibtexReturnCode
+		    echomsg "[ATP:] no errors :)"
+		else
+		    echomsg "[ATP:] " . b:atp_TexCompiler . " exited without errors (errorformat=".g:atp_DefaultErrorFormat.")"
+		endif
 	    endif
 	endif
 
@@ -217,6 +223,7 @@ function! atplib#CallBack(mode,...)
 	    cc
 	endif
     endif
+
     if  !error && ( t:atp_DebugMode == "silent" || a:mode == "silent" )
 	if t:atp_QuickFixOpen 
 	    let t:atp_QuickFixOpen 	= 0
@@ -230,7 +237,7 @@ function! atplib#CallBack(mode,...)
 	endif
     endif
 
-    if atp_DebugMode != 'silent' && b:atp_BibtexReturnCode
+    if (atp_DebugMode != 'silent' || a:mode != 'silent') && b:atp_BibtexReturnCode
 	if !redraw
 	    redraw!
 	    let redraw			= 1
@@ -242,6 +249,9 @@ function! atplib#CallBack(mode,...)
 	redraw!
     endif
     let g:showed_message=showed_message
+    if g:atp_debugCB
+	redir END
+    endif
 endfunction "}}}
 "{{{ LatexPID
 "Store LatexPIDs in a variable

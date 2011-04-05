@@ -6,6 +6,12 @@ Supported OS'es: Linux, Mac OS, Windows (need to be TESTED).
 Note: support of Windows is EXPERIMENTAL (not yet TESTED!). If you want to try
 it and you find a bug use mailing list to post the bug report, thanks!)
 
+-------------------------------------------------------------
+The directory 'releases' contains stable releases.
+The directory 'snapshots' contains unstable releases.
+
+-------------------------------------------------------------
+INSTALATION:
 
 To install vimball (vba) file you need to have Vimball Archiver plugin (see 
 :h vimball). If you have it, just open the vba file within vim and source it

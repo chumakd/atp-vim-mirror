@@ -2035,9 +2035,19 @@ function! <SID>SetDebugMode(bang,...)
 	echo t:atp_DebugMode
 	return
     else
-	let t:atp_DebugMode=a:1
+	if a:1 =~# 's\%[silent]'
+	    let t:atp_DebugMode= 'silent'
+	elseif a:1 =~# 'd\%[debug]'
+	    let t:atp_DebugMode= 'debug'
+	elseif a:1 =~# 'D\%[debug]'
+	    let t:atp_DebugMode= 'Debug'
+	elseif a:1 =~# 'v\%[verbose]'
+	    let t:atp_DebugMode= 'verbose'
+	else
+	    let t:atp_DebugMode= g:atp_DefaultDebugMode
+	endif
     endif
-    if a:1 == 'silent'
+    if a:1 =~# 's\%[ilent]'
 	let winnr=winnr()
 	if t:atp_QuickFixOpen
 	    cclose
@@ -2048,12 +2058,12 @@ function! <SID>SetDebugMode(bang,...)
 		exe winnr . "wincmd w"
 	    endif
 	endif
-    elseif a:1 ==# 'debug'
+    elseif a:1 =~# 'd\%[ebug]'
 	let winnr=winnr()
 	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
 	exe winnr . "wincmd w"
 	cgetfile
-    elseif a:1 ==# 'Debug'
+    elseif a:1 =~# 'D\%[ebug]'
 	let winnr=winnr()
 	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
 	exe winnr . "wincmd w"
