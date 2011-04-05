@@ -952,6 +952,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
     let aucommand = ( a:command == "AU" ? ' --aucommand ' : '' )
     let progress_bar = ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
+    let bibliographies = join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
     let g:gui_running = gui_running
     let g:bibtex=bibtex
     let g:reload_on_error=reload_on_error
@@ -969,6 +970,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
+		\ ." --bibliographies " . shellescape(bibliographies)
 		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".b:atp_TexCompilerVariable)
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     let g:cmd=cmd
@@ -1509,7 +1511,18 @@ endfunction
 nnoremap <silent> <Plug>SimpleBibtex	:call <SID>SimpleBibtex()<CR>
 
 function! <SID>Bibtex(bang, ...)
-    if a:bang == ""
+    if a:0 >= 1 && a:1 =~# '^o\%[utput]$'
+	redraw!
+	if exists("b:atp_BibtexReturnCode")
+	    echo "[Bib:] BibTeX returned with exit code " . b:atp_BibtexReturnCode
+	endif
+	if exists("b:atp_BibtexOutput")
+	    echo substitute(b:atp_BibtexOutput, '\(^\zs\|\n\)', '\1       ', "g")
+	else
+	    echo "No BibiTeX output."
+	endif
+	return
+    elseif a:bang == ""
 	call <SID>SimpleBibtex()
 	return
     endif
@@ -1544,6 +1557,9 @@ function! <SID>Bibtex(bang, ...)
     else
 	call <SID>Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")
     endif
+endfunction
+function! BibtexComp(A,L,P)
+	return "silent\ndebug\nDebug\nverbose\noutput"
 endfunction
 nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("", "default")<CR>
 nnoremap <silent> <Plug>BibtexSilent	:call <SID>Bibtex("", "silent")<CR>
@@ -1787,7 +1803,7 @@ command! -buffer 		PID			:call <SID>GetPID()
 command! -buffer -bang 		MakeLatex		:call <SID>MakeLatex(( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile ), 0,0, [],1,1,<q-bang>,1)
 command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
-command! -buffer -bang -nargs=? -complete=custom,DebugComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
+command! -buffer -bang -nargs=? -complete=custom,BibtexComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>)
 augroup ATP_QuickFixCmds_1
     au!

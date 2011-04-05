@@ -1451,7 +1451,7 @@ endif
 	\ "\\dashv", "\\vdash", "\\vDash", "\\Vdash", "\\models", "\\sim", "\\simeq", 
 	\ "\\prec", "\\preceq", "\\preccurlyeq", "\\precapprox", "\\mid",
 	\ "\\succ", "\\succeq", "\\succcurlyeq", "\\succapprox", "\\approx", 
-	\ "\\ldots", "\\cdots", "\\vdots", "\\ddots", "\\circ", 
+	\ "\\ldots", "\\cdot", "\\cdots", "\\vdots", "\\ddots", "\\circ", 
 	\ "\\thickapprox", "\\cong", "\\bullet",
 	\ "\\lhd", "\\unlhd", "\\rhd", "\\unrhd", "\\dagger", "\\ddager", "\\dag", "\\ddag", 
 	\ "\\vartriangleright", "\\vartriangleleft", 

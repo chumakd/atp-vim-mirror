@@ -38,6 +38,8 @@ parser.add_option("--reload-on-error",  action="store_true",    default=False,  
 parser.add_option("--bang",             action="store_false",   default=False,  dest="bang", help="force reloading on error (Xpdf only)")
 parser.add_option("--gui-running", "-g", action="store_true",   default=False,  dest="gui_running", help="if vim gui is running (has('gui_running'))") 
 parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar", help="send progress info back to gvim") 
+parser.add_option("--bibliographies",                           default="",     dest="bibliographies", help="command separated list of bibliographies")
+
 (options, args) = parser.parse_args()
 
 # Debug file should be changed for sth platform independent
@@ -98,6 +100,7 @@ if options.env != "default":
 # Boolean options
 reload_viewer   = options.reload_viewer
 bibtex          = options.bibtex
+bibliographies  = options.bibliographies.split(",")
 bang            = options.bang
 reload_on_error = options.reload_on_error
 gui_running     = options.gui_running
@@ -108,6 +111,7 @@ debug_file.write("AUCOMMAND "+aucommand+"\n")
 debug_file.write("PROGNAME "+progname+"\n")
 debug_file.write("COMMAND_OPT "+str(command_opt)+"\n")
 debug_file.write("MAINFILE_FP "+str(mainfile_fp)+"\n")
+debug_file.write("OUTPUT FORMAT "+str(output_format)+"\n")
 debug_file.write("EXT "+extension+"\n")
 debug_file.write("RUNS "+str(runs)+"\n")
 debug_file.write("VIM_SERVERNAME "+str(servername)+"\n")
@@ -117,6 +121,7 @@ debug_file.write("XPDF_SERVER "+str(XpdfServer)+"\n")
 debug_file.write("VIEWER_OPT "+str(viewer_opt)+"\n")
 debug_file.write("VERBOSE "+str(verbose)+"\n")
 debug_file.write("KEEP "+str(keep)+"\n")
+debug_file.write("BIBLIOGRAPHIES "+str(bibliographies)+"\n")
 debug_file.write("*BIBTEX "+str(bibtex)+"\n")
 debug_file.write("*BANG "+str(bang)+"\n")
 debug_file.write("*RELOAD_VIEWER "+str(reload_viewer)+"\n")
@@ -134,7 +139,7 @@ def latex_progress_bar(cmd):
 # Run latex and send data for progress bar,
 
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    pid   =child.pid
+    pid   = child.pid
     vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
     debug_file.write("latex pid "+str(pid)+"\n")
     stack = deque([])
@@ -266,6 +271,13 @@ for ext in filter(keep_filter_log,keep):
         debug_file.write(file_cp+' ')
         shutil.copy(file_cp, tmpdir)
 
+# Link local bibliographies:
+for bib in bibliographies:
+    if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
+        os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
+
+tempdir_list = os.listdir(tmpdir)
+debug_file.write("\n*** ls tmpdir "+str(tempdir_list)+"\n")
 ####################################
 #
 #       Compile:   
@@ -308,7 +320,7 @@ elif bibtex:
     # we need run latex at least 3 times
     runs=max([runs, 3])
 
-debug_file.write("RANGE="+str(range(1,int(runs+1)))+"\n")
+debug_file.write("\nRANGE="+str(range(1,int(runs+1)))+"\n")
 debug_file.write("RUNS="+str(runs)+"\n")
 for i in range(1, int(runs+1)):
     if verbose == "verbose" and i == 1 and bibtex:
@@ -363,6 +375,43 @@ for i in range(1, int(runs+1)):
 
 ####################################
 #
+#       Call Back Communication:   
+#
+####################################
+# this is not working in vim
+# within gvim it works (running a command doesn't suspend gvim) to be tested:
+# I'm not sure if these commands reach gvim. But latex status is not needed in
+# verbose mode can we add interaction as an option for verbose mode this would
+# make classical style of compilation which is also nice :)
+if verbose != "verbose":
+    # call back:
+    debug_file.write("CALL BACK "+"atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')"+"\n")
+    vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')")
+    # return code of compelation is returned before (after each compilation).
+
+
+####################################
+#
+#       Copy Files:
+#
+####################################
+
+# Copy files:
+debug_file.write('COPY END '+os.getcwd()+"\n")
+for ext in filter(keep_filter_aux,keep)+[output_format]:
+    file_cp=basename+"."+ext
+    if os.path.exists(file_cp):
+        debug_file.write(file_cp+' ')
+        shutil.copy(file_cp, mainfile_dir)
+# Copy aux file if there were no compilation errors.
+if latex_returncode == 0:
+    file_cp=basename+".aux"
+    if os.path.exists(file_cp):
+        shutil.copy(file_cp, mainfile_dir)
+os.chdir(cwd)
+
+####################################
+#
 #       Reload/Start Viewer:   
 #
 ####################################
@@ -396,41 +445,8 @@ else:
 
 ####################################
 #
-#       Call Back Communication:   
+#       Clean:
 #
 ####################################
-# this is not working in vim
-# within gvim it works (running a command doesn't suspend gvim) to be tested:
-# I'm not sure if these commands reach gvim. But latex status is not needed in
-# verbose mode can we add interaction as an option for verbose mode this would
-# make classical style of compilation which is also nice :)
-if verbose != "verbose":
-    # call back:
-    debug_file.write("CALL BACK "+"atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')"+"\n")
-    vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')")
-    # return code of compelation is returned before (after each compilation).
-
-
-####################################
-#
-#       Copy Files and Clean:   
-#
-####################################
-
-# Copy files:
-debug_file.write('COPY END '+os.getcwd()+"\n")
-for ext in filter(keep_filter_aux,keep)+[output_format]:
-    file_cp=basename+"."+ext
-    if os.path.exists(file_cp):
-        debug_file.write(file_cp+' ')
-        shutil.copy(file_cp, mainfile_dir)
-# Copy aux file if there were no compilation errors.
-if latex_returncode == 0:
-    file_cp=basename+".aux"
-    if os.path.exists(file_cp):
-        shutil.copy(file_cp, mainfile_dir)
-os.chdir(cwd)
-
-# Clean:
 debug_file.close()
 shutil.rmtree(tmpdir)

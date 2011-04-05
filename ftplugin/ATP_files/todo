@@ -274,3 +274,4 @@ Done[important]: QuickFixWindow is closing automativally when there are no error
 To do: 'formatexpr'
 To do: verbose mode in compile.py 
 IDEA: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
+WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
