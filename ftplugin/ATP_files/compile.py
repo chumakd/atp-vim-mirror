@@ -296,12 +296,14 @@ if bibtex and os.path.exists(tmpaux):
         vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
     else:
         print(bibtex_output)
+    # We need run latex at least 2 times
     bibtex=False
-    # we need run latex at least 2 times
-    if not bibtex_returncode:
-        runs=max([runs, 2])
-    else:
-        runs=1
+    runs=max([runs, 2])
+# If bibtex contained errros we stop:
+#     if not bibtex_returncode:
+#         runs=max([runs, 2])
+#     else:
+#         runs=1
 elif bibtex:
     # we need run latex at least 3 times
     runs=max([runs, 3])
@@ -353,11 +355,11 @@ for i in range(1, int(runs+1)):
             vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
         else:
             print(bibtex_output)
-        if bibtex_returncode:
 # If bibtex had errors we stop, 
 # at this point tex file was compiled at least once.
-            debug_file.write("BIBTEX BREAKE "+str(bibtex_returncode)+"\n")
-            break
+#         if bibtex_returncode:
+#             debug_file.write("BIBTEX BREAKE "+str(bibtex_returncode)+"\n")
+#             break
 
 ####################################
 #

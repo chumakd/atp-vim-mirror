@@ -133,11 +133,10 @@ function! atplib#CallBack(mode,...)
     let AU = ( a:0 >= 1 ? a:1 : 'COM' )
     " Was compiler called to make bibtex
     let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
-    if g:atp_debugCB
-	redir! > /tmp/atp_callback
-	let g:BIBTEX=BIBTEX
-	silent echo "BIBTEX =".BIBTEX
-    endif
+"     if g:atp_debugCB
+" 	redir! > /tmp/atp_callback
+" 	silent echo "BIBTEX =".BIBTEX
+"     endif
 
     for cmd in keys(g:CompilerMsg_Dict) 
     if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -237,21 +236,30 @@ function! atplib#CallBack(mode,...)
 	endif
     endif
 
-    if (atp_DebugMode != 'silent' || a:mode != 'silent') && b:atp_BibtexReturnCode
+    if b:atp_BibtexReturnCode
 	if !redraw
 	    redraw!
 	    let redraw			= 1
 	endif
-	echo b:atp_BibtexOutput 
+	if (atp_DebugMode != 'silent' || a:mode != 'silent')
+	    echohl ErrorMsg
+	    echo "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode
+	    echohl Normal
+	    echo b:atp_BibtexOutput 
+	else
+	    echohl ErrorMsg
+	    echo "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode
+	    echohl Normal
+	endif
     endif
 
     if !redraw && 
 	redraw!
     endif
-    let g:showed_message=showed_message
-    if g:atp_debugCB
-	redir END
-    endif
+"     let g:showed_message=showed_message
+"     if g:atp_debugCB
+" 	redir END
+"     endif
 endfunction "}}}
 "{{{ LatexPID
 "Store LatexPIDs in a variable
