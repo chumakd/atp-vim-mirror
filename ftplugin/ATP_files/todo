@@ -278,3 +278,5 @@ WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> A
 TO DO: link pdf, sty, cls  and all other local files to .tmp directory! (This is especially important for Windows users how tend to keep sty cls ... files in the current directory!
 Bug: GotoLabel gives one label to choose from (it should take this one and go :).
 TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
+# NOTE: if the latex return code is non zero then reference numbers (Lemma
+# X.Y) may be '?'! (do I want it to be like that?)

@@ -286,6 +286,11 @@ if options.env != "default":
         debug_file.write("ENV "+var[0]+"="+var[1]+"\n")
         os.putenv(var[0], var[1])
 
+# Link local bibliographies:
+for bib in bibliographies:
+    if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
+        os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
+
 ####################################
 #
 #       Compile:   

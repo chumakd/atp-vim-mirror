@@ -560,7 +560,7 @@ function! LatexRunning()
 python << EOL
 import psutil, vim
 if vim.eval("exists('b:atp_LastLatexPID')"):
-	lpid = int(vim.eval("b:atp_LastLatexPID"))
+	lpid = int(vim.eval("exists('b:atp_LastLatexPID') ? b:atp_LastLatexPID : -1"))
 	if lpid != -1:
                 try:
 			name=psutil.Process(lpid).name

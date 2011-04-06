@@ -291,6 +291,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_normal_updatetime")
+    let g:atp_normal_updatetime = 1000
+endif
 if !exists("g:atp_DefaultErrorFormat")
     let g:atp_DefaultErrorFormat = "erc"
 endif
@@ -1782,8 +1785,8 @@ endfunction
     augroup ATP_updatetime
 	au!
 	au VimEnter if &l:updatetime == 4000 | let &l:updatetime = 800 | endif
-	au InsertEnter *.tex let s:updatetime=&l:updatetime | let &l:updatetime = g:atp_insert_updatetime
-	au InsertLeave *.tex let &l:updatetime=s:updatetime 
+	au InsertEnter *.tex let &l:updatetime=g:atp_insert_updatetime
+	au InsertLeave *.tex let &l:updatetime=g:atp_normal_updatetime 
     augroup END
 
     if (exists("g:atp_statusline") && g:atp_statusline == '1') || !exists("g:atp_statusline")

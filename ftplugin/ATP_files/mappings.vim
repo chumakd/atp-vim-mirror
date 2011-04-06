@@ -6,6 +6,11 @@
 " Last Change:
 
 " Commands to library functions (autoload/atplib.vim)
+
+" <c-c> in insert mode doesn't trigger InsertLeave autocommands
+" this fixes this.
+imap <buffer> <c-c> <c-[>
+
 command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#OpenFdFile(<f-args>) 
