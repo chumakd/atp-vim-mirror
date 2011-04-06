@@ -276,3 +276,5 @@ Done: verbose mode in compile.py
 IDEA: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
 TO DO: link pdf, sty, cls  and all other local files to .tmp directory! (This is especially important for Windows users how tend to keep sty cls ... files in the current directory!
+Bug: GotoLabel gives one label to choose from (it should take this one and go :).
+TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)

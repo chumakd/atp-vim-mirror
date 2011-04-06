@@ -171,8 +171,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
   - Debug modes has changed: |atp-debug-mode-debug|, |atp-debug-mode-Debug|
     and are more usable now. See also |g:atp_DefaultDebugMode|,
     |atp-:DebugMode| and |g:atp_DebugModeQuickFixHeight|.
-							*g:atp_ProgressBar*
-9.2!!:
+
+9.2!!:							*g:atp_ProgressBar*
 >
  g:atp_ProgressBar = 1  
 <   By default, when using the python compiler you will get progress message
@@ -182,6 +182,10 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 
     You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature
     to work (see also |laststatus| on how to activate status line in Vim).
+
+    If there are many background processes the number which is shown belongs
+    to the oldest process. (b:atp_ProgressBar is a dictionary 
+    { 'pid' : 'pagenr' } - status line shows max of pagenr's).
 
     Note: the time between you start to compile and [1] appears in the status line
     is mostly the time when LaTeX is reading all the packages that you loaded

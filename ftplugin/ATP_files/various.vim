@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Wed Mar 30 09:00  2011 W
+" Last Change: Wed Apr 06 05:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -758,7 +758,7 @@ function! F_compl(ArgLead, CmdLine, CursorPos) "{{{
     if atplib#SearchPackage('amsmath')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
-    call filter(env_list, "v:val =~# '^' .a:ArgLead && v:val !~ '\*$'")
+    call filter(env_list+['math'], "v:val =~# '^' .a:ArgLead && v:val !~ '\*$'")
     return env_list
 endfunction "}}}
 " TexDoc commanand and its completion

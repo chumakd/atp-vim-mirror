@@ -229,6 +229,7 @@ let s:optionsDict= {
 		\ "atp_LastLatexPID"		: 0,
 		\ "atp_VerboseLatexInteractionMode" : "errorstopmode",
 		\ "atp_BibtexReturnCode"	: 0,
+		\ "atp_ProgressBar"		: {},
 		\ "atp_BibtexOutput"		: ""}
 
 " 		\ "atp_TexCompilerVariable"	: "",

@@ -562,9 +562,9 @@ import psutil, vim
 if vim.eval("exists('b:atp_LastLatexPID')"):
 	lpid = int(vim.eval("b:atp_LastLatexPID"))
 	if lpid != -1:
-    		try:
+                try:
 			name=psutil.Process(lpid).name
-    		except psutil.NoSuchProcess:
+                except psutil.NoSuchProcess:
 			lpid=0
 	vim.command(":let b:atp_LastLatexPID="+str(lpid))
 else:
@@ -606,8 +606,9 @@ function! ATPRunning() "{{{
 	    endif
 	endfor
 
-	if exists("b:atp_ProgressBar") && b:atp_ProgressBar != ''
-	    let progress_bar="[".b:atp_ProgressBar."]".( g:atp_statusOutDir ? " " : "" )
+	if exists("b:atp_ProgressBar") && b:atp_ProgressBar != {}
+	    let max = max(values(b:atp_ProgressBar))
+	    let progress_bar="[".max."]".( g:atp_statusOutDir ? " " : "" )
 	else
 	    let progress_bar=""
 	endif

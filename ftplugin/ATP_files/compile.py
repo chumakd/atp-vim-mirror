@@ -159,9 +159,9 @@ def latex_progress_bar(cmd):
                 stack.popleft()
             match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))
             if match:
-                vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+")")
+                vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+")")
     child.wait()
-    vim_remote_expr(servername, "atplib#ProgressBar('')")
+    vim_remote_expr(servername, "atplib#ProgressBar('end',"+str(pid)+")")
     return child
 
 def xpdf_server_file_dict():
@@ -277,11 +277,6 @@ for ext in filter(keep_filter_log,keep):
         debug_file.write(file_cp+' ')
         shutil.copy(file_cp, tmpdir)
 
-# Link local bibliographies:
-# for bib in bibliographies:
-#     if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
-#         os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
-
 tempdir_list = os.listdir(tmpdir)
 debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
 
@@ -296,11 +291,12 @@ if options.env != "default":
 #       Compile:   
 #
 ####################################
-# Start Xpdf (this can be done before compelation, because we can load file into afterwards)
-# in this way Xpdf starts faster (it is already running when file compiles,
+# Start Xpdf (this can be done before compelation, because we can load file
+# into afterwards) in this way Xpdf starts faster (it is already running when
+# file compiles). 
 # TODO: this might cause problems when the tex file is very simple and short.
-# Can we test if xpdf started properly?
-# okular doesn't behave nicly even with --unique switch.
+# Can we test if xpdf started properly?  okular doesn't behave nicely even with
+# --unique switch.
 
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0

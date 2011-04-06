@@ -291,9 +291,13 @@ if len(pids) > 0:
 EOL
 endfunction "}}}
 "{{{ ProgressBar
-function! atplib#ProgressBar(value)
+function! atplib#ProgressBar(value,pid)
     unlockvar b:atp_ProgressBar
-    let b:atp_ProgressBar=a:value
+    if a:value != 'end'
+	let b:atp_ProgressBar[a:pid]=a:value
+    else
+	call remove(b:atp_ProgressBar, a:pid)
+    endif
     lockvar b:atp_ProgressBar
     redrawstatus
 "     redraw
