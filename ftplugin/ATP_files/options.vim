@@ -219,10 +219,10 @@ let s:optionsDict= {
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
-		\ "atp_TexCompilerVariable"	: "max_print_line=2000",
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "",
+		\ "atp_TexCompilerVariable"	: "max_print_line=2000",
 		\ "atp_StarEnvDefault"		: "",
 		\ "atp_StarMathEnvDefault"	: "",
 		\ "atp_LatexPIDs"		: [],
@@ -231,6 +231,11 @@ let s:optionsDict= {
 		\ "atp_BibtexReturnCode"	: 0,
 		\ "atp_BibtexOutput"		: ""}
 
+" 		\ "atp_TexCompilerVariable"	: "",
+" 			\.";TEXINPUT="
+" 			\.($TEXINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$TEXINPUTS)
+" 			\.";BIBINPUTS="
+" 			\.($BIBINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$BIBINPUTS),
 let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
@@ -2076,4 +2081,43 @@ function! DebugComp(A,L,P)
     return "silent\ndebug\nDebug\nverbose"
 endfunction
 "}}}1
+
+" Python test if libraries are present
+function! <SID>TestPythonLibs()
+python << END
+import vim
+try:
+    import psutil
+except ImportError:
+    vim.command('echohl ErrorMsg|echomsg "[ATP:] needs psutil python library."')
+    vim.command('echomsg "You can get it from: http://code.google.com/p/psutil/"')
+    test=vim.eval("has('mac')||has('macunix')||has('unix')")
+    if test:
+	vim.command('echomsg "Falling back to bash"')
+	vim.command("let g:atp_Compiler='bash'")
+    vim.command("echohl Normal")
+    vim.command("echomsg \"If you don't want to see this message (and you are on *nix system)\"") 
+    vim.command("echomsg \"put let g:atp_Compiler='bash' in your vimrc or atprc file.\"")
+    vim.command("sleep 2")
+END
+endfunction
+
+if g:atp_Compiler == "python"
+    if !executable("python")
+	echohl ErrorMsg
+	echomsg "[ATP:] needs python to be installed."
+	echohl Normal
+	if has("mac") || has("macunix") || has("unix")
+	    echohl ErrorMsg
+	    echomsg "I'm falling back to bash (deprecated)."
+	    echohl Normal
+	    let g:atp_Compiler = "bash"
+	    echomsg "If you don't want to see this message"
+	    echomsg "put let g:atp_Compiler='bash' in your vimrc or atprc file."
+	    sleep 2
+	endif
+    else
+	call <SID>TestPythonLibs()
+    endif
+endif
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

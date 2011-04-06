@@ -189,37 +189,25 @@ endfunction
 function! DefiSearch(bang,...)
 
     let pattern		= a:0 >= 1 ? a:1 : ''
-    let preambule_only	= a:bang == "!" ? 0 : 1
+    let pattern		= '\%(\\def\|\\\%(re\)\=newcommand\s*{\=\|\\providecommand\s*{\=\|\\\%(re\)\=newenvironment\s*{\|\\\%(re\)\=newtheorem\s*{\)\s*\\\=\w*\zs'.pattern
+    let g:pattern	= pattern
+    let preambule_only	= ( a:bang == "!" ? 0 : 1 )
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    let defi_dict	= s:make_defi_dict(a:bang, atp_MainFile, '\\def\|\\newcommand')
-
-    let len=0
-    for f in keys(defi_dict)
-	let len+=len(defi_dict[f])
-    endfor
-
-    let window_height= min([g:atp_DefiSearchMaxWindowHeight, len])
-
-    " open new buffer
-    let openbuffer=" +setl\\ buftype=nofile\\ nospell " . fnameescape("DefiSearch")
-    if g:vertical ==1
-	let openbuffer="keepalt vsplit " . openbuffer 
-    else
-	let openbuffer="keepalt ".window_height."split " . openbuffer 
-    endif
+    let defi_dict	= s:make_defi_dict(a:bang, atp_MainFile, pattern)
+    let g:defi_dict	= defi_dict
 
     if len(defi_dict) > 0
 	" wipe out the old buffer and open new one instead
 	if bufloaded("DefiSearch")
 	    exe "silent bd! " . bufnr("DefiSearch") 
 	endif
-	silent exe openbuffer
 	let b:atp_MainFile	= expand("%")
 	let b:atp_ProjectDir	= expand("%:p:h")
 	setl syntax=tex
 
-	map <buffer> q	:bd<CR>
+	let defi_list = []
+	let g:defi_list = defi_list
 
 	for inputfile in keys(defi_dict)
 	    let ifile	= readfile(inputfile)
@@ -228,30 +216,50 @@ function! DefiSearch(bang,...)
 		let case = ( &l:smartcase && &l:ignorecase && pattern =~ '\u' ? 'noignorecase'  : ( &l:ignorecase ? 'ignorecase' : 'noignorecase' )) 
 		let condition = ( case == "noignorecase" ? ifile[l:range[0]-1] =~# pattern : ifile[l:range[0]-1] =~? pattern )
 		if condition
-		    " print the lines into the buffer
+		    " print the lines into defi_list
 		    let i=0
 		    let c=0
 		    " add an empty line if the definition is longer than one line
 		    if l:range[0] != l:range[1]
-			call setline(line('$')+1,'')
+			call add(defi_list, '')
+" 			call setline(line('$')+1,'')
 			let i+=1
 		    endif
 		    while c <= l:range[1]-l:range[0] 
 			let line=l:range[0]+c
-			call setline(line('$')+1,ifile[line-1])
+			call add(defi_list, ifile[line-1])
+" 			call setline(line('$')+1,ifile[line-1])
 			let i+=1
 			let c+=1
 		    endwhile
 		endif
 	    endfor
 	endfor
-	if getbufline("DefiSearch",'1','$') == ['']
-	    bw
+
+	if len(defi_list) == 0
 	    redraw
 	    echohl ErrorMsg
 	    echomsg "[ATP:] definition not found."
 	    echohl Normal
+	    return
 	endif
+
+	let window_height= min([g:atp_DefiSearchMaxWindowHeight, len(defi_list)])
+	" open new buffer
+	let openbuffer=" +setl\\ buftype=nofile\\ nospell " . fnameescape("DefiSearch")
+	if g:vertical ==1
+	    let openbuffer="keepalt vsplit " . openbuffer 
+	else
+	    let openbuffer="keepalt rightbelow ".window_height."split " . openbuffer 
+	endif
+
+	silent exe openbuffer
+	call setline(1, defi_list)
+	call matchadd('Search', ( &l:ignorecase ? '\c' : '\C' ) .pattern)
+	let @/=pattern
+	setl ft=tex
+	setl readonly
+	map <buffer> q	:bd<CR>
     else
 	redraw
 	echohl ErrorMsg

@@ -2,7 +2,8 @@
 # Author: Marcin Szamotulski <mszamot[@]gmail[.]com>
 # This file is a part of Automatic TeX Plugin for Vim.
 
-import sys, os.path, shutil, subprocess, re, psutil, tempfile, optparse 
+import sys, os.path, shutil, subprocess, psutil, re, tempfile, optparse 
+
 from os import chdir, readlink, mkdir, putenv
 from optparse import OptionParser
 from collections import deque
@@ -92,10 +93,9 @@ def keep_filter_log(string):
         return True
 
 def mysplit(string):
-        return string.split('=')
+        return re.split('\s*=\s*', string)
 if options.env != "default":
-    env         = map(mysplit,re.split('\s+',options.env))
-    debug_file.write("ENV "+str(env)+"\n")
+    env         = map(mysplit,re.split('\s*;\s*',options.env))
 
 # Boolean options
 reload_viewer   = options.reload_viewer
@@ -122,6 +122,11 @@ debug_file.write("VIEWER_OPT "+str(viewer_opt)+"\n")
 debug_file.write("VERBOSE "+str(verbose)+"\n")
 debug_file.write("KEEP "+str(keep)+"\n")
 debug_file.write("BIBLIOGRAPHIES "+str(bibliographies)+"\n")
+debug_file.write("ENV OPTION "+str(options.env)+"\n")
+if options.env != "default":
+    debug_file.write("ENV "+str(env)+"\n")
+else:
+    debug_file.write("ENV default (NONE)\n")
 debug_file.write("*BIBTEX "+str(bibtex)+"\n")
 debug_file.write("*BANG "+str(bang)+"\n")
 debug_file.write("*RELOAD_VIEWER "+str(reload_viewer)+"\n")
@@ -134,7 +139,7 @@ debug_file.write("*PROGRESS_BAR "+str(progress_bar)+"\n")
 #       Functions:   
 #
 ####################################
-   
+
 def latex_progress_bar(cmd):
 # Run latex and send data for progress bar,
 
@@ -152,16 +157,16 @@ def latex_progress_bar(cmd):
 
             if len(stack)>10:
                 stack.popleft()
-            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))        
+            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))
             if match:
                 vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+")")
-    child.wait() 
+    child.wait()
     vim_remote_expr(servername, "atplib#ProgressBar('')")
-    return child           
+    return child
 
 def xpdf_server_file_dict():
 # Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
-    
+
 # to test if the server host file use:
 # basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
 # this dictionary always contains the full path (Linux).
@@ -177,7 +182,7 @@ def xpdf_server_file_dict():
         try:
             name=psutil.Process(pr).name
             cmdline=psutil.Process(pr).cmdline
-            if name == 'xpdf': 
+            if name == 'xpdf':
                 try:
                     ind=cmdline.index('-remote')
                 except:
@@ -196,10 +201,11 @@ def vim_remote_send(servername, keys):
     subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file).wait()
 
 
-def vim_echo(message, command, servername, highlight):
+def vim_echo(servername, message, command="echo", highlight="Normal"):
 # Send message to vim server,
 
-    cmd=[progname, '--servername', servername, '--remote-send', ':echohl '+highlight+'|'+command+' "'+message+'"|echohl Normal<CR>' ]
+    cmd=[progname, '--servername', servername, '--remote-send', '<ESC>:echohl '+highlight+'|'+command+' '+message+'|echohl Normal<CR>' ]
+    debug_file.write("VIM ECHO "+str(cmd))
     subprocess.Popen(cmd, stdout=debug_file, stderr=debug_file).wait()
 
 
@@ -223,7 +229,7 @@ if not re.match(os.sep, mainfile_fp):
 mainfile        = os.path.basename(mainfile_fp)
 mainfile_dir    = os.path.dirname(mainfile_fp)
 if mainfile_dir == "":
-    mainfile_fp = os.path.join(os.getcwd(), mainfile) 
+    mainfile_fp = os.path.join(os.getcwd(), mainfile)
     mainfile    = os.path.basename(mainfile_fp)
     mainfile_dir= os.path.dirname(mainfile_fp)
 if os.path.islink(mainfile_fp):
@@ -239,10 +245,10 @@ mainfile_dir    = os.path.normcase(mainfile_dir+os.sep)
                          # from line 908 of <SID>compiler()
 output_fp       = os.path.splitext(mainfile_fp)[0]+extension
 
-
 ####################################
 #
-#       Make temporary directory:   
+#       Make temporary directory,
+#       Copy files and Set Environment:
 #
 ####################################
 cwd     = os.getcwd()
@@ -262,7 +268,7 @@ debug_file.write("COMMAND "+str(latex_cmd)+"\n")
 debug_file.write("COMMAND "+" ".join(latex_cmd)+"\n")
 
 # Copy important files to output directory:
-# except log file
+# /except the log file/
 os.chdir(mainfile_dir)
 debug_file.write('COPY BEG '+os.getcwd()+"\n")
 for ext in filter(keep_filter_log,keep):
@@ -272,12 +278,19 @@ for ext in filter(keep_filter_log,keep):
         shutil.copy(file_cp, tmpdir)
 
 # Link local bibliographies:
-for bib in bibliographies:
-    if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
-        os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
+# for bib in bibliographies:
+#     if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
+#         os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
 
 tempdir_list = os.listdir(tmpdir)
-debug_file.write("\n*** ls tmpdir "+str(tempdir_list)+"\n")
+debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
+
+# Set environment
+if options.env != "default":
+    for var in env:
+        debug_file.write("ENV "+var[0]+"="+var[1]+"\n")
+        os.putenv(var[0], var[1])
+
 ####################################
 #
 #       Compile:   
@@ -289,21 +302,17 @@ debug_file.write("\n*** ls tmpdir "+str(tempdir_list)+"\n")
 # Can we test if xpdf started properly?
 # okular doesn't behave nicly even with --unique switch.
 
-# Set environment
-if options.env != "default":
-    for var in env:
-        os.putenv(var[0], var[1])
-
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0
-os.chdir(tmpdir)
 if bibtex and os.path.exists(tmpaux):
     debug_file.write("\nBIBTEX1"+str(['bibtex', basename+".aux"])+"\n")
+    os.chdir(tmpdir)
     bibtex_popen=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
     bibtex_popen.wait()
+    os.chdir(mainfile_dir)
     bibtex_returncode=bibtex_popen.returncode
     bibtex_output=re.sub('"', '\\"', bibtex_popen.stdout.read())
-    debug_file.write("BIBTEX RETURN CODE "+str(bibtex_returncode)+"\nBIBTEX OUTPUT\n"+bibtex_output+"\n")
+    debug_file.write("BIBTEX RET CODE "+str(bibtex_returncode)+"\nBIBTEX OUTPUT\n"+bibtex_output+"\n")
     if verbose != 'verbose':
         vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
     else:
@@ -329,7 +338,8 @@ for i in range(1, int(runs+1)):
         print(command+" is running to make bbl file ..." )
     debug_file.write("RUN="+str(i)+"\n")
     debug_file.write("DIR="+str(os.getcwd())+"\n")
-    subprocess.Popen(['ls', tmpdir], stdout=debug_file)
+    tempdir_list = os.listdir(tmpdir)
+    debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
     debug_file.write("BIBTEX="+str(bibtex)+"\n")
 
     if verbose == 'verbose' and i == runs:
@@ -353,16 +363,23 @@ for i in range(1, int(runs+1)):
             latex.wait()
         latex_returncode=latex.returncode
         debug_file.write("latex return code "+str(latex_returncode)+"\n")
+        tempdir_list = os.listdir(tmpdir)
+        debug_file.write("JUST AFTER LATEX ls tmpdir "+str(tempdir_list)+"\n")
     # Return code of compilation:
     if verbose != "verbose":
         vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_returncode)+"')")
     if bibtex and i == 1:
         debug_file.write("BIBTEX2 "+str(['bibtex', basename+".aux"])+"\n")
         debug_file.write(os.getcwd()+"\n")
+        tempdir_list = os.listdir(tmpdir)
+        debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
+        os.chdir(tmpdir)
         bibtex_popen=subprocess.Popen(['bibtex', basename+".aux"], stdout=subprocess.PIPE)
         bibtex_popen.wait()
+        os.chdir(mainfile_dir)
         bibtex_returncode=bibtex_popen.returncode
         bibtex_output=re.sub('"', '\\"', bibtex_popen.stdout.read())
+        debug_file.write("BIBTEX2 RET CODE"+str(bibtex_returncode)+"\n")
         if verbose != 'verbose':
             vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
         else:
@@ -397,12 +414,13 @@ if verbose != "verbose":
 ####################################
 
 # Copy files:
-debug_file.write('COPY END '+os.getcwd()+"\n")
+os.chdir(tmpdir)
 for ext in filter(keep_filter_aux,keep)+[output_format]:
     file_cp=basename+"."+ext
     if os.path.exists(file_cp):
         debug_file.write(file_cp+' ')
         shutil.copy(file_cp, mainfile_dir)
+
 # Copy aux file if there were no compilation errors.
 if latex_returncode == 0:
     file_cp=basename+".aux"

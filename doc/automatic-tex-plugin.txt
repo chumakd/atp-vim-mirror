@@ -181,19 +181,25 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     g:atp_ProgressBar to 0 (use |let|).
 
     You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature
-    to work (see also |laststatus|).
+    to work (see also |laststatus| on how to activate status line in Vim).
+
+    Note: the time between you start to compile and [1] appears in the status line
+    is mostly the time when LaTeX is reading all the packages that you loaded
+    in the preambule.
+>
+ b:atp_ProgressBar
+<   This is a read only variable. It is equal to empty string '' if
+    compilation is not going on, and while compilation it stores the page
+    number which LaTeX is processing.
 9.2
   - if you use python compiler (the default new compiler |g:atp_Compiler|)
     the command |atp-:Bibtex|! (with bang) will show you bibtex output while
     you're in debug mode. You can access retrun code of bibtex via
-    b:atp_BibtexReturnCode, and bibtex output via |b:atp_BibtexOutput|. 
+    :Bibtex output (it is stored in the variable b:atp_BibtexReturnCode), and
+    bibtex output via |b:atp_BibtexOutput|. 
+
     Note: However the fasted way to see the bibtex output is to use |atp-:Bibtex|
-    (without a bang "!").
->
- b:atp_ProgressBar
-<   This is read only variable. It is equal to empty string '' if compilation
-    is not going on, and while compilation it stores the page number which
-    LaTeX is processing.
+    (without a bang "!"), i.e. run BibTeX.
 	
 							*atp-:GotoNamedDest*
 9.2:
@@ -538,6 +544,7 @@ groups, because ':hi clear' will not give you what you want).
 ================================================================================
 COMMANDS	                               		*atp-commands* *atp-:*
 							
+							*atp-compilation*
 The main function is not seen by the user (it is called s:compiler, for those
 who want to read the plugin). It executes tex compiler specified by the
 variable b:atp_TexCompiler. It is executed
@@ -570,8 +577,8 @@ is around 1000ms ('updatetime' is set in milliseconds). Tex compiler is run with
 one options:
 	-output-directory 
 which points to a unique temporary file in Vim temporary directory (using the
-function 'tempname()' (see |tempname()|. If you are concerned with security
-reasons read also: |shelltemp|.
+function 'tempname()' (see |tempname()|). If you are concerned with security
+read also: |shelltemp|.
 
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
 the local to buffer variable b:autex=1 (on) b:autex=0 (off). It is useful in
@@ -2766,9 +2773,8 @@ let b:atp_TexCompilerVariable = "max_print_line=2000" 	*b:atp_TexCompilerVariabl
 	"max_print_line" sets the maximal length of a line in the log file.
 	The value 2000 is high enough to prevent line breaking.
 
-	The gramar for this variable: it should be a white space separated list of
-	variables and values, i.e. 'variable_1=value_1 variable_2=value_2'
-	(the white spaces matters!)
+	The gramar for this variable: it should be a semicolon separated list of
+	variables and values, i.e. 'variable_1=value_1;variable_2=value_2'
 
 							*b:atp_TexFlavor*
 let b:atp_TexFlavor	= "tex"	
@@ -3686,10 +3692,17 @@ nmaps: g>, g<, 2g>, ..., 6g>
 ================================================================================
 REQUIREMENTS							*atp-requirements*
 
-This plugin requires Vim version higher than 7. Several tools uses syntax, so
-even if you do not like colours on the screen you should set "syntax on". For
-example, the recognition of math mode used by |atp-completion|, and
-|atp-:TexAlign| command (but also some other things).
+This plugin requires Vim version 7.2. Several tools uses syntax, so even if
+you do not like colours on the screen you should set "syntax on". For example,
+the recognition of math mode used by |atp-completion|, and |atp-:TexAlign|
+command (but also some other things).
+
+ATP uses python 2.7 (also works with 3.0). You need psutil library which you
+can get from here:
+    http://code.google.com/p/psutil/
+Other libraries are standard ones so they should be available. If you have
+a problem you can try to set g:atp_debugPythonCompiler=1 and then look at the
+file /tmp/atp_PythonCompiler.debug it will contain python errors.
 
 It is nice to have 'texdoc' program. This plugin maps <F1> to a function which
 calls it. This allows to speed up searches for documentation. Also the option

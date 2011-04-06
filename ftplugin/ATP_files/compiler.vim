@@ -971,7 +971,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
 		\ ." --bibliographies " . shellescape(bibliographies)
-		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".b:atp_TexCompilerVariable)
+		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
     let g:cmd=cmd
     " Write file
@@ -1080,7 +1080,9 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" finally, set the output file names. 
 	let outfile 	= b:atp_OutDir . fnamemodify(basename,":t:r") . ext
 	let outaux  	= b:atp_OutDir . fnamemodify(basename,":t:r") . ".aux"
+	let outbbl  	= b:atp_OutDir . fnamemodify(basename,":t:r") . ".bbl"
 	let tmpaux  	= fnamemodify(tmpfile, ":r") . ".aux"
+	let tmpbbl  	= fnamemodify(tmpfile, ":r") . ".bbl"
 	let tmptex  	= fnamemodify(tmpfile, ":r") . ".tex"
 	let outlog  	= b:atp_OutDir . fnamemodify(basename,":t:r") . ".log"
 	let syncgzfile 	= b:atp_OutDir . fnamemodify(basename,":t:r") . ".synctex.gz"
@@ -1152,7 +1154,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
 "	SET THE COMMAND 
 	let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
-	let variable	= ( a:verbose!="verbose" ? b:atp_TexCompilerVariable	: '' ) 
+	let variable	= ( a:verbose!="verbose" ? substitute(b:atp_TexCompilerVariable, ';', ' ', 'g') : '' ) 
 	let comp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction=" . interaction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
 	let vcomp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction=". interaction . " -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
 	
@@ -1181,10 +1183,10 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	if a:bibtex == 1
 	    " this should be decided using the log file as well.
 	    if filereadable(outaux)
-		call s:copy(outaux,tmpfile . ".aux")
-		let texcomp="bibtex " . shellescape(tmpfile) . ".aux ; " . comp . "  1>/dev/null 2>&1 "
+" 		call s:copy(outaux,tmpfile . ".aux")
+		let texcomp="bibtex " . shellescape(fnamemodify(outaux, ":t")) . "; ".g:atp_cpcmd." ".shellescape(outbbl)." ".shellescape(tmpbbl).";" . comp . "  1>/dev/null 2>&1 "
 	    else
-		let texcomp=comp . " ; clear ; bibtex " . shellescape(tmpfile) . ".aux ; " . comp . " 1>/dev/null 2>&1 "
+		let texcomp=comp.";clear;".g:atp_cpcmd." ".shellescape(tmpaux)." ".shellescape(outaux)."; bibtex ".shellescape(fnamemodify(outaux, ":t")).";".g:atp_cpcmd." ".shellescape(outbbl)." ".shellescape(tmpbbl)."; ".comp." 1>/dev/null 2>&1 "
 	    endif
 	    if a:verbose != 'verbose'
 		let texcomp=texcomp . " ; " . comp
@@ -1303,6 +1305,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	endif
 
 	if a:verbose != 'verbose'
+" "cd ".shellescape(tmpdir).";".
 	    let g:atp_TexOutput=system(command)
 	else
 	    let command="!clear;" . texcomp . " " . cpoutfile . " " . copy_cmd
@@ -1312,7 +1315,6 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	unlockvar g:atp_TexCommand
 	let g:atp_TexCommand=command
 	lockvar g:atp_TexCommand
-
 
     if g:atp_debugCompiler
 	silent echomsg "command=" . command
