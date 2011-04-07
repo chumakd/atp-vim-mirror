@@ -253,30 +253,26 @@ To do: There are three completion function for environment names: Env_compl (mot
 To do: MakeLatex is not WINDOWS COMPATIBLE (because it uses bash syntax, I need python code to execute commands)
 	If MakeLatex would be done in Python -> progress bar could be made.
 	(at least it can call Python compiler)
-
 To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
+		It might also be %&latex issue -> test 
 		THIS IS BECAUSE: skeleton file opens as a tex file and the variables are not reloaded. 
-Done: b:atp_ReloadOnError is not working (when 1 it is not reloading on error).
-Done: make progress bar for compelation (read from log the last page numbers: [4] :) )
-	This can be tested with beamer + overlays => lots of pages to process.
-To do: inner paragraph should be (?) ended with \pause (beamer)
-To do: \{:} are matched as brackets.
+# To do: inner paragraph should be (?) ended with \pause (beamer)
+# To do: \{:} are matched as brackets.
 Done: :YankSection (like :DeleteSection in ToC)
-Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
-To do: :WrapSelection make better interface.
+# Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
+# To do: :WrapSelection make better interface.
 To do: debug why sometimes generating g:atp_latexpackages takes so much time.
 Done: make a default flag for :ShowErrors 
-To do: progress bar for project files (project variables).
+# TEST: progress bar for project files (project variables).
 To do: bash compiler is not reloading Xpdf.
 To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
 	Debug: MakeLatex. (implemented in compile.py)
-Done[important]: QuickFixWindow is closing automativally when there are no errors, it should close automatically if there are no stuff to show so this would differ depending on SetErrorFormat! and not only latex exit code.
+# Done[important]: QuickFixWindow is closing automativally when there are no errors, it should close automatically if there are no stuff to show so this would differ depending on SetErrorFormat! and not only latex exit code.
 To do: 'formatexpr'
-Done: verbose mode in compile.py 
-IDEA: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
-WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
-TO DO: link pdf, sty, cls  and all other local files to .tmp directory! (This is especially important for Windows users how tend to keep sty cls ... files in the current directory!
-Bug: GotoLabel gives one label to choose from (it should take this one and go :).
-TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
+# Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
+# WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
+Done: GotoLabel gives one label to choose from (it should take this one and go :).
+# TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
 # NOTE: if the latex return code is non zero then reference numbers (Lemma
-# X.Y) may be '?'! (do I want it to be like that?)
+# X.Y) may be '?'! ( I don't why its like that )
+# FIX: Xpdf sleep time between sending remote commands (SyncTex)

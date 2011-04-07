@@ -270,12 +270,35 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 
     Note: if you change |cmdheight| you should also change g:atp_DefaultCmdHeight, 
     unfortunatelly vim has not autocommand group evnet to do that automatically.
+9.2:
+							*g:atp_MapCC*
+  - In vim the key compination CTRL-C (|i_CTRL-C|) in insert mode exists to
+    normal without triggering the InsertLeave autocommands. In this way it
+    doesn't changes the |'updatetime'| from |g:atp_updatetime_insert| to
+    |g:atp_updatetime_normal|. If |g:atp_MapCC|=1 (this recommended but the
+    deafult is 0) then |_CTRL-C| is mapped to |i_CTRL-[| so the InsertLeave
+    autocommands are parsed.
+9.2:    
+							*g:atp_updatetime_insert*
+							*g:atp_updatetime_normal*
+>
+ g:atp_updatetime_insert = 2000							
+ g:atp_updatetime_normal = 1000
+< - These variables sets the value of |'updatetime'| vim option. Seprate
+    settings are for normal and insert mode. You can make
+    g:atp_updatetime_normal even smaller so that the file is proccessed
+    whenever you go out from insert mode to normal mode. These values will
+    overwrite the original value of |'updatetime'| so you should adjust them
+    in order for the change to have an effect.
+
+    If you set g:atp_updatetime_insert = 0 the tex compiler will not be called
+    while the vim is in insert mode.
 
 9.1:  
   - :SetOkular						*atp-:SetOkular*
     This works the same as |atp-:SetXpdf|. It sets the forward searching
     options needed for Okular (notably this is just >
-	    b:atp_TexOptions="-synctex=1"
+        b:atp_TexOptions="-synctex=1"
 <   but it also makes some changes in the menu). You can use the commands
     |atp-:SetOkular|, |atp-:SetXdvi| in your atprc file (|atp-:SetXpdf| has
     the default settings so it is not needed at startup): >
@@ -574,15 +597,16 @@ buffer with the on-disk version:
 	is the default.
 
 As you can see it will run if a key is not pressed during time defined by
-option 'updatetime' (see |CursorHold|) in the normal mode. If you type in
+option |'updatetime'| (see |CursorHold|) in the normal mode. If you type in
 insert mode the file won't be compiled (and that's all right as you can be in the
-middle of your very long formula). The value of 'updatetime' which works fine
-is around 1000ms ('updatetime' is set in milliseconds). Tex compiler is run with
-one options:
+middle of your very long formula). The value of |'updatetime'| which works
+fine is around 1000ms (|'updatetime'| is set in milliseconds). Instead of
+setting |'updatetime'| options directly you should set the variables
+|g:atp_updatetime_insert| and |g:atp_updatetime_normal|.
+
+Tex compiler is run with one options:
 	-output-directory 
-which points to a unique temporary file in Vim temporary directory (using the
-function 'tempname()' (see |tempname()|). If you are concerned with security
-read also: |shelltemp|.
+which points to a unique temporary file in a temporary directory |b:atp_TmpDir| 
 
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
 the local to buffer variable b:autex=1 (on) b:autex=0 (off). It is useful in
@@ -912,6 +936,13 @@ map t, map <S-LeftMouse>
 	Note: you can also set reverse search for Okular and Xdvi, see
 	|atp-viewers-Okular| and |atp-viewers-Xdvi| for an instruction how to
 	do that. Xpdf doesn't support reverse searching.
+
+							|atp-:SyncTex_Xpdf-hack|
+	Note: there is a bug in Xpdf, one canot sent commands to Xpdf to
+	quickly. If the |atp-:SyncTex| command only updates the page, but
+	doesn't shift it then you can try to set g:atp_XpdfSleepTime variable
+	to something higher than the default 0.1 (this is sleep time between
+	sending commands to Xpdf in seconds)
 
 	When the output file or the synctex file (.synctex.gz) doesn't exists
 	then first it will be generated. It can also open the document if it
@@ -2055,9 +2086,9 @@ map c, map y, map p
 	You can set the maximal hieght of the window wich shows the results of
 	|atp-:DefiSearch| (default is 15).
 
+								
 								*atp-bibsearch-variables*
-								*atp-variables-bib*	
-SOME VARIABLES:
+SOME VARIABLES							*atp-variables-bib*
 	All the values of important variables can be shown by ShowOption
 	command.
 
@@ -3276,10 +3307,22 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	compile your document. It changes also when your compiler was run
 	automatically. >
 		:TEX
-		:echo g:texcommand
+		:echo g:atp_TexCommand
 		:TEX!
-		:echo g:texcommand
+		:echo g:atp_TexCommand
 <	It is read-only variable.	
+							*b:atp_TmpDir*
+>
+ b:atp_TmpDir =	b:atp_OutDir/.tmp
+<	In this directory vim (or python) will make a temporary directory
+	(with a unique name) to which output files will be put by your TeX
+	compiler. This is done so to prevent overwriting the output file while
+	the compelation is being done (this can cause problems when there are
+	many TeX processes and the Viewer is accessing not yet compilated
+	file). The output files are copied back to b:atp_OutDir after
+	compelation. The tmporary directory is passed to your TeX compiler
+	using '-output-directory' switch.  
+
 							*g:atp_CompilersDict*
 >
  let g:atp_CompilersDict 	= { 
@@ -3730,13 +3773,14 @@ Xpdf								*atp-Viewers-Xpdf*
 		:SyncTex
 		map t
 		map <S-LeftMouse>
-<	There is useful command |atp-:SetXpdf|.
-	You can set your own options of Xpdf using b:XpdfOptions, for example
+<	Read also |atp-:SyncTex_Xpdf-hack| and see |atp-:SetXpdf| command
+	description.  You can set your own options of Xpdf using
+	|b:atp_xpdfOptions|, for example
 >
 	    let b:atp_xpdfOptions="-bg NavajoWhite4 -fg black -mattecolor burylwood"
 <
 	will make Xpdf view different. This is helpful when you edit to
-	files, and do not want to Xpdf mix them. Another example:
+	files, and do not want to mix them. Another nice example:
 >
 	    let b:atp_xpdfOptions="-bg Grey30 -mattecolor SlateBlue2 -papercolor White"
 <

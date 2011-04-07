@@ -200,7 +200,7 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
 	"There is a bug in xpdf. We need to sleep between sending commands to it.:
-	let sleep	= 'sleep 0.1s;'
+	let sleep	= 'sleep '.g:atp_XpdfSleepTime.'s;'
 	let sync_cmd = sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x
 " 	let sync_cmd = sync_cmd_page.";".sync_cmd_y.";".sync_cmd_x
 	if !dryrun
@@ -901,11 +901,19 @@ endfunction
 " THE MAIN COMPILER FUNCTIONs:
 " {{{ s:PythonCompiler
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
-    let g:debugPC_bibtex=a:bibtex
-    let g:debugPC_start=a:start
-    let g:debugPC_runs=a:runs
-    let g:debugPC_verbose=a:verbose
-    let g:debugPC_bang=a:bang
+
+    " Debug varibles
+    " On Unix the output of compile.py run by this function is available at
+    " /tmp/atp_pc.debug
+    if g:atp_debugPythonCompiler
+	let g:debugPC_bibtex	=a:bibtex
+	let g:debugPC_start	=a:start
+	let g:debugPC_runs	=a:runs
+	let g:debugPC_verbose	=a:verbose
+	let g:debugPC_command	=a:command
+	let g:debugPC_filename	=a:filename
+	let g:debugPC_bang	=a:bang
+    endif
 
     if t:atp_DebugMode != 'verbose' && a:verbose != 'verbose'
 	let b:atp_LastLatexPID = -1
@@ -927,36 +935,38 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	else
 	    echohl WarningMsg
 	    echomsg "[ATP:] python compiler needs +clientserver vim compilation option."
+	    echomsg "       falling back to g:atp_Compiler=\"bash\""
 	    echohl Normal
 	    let g:atp_Compiler = "bash"
 	    return
 	endif
     endif
-    let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
-    let tex_options=shellescape(b:atp_TexOptions.',-interaction='.interaction)
+
+
+    " Set options for compile.py
+    let interaction 		= ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
+    let tex_options		= shellescape(b:atp_TexOptions.',-interaction='.interaction)
 "     let g:tex_options=tex_options
-    let ext	= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
-    let ext	= substitute(ext, '\.', '', '')
+    let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
+    let ext			= substitute(ext, '\.', '', '')
 
-    let global_options 	= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
-    let local_options 	= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
-    if global_options != "" 
-	let viewer_options  = global_options.",".local_options
+    let global_options 		= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
+    let local_options 		= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
+    if global_options !=  "" 
+	let viewer_options  	= global_options.",".local_options
     else
-	let viewer_options  = local_options
+	let viewer_options  	= local_options
     endif
-    let bang = ( a:bang == '!' ? ' --bang ' : '' ) 
-    let bibtex = ( a:bibtex ? ' --bibtex ' : '' )
-    let reload_on_error = ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
-    let gui_running = ( has("gui_running") ? ' --gui-running ' : '' )
-    let reload_viewer = ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
-    let aucommand = ( a:command == "AU" ? ' --aucommand ' : '' )
-    let progress_bar = ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
-    let bibliographies = join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
-    let g:gui_running = gui_running
-    let g:bibtex=bibtex
-    let g:reload_on_error=reload_on_error
+    let bang 			= ( a:bang == '!' ? ' --bang ' : '' ) 
+    let bibtex 			= ( a:bibtex ? ' --bibtex ' : '' )
+    let reload_on_error 	= ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
+    let gui_running 		= ( has("gui_running") ? ' --gui-running ' : '' )
+    let reload_viewer 		= ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
+    let aucommand 		= ( a:command == "AU" ? ' --aucommand ' : '' )
+    let progress_bar 		= ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
+    let bibliographies 		= join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
 
+    " Set the command
     let cmd="python ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
 		\ ." --tex-options ".tex_options
 		\ ." --verbose ".a:verbose
@@ -973,7 +983,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --bibliographies " . shellescape(bibliographies)
 		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
-    let g:cmd=cmd
+
     " Write file
     let backup=&backup
     let writebackup=&writebackup
@@ -981,24 +991,26 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	if &backup | setlocal nobackup | endif
 	if &writebackup | setlocal nowritebackup | endif
     endif
-    " disable WriteProjectScript
-    let eventignore = &l:eventignore
+
+    " Disable WriteProjectScript
+    let eventignore 		= &l:eventignore
     setl eventignore+=BufWrite
     silent! w
-    let &l:eventignore = eventignore
+    let &l:eventignore 		= eventignore
     if a:command == "AU"  
-	let &l:backup=backup 
-	let &l:writebackup=writebackup 
+	let &l:backup		= backup 
+	let &l:writebackup 	= writebackup 
     endif
     unlockvar g:atp_TexCommand
-    let g:atp_TexCommand= cmd
+    let g:atp_TexCommand	= cmd
     lockvar g:atp_TexCommand
 
+    " Call compile.py
     let b:atp_running += ( a:verbose != "verbose" ?  1 : 0 )
     if a:verbose == "verbose"
 	exe ":!".cmd
     elseif g:atp_debugPythonCompiler && has("unix") 
-	call system(cmd." 2>/tmp/atp_PythonCompiler.debug &")
+	call system(cmd." 2>/tmp/atp_pc.debug &")
     else
 	call system(cmd." &")
     endif
@@ -1414,7 +1426,7 @@ endfunction
 augroup ATP_auTeX
     au!
     au CursorHold 	*.tex call s:auTeX()
-    if g:atp_insert_updatetime
+    if g:atp_updatetime_insert
 	au CursorHoldI 	*.tex call s:auTeX()
     endif
 augroup END 

@@ -9,7 +9,9 @@
 
 " <c-c> in insert mode doesn't trigger InsertLeave autocommands
 " this fixes this.
-imap <buffer> <c-c> <c-[>
+if g:atp_MapCC
+    imap <buffer> <c-c> <c-[>
+endif
 
 command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f-args>)

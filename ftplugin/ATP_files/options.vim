@@ -291,39 +291,42 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_normal_updatetime")
-    let g:atp_normal_updatetime = 1000
+if !exists("g:atp_XpdfSleepTime")
+    let g:atp_XpdfSleepTime = "0.1"
 endif
-if !exists("g:atp_DefaultErrorFormat")
+if !exists("g:atp_MapCC") || g:atp_reload
+    let g:atp_MapCC = 0
+endif
+if !exists("g:atp_DefaultErrorFormat") || g:atp_reload
     let g:atp_DefaultErrorFormat = "erc"
 endif
-if !exists("g:atp_DefiSearchMaxWindowHeight")
+if !exists("g:atp_DefiSearchMaxWindowHeight") || g:atp_reload
     let g:atp_DefiSearchMaxWindowHeight=15
 endif
-if !exists("g:atp_ProgressBar")
+if !exists("g:atp_ProgressBar") || g:atp_reload
     let g:atp_ProgressBar = 1
 endif
 let g:atp_cmdheight = &l:cmdheight
-if !exists("g:atp_DebugModeQuickFixHeight") 
+if !exists("g:atp_DebugModeQuickFixHeight") || g:atp_reload 
     let g:atp_DebugModeQuickFixHeight = 8 
 endif
-if !exists("g:atp_DebugModeCmdHeight") 
+if !exists("g:atp_DebugModeCmdHeight") || g:atp_reload 
     let g:atp_DebugModeCmdHeight = &l:cmdheight
 endif
-if !exists("g:atp_DebugMode_AU_change_cmdheight")
+if !exists("g:atp_DebugMode_AU_change_cmdheight") || g:atp_reload
     " Background Compilation will change the 'cmdheight' option when the compilation
     " was without errors. AU - autocommand compilation
     let g:atp_DebugMode_AU_change_cmdheight = 0
     " This is the 'stay out of my way' solution. 
 endif
-if !exists("g:atp_Compiler") 
+if !exists("g:atp_Compiler") || g:atp_reload 
     let g:atp_Compiler = "python"
 endif
-if !exists("g:atp_ReloadViewers")
+if !exists("g:atp_ReloadViewers") || g:atp_reload
     " List of viewers which need to be reloaded after output file is updated.
     let g:atp_ReloadViewers	= [ 'xpdf' ]
 endif
-if !exists("g:atp_PythonCompilerPath")
+if !exists("g:atp_PythonCompilerPath") || g:atp_reload
     let g:atp_PythonCompilerPath=globpath(&rtp, 'ftplugin/ATP_files/compile.py')
 endif
 if !exists("g:atp_cpcmd") || g:atp_reload
@@ -535,8 +538,11 @@ if !exists("g:ViewerMsg_Dict") || g:atp_reload
 endif
 
 "ToDo: to doc.
-if !exists("g:atp_insert_updatetime") || g:atp_reload
-    let g:atp_insert_updatetime = max([ 2000, &l:updatetime])
+if !exists("g:atp_updatetime_insert") || g:atp_reload
+    let g:atp_updatetime_insert = 2000
+endif
+if !exists("g:atp_updatetime_normal") || g:atp_reload
+    let g:atp_updatetime_normal = 1000
 endif
 if !exists("g:atp_DefaultDebugMode") || g:atp_reload
     " recognised values: silent, debug.
@@ -1785,8 +1791,8 @@ endfunction
     augroup ATP_updatetime
 	au!
 	au VimEnter if &l:updatetime == 4000 | let &l:updatetime = 800 | endif
-	au InsertEnter *.tex let &l:updatetime=g:atp_insert_updatetime
-	au InsertLeave *.tex let &l:updatetime=g:atp_normal_updatetime 
+	au InsertEnter *.tex let &l:updatetime=g:atp_updatetime_insert
+	au InsertLeave *.tex let &l:updatetime=g:atp_updatetime_normal
     augroup END
 
     if (exists("g:atp_statusline") && g:atp_statusline == '1') || !exists("g:atp_statusline")
@@ -2044,24 +2050,31 @@ function! <SID>SetDebugMode(bang,...)
 	echo t:atp_DebugMode
 	return
     else
-	if a:1 =~# 's\%[silent]'
+	if a:1 =~# '^s\%[silent]'
 	    let t:atp_DebugMode= 'silent'
-	elseif a:1 =~# 'd\%[debug]'
+	elseif a:1 =~# '^d\%[debug]'
 	    let t:atp_DebugMode= 'debug'
-	elseif a:1 =~# 'D\%[debug]'
+	elseif a:1 =~# '^D\%[debug]'
 	    let t:atp_DebugMode= 'Debug'
-	elseif a:1 =~# 'v\%[verbose]'
+	elseif a:1 =~# '^v\%[erbose]'
 	    let t:atp_DebugMode= 'verbose'
 	else
 	    let t:atp_DebugMode= g:atp_DefaultDebugMode
 	endif
     endif
+
     if a:1 =~# 's\%[ilent]'
 	let winnr=winnr()
 	if t:atp_QuickFixOpen
 	    cclose
 	else
-	    cgetfile
+	    try
+		cgetfile
+	    catch /E40/
+		echohl WarningMsg 
+		echo "[ATP:] log file missing."
+		echohl Normal
+	    endtry
 	    if a:bang == "!"
 		exe "cwindow " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
 		exe winnr . "wincmd w"
@@ -2071,12 +2084,25 @@ function! <SID>SetDebugMode(bang,...)
 	let winnr=winnr()
 	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
 	exe winnr . "wincmd w"
-	cgetfile
+	try
+	    cgetfile
+	catch /E40/
+	    echohl WarningMsg 
+	    echo "[ATP:] log file missing."
+	    echohl Normal
+	endtry
+	" DebugMode is not changing when log file is missing!
     elseif a:1 =~# 'D\%[ebug]'
 	let winnr=winnr()
 	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
 	exe winnr . "wincmd w"
-	cgetfile
+	try
+	    cgetfile
+	catch /E40/
+	    echohl WarningMsg 
+	    echo "[ATP:] log file missing."
+	    echohl Normal
+	endtry
 	cc
     endif
 endfunction
