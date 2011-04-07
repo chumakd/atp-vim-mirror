@@ -72,9 +72,9 @@ else:
 # FUNCTIONS
 def filter_empty(str):
 	if re.match('\s*$', str):
-	    return False
+            return False
 	else:
-	    return True
+            return True
 
 def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
@@ -106,12 +106,12 @@ def latex_progress_bar(cmd):
 
             if len(stack)>10:
                 stack.popleft()
-            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))        
+            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))
             if match:
                 vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+")")
-    child.wait() 
-    vim_remote_expr(servername, "atplib#ProgressBar('')")        
-    return child           
+    child.wait()
+    vim_remote_expr(servername, "atplib#ProgressBar('')")
+    return child
 
 cwd=os.getcwd()
 os.chdir(outdir)
@@ -120,7 +120,7 @@ debug_file.write("DIR="+os.getcwd()+"\n")
 # MAKE BIBTEX
 if bibtex:
     did_bibtex  = 1
-    auxfile     = os.path.basename(basename)+".aux" 
+    auxfile     = os.path.basename(basename)+".aux"
     bibtex=subprocess.Popen(['bibtex', auxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     bibtex.wait()
     bibtex_returncode=bibtex.returncode
@@ -140,7 +140,7 @@ if re.match('\s*$', tex_options):
 else:
     if re.search('\s', tex_options):
 	tex_options_list=' '.split(tex_options)
-	tex_options_list=filter(filter_empty,tex_options_list) 
+	tex_options_list=filter(filter_empty,tex_options_list)
     else:
 	tex_options_list=[tex_options]
 
@@ -154,7 +154,7 @@ debug_file.write("LATEX RETURN CODE="+str(latex_return_code)+"\n")
 
 run+=1
 # CALL BACK
-callback_cmd=str(sid)+"MakeLatex('"+file_fp+"',"+str(did_bibtex)+","+str(did_index)+",["+str(time[0])+","+str(time[1])+"],"+str(did_firstrun)+","+str(run)+",'"+str(bang)+"')" 
+callback_cmd=str(sid)+"MakeLatex('"+file_fp+"',"+str(did_bibtex)+","+str(did_index)+",["+str(time[0])+","+str(time[1])+"],"+str(did_firstrun)+","+str(run)+",'"+str(bang)+"')"
 debug_file.write("CALLBACK="+str(callback_cmd)+"\n")
 vim_remote_expr(servername, callback_cmd)
 

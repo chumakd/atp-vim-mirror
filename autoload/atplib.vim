@@ -649,7 +649,8 @@ function! atplib#generatelabels(filename, ...)
     let saved_pos	= getpos(".")
     call cursor(1,1)
 
-    let [ TreeofFiles, ListOfFiles, DictOfFiles, LevelDict ] 		= TreeOfFiles(a:filename, '\\\(input\|include\)\s*{')
+    let [ TreeofFiles, ListOfFiles, DictOfFiles, LevelDict ] 		= TreeOfFiles(a:filename)
+    let ListOfFiles_orig = copy(ListOfFiles)
     if count(ListOfFiles, a:filename) == 0
 	call add(ListOfFiles, a:filename)
     endif
@@ -705,7 +706,7 @@ function! atplib#generatelabels(filename, ...)
     endif
     keepjumps call setpos(".", saved_pos)
     if return_ListOfFiles
-	return [ t:atp_labels, ListOfFiles ]
+	return [ t:atp_labels, ListOfFiles_orig ]
     else
 	return t:atp_labels
     endif

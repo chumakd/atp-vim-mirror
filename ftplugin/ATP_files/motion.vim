@@ -8,10 +8,10 @@
 let s:sourced = ( !exists("s:sourced") ? 0 : 1 )
 
 " Functions: (source once)
-if !s:sourced || g:atp_reload_functions "{{{
+if !s:sourced || g:atp_reload_functions "{{{1
 " All table  of contents stuff: variables, functions and commands. 
-" {{{ Table Of Contents
-" {{{2 Variabels
+" {{{2 Table Of Contents
+" {{{3 Variabels
 let g:atp_sections={
     \	'chapter' 	: [           '\m^\s*\(\\chapter\*\?\s*{\)',	'\m\\chapter\*'],	
     \	'section' 	: [           '\m^\s*\(\\section\*\?\s*{\)',	'\m\\section\*'],
@@ -32,7 +32,7 @@ let g:atp_sections={
 " 		    which works in all situations, while this is important for 
 " 		    :DeleteSection command /
 "
-" {{{2 s:find_toc_lines
+" {{{3 s:find_toc_lines
 function! s:find_toc_lines()
     let toc_lines_nr=[]
     let toc_lines=[]
@@ -64,7 +64,7 @@ function! s:find_toc_lines()
     endfor
     return toc_lines
 endfunction
-" {{{2 s:maketoc 
+" {{{3 s:maketoc 
 " this will store information: 
 " { 'linenumber' : ['chapter/section/..', 'sectionnumber', 'section title', '0/1=not starred/starred'] }
 function! s:maketoc(filename)
@@ -222,7 +222,7 @@ function! s:maketoc(filename)
     endif
     return t:atp_toc
 endfunction
-" {{{2 s:buflist
+" {{{3 s:buflist
 if !exists("t:buflist")
     let t:buflist=[]
 endif
@@ -237,7 +237,7 @@ function! s:buflist()
     endif
     return t:buflist
 endfunction
-" {{{2 RemoveFromBufList
+" {{{3 RemoveFromBufList
 " function! RemoveFromBufList()
 "     let i=1
 "     for f in t:buflist
@@ -249,7 +249,7 @@ endfunction
 " 	call remove(t:buflist,f-1)
 "     endif
 " endfunction
-" {{{2 s:showtoc
+" {{{3 s:showtoc
 function! s:showtoc(toc)
 
     " this is a dictionary of line numbers where a new file begins.
@@ -479,9 +479,7 @@ function! s:showtoc(toc)
     endif
     lockvar 3 b:atp_Toc
 endfunction
-"}}}2
 " }}}
-
 " This is User Front End Function 
 "{{{2 TOC
 function! <SID>TOC(bang)
@@ -499,12 +497,11 @@ function! <SID>TOC(bang)
     call s:showtoc(t:atp_toc)
 endfunction
 nnoremap <Plug>ATP_TOC			:call <SID>TOC(1)<CR>
-" }}}2
 
 " This finds the name of currently eddited section/chapter units. 
-" {{{ Current TOC
+" {{{2 Current TOC
 " ToDo: make this faster!
-" {{{ s:NearestSection
+" {{{3 s:NearestSection
 " This function finds the section name of the current section unit with
 " respect to the dictionary a:section={ 'line number' : 'section name', ... }
 " it returns the [ section_name, section line, next section line ]
@@ -529,8 +526,7 @@ function! <SID>NearestSection(section)
 	return ['','0', line('$')]
     endif
 endfunction
-" }}}
-" {{{ s:ctoc
+" {{{3 s:ctoc
 function! s:ctoc()
     if &l:filetype != 'tex' 
 " TO DO:
@@ -620,8 +616,7 @@ function! s:ctoc()
     endif
     return names
 endfunction
-" }}}
-" {{{ CTOC
+" {{{3 CTOC
 function! CTOC(...)
     " if there is any argument given, then the function returns the value
     " (used by ATPStatus()), otherwise it echoes the section/subsection
@@ -666,12 +661,10 @@ function! CTOC(...)
 	endif
     endif
 endfunction
-" }}}
-" }}}
 
 " Labels Front End Finction. The search engine/show function are in autoload/atplib.vim script
 " library.
-" {{{ Labels
+" {{{2 Labels
 " a:bang = "!" do not regenerate labels if not necessary
 function! <SID>Labels(bang)
     let t:atp_bufname	= bufname("%")
@@ -694,9 +687,8 @@ function! <SID>Labels(bang)
     endif
 endfunction
 nnoremap <Plug>ATP_Labels		:call <SID>Labels("")<CR>
-" }}}
 
-" GotoLabel & GotoLabelCompletion {{{
+" GotoLabel & GotoLabelCompletion {{{2
 " a:bang = "!" do not regenerate labels if not necessary
 " This is developed for one tex project in a vim.
 function! GotoLabel(bang,...)
@@ -728,9 +720,9 @@ function! GotoLabel(bang,...)
 	echomsg "[ATP:] no matching label"
 	echohl Normal
 	return 1
-"     elseif len(matches) == 1
-" 	let file=matches[0][0]
-" 	let line=matches[0][1]
+    elseif len(matches) == 1
+	let file=matches[0][0]
+	let line=matches[0][1]
     else
 " 	if len(keys(filter(copy(b:TypeDict), 'v:val == "input"'))) == 0
 	    let mlabels=map(copy(matches), "[(index(matches, v:val)+1).'.', v:val[2],v:val[3]]")
@@ -778,7 +770,7 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 
     let labels=[]
     for file in keys(t:atp_labels)
-	if index(b:ListOfFiles, fnamemodify(file, ":t")) != -1 || index(b:ListOfFiles, file) != -1
+	if index(b:ListOfFiles, fnamemodify(file, ":t")) != -1 || index(b:ListOfFiles, file) != -1 || file == atplib#FullPath(b:atp_MainFile)
 	    call extend(labels, map(deepcopy(t:atp_labels)[file], 'v:val[1]'))
 	    call extend(labels, map(deepcopy(t:atp_labels)[file], 'v:val[2]'))
 	endif
@@ -788,9 +780,8 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 
     return map(labels, "v:val.'\\>'")
 endfunction
-" }}}
 
-"{{{ GotoDestination
+"{{{2 GotoDestination
 function! <SID>GotoNamedDestination(destination)
     if b:atp_Viewer !~ '^\s*xpdf\>' 
 	echomsg "[ATP:] this only works with Xpdf viewer."
@@ -826,11 +817,10 @@ function! <SID>CompleteDestinations(ArgLead, CmdLine, CursorPos)
     let dests=<SID>FindDestinations()
     return join(dests, "\n")
 endfunction
-"}}}
 
 " Motion functions through environments and sections. 
-" {{{ Motion functions
-" Go to next environment "{{{
+" {{{2 Motion functions
+" Go to next environment "{{{3
 " which name is given as the argument. Do not wrap
 " around the end of the file.
 function! <SID>GotoEnvironment(flag,...)
@@ -932,8 +922,8 @@ function! <SID>GotoEnvironment(flag,...)
     silent! call histadd("search", pattern)
     silent! let @/ 	 = pattern
     return ""
-endfunction "}}}
-" Go to next section {{{ 
+endfunction
+" Go to next section {{{3 
 " The extra argument is a pattern to match for the
 " section title. The first, obsolete argument stands for:
 " part,chapter,section,subsection,etc.
@@ -987,7 +977,7 @@ function! Env_compl(A,P,L)
     return returnlist
 endfunction
 
-" {{{ Input() function
+" {{{3 Input() function
 function! <SID>Input(flag)
     let pat 	= ( &l:filetype == "plaintex" ? '\\input\s*{' : '\%(\\input\>\|\\include\s*{\)' )
     let @/	= '^\([^%]\|\\\@<!\\%\)*' . pat
@@ -1000,9 +990,7 @@ function! <SID>Input(flag)
     "     search history.
     "     call histadd("search", pat)
 endfunction
-" }}}
-" }}}
-" {{{ Go to File
+" {{{2 Go to File
 " This function also sets filetype vim option.
 " It is useing '\f' pattern thus it depends on the 'isfname' vim option.
 try
@@ -1297,8 +1285,8 @@ function! <SID>GotoFileComplete(ArgLead, CmdLine, CursorPos)
 	call add(file_l, b:atp_MainFile) 
     endif
     return  filter(file_l, "v:val =~ a:ArgLead")
-endfunction "}}}
-" Skip Comment "{{{
+endfunction
+" Skip Comment "{{{2
 " a:flag=fb (f-forward, b-backward)
 " f works like ]*
 " b workd like [*
@@ -1335,11 +1323,10 @@ function! <SID>SkipComment(flag, mode, ...)
 	exe "normal " . visualmode()
 	call cursor(end_pos)
     endif
-endfunction "}}}
-"}}}
+endfunction
 
 " Syntax motion
-" {{{ TexSyntaxMotion
+" {{{2 TexSyntaxMotion
 function! TexSyntaxMotion(forward, how, ...)
 
     " If the function is used in imap.
@@ -1501,10 +1488,10 @@ function! TexSyntaxMotion(forward, how, ...)
     if step == "l" && syntax == [ 'Delimiter' ]
 	normal h
     endif
-endfunction "}}}
+endfunction
 
 " ctrl-j motion
-" {{{ ctrl-j motion
+" {{{2 ctrl-j motion
 " New <Ctrl-j> motion
 function! JMotion(flag)
 " 	Note: pattern to match only commands which do not have any arguments:
@@ -1538,13 +1525,14 @@ function! JMotion(flag)
 		execute "normal a "
 	endif
     endif
-endfunction "}}}
-endif "}}}
+endfunction
+endif
 " Add newly opened files to t:buflist.
 call s:buflist()
+" }}}1
 
 " Commands And Maps:
-" {{{
+" {{{1
 command! -buffer -nargs=1 -complete=custom,<SID>CompleteDestinations GotoNamedDest	:call <SID>GotoNamedDestination(<f-args>)
 command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs', 'n')
 command! -buffer SkipCommentBackward 	:call <SID>SkipComment('bs', 'n')
@@ -1628,6 +1616,5 @@ command! -buffer NInput				:call <SID>Input("w") 	| let v:searchforward = 1
 command! -buffer PInput 			:call <SID>Input("bw")	| let v:searchforward = 0
 command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete GotoFile	:call GotoFile(<q-bang>,<q-args>, 0)
 command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete EditInputFile :call GotoFile(<q-bang>,<q-args>, 0)
-" }}}
 " vimeif data[0]['text'] =~ 'No Unique Match Found'	    echohl WarningMsg
 command! -bang -nargs=? -complete=customlist,GotoLabelCompletion GotoLabel  		:call GotoLabel(<f-bang>, <f-args>)
