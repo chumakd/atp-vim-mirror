@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 09 11:00  2011 W
+" Last Change: Sat Apr 09 12:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2093,6 +2093,7 @@ function! <SID>UpdateATP(bang)
 		let l:return = (l:return !~? '^\s*y\%[es]\s*$')
 		if l:return
 		    call delete(atp_tempname)
+		    redraw
 		    return
 		endif
 	    elseif compare == 0
