@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 09 12:00  2011 W
+" Last Change: Sat Apr 09 08:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2033,7 +2033,7 @@ function! <SID>UpdateATP(bang)
 	let g:cmd_get = cmd
 	call system(cmd)
 
-	"Get time stamps and copare them:
+	"Get time stamps and compare them:
 
 	" Stamp in the tar.gz file.
 	try
