@@ -1400,7 +1400,7 @@ map \L
 							*atp-:NEnv* *atp-}e*
 :NEnv {environment}
 :F {environment}
-map }e
+map >e
 	Move to next environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1415,7 +1415,7 @@ map }e
 							*atp-:PEnv* *atp-{e*
 :PEnv {environment}
 :B {environment}
-map {e
+map <e
 	Move to previous environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1428,15 +1428,15 @@ map {e
 	is using |atp-:S|.
 
 							*atp-:NextSection*
-							*atp-:NPart*	*atp-}p*
-							*atp-:NChap*	*atp-}c*
-							*atp-:NSec*	*atp-}s*
-							*atp-:NSSec*	*atp-}S*
+							*atp-:NPart*	*atp->p*
+							*atp-:NChap*	*atp->c*
+							*atp-:NSec*	*atp->s*
+							*atp-:NSSec*	*atp->S*
 							*atp-:NSSSec*
 :NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]
 :F {section}
- map }p,  map }c,  map }s,  map }S
-vmap }p, vmap }c, vmap }s, vmap }S
+ map >p,  map >c,  map >s,  map >S
+vmap >p, vmap >c, vmap >s, vmap >S
 
 	Go to next part/chapter/section/subsection/subsubsection which title
 	matches optionally given [title_pattern]. With bang "!" the command
@@ -1447,10 +1447,10 @@ vmap }p, vmap }c, vmap }s, vmap }S
 	    part/chapter/section/subsection/subsubsection.
 
 	Map  		Command			Meaning
-	}p		:NPart			go to next part
-	}c		:NChap			go to next chapter
-	}s		:NSec			go to next section	
-	}S		:NSSec			go to next subsection
+	>p		:NPart			go to next part
+	>c		:NChap			go to next chapter
+	>s		:NSec			go to next section	
+	>S		:NSSec			go to next subsection
 
 	The leader } can be changed by setting the variable
 	*g:atp_map_forward_motion_leader* .
@@ -1477,16 +1477,18 @@ vmap }p, vmap }c, vmap }s, vmap }S
 	<Plug>GotoNextSection, <Plug>GotoNextChapter, <Plug>GotoNextPart to
 	define new maps.
 
+	Note: you can set the leader '>' using g:atp_map_forward_motion_leader.
+
 							*atp-:PrevSection*
-							*atp-:PPart*	*atp-{p*
-							*atp-:PChap*	*atp-{c*
-							*atp-:PSec*     *atp-{s*
-							*atp-:PSSec*	*atp-{S*
+							*atp-:PPart*	*atp-<p*
+							*atp-:PChap*	*atp-<c*
+							*atp-:PSec*     *atp-<s*
+							*atp-:PSSec*	*atp-<S*
 							*atp-:PSSSec*
 :PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]
 :B {section}
- map {p,  map {c,  map {s,  map {S
-vmap {p, vmap {c, vmap {s, vmap {S
+ map <p,  map <c,  map <s,  map <S
+vmap <p, vmap <c, vmap <s, vmap <S
 
 	Go to previous part/chapter/section/subsection/subsubsection which
 	title matches [title_pattern] (an optional argument). With bang "!"
@@ -1502,10 +1504,10 @@ vmap {p, vmap {c, vmap {s, vmap {S
 	For description of arguments read |atp-:NextSection| just above.
 
 	Map  		Command			Meaning
-	{p		:PPart			go to previous part
-	{c		:PChap			go to previous chapter
-	{s		:PSec			go to previous section	
-	{S		:PSSec			go to previous subsection
+	<p		:PPart			go to previous part
+	<c		:PChap			go to previous chapter
+	<s		:PSec			go to previous section	
+	<S		:PSSec			go to previous subsection
 
 	These commands (and maps) use Vim |search()| function or |atp-:S|
 	command depending on the value of |g:atp_mapNn| (see |atp-:ToggleNn|,
@@ -1516,6 +1518,8 @@ vmap {p, vmap {c, vmap {s, vmap {S
 	You can unmap these keys and use <Plug>GotoPreviousSubSection,
 	<Plug>GotoPreviousSection, <Plug>GotoPreviousChapter,
 	<Plug>GotoPreviousPart to define new maps.
+
+	Note: you can set the leader '<' using g:atp_map_bacward_motion_leader.
 
 ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 :ToDo [bufname]					*atp-:ToDo*
