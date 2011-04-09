@@ -408,7 +408,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     |atp-:DefiSearch| are listed in a buffer at the bottom of the window. 
 9.2:
 							*atp-:UpdateATP*
-UpdateATP[!]
+:UpdateATP[!]
 	With bang update ATP to latest {UNSTABLE} snapshot, without to latest
 	stable release. It makes a check if your version is the latest one. 
 	If you have installed {UNSTABLE} snapshot and the you run :UpdateATP
@@ -419,6 +419,11 @@ UpdateATP[!]
 	of important parts of ATP (what can produce new bugs).  
 
 	This requires python.
+							*atp-:ATPversion*
+:ATPversion	
+	This command prints version information of ATP and the time stamp when
+	this version was build. The time stamp is in format 'dd-mm-yy_HH-MM'.
+
     						Chears, Marcin
 >
   Changes in version 8.7

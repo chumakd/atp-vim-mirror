@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 09 07:00  2011 W
+" Last Change: Sat Apr 09 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2152,6 +2152,18 @@ file_o=tarfile.open(file_n, "r:gz")
 file_o.extractall(path)
 END
 endfunction
+function! <SID>ATPversion()
+    let saved_loclist = getloclist(0)
+    exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+    let stamp 	= get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
+    let stamp	= matchstr(stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
+    exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
+    let l:version = get(getloclist(0),0, {'text' : 'unknown'})['text']
+    let l:version = matchstr(l:version, '(ver\.\?\s\+\zs[0-9.]*\ze)')
+    call setloclist(0, saved_loclist) 
+    redraw
+    echomsg "ATP version: ".l:version.", time stamp: ".stamp 
+endfunction
 "}}}
 endif "}}}
 
@@ -2198,4 +2210,5 @@ command! -bang -buffer -nargs=1 AMSRef				:call AMSRef(<q-bang>, <q-args>)
 command! -buffer	Preambule				:call Preambule()
 command! -bang		WordCount				:call <SID>ShowWordCount(<q-bang>)
 command! -buffer -bang	UpadteATP				:call <SID>UpdateATP(<q-bang>)
+command! -buffer	ATPversion				:call <SID>ATPversion()
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
