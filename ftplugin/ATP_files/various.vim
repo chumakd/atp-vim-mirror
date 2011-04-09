@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 09 10:00  2011 W
+" Last Change: Sat Apr 09 11:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2036,7 +2036,27 @@ function! <SID>UpdateATP(bang)
 	"Get time stamps and copare them:
 
 	" Stamp in the tar.gz file.
-	call <SID>GetTimeStamp(atp_tempname)
+	try
+	    call <SID>GetTimeStamp(atp_tempname)
+	catch
+	    echohl ErrorMsg
+	    echo "[ATP:] GetTimeStamp error, please trying agian ..."
+	    echohl Normal
+	    call delete(atp_tempname)
+	    if a:bang == "!"
+		echo "[ATP:] getting latest snapshot (unstable version) ..."
+	    else
+		echo "[ATP:] getting latest stable version ..."
+	    endif
+	    call system(cmd)
+	    try
+		call <SID>GetTimeStamp(atp_tempname)
+	    catch
+		call delete(atp_tempname)
+		echoerr "[ATP:] GetTimeStamp error." 
+		return
+	    endtry
+	endtry
 	let new_stamp=g:atp_stamp
 	let new_list = matchstr(new_stamp, '\(\d*\)-\(\d*\)-\(d*\)_\(\d*\)-\(\d*\)')
 " 	let g:new_stamp = new_stamp
@@ -2087,6 +2107,7 @@ function! <SID>UpdateATP(bang)
 	echo "[ATP:] installing ..." 
 	call <SID>Tar(atp_tempname, dir)
 	call delete(atp_tempname)
+
 	" WINDOWS NOT COMPATIBLE (?)
 	exe "helptags " . dir . "/doc"
 	ReloadATP
