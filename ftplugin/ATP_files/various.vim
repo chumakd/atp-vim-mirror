@@ -1967,6 +1967,7 @@ function! <SID>UpdateATP(bang)
 
 	let saved_loclist = getloclist(0)
 	exe 'lvimgrep /\C<a\s\+href=".*AutomaticTexPlugin_\d\+\%(\.\d\+\)*\.'.escape(ext, '.').'/jg '.url_tempname
+	call delete(url_tempname)
 	let list = map(getloclist(0), 'v:val["text"]')
 " 	let g:list = copy(list)
 	if a:bang == "!"
@@ -2029,7 +2030,7 @@ function! <SID>UpdateATP(bang)
 	else
 	    echo "[ATP:] getting latest stable version ..."
 	endif
-" 	let g:cmd_get = cmd
+	let g:cmd_get = cmd
 	call system(cmd)
 
 	"Get time stamps and copare them:
@@ -2074,7 +2075,7 @@ function! <SID>UpdateATP(bang)
 		    call delete(atp_tempname)
 		    return
 		endif
-	    else compare == 0
+	    elseif compare == 0
 		redraw
 		echomsg "You have the latest STABLE version of ATP."
 		call delete(atp_tempname)
@@ -2160,6 +2161,17 @@ python << END
 import tarfile, vim
 file_n=vim.eval("a:file")
 path=vim.eval("a:path")
+file_o=tarfile.open(file_n, "r:gz")
+file_o.extractall(path)
+END
+endfunction
+function! Tar(file,path)
+python << END
+import tarfile, vim
+file_n=vim.eval("a:file")
+print(file_n)
+path=vim.eval("a:path")
+print(path)
 file_o=tarfile.open(file_n, "r:gz")
 file_o.extractall(path)
 END

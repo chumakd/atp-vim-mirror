@@ -2,7 +2,7 @@
 " Author:		Marcin Szamotulski
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
-" Time Stamp: 09-04-11_09-49
+" Time Stamp: 09-04-11_10-31
 " Language:	    tex
 " Last Change: Fri Apr 08 07:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
