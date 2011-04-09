@@ -412,8 +412,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 	With bang update ATP to latest {UNSTABLE} snapshot, without to latest
 	stable release. It makes a check if your version is the latest one. 
 	If you have installed {UNSTABLE} snapshot and the you run :UpdateATP
-	without a bang "!", then ATP will be downgraded to latest stable
-	release.
+	without a bang "!", then ATP will ask you if you want to DOWNGRADE to
+	the last stable release.
 
 	{UNSTABLE} snapshots contain small fixes, and rarely, major changes
 	of important parts of ATP (what can produce new bugs).  

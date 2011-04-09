@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 09 09:00  2011 W
+" Last Change: Sat Apr 09 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1940,8 +1940,8 @@ function! <SID>Wdiff(new_file, old_file)
 endfunction "}}}
 
 " ATPUpdate
-try
-function! <SID>UpdateATP(bang) "{{{
+try "{{{ UpdateATP
+function! <SID>UpdateATP(bang)
     "DONE: add bang -> get stable/unstable latest release.
     "DONE: check if the current version is newer than the available one
     "		if not do not download and install (this saves time).
@@ -2015,14 +2015,14 @@ function! <SID>UpdateATP(bang) "{{{
 " 	let g:url = url
 
 	let ATPversion = matchstr(url, 'AutomaticTexPlugin_\zs\d\+\%(\.\d\+\)*\ze\.'.escape(ext, '.'))
-" 	let g:ATPversion = ATPversion
+	let g:ATPversion = ATPversion
 	if a:bang == "!"
 	    let ATPdate = matchstr(url, 'AutomaticTexPlugin_\d\+\%(\.\d\+\)*.'.escape(ext, '.').'.\zs[0-9-_]*\ze')
 	else
 	    let ATPdate = ""
 	endif
 	let atp_tempname = tempname()."_ATP.tar.gz"
-" 	let g:atp_tempname = atp_tempname
+	let g:atp_tempname = atp_tempname
 	let cmd="python ".URLquery_path." ".shellescape(url)." ".shellescape(atp_tempname)
 	if a:bang == "!"
 	    echo "[ATP:] getting latest snapshot (unstable version) ..."
@@ -2042,46 +2042,58 @@ function! <SID>UpdateATP(bang) "{{{
 
 	" Stamp of the local version
 	let saved_loclist = getloclist(0)
-	exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
-	let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
-	call setloclist(0, saved_loclist) 
-	let old_stamp=matchstr(old_stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
+	try
+	    exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+	    let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
+	    call setloclist(0, saved_loclist) 
+	    let old_stamp=matchstr(old_stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
+	catch /E480:/
+	    let old_stamp="00-00-00_00-00"
+	endtry
 	let old_list = matchlist(old_stamp, '\(\d*\)-\(\d*\)-\(d*\)_\(\d*\)-\(\d*\)')
 " 	let g:old_stamp = old_stamp
 	 
 	"Compare stamps:
 	" stamp format day-month-year_hour-minute
 	" if o_stamp is >= than n_stamp  ==> return
-	if <SID>CompareStamps(new_stamp, old_stamp) == 1
-	    redraw
-	    if a:bang == "!"
+	let l:return = 1
+	let compare = <SID>CompareStamps(new_stamp, old_stamp)
+	if a:bang == "!"
+	    if  compare == 1 || compare == 0
+		redraw
 		echomsg "You have the latest UNSTABLE version of ATP."
-	    else
-		echomsg "You have the latest version of ATP."
+		call delete(atp_tempname)
+		return
 	    endif
-	    call delete(atp_tempname)
-	    return
+	else
+	    if compare == 1
+		redraw
+		let l:return = input("You have UNSTABLE version of ATP.\nDo you want to DOWNGRADE to the last STABLE release? type yes/no [or y/n] and hit <Enter> ")
+		let l:return = (l:return !~? '^\s*y\%[es]\s*$')
+		if l:return
+		    call delete(atp_tempname)
+		    return
+		endif
+	    else compare == 0
+		redraw
+		echomsg "You have the latest STABLE version of ATP."
+		call delete(atp_tempname)
+		return
+	    endif
 	endif
 
 	redraw
 	echo "[ATP:] installing ..." 
-	if ext == "vba"
-	    silent exe "edit ".atp_tempname
-	    silent! source %
-	    bd
-	else
-	    " Rewrite this using python
-	    call <SID>Tar(atp_tempname, dir)
-	    call delete(atp_tempname)
-	    " WINDOWS NOT COMPATIBLE (?)
-	    exe "helptags " . dir . "/doc"
-	endif
+	call <SID>Tar(atp_tempname, dir)
+	call delete(atp_tempname)
+	" WINDOWS NOT COMPATIBLE (?)
+	exe "helptags " . dir . "/doc"
 	ReloadATP
 	redraw!
 	if a:bang == "!"
 	    echomsg "[ATP:] updated to version ".ATPversion." (snapshot date stamp ".new_stamp.")." 
 	else
-	    echomsg "[ATP:] updated to release ".ATPversion
+	    echomsg "[ATP:] ".(l:return ? 'updated' : 'downgraded')." to release ".ATPversion
 	endif
 endfunction 
 catch E127:
@@ -2154,15 +2166,23 @@ END
 endfunction
 function! <SID>ATPversion()
     let saved_loclist = getloclist(0)
-    exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
-    let stamp 	= get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
-    let stamp	= matchstr(stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
-    exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
-    let l:version = get(getloclist(0),0, {'text' : 'unknown'})['text']
-    let l:version = matchstr(l:version, '(ver\.\?\s\+\zs[0-9.]*\ze)')
+    try
+	exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+	let stamp 	= get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
+	let stamp	= matchstr(stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
+    catch /E480:/
+	let stamp	= "(no stamp)"
+    endtry
+    try
+	exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
+	let l:version = get(getloclist(0),0, {'text' : 'unknown'})['text']
+	let l:version = matchstr(l:version, '(ver\.\?\s\+\zs[0-9.]*\ze)')
+    catch /E480:/
+	let l:version = "(no version number)"
+    endtry
     call setloclist(0, saved_loclist) 
     redraw
-    echomsg "ATP version: ".l:version.", time stamp: ".stamp 
+    echomsg "ATP version: ".l:version.", time stamp: ".stamp."."
 endfunction
 "}}}
 endif "}}}
