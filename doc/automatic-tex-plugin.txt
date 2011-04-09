@@ -89,6 +89,13 @@ This was quite active time for ATP, there are a lot of nice (I hope useful)
 changes:
 
 >
+  Changes in versions 9.3
+<
+	|g:atp_map_forward_motion_leader| = '>'
+	|g:atp_map_backward_motion_leader| = '<'
+		see |atp-:NSec| and |atp-:PSec| and friends. 
+	(actually nothing changes, there just was a bug in help file)
+>
   Changes in versions 9 & 9.1 & 9.2
 <
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
@@ -1452,8 +1459,9 @@ vmap >p, vmap >c, vmap >s, vmap >S
 	>s		:NSec			go to next section	
 	>S		:NSSec			go to next subsection
 
-	The leader } can be changed by setting the variable
-	*g:atp_map_forward_motion_leader* .
+							*g:atp_map_forward_motion_leader*
+	You can set the leader '>' using |g:atp_map_forward_motion_leader|
+	variable.
 
 	Note: the maps work in visual mode and operator pending mode ('d\ns'
 	will delete till the end of the section). You can use |n| and |N| Vim
@@ -1477,7 +1485,6 @@ vmap >p, vmap >c, vmap >s, vmap >S
 	<Plug>GotoNextSection, <Plug>GotoNextChapter, <Plug>GotoNextPart to
 	define new maps.
 
-	Note: you can set the leader '>' using g:atp_map_forward_motion_leader.
 
 							*atp-:PrevSection*
 							*atp-:PPart*	*atp-<p*
@@ -1495,8 +1502,9 @@ vmap <p, vmap <c, vmap <s, vmap <S
 	the command doesn't skip commented sections. Maps skip them. The
 	search will wrap around the beginning of a file if 'wrapscan' is set.
 
-	The leader { can be changed by setting the variable
-	*g:atp_map_backward_motion_leader* .
+						*g:atp_map_backward_motion_leader*
+	You can set the leader '<' using |g:atp_map_bacward_motion_leader|
+	variable.
 
 	The {section} argument for :B is one off:
 	    part/chapter/section/subsection/subsubsection.
@@ -1518,8 +1526,6 @@ vmap <p, vmap <c, vmap <s, vmap <S
 	You can unmap these keys and use <Plug>GotoPreviousSubSection,
 	<Plug>GotoPreviousSection, <Plug>GotoPreviousChapter,
 	<Plug>GotoPreviousPart to define new maps.
-
-	Note: you can set the leader '<' using g:atp_map_bacward_motion_leader.
 
 ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 :ToDo [bufname]					*atp-:ToDo*
