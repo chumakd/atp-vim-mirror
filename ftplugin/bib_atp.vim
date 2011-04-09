@@ -4,7 +4,7 @@
 " URL:	       https://launchpad.net/automatictexplugin	
 " BUG Trucer:  https://bugs.launchpad.net/automatictexplugin
 " Language:    bib
-" Last Change: Wed Mar 30 09:00  2011 W
+" Last Change: Fri Apr 08 07:00  2011 W
 " Copyright Statement: 
 " 	  This file is part of Automatic Tex Plugin for Vim.
 "
@@ -310,3 +310,4 @@ nnoremap <buffer> <LocalLeader>pr	:call append(line("."), g:atpbib_Proceedings)<
 nnoremap <buffer> <LocalLeader>tr	:call append(line("."), g:atpbib_TechReport)<CR>:call <SID>JMotion("")<CR>
 nnoremap <buffer> <LocalLeader>un	:call append(line("."), g:atpbib_Unpublished)<CR>:call <SID>JMotion("")<CR>
 " }}}
+" vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

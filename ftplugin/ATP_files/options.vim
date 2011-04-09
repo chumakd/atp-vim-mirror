@@ -300,6 +300,9 @@ endif
 if !exists("g:atp_DefaultErrorFormat") || g:atp_reload
     let g:atp_DefaultErrorFormat = "erc"
 endif
+unlockvar g:atp_ErrorFormat
+let g:atp_ErrorFormat = g:atp_DefaultErrorFormat
+lockvar g:atp_ErrorFormat
 if !exists("g:atp_DefiSearchMaxWindowHeight") || g:atp_reload
     let g:atp_DefiSearchMaxWindowHeight=15
 endif

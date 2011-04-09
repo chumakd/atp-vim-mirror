@@ -275,4 +275,9 @@ Done: GotoLabel gives one label to choose from (it should take this one and go :
 # TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
 # NOTE: if the latex return code is non zero then reference numbers (Lemma
 # X.Y) may be '?'! ( I don't why its like that )
-# FIX: Xpdf sleep time between sending remote commands (SyncTex)
+# Done: Xpdf sleep time between sending remote commands (SyncTex)
+SOLUTION FOR CallBack: get all messages into list [ [ msg_text : highlight group ], ... ] and echo them at the end. 
+	g:atp_DefualtDebugMode == "silent" && !errors -> cclose
+	t:atp_DebugMode == "silent" || a:mode == "silent" -> cclose
+	(t:atp_DebugMode == "debug" || a:mode == "debug") && errors && !t:atp_QuickFixOpen -> clist
+	What for to show in debug mode what was the error code of latex if quickfix window is opened ...

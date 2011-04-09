@@ -980,8 +980,8 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
-		\ ." --bibliographies " . shellescape(bibliographies)
-		\ .(t:atp_DebugMode == 'verbose' || a:verbose == 'verbose' ? ' --env default ' : " --env ".shellescape(b:atp_TexCompilerVariable))
+		\ ." --bibliographies ".shellescape(bibliographies)
+		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env default ': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
 
     " Write file
@@ -1454,7 +1454,7 @@ function! <SID>TeX(runs, bang, ...)
     if mode =~# '^s\%[ilent]$'
 	let mode = 'silent'
     elseif mode =~# '^d\%[ebug]$'
-	let mode = '^debug'
+	let mode = 'debug'
     elseif mode =~# 'D\%[ebug]$'
 	let mode = 'Debug'
     elseif mode =~#  '^v\%[erbose]$'
@@ -1550,12 +1550,10 @@ function! <SID>Bibtex(bang, ...)
 	let mode = t:atp_DebugMode
     endif
 
-    let g:mode0 = mode
-
     if mode =~# '^s\%[ilent]$'
 	let mode = 'silent'
     elseif mode =~# '^d\%[ebug]$'
-	let mode = '^debug'
+	let mode = 'debug'
     elseif mode =~# 'D\%[ebug]$'
 	let mode = 'Debug'
     elseif mode =~#  '^v\%[erbose]$'
@@ -1563,8 +1561,6 @@ function! <SID>Bibtex(bang, ...)
     else
 	let mode = t:atp_DebugMode
     endif
-
-    let g:mode = mode
 
     if g:atp_Compiler == 'python'
 	call <SID>PythonCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
@@ -1603,6 +1599,9 @@ nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("", "verbose")<CR>
 function! <SID>SetErrorFormat(...)
 
     let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+    unlockvar g:atp_ErrorFormat
+    let g:atp_ErrorFormat = carg
+    lockvar g:atp_ErrorFormat
 "     let l:cgetfile = ( a:0 >=2 ? a:2 : 1 )
 
     let &l:errorformat=""

@@ -133,10 +133,12 @@ function! atplib#CallBack(mode,...)
     let AU = ( a:0 >= 1 ? a:1 : 'COM' )
     " Was compiler called to make bibtex
     let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
-"     if g:atp_debugCB
-" 	redir! > /tmp/atp_callback
+    let BIBTEX = ( BIBTEX == "True" ? 1 : 0 )
+    if g:atp_debugCB
+	let g:BIBTEX = BIBTEX
+	redir! > /tmp/atp_callback
 " 	silent echo "BIBTEX =".BIBTEX
-"     endif
+    endif
 
     for cmd in keys(g:CompilerMsg_Dict) 
     if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -149,8 +151,9 @@ function! atplib#CallBack(mode,...)
     let b:atp_running	= b:atp_running - 1
 
     " Read the log file
-    cg
-    error=len(getqflist()) + (BIBTEX == "True" ? b:atp_BibtexReturnCode : 0)
+    cgetfile
+    " /this cgetfile is not working (?)/
+    let error	= len(getqflist()) + (BIBTEX ? b:atp_BibtexReturnCode : 0)
 
     " If the log file is open re read it / it has 'autoread' opion set /
     checktime
@@ -166,100 +169,150 @@ function! atplib#CallBack(mode,...)
     "  0 redraw
     "  i.e. redraw at the end of function (this is done to not redraw twice in
     "  this function)
-    let redraw = 1
+    let l:clist 	= 0
     let atp_DebugMode = t:atp_DebugMode
+
     if b:atp_TexReturnCode == 0 && ( a:mode == 'silent' || t:atp_DebugMode == 'silent' ) && g:atp_DebugMode_AU_change_cmdheight 
 	let &l:cmdheight=g:atp_cmdheight
-	let redraw = 0
     endif
 
+    if g:atp_debugCB
+	let g:debugCB 		= 0
+	let g:debugCB_mode 	= a:mode
+	let g:debugCB_error 	= error
+    endif
+
+    let msg_list = []
     let showed_message = 0
-    if b:atp_TexReturnCode && ( t:atp_DebugMode != "silent" || a:mode != 'silent' )
-	redraw!
-	let redraw = 1
-	if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexReturnCode . "."
-	else
-	    echomsg "[ATP:] ".Compiler." exited with status " . b:atp_TexReturnCode . " output file not reloaded."
+
+    if a:mode == "silent" && !error
+
+	if t:atp_QuickFixOpen 
+
+	    if g:atp_debugCB
+		let g:debugCB .= 7
+	    endif
+
+	    cclose
+	    call add(msg_list, ["[ATP:] no errors, closing quick fix window.", "Normal"])
 	endif
-	let showed_message = 1
-    elseif !g:atp_statusNotif || !g:atp_statusline
-	echomsg "[ATP:] ".Compiler." finished"
-	let showed_message = 1
     endif
 
-    " End the debug mode if there are no errors
-    if !error && ( t:atp_DebugMode ==? 'debug' )
+    if a:mode ==? 'debug' && !error
+
+	if g:atp_debugCB
+	    let g:debugCB 	.= 3
+	endif
+
 	cclose
-	redraw!
-	echomsg "[ATP:] ". b:atp_TexCompiler." finished with status " . b:atp_TexReturnCode . " going out of debuging mode."
-	let redraw 		= 1
+	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returened without errors (atp_ErrorFormat=".g:atp_ErrorFormat.")".(g:atp_DefaultDebugMode=='silent'?" going out of debuging mode.","Normal","after": ".")]) 
 	let showed_message 	= 1
 	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
+	if g:atp_DefaultDebugMode == "silent" && t:atp_QuickFixOpen
+	    cclose
+	endif
 	let &l:cmdheight 	= g:atp_cmdheight
     endif
 
-    if a:mode == 'debug'
-	if !t:atp_QuickFixOpen
-	    if len(getqflist())
-		let &l:cmdheight 	= g:atp_DebugModeCmdHeight
-		let showed_message 	= 1
-		let redraw 		= 1
-		call ShowErrors(g:atp_DefaultErrorFormat, !showed_message)
+    " debug mode with errors
+    if a:mode ==? 'debug' && error
+	if len(getqflist())
 
-	    elseif !showed_message
-		let redraw 		= 1
-		if BIBTEX == "False" || BIBTEX == "True" && !b:atp_BibtexReturnCode
-		    echomsg "[ATP:] no errors :)"
+	    if g:atp_debugCB
+		let g:debugCB .= 4
+	    endif
+
+	    let g:debug		= 1
+	    let &l:cmdheight 	= g:atp_DebugModeCmdHeight
+		let showed_message 	= 1
+		if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
+		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . ".", "ErrorMsg", "before"])
 		else
-		    echomsg "[ATP:] " . b:atp_TexCompiler . " exited without errors (errorformat=".g:atp_DefaultErrorFormat.")"
+		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . " output file not reloaded.", "ErrorMsg", "before"])
 		endif
+	    if !t:atp_QuickFixOpen
+		let l:clist		= 1
 	    endif
 	endif
 
+	if BIBTEX && b:atp_BibtexReturnCode
+
+	    if g:atp_debugCB
+		let g:debugCB .= 8
+	    endif
+
+	    let l:clist		= 1
+	    call add(msg_list, [ "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode .".", "ErrorMsg", "after"])
+	    call add(msg_list, [ "BIBTEX_OUTPUT" , "Normal", "after"])
+
+	endif
+
 	" In debug mode, go to first error. 
-	if t:atp_DebugMode ==# "Debug" || a:mode ==# "Debug"
+	if a:mode ==# "Debug"
+
+	    if g:atp_debugCB
+		let g:debugCB .= 6
+	    endif
+
 	    cc
 	endif
     endif
 
-    if  !error && ( t:atp_DebugMode == "silent" || a:mode == "silent" )
-	if t:atp_QuickFixOpen 
-	    let t:atp_QuickFixOpen 	= 0
-	    cclose
-	    redraw!
-	    let redraw 			= 1
-	    echomsg "[ATP:] no errors, closing quick fix window."
-" 	else
-" 	    let redraw			= 1
-" 	    redraw!
-	endif
+    if msg_list == []
+	return
     endif
 
-    if b:atp_BibtexReturnCode
-	if !redraw
-	    redraw!
-	    let redraw			= 1
-	endif
-	if (atp_DebugMode != 'silent' || a:mode != 'silent')
-	    echohl ErrorMsg
-	    echo "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode
-	    echohl Normal
-	    echo b:atp_BibtexOutput 
+    " Count length of the message:
+    let msg_len		= len(msg_list)
+    if len(map(copy(msg_list), "v:val[0] == 'BIBTEX_OUTPUT'")) 
+	let msg_len += (BIBTEX ? len(split(b:atp_BibtexOutput, "\\n")) - 1 : - 1 )
+    endif
+    let msg_len		+= ((len(getqflist()) <= 7 && !t:atp_QuickFixOpen) ? len(getqflist()) : 0 )
+    let g:msg_len	= msg_len
+
+    " Show messages/clist
+    
+    if g:atp_debugCB
+	let g:msg_list 	= msg_list
+	let g:clist 	= l:clist
+    endif
+
+    let cmdheight = &l:cmdheight
+    let &l:cmdheight	= msg_len+2
+    if l:clist && len(getqflist()) > 7 && !t:atp_QuickFixOpen
+	let winnr = winnr()
+	copen
+	exe winnr."wincmd w"
+    elseif (a:mode ==? "debug") && !t:atp_QuickFixOpen 
+	let l:clist = 1
+    endif
+    redraw
+    let before_msg = filter(copy(msg_list), "v:val[2] == 'before'")
+    let after_msg = filter(copy(msg_list), "v:val[2] == 'after'")
+    for msg in before_msg 
+	exe "echohl " . msg[1]
+	echomsg msg[0]
+    endfor
+    let l:redraw	= 1
+    if l:clist && len(getqflist()) <= 7 && !t:atp_QuickFixOpen
+	let g:debugCB .= "clist"
+	clist
+	let l:redraw	= 0
+    endif
+    for msg in after_msg 
+	exe "echohl " . msg[1]
+	if msg[0] !=# "BIBTEX_OUTPUT"
+	    echomsg msg[0]
 	else
-	    echohl ErrorMsg
-	    echo "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode
-	    echohl Normal
+	    echo "       ".substitute(b:atp_BibtexOutput, "\n", "\n       ", "g")
+	    let g:debugCB .=" BIBTEX_output "
 	endif
+    endfor
+    echohl Normal
+    let &l:cmdheight = cmdheight
+    if g:atp_debugCB
+	redir END
     endif
-
-    if !redraw && 
-	redraw!
-    endif
-"     let g:showed_message=showed_message
-"     if g:atp_debugCB
-" 	redir END
-"     endif
 endfunction "}}}
 "{{{ LatexPID
 "Store LatexPIDs in a variable

@@ -245,8 +245,10 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     the directory will not be removed. 
 							*atp-:WrapEnvironment*
 9.2:
-  - :WrapEnvironment {environment} command, mark part of the text and wrap it into
-    anvironment given as the argument.
+  - :WrapEnvironment {environment} 
+    vmap <F4>		mark part of the text and wrap it into anvironment
+			given as the argument, the map will let you choose the
+			environment name.
 
 9.2:
   - :SetErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
@@ -401,7 +403,22 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 9.2:
   - |atp-:AMSRef| command is using pyhon code to get the data from AMS web
     interface (this makes it portable). wget is no longer used.
+9.2:
+  - see |g:atp_DefiSearchMaxWindowHeight|. Now the results of
+    |atp-:DefiSearch| are listed in a buffer at the bottom of the window. 
+9.2:
+							*atp-:UpdateATP*
+UpdateATP[!]
+	With bang update ATP to latest {UNSTABLE} snapshot, without to latest
+	stable release. It makes a check if your version is the latest one. 
+	If you have installed {UNSTABLE} snapshot and the you run :UpdateATP
+	without a bang "!", then ATP will be downgraded to latest stable
+	release.
 
+	{UNSTABLE} snapshots contain small fixes, and rarely, major changes
+	of important parts of ATP (what can produce new bugs).  
+
+	This requires python.
     						Chears, Marcin
 >
   Changes in version 8.7
@@ -667,12 +684,14 @@ forth between you |b:atp_OutDir| and the temporary directory)
 			   If you open the error window with :copen or with
 			   the menu option ToggleDebugMode then it will be
 			   automatically closed after first compilation with
-			   no errors (both in 'silent' and 'debug' debug
-			   mode); This depends on |errorformat| which you can
-			   set with |atp-:SetErrorFormat| and |atp-:ShowErrors| 
-			   - ATP test for no errors is len(|getqflist()|). If
-			   the debug mode was 'debug' |t:atp_DebugMode| will
-			   be set to |g:atp_DefaultDebugMode|.
+			   no errors. Quick fix window is closed in both
+			   'silent' and 'debug' debug modes. This depends on
+			   |errorformat| which you can set with
+			   |atp-:SetErrorFormat| and |atp-:ShowErrors| 
+			   - ATP test for 'no errors' is 'len(|getqflist()|)'. If
+			     the debug mode was 'debug' |t:atp_DebugMode| will
+			     fall back to |g:atp_DefaultDebugMode| (i.e.
+			     'silent' mode).
 
 							*atp-debug-mode-Debug*
 				= 'Debug'
@@ -712,9 +731,13 @@ g:atp_DebugModeQuickFixHeight = 8
 	same efect as setting it to 'debug'. ATP will come back to this debug
 	mode if compilation ends with exit status 0.
 
-:DebugMode {debug-mode}					*atp-:DebugMode*
-	Command which help to set |t:atp_DebugMode| variable (has nice completion).
-	{debug-mode} is one of "silent", "debug", "Debug", "verbose" (they can
+	When compilations ends without errors (i.e. when quick fix list is
+	empty for the current error format) |t:atp_DebugMode| falls back to
+	|g:atp_DefaultDebugMode|.
+
+:DebugMode [debug-mode]					*atp-:DebugMode*
+	Command which help to set |t:atp_DebugMode| variable (has completion).
+	[debug-mode] is one of "silent", "debug", "Debug", "verbose" (they can
 	be suppressed to 's', 'd', 'D' or 'v' (or "si"/"sil"/"sile"/... etc).
 	If no argument is given it shows the current debug mode.
 

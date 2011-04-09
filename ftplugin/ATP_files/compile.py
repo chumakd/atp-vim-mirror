@@ -119,7 +119,7 @@ debug_file.write("START "+str(start)+"\n")
 debug_file.write("VIEWER "+str(viewer)+"\n")
 debug_file.write("XPDF_SERVER "+str(XpdfServer)+"\n")
 debug_file.write("VIEWER_OPT "+str(viewer_opt)+"\n")
-debug_file.write("VERBOSE "+str(verbose)+"\n")
+debug_file.write("DEBUG MODE (verbose) "+str(verbose)+"\n")
 debug_file.write("KEEP "+str(keep)+"\n")
 debug_file.write("BIBLIOGRAPHIES "+str(bibliographies)+"\n")
 debug_file.write("ENV OPTION "+str(options.env)+"\n")
@@ -240,9 +240,6 @@ if os.path.islink(mainfile_fp):
 
 mainfile_dir    = os.path.normcase(mainfile_dir+os.sep)
 [basename, ext] = os.path.splitext(mainfile)
-# ext           = ".pdf" # extension of the output file
-                         # this will be passed to mklatex.py
-                         # from line 908 of <SID>compiler()
 output_fp       = os.path.splitext(mainfile_fp)[0]+extension
 
 ####################################
@@ -393,23 +390,6 @@ for i in range(1, int(runs+1)):
 
 ####################################
 #
-#       Call Back Communication:   
-#
-####################################
-# this is not working in vim
-# within gvim it works (running a command doesn't suspend gvim) to be tested:
-# I'm not sure if these commands reach gvim. But latex status is not needed in
-# verbose mode can we add interaction as an option for verbose mode this would
-# make classical style of compilation which is also nice :)
-if verbose != "verbose":
-    # call back:
-    debug_file.write("CALL BACK "+"atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')"+"\n")
-    vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')")
-    # return code of compelation is returned before (after each compilation).
-
-
-####################################
-#
 #       Copy Files:
 #
 ####################################
@@ -422,12 +402,23 @@ for ext in filter(keep_filter_aux,keep)+[output_format]:
         debug_file.write(file_cp+' ')
         shutil.copy(file_cp, mainfile_dir)
 
-# Copy aux file if there were no compilation errors.
-if latex_returncode == 0:
+# Copy aux file if there were no compilation errors or if it doesn't exists in mainfile_dir.
+if latex_returncode == 0 or not os.path.exists(os.path.join(mainfile_dir, basename+".aux")):
     file_cp=basename+".aux"
     if os.path.exists(file_cp):
         shutil.copy(file_cp, mainfile_dir)
 os.chdir(cwd)
+
+####################################
+#
+#       Call Back Communication:   
+#
+####################################
+if verbose != "verbose":
+    debug_file.write("CALL BACK "+"atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')"+"\n")
+    vim_remote_expr(servername, "atplib#CallBack('"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')")
+    # return code of compelation is returned before (after each compilation).
+
 
 ####################################
 #

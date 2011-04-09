@@ -2,9 +2,9 @@
 " Author:		Marcin Szamotulski
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
-" 
+" Time Stamp: 09-04-11_07-53
 " Language:	    tex
-" Last Change: Sun Apr 03 07:00  2011 W
+" Last Change: Fri Apr 08 07:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -125,4 +125,4 @@ endif
 
 	" Execute the atprc file.
 
-" vim:fdm=marker:ff=unix:noet:ts=4:sw=4
+" vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
