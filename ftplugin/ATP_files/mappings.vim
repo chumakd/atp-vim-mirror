@@ -32,7 +32,7 @@ if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_ma
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
 nmap <buffer> <silent> t 		<Plug>SyncTexKeyStroke
-nmap <buffer> <silent> <S-LeftMouse> 	<LeftMouse><Plug>SyncTexKeyStroke
+nmap <buffer> <silent> <S-LeftMouse> 	<LeftMouse><Plug>SyncTexMouse
 
 nmap <buffer> <silent> ]*	:SkipCommentForward<CR> 
 omap <buffer> <silent> ]*	:SkipCommentForward<CR> 
@@ -236,6 +236,11 @@ nmap <C-k> <Plug>TexJMotionBackward
     " Normal mode maps (mostly)
     nmap  <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
     nmap  <buffer> <F2> 			<Plug>ToggleSpace
+" This would be cool but is not working:
+"     nmap  <buffer> <F2> 			<Plug>ToggleSpaceOn/
+"     nmap  <buffer> <S-F2> 			<Plug>ToggleSpaceOn?
+"     nmap  <buffer> /				<Plug>ToggleSpaceOff/
+"     nmap  <buffer> ?				<Plug>ToggleSpaceOff?
     nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
 
     nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggleDebugMode

@@ -292,7 +292,7 @@ call s:SetOptions()
 " Global Variables: (almost all)
 " {{{ global variables 
 if !exists("g:atp_XpdfSleepTime")
-    let g:atp_XpdfSleepTime = "0.1"
+    let g:atp_XpdfSleepTime = "0.2"
 endif
 if !exists("g:atp_MapCC") || g:atp_reload
     let g:atp_MapCC = 0
@@ -1051,8 +1051,15 @@ function! ATP_ToggleSpace(...)
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
     else
+" 	if maparg('<space>', 'c') == ""
+" 	    return
+" 	endif
 	echomsg "[ATP:] special space is off"
- 	cunmap <Space>
+" 	try
+	    cunmap <Space>
+" 	catch /E31:/
+" 	    return
+" 	endtry
 	let s:special_space="[off]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [on]
 	silent! aunmenu LaTeX.Toggle\ Space\ [off]
@@ -1245,7 +1252,9 @@ command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:ca
 nnoremap <silent> <buffer> 	<Plug>ToggleAuTeX 		:call ATP_ToggleAuTeX()<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleSpace 	:call ATP_ToggleSpace(<f-args>)
-nnoremap <silent> <buffer> 	<Plug>ToggleSpace 	:call ATP_ToggleSpace()<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleSpace 		:call ATP_ToggleSpace()<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOn 		:call ATP_ToggleSpace('on')<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOff 		:call ATP_ToggleSpace('off')<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleCheckMathOpened 	:call ATP_ToggleCheckMathOpened(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleCheckMathOpened	:call ATP_ToggleCheckMathOpened()<CR>

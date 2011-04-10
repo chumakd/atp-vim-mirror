@@ -487,7 +487,7 @@ function! atplib#FindAndOpen(file, line, ...)
     redir! > /tmp/atp_FindAndOpen.debug
     echo "server list=".string(server_list)
     if len(server_list) == 0
-	retun 1
+	return 1
     endif
     let use_server	= "no_server"
     for server in server_list

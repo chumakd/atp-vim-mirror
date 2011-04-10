@@ -1,16 +1,16 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 9 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 10 April 2011
 
-			An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2.1)
-				by Marcin Szamotulski
-			    mszamot [AT] gmail [DOT] com
-			----------------------------------------
+		An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2.2)
+			by Marcin Szamotulski
+		    mszamot [AT] gmail [DOT] com
+		----------------------------------------
 
 If you found this plugin useful or you have any kind of problems with running
 it or some ideas to share, you are cordially invited to write to me:
 mszamot@gmail.com. Voting at Vim site is also welcome ;) .
 
 -----------------------------------------------------------------------------
-					Abstract
+			Abstract
 
 This is a filetype plugin for Vim to comfortably write TeX (LaTeX, PdfLaTeX)
 documents, which provides functionality not met in other such plugins. It
@@ -21,10 +21,11 @@ bib files or to find a macro definition matching a pattern, or even to find
 and preview fonts in your tex distribution. The features include an extended
 tab completion for: commands, environment names, packages, input files, bib
 files, bst files, colours, closing brackets and environments (preserves
-nesting),... etc. To have full functionality you need: pdffonts available in
-the package 'app-text/poppler' (at least in Gentoo). Another good tool is
-texdoc, which is a part of texlive - these days standard TeX distribution for
-Linux, and MikTeX on Windows.
+nesting),... etc. To have full functionality you need: python (with
+nonstandard psutil library, see |atp-python-requirements| how to get it),
+pdffonts available in the package 'app-text/poppler' (at least in Gentoo).
+Another good tool is texdoc, which is a part of TexLive - these days standard
+TeX distribution for Linux, and MikTeX on Windows.
 ------------------------------------------------------------------------------
 
 FEATURES INCLUDE:
@@ -98,9 +99,13 @@ changes:
 >
   Changes in versions 9 & 9.1 & 9.2
 <
+
+SOURCEFORGE						*atp-sourceforge*
+
   - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
     http://sourceforge.net/projects/atp-vim/
-    							*atp-donate*
+
+DONATE    						*atp-donate*
     You can DONATE for this project (on the project web page above). This will
     be highly appreciated, and the money will be used to cover some vary basic
     costs (internet access, hardware updates). You can also feel like you are
@@ -125,8 +130,8 @@ changes:
 
 NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 9.2:
-  - This is a very handy change: unified way to goto next section/environment
-    with the commads |atp-:F| (forward) and |atp-:B| (backward).
+  - This is a very handy change: unified way to go to next section/environment
+    with the commands |atp-:F| (forward) and |atp-:B| (backward).
 9.2:							
 							*atp-compile.py*
   - There are two function compile which can compile your tex file: a newly
@@ -161,9 +166,9 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     script and then run latex). 
 							*b:atp_TexReturnCode*	
     The variable |b:atp_TexReturnCode| stores the return code of compilation.
->
-    REQUIRMENTS:
-< (1)	The script is written in python version 3.1 (and it works in python 2.6).
+
+    REQUIRMENTS						*atp-python-requirements*
+  (1)	The script is written in python version 3.1 (and it works in python 2.6).
 	The only non standard library that it uses is psutil. You can get it from:
 	    http://code.google.com/p/psutil/
 	or (better) use your os specific instalation tools.		
@@ -231,7 +236,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     searching viewer->Vim), and Xpdf (only forward search). Read
     |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
     |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
-    -src-specials. 
+    -src-specials is used. 
 9.2:
   - Forward searching for Xpdf works better (finds the horisontal and vertical
     position on the page). The developer of Xpdf said that Xpdf v3.03 will
@@ -280,29 +285,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     Note: if you change |cmdheight| you should also change g:atp_DefaultCmdHeight, 
     unfortunatelly vim has not autocommand group evnet to do that automatically.
 9.2:
-							*g:atp_MapCC*
-  - In vim the key compination CTRL-C (|i_CTRL-C|) in insert mode exists to
-    normal without triggering the InsertLeave autocommands. In this way it
-    doesn't changes the |'updatetime'| from |g:atp_updatetime_insert| to
-    |g:atp_updatetime_normal|. If |g:atp_MapCC|=1 (this recommended but the
-    deafult is 0) then |_CTRL-C| is mapped to |i_CTRL-[| so the InsertLeave
-    autocommands are parsed.
-9.2:    
-							*g:atp_updatetime_insert*
-							*g:atp_updatetime_normal*
->
- g:atp_updatetime_insert = 2000							
- g:atp_updatetime_normal = 1000
-< - These variables sets the value of |'updatetime'| vim option. Seprate
-    settings are for normal and insert mode. You can make
-    g:atp_updatetime_normal even smaller so that the file is proccessed
-    whenever you go out from insert mode to normal mode. These values will
-    overwrite the original value of |'updatetime'| so you should adjust them
-    in order for the change to have an effect.
-
-    If you set g:atp_updatetime_insert = 0 the tex compiler will not be called
-    while the vim is in insert mode.
-
+    See |g:atp_MapCC| and |g:atp_updatetime_insert|.
 9.1:  
   - :SetOkular						*atp-:SetOkular*
     This works the same as |atp-:SetXpdf|. It sets the forward searching
@@ -418,7 +401,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 :UpdateATP[!]
 	With bang update ATP to latest {UNSTABLE} snapshot, without to latest
 	stable release. It makes a check if your version is the latest one. 
-	If you have installed {UNSTABLE} snapshot and the you run :UpdateATP
+	If you have installed {UNSTABLE} snapshot and then you run :UpdateATP
 	without a bang "!", then ATP will ask you if you want to DOWNGRADE to
 	the last stable release.
 
@@ -631,7 +614,46 @@ insert mode the file won't be compiled (and that's all right as you can be in th
 middle of your very long formula). The value of |'updatetime'| which works
 fine is around 1000ms (|'updatetime'| is set in milliseconds). Instead of
 setting |'updatetime'| options directly you should set the variables
-|g:atp_updatetime_insert| and |g:atp_updatetime_normal|.
+|g:atp_updatetime_insert| and |g:atp_updatetime_normal|. Here's an importand
+note on using CTRL-C (|i_CTRL-C|) in Vim:
+
+							*g:atp_MapCC*
+    In vim the key compination CTRL-C (|i_CTRL-C|) in insert mode exists to
+    normal without triggering the InsertLeave autocommands. In this way it
+    doesn't changes the |'updatetime'| from |g:atp_updatetime_insert| to
+    |g:atp_updatetime_normal|. If |g:atp_MapCC|=1 then |_CTRL-C| is mapped to
+    |i_CTRL-[| so the InsertLeave autocommands are parsed. However, it is
+    a good habit to use |i_CTRL-C| while you are writting/editing and |i_CTRL-[| or
+    |i_ESC| when you whish to see what you wrote (then TeX will be run
+    quicker). If you follow this you can even set
+    |g:atp_updatetime_normal|=1 (if you set it to 0 then the the file will not
+    be processed while Vim is in normal mode).
+
+							*g:atp_updatetime_insert*
+							*g:atp_updatetime_normal*
+>
+ g:atp_updatetime_insert = 2000							
+ g:atp_updatetime_normal = 1000
+< - These variables sets the value of |'updatetime'| vim option.
+    Separate settings are for normal and insert mode. You can make
+    g:atp_updatetime_normal even smaller so that the file is processed
+    whenever you go out from insert mode to normal mode. These values will
+    overwrite the original value of |'updatetime'| so you should adjust them
+    in order for the change to have an effect.
+
+    If you set |g:atp_updatetime_insert|=0 the TeX compiler will not be called
+    while Vim is in the insert mode. 
+
+    If you set |g:atp_updatetime_normal|=0 the TeX compiler will not be called
+    while Vim is in the normal mode. 
+
+    Note: this will only work if you set this in your |atprc| or |vimrc| file.
+    Also changing this to non zero will only work after restarting Vim (so
+    this requires changing this in |atprc|/|vimrc| files. Though it is
+    possible (at least theoretically) to make it work on the fly, I found
+    a bug which I could not resolve :(.
+
+Coming back to compilation ...
 
 Tex compiler is run with one options:
 	-output-directory 
@@ -959,7 +981,8 @@ map \v,map <F3>, imap <F3>
 	(inverse/reverse searching) in |atp-viewers|. 
 	You can open and sync the viewer with: >
 		:SyncTex
-		<S-LeftMouse>
+		nmap t
+		nmap <S-LeftMouse>
 		:ViewOutput sync
 <
 
@@ -994,6 +1017,8 @@ map t, map <S-LeftMouse>
 	forward searches (Vim->Xdvi) >
 		:SyncTex	(although dvi is using srcspecials rather than synctex)
 		map t
+		nmap <S-LeftMouse>
+		:ViewOutput sync
 <	For inverse searching hold CTRL and click left mouse button on
 	the text in xdvi viewer. It sets: >
 	    let b:atp_TexOptions="-src-specials"
@@ -3832,6 +3857,7 @@ Okular
 		:SyncTex
 		map t
 		map <S-LeftMouse>
+		:ViewOutput sync
 <	Here is how to CONFIGURE REVERSE SEARCHING (Okular->Vim): 
 	open Okular and go to >
 		settings>Configure Okular>Editor

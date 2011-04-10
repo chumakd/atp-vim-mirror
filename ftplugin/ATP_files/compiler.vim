@@ -159,7 +159,7 @@ function! <SID>GetSyncData(line, col)
 	endif
 
 	if page == "no_sync"
-	    return [ "no_sync", "No SyncTex Data: try on another line (comments are not allowed).", 0 ]
+	    return [ "no_sync", "No SyncTex Data: try on another line (or recompile the document).", 0 ]
 	endif
 	let page_nr=matchstr(page, '^\cPage:\zs\d\+') 
 	let [ b:atp_synctex_pagenr, b:atp_synctex_ycoord, b:atp_synctex_xcoord ] = [ page_nr, y_coord, x_coord ]
@@ -183,10 +183,13 @@ function! <SID>SyncShow( page_nr, y_coord)
     endif
 endfunction "}}}
 function! <SID>SyncTex(mouse, ...) "{{{
+    let g:debug 	= (exists("g:debug")?g:debug+1:1)
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
     let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
-    let g:dryrun	= dryrun
-    let [ line, col ] 	= ( a:mouse ? [ v:mouse_lnum, v:mouse_col ] : [ line("."), col(".") ] )
+    " Mouse click <S-LeftMouse> is mapped to <LeftMouse>... => thus it first changes
+    " the cursor position.
+    let [ line, col ] 	= [ line("."), col(".") ]
+    let [ g:line, g:col ] 	= [ line, col ]
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
     let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
@@ -200,8 +203,8 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
 	"There is a bug in xpdf. We need to sleep between sending commands to it.:
-	let sleep	= 'sleep '.g:atp_XpdfSleepTime.'s;'
-	let sync_cmd = sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x
+	let sleep	= 'sleep '.string(g:atp_XpdfSleepTime).'s;'
+	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x.")&"
 " 	let sync_cmd = sync_cmd_page.";".sync_cmd_y.";".sync_cmd_x
 	if !dryrun
 	    call system(sync_cmd)
@@ -230,9 +233,9 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let options = (exists("g:atp_xdviOptions") ? g:atp_xdviOptions : "" ) . getbufvar(bufnr(""), "atp_xdviOptions")
 	let sync_cmd = "xdvi ".options.
 		\ " -editor '".v:progname." --servername ".v:servername.
-		\ " --remote-wait +%l %f' -sourceposition " . 
+		\ " --remote-wait +%l %f' -sourceposition ". 
 		\ line.":".col.shellescape(fnameescape(fnamemodify(expand("%"),":p"))). 
-		\ " " . fnameescape(output_file)
+		\ " ".fnameescape(output_file)." &"
 	let sync_args = " -sourceposition ".line.":".col.shellescape(fnameescape(fnamemodify(expand("%"),":p")))." "
 	if !dryrun
 	    call system(sync_cmd)
@@ -242,7 +245,6 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd=""
 	let g:sync_cmd = sync_cmd
     endif
-"     return sync_args
     return
 endfunction 
 nmap <buffer> <Plug>SyncTexKeyStroke		:call <SID>SyncTex(0)<CR>
@@ -1571,11 +1573,12 @@ endfunction
 function! BibtexComp(A,L,P)
 	return "silent\ndebug\nDebug\nverbose\noutput"
 endfunction
-nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("", "default")<CR>
-nnoremap <silent> <Plug>BibtexSilent	:call <SID>Bibtex("", "silent")<CR>
-nnoremap <silent> <Plug>Bibtexdebug	:call <SID>Bibtex("", "debug")<CR>
-nnoremap <silent> <Plug>BibtexDebug	:call <SID>Bibtex("", "Debug")<CR>
-nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("", "verbose")<CR>
+nnoremap <silent> <Plug>SimpleBibtex	:call <SID>Bibtex("")<CR>
+nnoremap <silent> <Plug>BibtexDefault	:call <SID>Bibtex("!", "default")<CR>
+nnoremap <silent> <Plug>BibtexSilent	:call <SID>Bibtex("!", "silent")<CR>
+nnoremap <silent> <Plug>Bibtexdebug	:call <SID>Bibtex("!", "debug")<CR>
+nnoremap <silent> <Plug>BibtexDebug	:call <SID>Bibtex("!", "Debug")<CR>
+nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("!", "verbose")<CR>
 "}}}
 
 " Show Errors Function

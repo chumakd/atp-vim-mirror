@@ -227,8 +227,6 @@ to do: gm (end math) gM (begin math)
 To do: debug ]d
 To do: test debug mode.
 To do: find a better way of dealing with g:atp_latexpackages (update them)
-To do: I can write python code using psutil to check if latex is running this
-	will be 100% accurate (not like now).
 To do: statusNotifHi -> change in to a highliht group name.
 To do: xpdfpid() function should be writtine in Python.
 To do: rewrite MakeLatex in python (this will help with the screen isue)
@@ -281,3 +279,6 @@ SOLUTION FOR CallBack: get all messages into list [ [ msg_text : highlight group
 	t:atp_DebugMode == "silent" || a:mode == "silent" -> cclose
 	(t:atp_DebugMode == "debug" || a:mode == "debug") && errors && !t:atp_QuickFixOpen -> clist
 	What for to show in debug mode what was the error code of latex if quickfix window is opened ...
+SyncTex:
+	Should test if the viewer is running (this can be done with the help of python and psutils) 
+	if not it should run the viewer first.
