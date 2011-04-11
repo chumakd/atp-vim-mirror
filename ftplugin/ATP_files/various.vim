@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Mon Apr 11 10:00  2011 W
+" Last Change: Mon Apr 11 08:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -807,7 +807,7 @@ endfunction
 " This function deletes tex specific output files (exept the pdf/dvi file, unless
 " bang is used - then also delets the current output file)
 " {{{ Delete
-function! s:Delete(delete_output)
+function! <SID>Delete(delete_output)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     call atplib#outdir()
@@ -837,10 +837,13 @@ function! s:Delete(delete_output)
 	    endif
 	    echo system(rm)
 	else
-	    let file=b:atp_OutDir . fnamemodify(expand("%"),":t:r") . "." . ext
-	    if delete(file) == 0
-		echo "Removed " . file 
-	    endif
+	    let file=fnamemodify(atp_MainFile,":r").".".ext
+	    let files=split(glob(file), "\n")
+	    for f in files
+		if !delete(f)
+		    echo "Removed " . f
+		endif
+	    endfor
 	endif
     endfor
 endfunction
@@ -1592,6 +1595,17 @@ function! <SID>ReloadATP(bang)
 	let tex_atp_file = globpath(&rtp, 'ftplugin/tex_atp.vim')
 	execute "source " . tex_atp_file
 	" This reloads all functions except autoload/atplib.vim
+	let atplib_file	= globpath(&rtp, 'autoload/atplib.vim')
+	let saved_loclist = getloclist(0)
+	exe 'lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_file
+	let list=map(getloclist(0), 'v:val["text"]')
+	call setloclist(0,saved_loclist)
+	call map(list, 'matchstr(v:val, ''^\s*fun\%[ction]!\=\s\+\zsatplib#\S\+\ze\s*('')')
+	for fname in list
+	    if fname != ""
+		exe 'delfunction '.fname
+	    endif
+	endfor
 	let g:atp_reload		= 0
 	let g:atp_reload_functions 	= 0
     endif
