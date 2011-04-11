@@ -1051,15 +1051,8 @@ function! ATP_ToggleSpace(...)
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
     else
-" 	if maparg('<space>', 'c') == ""
-" 	    return
-" 	endif
 	echomsg "[ATP:] special space is off"
-" 	try
-	    cunmap <Space>
-" 	catch /E31:/
-" 	    return
-" 	endtry
+	cunmap <Space>
 	let s:special_space="[off]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [on]
 	silent! aunmenu LaTeX.Toggle\ Space\ [off]
@@ -1067,6 +1060,19 @@ function! ATP_ToggleSpace(...)
 	cmenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [off] cmap <space> \_s\+ is curently off
+    endif
+endfunction
+function! ATP_CmdwinToggleSpace(on)
+    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
+    if on
+	let g:debug = 1
+	imap <space> \_s\+
+    else
+	let g:debug = 0
+" 	try
+	    iunmap <space>
+" 	catch /E31:/
+" 	endtry
     endif
 endfunction
 "}}}
@@ -1771,6 +1777,14 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 
 if !s:did_options
 
+    augroup ATP_Cmdwin
+	au!
+" 	au CmdwinEnter / :call ATP_CmdwinToggleSpace('on')
+" 	au CmdwinEnter ? :call ATP_CmdwinToggleSpace('on')
+	au CmdwinLeave / :call ATP_CmdwinToggleSpace('off')
+	au CmdwinLeave ? :call ATP_CmdwinToggleSpace('off')
+    augroup END
+
     augroup ATP_cmdheight
 	" update g:atp_cmdheight when user writes the buffer
 	au!
@@ -1784,7 +1798,7 @@ dir=vim.eval('a:dir')
 try:
 	shutil.rmtree(dir)
 except OSError, e:
- 	if errno.errorcode[e.errno] == 'ENOENT':
+	if errno.errorcode[e.errno] == 'ENOENT':
 		pass
 EOF
 endfunction

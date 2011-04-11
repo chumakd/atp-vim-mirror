@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun Apr 10 06:00  2011 W
+" Last Change: Mon Apr 11 12:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -13,6 +13,7 @@ if !s:sourced || g:atp_reload_functions "{{{
 " {{{ WrapSelection
 function! s:WrapSelection(wrapper,...)
 
+    let g:args=[a:wrapper]+a:000
     let l:end_wrapper 	= ( a:0 >= 1 ? a:1 : '}' )
     let l:cursor_pos	= ( a:0 >= 2 ? a:2 : 'end' )
     let l:new_line	= ( a:0 >= 3 ? a:3 : 0 )
@@ -2233,7 +2234,7 @@ nnoremap <silent> <buffer> 	<Plug>ChangeEnv			:call <SID>ToggleEnvironment(1)<CR
 nnoremap <silent> <buffer> 	<Plug>TexDoc			:TexDoc 
 " Commands: "{{{1
 command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
-command! -buffer -nargs=? -range WrapSelection			:call <SID>WrapSelection(<args>)
+command! -buffer -nargs=* -range WrapSelection			:call <SID>WrapSelection(<f-args>)
 command! -buffer -nargs=? -complete=customlist,EnvCompletion -range WrapEnvironment		:call <SID>WrapEnvironment(<f-args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
 command! -buffer	TexAlign				:call TexAlign()

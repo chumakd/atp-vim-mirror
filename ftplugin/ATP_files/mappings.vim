@@ -125,12 +125,12 @@ nmap <C-k> <Plug>TexJMotionBackward
 	" when this is set it also runs after the \l map: ?!?
 " 	nmap <silent> <buffer> <Tab>		:call atplib#TabCompletion(1,1)<CR>
 	nnoremap <silent> <buffer> <S-Tab>	:call atplib#TabCompletion(0,1)<CR> 
-	vnoremap <buffer> <silent> <F7> 	:WrapSelection '\{','}','begin'<CR>
+	vnoremap <buffer> <silent> <F7> 	:WrapSelection \{ } begin<CR>
     endif
 
     " Fonts:
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."f		:WrapSelection '{\\usefont{".g:atp_font_encoding."}{}{}{}\\selectfont ', '}', '".(len(g:atp_font_encoding)+11)."'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."mb		:WrapSelection '\\mbox{', '}', 'begin'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."f		:WrapSelection {\\usefont{".g:atp_font_encoding."}{}{}{}\\selectfont\\  } ".(len(g:atp_font_encoding)+11)."<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."mb	:WrapSelection \\mbox{ } begin<CR>"
 
 
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."te	:<C-U>InteligentWrapSelection ['\\textrm{'],['\\text{']<CR>"
@@ -144,47 +144,49 @@ nmap <C-k> <Plug>TexJMotionBackward
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."tt	:<C-U>InteligentWrapSelection ['\\texttt{'],['\\mathtt{']<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."bf	:<C-U>InteligentWrapSelection ['\\textbf{'],['\\mathbf{']<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."bb	:<C-U>InteligentWrapSelection ['\\textbf{'],['\\mathbb{']<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."sl	:<C-U>WrapSelection '\\textsl{'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."sc	:<C-U>WrapSelection '\\textsc{'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."up	:<C-U>WrapSelection '\\textup{'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>WrapSelection '\\textmd{'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>WrapSelection '\\underline{'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>WrapSelection '\\overline{'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."sl	:<C-U>WrapSelection \\textsl{<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."sc	:<C-U>WrapSelection \\textsc{<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."up	:<C-U>WrapSelection \\textup{<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>WrapSelection \\textmd{<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>WrapSelection \\underline{<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>WrapSelection \\overline{<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."no	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>"
     execute "vnoremap <buffer> ".g:atp_vmap_text_font_leader."cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>"
 
     " Environments:
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."C   :WrapSelection '"."\\"."begin{center}','"."\\"."end{center}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."R   :WrapSelection '"."\\"."begin{flushright}','"."\\"."end{flushright}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."L   :WrapSelection '"."\\"."begin{flushleft}','"."\\"."end{flushleft}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."E   :WrapSelection '"."\\"."begin{equation=b:atp_StarMathEnvDefault<CR>}','"."\\"."end{equation=b:atp_StarMathEnvDefault<CR>}','0','1'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."A   :WrapSelection '"."\\"."begin{align=b:atp_StarMathEnvDefault<CR>}','"."\\"."end{align=b:atp_StarMathEnvDefault<CR>}','0','1'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."C   :WrapSelection \\begin{center} \\end{center} 0 1<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."R   :WrapSelection \\begin{flushright} \\end{flushright} 0 1<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."L   :WrapSelection \\begin{flushleft} \\end{flushleft} 0 1<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."E   :WrapSelection \\begin{equation=b:atp_StarMathEnvDefault<CR>} \\end{equation=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_environment_leader."A   :WrapSelection \\begin{align=b:atp_StarMathEnvDefault<CR>} \\end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
 
     " Math Modes:
-    vmap <buffer> m						:<C-U>WrapSelection '\(', '\)'<CR>
-    vmap <buffer> M						:<C-U>WrapSelection '\[', '\]'<CR>
+    vmap <buffer> m						:<C-U>WrapSelection \( \)<CR>
+    vmap <buffer> M						:<C-U>WrapSelection \[ \]<CR>
 
     " Brackets:
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."( 	:WrapSelection '(', ')', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."[ 	:WrapSelection '[', ']', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."\\{ 	:WrapSelection '\\{', '\\}', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection '{', '}', 'begin'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."( 	:WrapSelection ( ) begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."[ 	:WrapSelection [ ] begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."\\{	:WrapSelection \\{ \\} begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."< 	:WrapSelection < > begin<CR>"
 "     execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."{	:<C-U>InteligentWrapSelection ['{', '}'],['\\{', '\\}']<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader.")	:WrapSelection '(', ')', 'end'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."]	:WrapSelection '[', ']', 'end'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."\\}	:WrapSelection '\\{', '\\}', 'end'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."}	:WrapSelection '{', '}', 'end'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader.")	:WrapSelection ( ) end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."]	:WrapSelection [ ] end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."\\}	:WrapSelection \\{ \\} end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."}	:WrapSelection { } end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_bracket_leader."> 	:WrapSelection < > end<CR>"
 
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."(	:WrapSelection '\\left(', '\\right)', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."[	:WrapSelection '\\left[', '\\right]', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."{	:WrapSelection '\\left\\{','\\right\\}', 'begin'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."(	:WrapSelection \\left( \\right) begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."[	:WrapSelection \\left[ \\right] begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."{	:WrapSelection \\left\\{ \\right\\} begin<CR>"
     " for compatibility:
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."\\{	:WrapSelection '\\left\\{','\\right\\}', 'begin'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader.")	:WrapSelection '\\left(', '\\right)', 'end'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."]	:WrapSelection '\\left[', '\\right]', 'end'<CR>"
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."}	:WrapSelection '\\left\\{', '\\right\\}', 'end'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."\\{	:WrapSelection \\left\\{ \\right\\} begin<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader.")	:WrapSelection \\left( \\right) end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."]	:WrapSelection \\left[ \\right] end<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."}	:WrapSelection \\left\\{ \\right\\} end<CR>"
     " for compatibility:
-    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."\\}	:WrapSelection '\\left\\{', '\\right\\}', 'end'<CR>"
+    execute "vnoremap <buffer> ".g:atp_vmap_big_bracket_leader."\\}	:WrapSelection \\left\\{ \\right\\} end<CR>"
 
     " Tex Align:
     nmap <Localleader>a	:TexAlign<CR>
@@ -235,12 +237,10 @@ nmap <C-k> <Plug>TexJMotionBackward
 
     " Normal mode maps (mostly)
     nmap  <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
-    nmap  <buffer> <F2> 			<Plug>ToggleSpace
-" This would be cool but is not working:
-"     nmap  <buffer> <F2> 			<Plug>ToggleSpaceOn/
-"     nmap  <buffer> <S-F2> 			<Plug>ToggleSpaceOn?
-"     nmap  <buffer> /				<Plug>ToggleSpaceOff/
-"     nmap  <buffer> ?				<Plug>ToggleSpaceOff?
+"     nmap  <buffer> <F2> 			<Plug>ToggleSpace
+    nmap  <buffer> <F2> 			:call ATP_CmdwinToggleSpace('on')<CR>q/i
+    nmap Q/					:call ATP_CmdwinToggleSpace('on')<CR>q/
+    nmap Q?					:call ATP_CmdwinToggleSpace('on')<CR>q/
     nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
 
     nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggleDebugMode

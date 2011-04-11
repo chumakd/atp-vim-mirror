@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 10 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 11 April 2011
 
-		An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2.2)
+		An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2.3)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -96,6 +96,19 @@ changes:
 	|g:atp_map_backward_motion_leader| = '<'
 		see |atp-:NSec| and |atp-:PSec| and friends. 
 	(actually nothing changes, there just was a bug in help file)
+
+
+	The command |atp-:WrapSelection| uses |<f-args>| instead of |<args>|.
+
+
+	Q/ and Q? to enter command-line window in which <space> is mapped to
+	'\_s\+'.
+
+	<F2> acts as 'Q/i' (i.e. enters insert mode).
+	If you want Q/ and Q? enter insert mode as well you can set: >
+	    nmap Q/					:call ATP_CmdwinToggleSpace('on')<CR>q/i
+	    nmap Q?					:call ATP_CmdwinToggleSpace('on')<CR>q/i
+<	in your |atprc| file.
 >
   Changes in versions 9 & 9.1 & 9.2
 <
@@ -1264,8 +1277,9 @@ map <F6>d
 	in separate lines (the begin line and end line are split), this is
 	useful for putting text into and environment \begin{}:\end{}. 
 
-	The command arguments should be separated with commas and quoted
-	separately (see |<args>|).
+	Read |<f-args>| on how to pass arguments to this command (arguments
+	are separeted with spaces, white spaces in arguments should be escaped
+	with backslash '\'.
 
 	For the predefined maps which use WrapSelection see below
 	|atp-maps-WrapSelection| or use |atp-:HelpVMaps|.
@@ -1566,17 +1580,6 @@ ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 	stop='\s*%.*\c\<note\>', and the command :Note sets
 	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
 	listing ToDo lines with Notes and vice versa. 
-	 
-:ToggleSpace, map <F2>					*atp-:ToggleSpace*
-	This function (command) sets, if it is undefined or removes if it is
-	defined, the mapping:
->
-		:cmap <Space> \_s\+
-<
-	which is useful when searching by the command '/', especially if
-	|'textwidth'| or |'wrapmargin'| is non zero (and |'formatoptions'|
-	contains one of the flags 't', 'v' or 'b'). Then each <Space> will
-	match for a space or end of line.
 
 							*atp-:ToggleStar*
 :ToggleStar 	 		adds/removes a star from the current 
