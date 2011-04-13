@@ -265,7 +265,6 @@ Done: make a default flag for :ShowErrors
 To do: bash compiler is not reloading Xpdf.
 To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
 	Debug: MakeLatex. (implemented in compile.py)
-# Done[important]: QuickFixWindow is closing automativally when there are no errors, it should close automatically if there are no stuff to show so this would differ depending on SetErrorFormat! and not only latex exit code.
 To do: 'formatexpr'
 # Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
@@ -282,3 +281,5 @@ SOLUTION FOR CallBack: get all messages into list [ [ msg_text : highlight group
 SyncTex:
 	Should test if the viewer is running (this can be done with the help of python and psutils) 
 	if not it should run the viewer first.
+
+Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 

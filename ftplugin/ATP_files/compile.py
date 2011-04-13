@@ -30,15 +30,15 @@ parser.add_option("-v", "--view", "--start", dest="start",      default=0, type=
 parser.add_option("--viewer",           dest="viewer",          default="xpdf", help="output viewer to use")
 parser.add_option("--xpdf-server",      dest="xpdf_server", help="xpdf_server")
 parser.add_option("--viewer-options",   dest="viewer_opt",      default="", help="comma separated list of viewer options")
-parser.add_option("-k", "--keep",       dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz") 
+parser.add_option("-k", "--keep",       dest="keep", help="comma separated list of extensions (see :help g:keep in vim)", default="aux,toc,bbl,ind,pdfsync,synctex.gz")
 parser.add_option("--env",              dest="env", default="default", help="a comma separated list environment variables and its values: var1=val1,var2=val2")
 # Boolean switches:
 parser.add_option("--reload-viewer",    action="store_true",    default=False,  dest="reload_viewer")
 parser.add_option("-b", "--bibtex",     action="store_true",    default=False,  dest="bibtex", help="run bibtex")
 parser.add_option("--reload-on-error",  action="store_true",    default=False,  dest="reload_on_error", help="reload Xpdf if compilation had errors")
 parser.add_option("--bang",             action="store_false",   default=False,  dest="bang", help="force reloading on error (Xpdf only)")
-parser.add_option("--gui-running", "-g", action="store_true",   default=False,  dest="gui_running", help="if vim gui is running (has('gui_running'))") 
-parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar", help="send progress info back to gvim") 
+parser.add_option("--gui-running", "-g", action="store_true",   default=False,  dest="gui_running", help="if vim gui is running (has('gui_running'))")
+parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar", help="send progress info back to gvim")
 parser.add_option("--bibliographies",                           default="",     dest="bibliographies", help="command separated list of bibliographies")
 
 (options, args) = parser.parse_args()

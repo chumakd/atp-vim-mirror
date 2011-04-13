@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.2.5
+VERSION = 9.2.6
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -42,6 +42,7 @@ SOURCE += colors/coots-beauty-256.vim
 
 ${Plugin}_${VERSION}.vba: ${SOURCE}
 		python stamp.py ${DATE}
+		python version.py ${VERSION}
 		tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
 		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 

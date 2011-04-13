@@ -197,7 +197,7 @@ nmap <C-k> <Plug>TexJMotionBackward
     omap <buffer>  ap	:normal vap<CR>
 
     " Formating:
-    nmap <buffer> gw		m`vipgq``
+    nmap <buffer> gq		m`vipgq``
     " Indent:
     nmap <buffer> g>		m`vip>``
     nmap <buffer> g<		m`vip<``

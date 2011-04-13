@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Mon Apr 11 08:00  2011 W
+" Last Change: Tue Apr 12 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -814,7 +814,7 @@ function! <SID>Delete(delete_output)
 
     let atp_tex_extensions=deepcopy(g:atp_tex_extensions)
 
-    if a:delete_output == "!"
+    if a:delete_output == "!" || g:atp_delete_output == 1
 	if b:atp_TexCompiler == "pdftex" || b:atp_TexCompiler == "pdflatex"
 	    let ext="pdf"
 	else
@@ -825,24 +825,14 @@ function! <SID>Delete(delete_output)
 	call filter(atp_tex_extensions, "v:val != 'synctex.gz'")
     endif
 
-    for ext in atp_tex_extensions
-	if executable(g:rmcommand)
-	    " WINDOWS NOT COMPATIBLE (at least I'm not sure).
-	    if g:rmcommand =~ "^\s*rm\p*" || g:rmcommand =~ "^\s*perltrash\p*"
-		if ext != "dvi" && ext != "pdf"
-		    let rm=g:rmcommand . " " . shellescape(b:atp_OutDir) . "*." . ext . " 2>/dev/null && echo Removed: ./*" . ext 
-		else
-		    let rm=g:rmcommand . " " . shellescape(fnamemodify(atp_MainFile,":r")).".".ext . " 2>/dev/null && echo Removed: " . fnamemodify(atp_MainFile,":r").".".ext
-		endif
-	    endif
-	    echo system(rm)
-	else
-	    let file=fnamemodify(atp_MainFile,":r").".".ext
-	    let files=split(glob(file), "\n")
+    " Be sure that we are not deleting outputs:
+    for ext in filter(atp_tex_extensions, 
+		\ "v:val != 'tex' && v:val != 'pdf' && v:val != 'dvi' && v:val != 'ps'")
+	let files=split(globpath(fnamemodify(atp_MainFile, ":h"), "*.".ext), "\n")
+	if files != []
+	    echo "Removing *.".ext
 	    for f in files
-		if !delete(f)
-		    echo "Removed " . f
-		endif
+		call delete(f)
 	    endfor
 	endif
     endfor
@@ -2026,14 +2016,25 @@ function! <SID>UpdateATP(bang)
 
 	" Stamp of the local version
 	let saved_loclist = getloclist(0)
-	try
-	    exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
-	    let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
-	    call setloclist(0, saved_loclist) 
-	    let old_stamp=matchstr(old_stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
-	catch /E480:/
-	    let old_stamp="00-00-00_00-00"
-	endtry
+	if a:bang == "!"
+	    try
+		exe '1lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+		let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
+		call setloclist(0, saved_loclist) 
+		let old_stamp=matchstr(old_stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
+	    catch /E480:/
+		let old_stamp="00-00-00_00-00"
+	    endtry
+	else
+	    try
+		exe '1lvimgrep /(ver\.\=\%[sion]\s\+\d\+\%(\.\d\+\)*\s*)/gj ' . globpath(&rtp, "doc/automatic-tex-plugin.txt")
+		let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
+		call setloclist(0, saved_loclist) 
+		let old_stamp=matchstr(old_stamp, '(ver\.\=\%[sion]\s\+\zs\d\+\%(\.\d\+\)*\ze')
+	    catch /E480:/
+		let old_stamp="0.0"
+	    endtry
+	endif
 	let g:atp_debugUD_old_stamp = old_stamp
 
 	" a:bang == ""
@@ -2067,44 +2068,18 @@ function! <SID>UpdateATP(bang)
 	    call system(cmd)
 	endfunction
 
-	if a:bang == ""
-	    call <SID>GetLatestSnapshot(a:bang, dict[sorted_list[0]])
-
-
-	    " Stamp in the tar.gz file.
-	    try
-		call <SID>GetTimeStamp(s:atp_tempname)
-	    catch
-		echohl ErrorMsg
-		echo "[ATP:] GetTimeStamp error, please trying agian ..."
-		echohl Normal
-		call delete(s:atp_tempname)
-		if a:bang == "!"
-		    echo "[ATP:] getting latest snapshot (unstable version) ..."
-		else
-		    echo "[ATP:] getting latest stable version ..."
-		endif
-		call system(cmd)
-		try
-		    call <SID>GetTimeStamp(atp_tempname)
-		catch
-		    call delete(s:atp_tempname)
-		    echoerr "[ATP:] GetTimeStamp error." 
-		    return
-		endtry
-	    endtry
-	    let new_stamp=g:atp_stamp
-	    let g:atp_debugUD_new_stamp = new_stamp
-	else
-
-	    let new_stamp = sorted_list[0]
-	endif
+	let new_stamp = sorted_list[0]
+	let g:atp_debugUD_new_stamp = new_stamp
 	 
 	"Compare stamps:
 	" stamp format day-month-year_hour-minute
 	" if o_stamp is >= than n_stamp  ==> return
 	let l:return = 1
-	let compare = <SID>CompareStamps(new_stamp, old_stamp)
+	if a:bang == "!"
+	    let compare = <SID>CompareStamps(new_stamp, old_stamp)
+	else
+	    let compare = <SID>CompareVersions(new_stamp, old_stamp) 
+	endif
 	if a:bang == "!"
 	    if  compare == 1 || compare == 0
 		redraw
@@ -2130,10 +2105,8 @@ function! <SID>UpdateATP(bang)
 	endif
 
 	redraw
+	call  <SID>GetLatestSnapshot(a:bang, dict[sorted_list[0]])
 	echo "[ATP:] installing ..." 
-	if a:bang == "!"
-	    call  <SID>GetLatestSnapshot(a:bang, dict[sorted_list[0]])
-	endif
 	call <SID>Tar(s:atp_tempname, dir)
 	call delete(s:atp_tempname)
 
@@ -2146,6 +2119,10 @@ function! <SID>UpdateATP(bang)
 	    echo "See ':help atp-news' for changes!"
 	else
 	    echomsg "[ATP:] ".(l:return ? 'updated' : 'downgraded')." to release ".s:ATPversion
+	endif
+	if bufloaded(globpath(&rtp, "doc/automatic-tex-plugin.txt")) ||
+		    \ bufloaded(globpath(&rtp, "doc/bibtex_atp.txt"))
+	    echo "[ATP:] to reload the ATP help files (and see what's new!), close and reopen them."
 	endif
 endfunction 
 catch E127:

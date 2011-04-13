@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 11 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 13 April 2011
 
-		An Introduction to AUTOMATIC (La)TeX PLUGIN (ver 9.2.5)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -92,8 +92,8 @@ changes:
 >
   Changes in versions 9.3
 <
-	|g:atp_map_forward_motion_leader| = '>'
-	|g:atp_map_backward_motion_leader| = '<'
+	|g:atp_map_forward_motion_leader|	= '>'
+	|g:atp_map_backward_motion_leader| 	= '<'
 		see |atp-:NSec| and |atp-:PSec| and friends. 
 	(actually nothing changes, there just was a bug in help file)
 
@@ -109,6 +109,8 @@ changes:
 	    nmap Q/					:call ATP_CmdwinToggleSpace('on')<CR>q/i
 	    nmap Q?					:call ATP_CmdwinToggleSpace('on')<CR>q/i
 <	in your |atprc| file.
+
+	|atp-gq| is now used instead of gw which is more in a vim way! 
 >
   Changes in versions 9 & 9.1 & 9.2
 <
@@ -1186,10 +1188,13 @@ automatically using autocommand group |CursorMoved|.
 :Delete[!]						*atp-:Delete*
 map <F6>d
 	Deletes all files which extension belongs to g:atp_tex_extensions in
-	the directory |b:atp_OutDir|. By default g:atp_tex_extensions does not
-	contain '.tex', '.pdf', '.dvi' so none of your important files will be
+	the directory |b:atp_OutDir|. By default |g:atp_tex_extensions| does not
+	contain 'tex', 'pdf', 'dvi' so none of your important files will be
 	deleted. When the command is used with bang it also deletes the
-	current output file. 
+	current output file and 'synctex.gz' file. 
+							*g:atp_delete_output*
+	If you set |g:atp_delete_output|=1 the function will delete also the
+	current output file (but not any other!) and 'synctex.gz' file.
 
 :SshPrint [lpr_options]					*atp-:SshPrint*
 	It will run 'lpr' command and append to it the options defined in the
@@ -3341,10 +3346,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 >
  let g:atp_tex_extensions=["aux", "log", "bbl", "blg", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "maf", "blg", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync" , "ind"]	
 <
-	 This list is used by the function Delete() (see |apt-Delete()|) which
-	 deletes all the files with the specified extension in the directory
-	 b:atp_OutDir, unless g:rmcommand="" (see |g:rmcommand|) in which case
-	 Delete() deletes only the output files for the current buffer.
+	 This list is used by the |atp-:Delete| command which deletes all the
+	 files with the specified extension in the directory |b:atp_OutDir|.
 							*g:keep*			
 >
  let g:keep	= ["log", "aux", "toc", "bbl", "ind"]	
@@ -3532,11 +3535,11 @@ map <F6>l, imap <F6>l
 :Delete[!]
 map <F6>d
 	Deletes all the files with an extension which belongs to
-	g:atp_tex_extensions in the directory b:atp_OutDir. By default
-	g:atp_tex_extensions does not contain '.tex', '.pdf', '.dvi' so none
+	|g:atp_tex_extensions| in the directory |b:atp_OutDir|. By default
+	|g:atp_tex_extensions| does not contain 'tex', 'pdf', 'dvi', 'ps' so none
 	of your important files will be deleted. If you set
-	g:atp_delete_output=1 the function will delete also the current output
-	file (but not any other!).
+	|g:atp_delete_output=1| the function will delete also the current
+	output file (but not any other!) and 'synctex.gz' file.
 
 :TOC[!]
 map \t
@@ -3790,8 +3793,8 @@ visual mode: ie, iE, ae, im, am, ip, ap, iS, aS, c
 		select comment lines which begin with '^\s*%'. If not in
 		comment line, end visual mode.
 
-								*atp-gw*	
-nmap gw
+								*atp-gq*	
+nmap gq
 	Quite useful normal map: m`vipgq``. It is mapped to gw (in normal
 	mode).
 
@@ -3980,7 +3983,7 @@ y/\\begin{document}/		When standing on 1st line - copy the preambule
 
 vipgq				Format inner paragraph. Or even better:
 m`vipgq``			This is so nice that I added a map: >
-				    nmap gw	m`vipgq``		
+				    nmap gq	m`vipgq``		
 <
 m`vip>``			
 m`vip<``			Indent inner paragraph, they are mapped to: >

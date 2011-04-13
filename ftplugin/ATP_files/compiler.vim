@@ -1275,7 +1275,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
 " 	    let callback	= s:SidWrap('CallBack')
 	    let callback_cmd 	= v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
-				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\"\)'. " ; "
+				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\",\"'.a:bibtex.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
 
@@ -1478,13 +1478,13 @@ function! <SID>TeX(runs, bang, ...)
 
     if l:mode != 'silent'
 	if a:runs > 2 && a:runs <= 5
-	    echomsg "[ATP:] ".Compiler . " will run " . a:1 . " times."
+	    echo "[ATP:] ".Compiler . " will run " . a:1 . " times."
 	elseif a:runs == 2
-	    echomsg "[ATP:] ".Compiler . " will run twice."
+	    echo "[ATP:] ".Compiler . " will run twice."
 	elseif a:runs == 1
-	    echomsg "[ATP:] ".Compiler . " will run once."
+	    echo "[ATP:] ".Compiler . " will run once."
 	elseif a:runs > 5
-	    echomsg "[ATP:] ".Compiler . " will run " . s:runlimit . " times."
+	    echo "[ATP:] ".Compiler . " will run " . s:runlimit . " times."
 	endif
     endif
     if g:atp_Compiler == 'python'
@@ -1520,7 +1520,7 @@ function! <SID>SimpleBibtex()
 	let b:atp_BibtexReturnCode=v:shell_error
 	echo b:atp_BibtexOutput
     else
-	echomsg "[ATP:] aux file " . auxfile . " not readable."
+	echo "[ATP:] aux file " . auxfile . " not readable."
     endif
     exe "lcd " . fnameescape(saved_cwd)
 endfunction
@@ -1757,7 +1757,7 @@ function! ShowErrors(...)
     " The same for readfile() and writefile()  built in functions.
     if !filereadable(errorfile)
 	echohl WarningMsg
-	echomsg "[ATP:] no error file: " . errorfile  
+	echo "[ATP:] no error file: " . errorfile  
 	echohl Normal
 	return
     endif
@@ -1794,7 +1794,7 @@ function! ShowErrors(...)
     " final stuff
     if len(getqflist()) == 0 
 	if show_message
-	    echomsg "[ATP:] no errors :)"
+	    echo "[ATP:] no errors :)"
 	endif
 	return ":)"
     else
