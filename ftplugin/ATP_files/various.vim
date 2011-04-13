@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Wed Apr 13 09:00  2011 W
+" Last Change: Wed Apr 13 12:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2227,6 +2227,25 @@ function! <SID>ATPversion()
     return "ATP version: ".l:version.", time stamp: ".stamp."."
 endfunction
 "}}}
+
+" Comment Lines
+function! Comment(arg) "{{{
+
+    " remember the column of the cursor
+    let col=col('.')
+     
+    if a:arg==1
+	call setline(line('.'),g:atp_CommentLeader . getline('.'))
+	let l:scol=l:col+len(g:atp_CommentLeader)-4
+	call cursor(line('.'),l:scol)
+    elseif a:arg==0 && getline('.') =~ '^\s*' . g:atp_CommentLeader
+	call setline(line('.'),substitute(getline('.'),g:atp_CommentLeader,'',''))
+	call cursor(line('.'),l:col-len(g:atp_CommentLeader))
+    endif
+
+endfunction "}}}
+map <Plug>CommentLines		:call CommentLine(1)<CR>
+map <Plug>UnCommentLines 	:call CommentLine(0)<CR>
 endif "}}}
 
 

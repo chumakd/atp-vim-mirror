@@ -100,7 +100,6 @@ To do: test SyncXpdf when syncing the last page (boarder conditions).
 
 NOTE: in aux file definitions are resolved (see \av)
 
-To do: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
 
 To do: :R Replace like :S  (project files). /there might be vim way to do that/.
 
@@ -184,10 +183,9 @@ To do: UnWrap command.
 To do: when changing bib file, the Main File is not processing (atp is not
 loaded for bib files!)
 
-Done: \DeclaraMathOperator for :LocalCommands
-Done: ShowErrors o <- add to command completion.
 To do: \varespilon,... - maps, completion
 To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this might be a local issue).
+
 (A VERY GOOD IDEA): write a package which lists in a file all theorems with numbers that tex is using.
 	This can be taken from list of theorems (lot) and list of definitions (lod) files.
 	This can be used to have more labels in GotoLabel (tex can print the line number where it is).
@@ -196,7 +194,6 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 To do: Closing environment inside environment at a wrong line. It is maybe
 	better to close enumerate where the user asks. 
 
-To do: check wdiff to make diff for tex files.
 To do: Suggest to use wdiff to get diff of pdf's with:
 	wdiff -w "\textcolor{red}{" -x "}" -y "\textcolor{blue}{" -z "}" file_rev1.tex file_rev2.tex > file_diff.tex
 	Or make a function which: removes comment lines, makes diff of \begin{document}:\end{document}, lets choose which preambule to use if they differ.
@@ -224,7 +221,6 @@ When opening skeleton file -> the g:atp_MathZone is like it was for file type pl
 The only solution is to set the variable g:tex_flavor="tex"
 To do: node{\(...\)<tab>
 to do: gm (end math) gM (begin math)
-To do: debug ]d
 To do: test debug mode.
 To do: find a better way of dealing with g:atp_latexpackages (update them)
 To do: statusNotifHi -> change in to a highliht group name.
@@ -283,3 +279,5 @@ SyncTex:
 	if not it should run the viewer first.
 
 Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 
+
+To do: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)

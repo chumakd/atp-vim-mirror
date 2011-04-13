@@ -111,6 +111,20 @@ changes:
 <	in your |atprc| file.
 
 	|atp-gq| is now used instead of gw which is more in a vim way! 
+
+nmap \c	
+nmap \u
+	Comment/Uncomment lines (both in |Normal| and |Visual| modes). 
+
+	Comment leader can be set with the variable g:atp_CommentLeader (by
+	default it is '% '). If you do not want this maps or you want to
+	remap them to something else you can set g:atp_MapCommentLines=0 in
+	your |vimrc| or |atprc| file and use <Plug>CommentLines,
+	<Plug>UnCommentLines (these are normal maps), for example: >
+		nmap <LocalLeader>C 	<Plug>UnCommentLines
+		vmap <LocalLeader>C 	<Plug>UnCommentLines
+<	
+
 >
   Changes in versions 9 & 9.1 & 9.2
 <

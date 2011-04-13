@@ -291,7 +291,13 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_XpdfSleepTime")
+if !exists("g:atp_CommentLeader") || g:atp_reload
+    let g:atp_CommentLeader="% "
+endif
+if !exists("g:atp_MapCommentLines") || g:atp_reload
+    let g:atp_MapCommentLines = 1
+endif
+if !exists("g:atp_XpdfSleepTime") || g:atp_reload
     let g:atp_XpdfSleepTime = "0.2"
 endif
 if !exists("g:atp_MapCC") || g:atp_reload

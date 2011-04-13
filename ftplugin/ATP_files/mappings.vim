@@ -31,6 +31,13 @@ let g:atp_map_list	= [
 if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_maps == 0 ) && 
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
+if g:atp_MapCommentLines    
+    nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
+    vmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
+    nmap <buffer> <silent> <LocalLeader>u	<Plug>UnCommentLines
+    vmap <buffer> <silent> <LocalLeader>u	<Plug>UnCommentLines
+endif
+
 nmap <buffer> <silent> t 		<Plug>SyncTexKeyStroke
 nmap <buffer> <silent> <S-LeftMouse> 	<LeftMouse><Plug>SyncTexMouse
 
