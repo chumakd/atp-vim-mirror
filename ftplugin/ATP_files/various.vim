@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Tue Apr 12 10:00  2011 W
+" Last Change: Wed Apr 13 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2215,7 +2215,7 @@ function! <SID>ATPversion()
 	let stamp	= "(no stamp)"
     endtry
     try
-	exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
+	exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\%(\.\|sion\)\=\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
 	let l:version = get(getloclist(0),0, {'text' : 'unknown'})['text']
 	let l:version = matchstr(l:version, '(ver\.\?\s\+\zs[0-9.]*\ze)')
     catch /E480:/
