@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Wed Apr 13 12:00  2011 W
+" Last Change: Wed Apr 13 05:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -822,7 +822,8 @@ function! <SID>Delete(delete_output)
 	endif
 	call add(atp_tex_extensions,ext)
     else
-	call filter(atp_tex_extensions, "v:val != 'synctex.gz'")
+	" filter extensions which should not be deleted
+	call filter(atp_tex_extensions, "index(g:atp_DeleteWithBang, v:val) == -1")
     endif
 
     " Be sure that we are not deleting outputs:

@@ -261,7 +261,7 @@ Done: make a default flag for :ShowErrors
 To do: bash compiler is not reloading Xpdf.
 To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
 	Debug: MakeLatex. (implemented in compile.py)
-To do: 'formatexpr'
+To do: 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
 # Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
 Done: GotoLabel gives one label to choose from (it should take this one and go :).
@@ -280,4 +280,4 @@ SyncTex:
 
 Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 
 
-To do: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
+Done: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)

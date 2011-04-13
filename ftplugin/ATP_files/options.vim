@@ -291,6 +291,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_DeleteWithBang") || g:atp_reload
+    let g:atp_DeleteWithBang = [ 'synctex.gz', 'tex.project.vim']
+endif
 if !exists("g:atp_CommentLeader") || g:atp_reload
     let g:atp_CommentLeader="% "
 endif
@@ -2052,7 +2055,7 @@ function! ViewerComp(A,L,P)
     return view
 endfunction
 
-function! s:Compiler(...) 
+function! <SID>Compiler(...) 
     if a:0 == 0
 	echo "[ATP:] b:atp_TexCompiler=".b:atp_TexCompiler
 	return
@@ -2060,7 +2063,7 @@ function! s:Compiler(...)
 	let compiler		= a:1
 	let old_compiler	= b:atp_TexCompiler
 	let oldCompiler	= get(g:CompilerMsg_Dict, matchstr(old_compiler, '^\s*\zs\S*'), "")
-	let b:atp_TexCompiler	= :compiler
+	let b:atp_TexCompiler	= compiler
 	let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\zs\S*'), "")
 	silent! execute "aunmenu LaTeX.".oldCompiler
 	silent! execute "aunmenu LaTeX.".oldCompiler."\\ debug"
@@ -2078,7 +2081,7 @@ function! s:Compiler(...)
 endfunction
 command! -buffer -nargs=? -complete=customlist,CompilerComp Compiler	:call <SID>Compiler(<f-args>)
 function! CompilerComp(A,L,P)
-    let compilers = [ 'tex', 'pdftex', 'latex', 'pdflatex', 'etex', 'xetex', 'luatex' ]
+    let compilers = [ 'tex', 'pdftex', 'latex', 'pdflatex', 'etex', 'xetex', 'luatex', 'xelatex' ]
 "     let g:compilers = copy(compilers)
     call filter(compilers, "v:val =~ '^' . a:A")
     call filter(compilers, 'executable(v:val)')

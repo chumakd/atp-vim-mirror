@@ -983,7 +983,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
 		\ ." --bibliographies ".shellescape(bibliographies)
-		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env default ': " --env ".shellescape(b:atp_TexCompilerVariable))
+		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
 
     " Write file

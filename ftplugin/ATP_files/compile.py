@@ -81,11 +81,14 @@ if viewer == "xpdf" and XpdfServer != None:
     viewer_opt.extend(["-remote", XpdfServer])
 verbose         = options.verbose
 keep            = options.keep.split(',')
+keep            = filter(nonempty, keep)
+
 def keep_filter_aux(string):
     if string == 'aux':
         return False
     else:
         return True
+
 def keep_filter_log(string):
     if string == 'log':
         return False
@@ -94,13 +97,14 @@ def keep_filter_log(string):
 
 def mysplit(string):
         return re.split('\s*=\s*', string)
-if options.env != "default":
-    env         = map(mysplit,re.split('\s*;\s*',options.env))
+
+env             = map(mysplit, filter(nonempty, re.split('\s*;\s*',options.env)))
 
 # Boolean options
 reload_viewer   = options.reload_viewer
 bibtex          = options.bibtex
 bibliographies  = options.bibliographies.split(",")
+bibliographies  = filter(nonempty, bibliographies)
 bang            = options.bang
 reload_on_error = options.reload_on_error
 gui_running     = options.gui_running
@@ -123,10 +127,7 @@ debug_file.write("DEBUG MODE (verbose) "+str(verbose)+"\n")
 debug_file.write("KEEP "+str(keep)+"\n")
 debug_file.write("BIBLIOGRAPHIES "+str(bibliographies)+"\n")
 debug_file.write("ENV OPTION "+str(options.env)+"\n")
-if options.env != "default":
-    debug_file.write("ENV "+str(env)+"\n")
-else:
-    debug_file.write("ENV default (NONE)\n")
+debug_file.write("ENV "+str(env)+"\n")
 debug_file.write("*BIBTEX "+str(bibtex)+"\n")
 debug_file.write("*BANG "+str(bang)+"\n")
 debug_file.write("*RELOAD_VIEWER "+str(reload_viewer)+"\n")
@@ -278,10 +279,9 @@ tempdir_list = os.listdir(tmpdir)
 debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
 
 # Set environment
-if options.env != "default":
-    for var in env:
-        debug_file.write("ENV "+var[0]+"="+var[1]+"\n")
-        os.putenv(var[0], var[1])
+for var in env:
+    debug_file.write("ENV "+var[0]+"="+var[1]+"\n")
+    os.putenv(var[0], var[1])
 
 # Link local bibliographies:
 for bib in bibliographies:
