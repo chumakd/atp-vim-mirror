@@ -702,10 +702,10 @@ function! GotoLabel(bang,...)
     endif
 
     let matches = []
-    let g:matches=copy(matches)
+    let g:matches=matches
 
     for file in keys(t:atp_labels)
-	if index(b:ListOfFiles, fnamemodify(file, ":t")) != -1 || index(b:ListOfFiles, file) != -1
+	if index(b:ListOfFiles, fnamemodify(file, ":t")) != -1 || index(b:ListOfFiles, file) != -1 || file == atplib#FullPath(b:atp_MainFile)
 	    for label in t:atp_labels[file]
 		if label[1] =~ alabel || label[2] =~ '^'.alabel
 		    call add(matches, extend([file], label))

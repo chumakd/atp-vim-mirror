@@ -3,10 +3,10 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " The do NOT DELETE the following line, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 13-04-11_20-33
+" Time Stamp: 14-04-11_17-30
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Sat Apr 09 12:00  2011 W
+" Last Change: Wed Apr 13 08:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -34,9 +34,7 @@ if !exists("g:atp_reload_functions")
 endif
 
 if &cpoptions =~ '<'
-	echohl WarningMsg
-	echo "ATP is removing < from cpoptions"
-	echohl None
+	echoerr "[ATP:] removing '<' from cpoptions"
 	setl cpoptions-=<
 endif
 

@@ -243,14 +243,23 @@ nmap <C-k> <Plug>TexJMotionBackward
     vmap <silent><buffer> <LocalLeader>sc	<Plug>vSelectComment
 
     " Normal mode maps (mostly)
-    nmap  <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
+    if mapcheck('<LocalLeader>v') == ""
+	nmap  <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
+    endif
 "     nmap  <buffer> <F2> 			<Plug>ToggleSpace
-    nmap  <buffer> <F2> 			:call ATP_CmdwinToggleSpace('on')<CR>q/i
-    nmap Q/					:call ATP_CmdwinToggleSpace('on')<CR>q/
-    nmap Q?					:call ATP_CmdwinToggleSpace('on')<CR>q/
-    nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
+    nmap  <buffer> <F2> 			q/:call ATP_CmdwinToggleSpace('on')<CR>i
+    if mapcheck('Q/', 'n') == ""
+	nmap Q/					q/:call ATP_CmdwinToggleSpace('on')<CR>
+    endif
+    if mapcheck('Q?', 'n') == ""
+	nmap Q?					q?:call ATP_CmdwinToggleSpace('on')<CR>
+    endif
+    if mapcheck('<LocalLeader>s') == ""
+	nmap  <buffer> <LocalLeader>s		<Plug>ToggleStar
+    endif
 
-    nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggleDebugMode
+    nmap  <buffer> <LocalLeader><Localleader>d	<Plug>ToggledebugMode
+    nmap  <buffer> <LocalLeader><Localleader>D	<Plug>ToggleDebugMode
     vmap  <buffer> <F4>				<Plug>WrapEnvironment
     nmap  <buffer> <F4>				<Plug>ChangeEnv
     nmap  <buffer> <S-F4>			<Plug>ToggleEnvForward

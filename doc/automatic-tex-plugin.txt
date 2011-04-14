@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 13 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 14 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.7)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.8)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -92,6 +92,14 @@ changes:
 >
   Changes in versions 9.3
 <
+	For XeTeX (and XeLaTeX) users the maps ]e, [e (to go to next/previous
+	error message) in a log file (see |atp-maps-log|) will work better.
+
+	|atp-:GotoLabel| - important fix.
+
+	\\D, \\d - maps to swith to: |atp-debug-mode-Debug| and
+	|atp-debug-mode-debug|.
+
 	|g:atp_map_forward_motion_leader|	= '>'
 	|g:atp_map_backward_motion_leader| 	= '<'
 		see |atp-:NSec| and |atp-:PSec| and friends. 
@@ -106,9 +114,9 @@ changes:
 
 	<F2> acts as 'Q/i' (i.e. enters insert mode).
 	If you want Q/ and Q? enter insert mode as well you can set: >
-	    nmap Q/					:call ATP_CmdwinToggleSpace('on')<CR>q/i
-	    nmap Q?					:call ATP_CmdwinToggleSpace('on')<CR>q/i
-<	in your |atprc| file.
+	    nmap Q/		q/:call ATP_CmdwinToggleSpace('on')<CR>i
+	    nmap Q?		q/:call ATP_CmdwinToggleSpace('on')<CR>i
+<	in your |atprc| or |vimrc| file.
 
 							*g:atp_DeleteWithBang*
 	g:atp_DeleteWithBang = ['synctex.gz', 'tex.project.vim']

@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Wed Apr 13 05:00  2011 W
+" Last Change: Thu Apr 14 01:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -861,7 +861,7 @@ function! <SID>Search(pattern, flag, ...)
 	let message = a:flag =~# 'b' ? 'previous' : 'next'
 	if a:pattern =~ 'warning'
 	    let type = 'warning'
-	elseif a:pattern =~ '\^!'
+	elseif a:pattern =~ '!$'
 	    let type = 'error'
 	elseif a:pattern =~ 'info'
 	    let type = 'info'
@@ -910,8 +910,8 @@ function! s:OpenLog()
 	nnoremap <silent> <buffer> [c :call <SID>Search('\CLaTeX Warning: Citation', 'bW')<CR>
 	nnoremap <silent> <buffer> ]r :call <SID>Search('\CLaTeX Warning: Reference', 'W')<CR>
 	nnoremap <silent> <buffer> [r :call <SID>Search('\CLaTeX Warning: Reference', 'bW')<CR>
-	nnoremap <silent> <buffer> ]e :call <SID>Search('^!', 'W')<CR>
-	nnoremap <silent> <buffer> [e :call <SID>Search('^!', 'bW')<CR>
+	nnoremap <silent> <buffer> ]e :call <SID>Search('^[^!].*\n\zs!', 'W')<CR>
+	nnoremap <silent> <buffer> [e :call <SID>Search('^[^!].*\n\zs!', 'bW')<CR>
 	nnoremap <silent> <buffer> ]f :call <SID>Search('\CFont \%(Info\\|Warning\)', 'W')<CR>
 	nnoremap <silent> <buffer> [f :call <SID>Search('\CFont \%(Info\\|Warning\)', 'bW')<CR>
 	nnoremap <silent> <buffer> ]p :call <SID>Search('\CPackage', 'W')<CR>
@@ -2245,13 +2245,13 @@ function! Comment(arg) "{{{
     endif
 
 endfunction "}}}
-map <Plug>CommentLines		:call CommentLine(1)<CR>
-map <Plug>UnCommentLines 	:call CommentLine(0)<CR>
 endif "}}}
 
 
 " COMMANDS AND MAPS:
 " Maps: "{{{1
+map <buffer> <Plug>CommentLines					:call CommentLine(1)<CR>
+map <buffer> <Plug>UnCommentLines 				:call CommentLine(0)<CR>
 vmap <buffer> 	<Plug>WrapSelection				:<C-U>call <SID>WrapSelection('')<CR>i
 vmap <buffer> 	<Plug>InteligentWrapSelection			:<C-U>call <SID>InteligentWrapSelection('')<CR>i
 nnoremap <silent> <buffer> 	<Plug>ToggleStar		:call <SID>ToggleStar()<CR>

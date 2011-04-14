@@ -1020,14 +1020,14 @@ nnoremap <silent> <buffer> <Plug>SetOkular	:call <SID>SetPdf('okular')<CR>
 
 " These are functions which toggles some of the options:
 "{{{ Toggle Functions
-if !s:did_options
+if !s:did_options || g:atp_reload_functions
 " {{{ ATP_ToggleAuTeX
 " command! -buffer -count=1 TEX	:call TEX(<count>)		 
 function! ATP_ToggleAuTeX(...)
   let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !b:atp_autex )
     if on
 	let b:atp_autex=1	
-	echo "automatic tex processing is ON"
+	echo "[ATP:] ON"
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
 	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
@@ -1040,7 +1040,7 @@ function! ATP_ToggleAuTeX(...)
 	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
 	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
 	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
-	echo "automatic tex processing is OFF"
+	echo "[ATP:] OFF"
     endif
 endfunction
 "}}}
@@ -1149,81 +1149,107 @@ endfunction
 " ToDo: to doc.
 " TODO: it would be nice to have this command (and the map) in quickflist (FileType qf)
 " describe DEBUG MODE in doc properly.
-function! ATP_ToggleDebugMode(...)
-    let new_debugmode	= ""
-    if a:0 >= 1 && a:1 =~ '^on\|off$'
-	let [ on, new_debugmode ]	= ( a:1 == 'on'  ? [ 1, 'Debug' ] : [0, g:atp_DefaultDebugMode] )
-	let set_default=1
-	let copen = 1
-    elseif a:0 >= 1
-	let t:atp_DebugMode	= a:1
-	let new_debugmode 	= a:1
-	let set_default		= 0
-	if a:1 == 'silent'
-	    let on		= 0
-	    let copen		= 0
-	elseif a:1 == 'debug'
-	    let on		= 1 
-	    let copen		= ( a:1 =~# 'Debug' ? 1 : 0 )
+function! ATP_ToggleDebugMode(mode,...)
+    if a:mode != ""
+	let set_new 		= 1
+	let new_debugmode 	= ( t:atp_DebugMode ==# a:mode ? g:atp_DefaultDebugMode : a:mode )
+	let copen 		= ( a:mode =~# '^D\%[ebug]' && t:atp_DebugMode !=# 'Debug' && !t:atp_QuickFixOpen )
+	let on 			= ( a:mode !=# t:atp_DebugMode )
+	if t:atp_DebugMode ==# 'Debug' && a:mode ==# 'debug' || t:atp_DebugMode ==# 'debug' && a:mode ==# 'Debug'
+	    let change_menu 	= 0
 	else
-	    " for verbose mode
-	    let on		= 0
-	    let copen		= 0
+	    let change_menu 	= 1
 	endif
     else
-	let set_default = 1
-	let [ on, new_debugmode ] = ( t:atp_DebugMode =~? '^\%(debug\|verbose\)$' ? [ 0, g:atp_DefaultDebugMode ] : [ 1, 'Debug' ] )
-	let copen 		= 1
+	let change_menu 	= 1
+	let new_debugmode	= ""
+	if a:0 >= 1 && a:1 =~ '^on\|off$'
+	    let [ on, new_debugmode ]	= ( a:1 == 'on'  ? [ 1, 'debug' ] : [0, g:atp_DefaultDebugMode] )
+	    let set_new=1
+	    let copen = 1
+	elseif a:0 >= 1
+	    let t:atp_DebugMode	= a:1
+	    let new_debugmode 	= a:1
+	    let set_new		= 0
+	    if a:1 =~ 's\%[ilent]'
+		let on		= 0
+		let copen		= 0
+	    elseif a:1 =~ '^d\%[ebug]'
+		let on		= 1 
+		let copen		= ( a:1 =~# '^D\%[ebug]' ? 1 : 0 )
+	    else
+		" for verbose mode
+		let on		= 0
+		let copen		= 0
+	    endif
+	else
+	    let set_new = 1
+	    let [ on, new_debugmode ] = ( t:atp_DebugMode =~? '^\%(debug\|verbose\)$' ? [ 0, g:atp_DefaultDebugMode ] : [ 1, 'debug' ] )
+	    let copen 		= 1
+	endif
     endif
+
+    let g:on = on
+    let g:set_new = set_new
+    let g:new_debugmode = new_debugmode
+    let g:copen = copen
+    let g:change_menu = change_menu
+
+    " on == 0 set debug off
+    " on == 1 set debug on
     if !on
-	echomsg "[ATP:] debug mode is ".new_debugmode
+	echomsg "[ATP debug mode:] ".new_debugmode
 
-	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
-	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
-		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
-		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
-		    \ <Esc>:ToggleDebugMode<CR>a
+	if change_menu
+	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
+	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [off]
+	    menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+			\ :<C-U>ToggleDebugMode<CR>
+	    cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+			\ <C-U>ToggleDebugMode<CR>
+	    imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+			\ <Esc>:ToggleDebugMode<CR>a
 
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
-		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
-		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
-		    \ <Esc>:ToggleDebugMode<CR>a
+	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
+	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
+	    menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+			\ :<C-U>ToggleDebugMode<CR>
+	    cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+			\ <C-U>ToggleDebugMode<CR>
+	    imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+			\ <Esc>:ToggleDebugMode<CR>a
+	endif
 
-	if set_default
-	    let t:atp_DebugMode	= g:atp_DefaultDebugMode
+	if set_new
+	    let t:atp_DebugMode	= g:new_debugmode
 	endif
 	silent cclose
     else
-	echomsg "[ATP:] debug mode is ".new_debugmode
+	echomsg "[ATP debug mode:] ".new_debugmode
 
-	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
-	silent! aunmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
-		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
-		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
-		    \ <Esc>:ToggleDebugMode<CR>a
+	if change_menu
+	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
+	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
+	    menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+			\ :<C-U>ToggleDebugMode<CR>
+	    cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+			\ <C-U>ToggleDebugMode<CR>
+	    imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+			\ <Esc>:ToggleDebugMode<CR>a
 
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
-		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
-		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
-		    \ <Esc>:ToggleDebugMode<CR>a
+	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
+	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
+	    menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+			\ :<C-U>ToggleDebugMode<CR>
+	    cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+			\ <C-U>ToggleDebugMode<CR>
+	    imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+			\ <Esc>:ToggleDebugMode<CR>a
+	endif
 
 	let g:atp_callback	= 1
-	if set_default
-	    let t:atp_DebugMode	= "Debug"
+	if set_new
+	    let t:atp_DebugMode	= new_debugmode
 	endif
 	let winnr = bufwinnr("%")
 	if copen
@@ -1274,8 +1300,9 @@ nnoremap <silent> <buffer> 	<Plug>ToggleCheckMathOpened	:call ATP_ToggleCheckMat
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleCallBack 		:call ATP_ToggleCallBack(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleCallBack		:call ATP_ToggleCallBack()<CR>
 
-command! -buffer -nargs=? -complete=custom,ToggleDebugModeCompl	ToggleDebugMode 	:call ATP_ToggleDebugMode(<f-args>)
-nnoremap <silent> <buffer> 	<Plug>ToggleDebugMode		:call ATP_ToggleDebugMode()<CR>
+command! -buffer -nargs=? -complete=custom,ToggleDebugModeCompl	ToggleDebugMode 	:call ATP_ToggleDebugMode("",<f-args>)
+nnoremap <silent> <buffer> 	<Plug>ToggledebugMode		:call ATP_ToggleDebugMode("debug")<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleDebugMode		:call ATP_ToggleDebugMode("Debug")<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleTab	 	:call ATP_ToggleTab(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleTab		:call ATP_ToggleTab()<CR>
@@ -2105,6 +2132,51 @@ function! <SID>SetDebugMode(bang,...)
 	    let t:atp_DebugMode= g:atp_DefaultDebugMode
 	endif
     endif
+
+    if t:atp_DebugMode ==# 'Debug' && a:1 ==# 'debug' || t:atp_DebugMode ==# 'debug' && a:1 ==# 'Debug'
+	let change_menu 	= 0
+    else
+	let change_menu 	= 1
+    endif
+
+    "{{{ Change menu
+    if change_menu && t:atp_DebugMode !=? 'debug'
+	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
+	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [off]
+	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+		    \ :<C-U>ToggleDebugMode<CR>
+	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+		    \ <C-U>ToggleDebugMode<CR>
+	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+		    \ <Esc>:ToggleDebugMode<CR>a
+
+	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
+	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
+	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+		    \ :<C-U>ToggleDebugMode<CR>
+	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+		    \ <C-U>ToggleDebugMode<CR>
+	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+		    \ <Esc>:ToggleDebugMode<CR>a
+    elseif change_menu
+	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
+	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
+	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+		    \ :<C-U>ToggleDebugMode<CR>
+	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+		    \ <C-U>ToggleDebugMode<CR>
+	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+		    \ <Esc>:ToggleDebugMode<CR>a
+
+	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
+	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
+	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+		    \ :<C-U>ToggleDebugMode<CR>
+	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+		    \ <C-U>ToggleDebugMode<CR>
+	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+		    \ <Esc>:ToggleDebugMode<CR>a
+    endif "}}}
 
     if a:1 =~# 's\%[ilent]'
 	let winnr=winnr()

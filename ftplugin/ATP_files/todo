@@ -281,3 +281,5 @@ SyncTex:
 Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 
 
 Done: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
+
+Done: \\D \\d can work better \\D go to Debug mode if not in Debug mode
