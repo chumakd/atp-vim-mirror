@@ -104,10 +104,6 @@ nmap <C-k> <Plug>TexJMotionBackward
 
     execute "map <buffer> ".g:atp_map_forward_motion_leader."e		<Plug>GotoNextEnvironment"
     execute "map <buffer> ".g:atp_map_backward_motion_leader."e		<Plug>GotoPreviousEnvironment"
-"     exe "map <buffer> ".g:atp_map_forward_motion_leader."  <Plug>GotoNextEnvironment"
-"     exe "map <buffer> ".g:atp_map_backward_motion_leader." <Plug>GotoPreviousEnvironment"
-"     map <buffer> ]m			<Plug>GotoNextInlineMath
-"     map <buffer> [m			<Plug>GotoPreviousInlineMath
     execute "map <buffer> ".g:atp_map_forward_motion_leader."m		<Plug>GotoNextMath"
     execute "map <buffer> ".g:atp_map_backward_motion_leader."m		<Plug>GotoPreviousMath"
     execute "map <buffer> ".g:atp_map_forward_motion_leader."M		<Plug>GotoNextDisplayedMath"

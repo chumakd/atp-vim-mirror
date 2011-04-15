@@ -823,11 +823,10 @@ endfunction
 " Go to next environment "{{{3
 " which name is given as the argument. Do not wrap
 " around the end of the file.
-function! <SID>GotoEnvironment(flag,...)
+function! <SID>GotoEnvironment(flag,count,...)
 
     " Options :
     let env_name 	= ( a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*' )
-    let g:flag=a:flag
     if env_name == 'part'
 	if a:flag =~ 'b'
 	    :PPart
@@ -870,14 +869,9 @@ function! <SID>GotoEnvironment(flag,...)
 	endif
     endif
 
+    let flag = a:flag
+    
     " Set the search tool :
-    if g:atp_mapNn
-	let search_cmd 	= "S /"
-	let search_cmd_e= "/ " . a:flag
-    else
-	let search_cmd	= "silent! call search('"
-	let search_cmd_e= "','" . a:flag . "')"
-    endif
     " Set the pattern : 
     if env_name == 'math'
 	let pattern = '\m\%(\(\\\@<!\\\)\@<!%.*\)\@<!\%(\%(\\begin\s*{\s*\%(\(displayed\)\?math\|\%(fl\)\?align\|eqnarray\|equation\|gather\|multline\|subequations\|xalignat\|xxalignat\)\s*\*\=\s*}\)\|\\\@<!\\\[\|\\\@<!\\(\|\\\@<!\$\$\=\)'
@@ -889,40 +883,62 @@ function! <SID>GotoEnvironment(flag,...)
 	let pattern = '\m\%(\(\\\@<!\\\)\@<!%.*\)\@<!\\begin\s*{\s*' . env_name 
     endif
 
+
     " Search (twise if needed)
-    silent! execute  search_cmd . pattern . search_cmd_e 
-    if a:flag !~# 'b'
-	if getline(".")[col(".")-1] == "$" 
-	    if ( get(split(getline("."), '\zs'), col(".")-1, '') == "$" && get(split(getline("."), '\zs'), col("."), '') == "$" )
-		"check $$
-		let rerun = !atplib#CheckSyntaxGroups(['texMathZoneY'], line("."), col(".")+1 )
-	    elseif get(split(getline("."), '\zs'), col(".")-1, '') == "$" 
-		"check $
-		let rerun = !atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".") )
+    for i in range(1, a:count)
+	if i > 1
+	    " the 's' flag should be used only in the first search. 
+	    let flag=substitute(flag, 's', '', 'g') 
+	endif
+	echomsg "flag ".flag
+	if g:atp_mapNn
+	    let search_cmd 	= "S /"
+	    let search_cmd_e= "/ " . flag
+	else
+	    let search_cmd	= "silent! call search('"
+	    let search_cmd_e= "','" . flag . "')"
+	endif
+	execute  search_cmd . pattern . search_cmd_e
+	if a:flag !~# 'b'
+	    if getline(".")[col(".")-1] == "$" 
+		if ( get(split(getline("."), '\zs'), col(".")-1, '') == "$" && get(split(getline("."), '\zs'), col("."), '') == "$" )
+		    "check $$
+		    let rerun = !atplib#CheckSyntaxGroups(['texMathZoneY'], line("."), col(".")+1 )
+		elseif get(split(getline("."), '\zs'), col(".")-1, '') == "$" 
+		    "check $
+		    let rerun = !atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".") )
+		endif
+		if rerun
+		    silent! execute search_cmd . pattern . search_cmd_e
+		endif
 	    endif
-	    if rerun
-		silent! execute search_cmd . pattern . search_cmd_e
+	else " a:flag =~# 'b'
+	    if getline(".")[col(".")-1] == "$" 
+		if ( get(split(getline("."), '\zs'), col(".")-1, '') == "$" && get(split(getline("."), '\zs'), col(".")-2, '') == "$" )
+		    "check $$
+		    let rerun = atplib#CheckSyntaxGroups(['texMathZoneY'], line("."), col(".")-3 )
+		elseif get(split(getline("."), '\zs'), col(".")-1, '') == "$" 
+		    "check $
+		    let rerun = atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".")-2 )
+		endif
+		if rerun
+		    silent! execute search_cmd . pattern . search_cmd_e
+		endif
 	    endif
 	endif
-    else " a:flag =~# 'b'
-	if getline(".")[col(".")-1] == "$" 
-	    if ( get(split(getline("."), '\zs'), col(".")-1, '') == "$" && get(split(getline("."), '\zs'), col(".")-2, '') == "$" )
-		"check $$
-		let rerun = atplib#CheckSyntaxGroups(['texMathZoneY'], line("."), col(".")-3 )
-	    elseif get(split(getline("."), '\zs'), col(".")-1, '') == "$" 
-		"check $
-		let rerun = atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'], line("."), col(".")-2 )
-	    endif
-	    if rerun
-		silent! execute search_cmd . pattern . search_cmd_e
-	    endif
-	endif
-    endif
+    endfor
 
     silent! call histadd("search", pattern)
     silent! let @/ 	 = pattern
     return ""
 endfunction
+" function! <SID>GotoEnvironmentB(flag,count,...)
+"     let env_name 	= (a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*')
+"     for i in range(1,a:count)
+" 	let flag 	= (i!=1?substitute(a:flag, 's', '', 'g'):a:flag)
+" 	call <SID>GotoEnvironment(flag,1,env_name)
+"     endfor
+" endfunction
 " Go to next section {{{3 
 " The extra argument is a pattern to match for the
 " section title. The first, obsolete argument stands for:
@@ -1553,23 +1569,24 @@ command! -buffer -nargs=1 -complete=buffer MakeToc	:echo s:maketoc(fnamemodify(<
 command! -buffer -bang -nargs=? TOC	:call <SID>TOC(<q-bang>)
 command! -buffer CTOC			:call CTOC()
 command! -buffer -bang Labels		:call <SID>Labels(<q-bang>)
-command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Nenv	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
-command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Penv	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Nenv	:call <SID>GotoEnvironment('sW',<q-count>,<q-args>)  | let v:searchforward=1 
+command! -buffer -count=1 -nargs=? -complete=customlist,EnvCompletionWithoutStarEnvs Penv	:call <SID>GotoEnvironment('bsW',<q-count>,<q-args>) | let v:searchforward=0
 "TODO: These two commands should also work with sections.
-command! -buffer -count=1 -nargs=? -complete=custom,F_compl F	:call <SID>GotoEnvironment('sW',<q-args>)  | let v:searchforward=1 
-command! -buffer -count=1 -nargs=? -complete=custom,F_compl B	:call <SID>GotoEnvironment('bsW',<q-args>) | let v:searchforward=0
+command! -buffer -count=1 -nargs=? -complete=custom,F_compl F	:call <SID>GotoEnvironment('sW',<q-count>,<q-args>)  | let v:searchforward=1
+command! -buffer -count=1 -nargs=? -complete=custom,F_compl B	:call <SID>GotoEnvironment('bsW',<q-count>,<q-args>) | let v:searchforward=0
 
-nnoremap <silent> <buffer> <Plug>GotoNextEnvironment			:Nenv <CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousEnvironment		:Penv <CR>
+nnoremap <silent> <buffer> <Plug>GotoNextEnvironment		:<C-U>call <SID>GotoEnvironment('sW',v:count1,'')<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousEnvironment	:<C-U>call <SID>GotoEnvironment('bsW',v:count1,'')<CR>
 
-nnoremap <silent> <buffer> <Plug>GotoNextMath				:Nenv math<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousMath			:Penv math<CR>
+nnoremap <silent> <buffer> <Plug>GotoNextMath			:<C-U>call <SID>GotoEnvironment('sW',v:count1,'math')<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousMath		:<C-U>call <SID>GotoEnvironment('bsW',v:count1,'math')<CR>
 
-nnoremap <silent> <buffer> <Plug>GotoNextInlineMath			:Nenv inlinemath<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousInlineMath			:Penv inlinemath<CR>
+nnoremap <silent> <buffer> <Plug>GotoNextInlineMath		:<C-U>call <SID>GotoEnvironment('sW',v:count1,'inlinemath')<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousInlineMath		:<C-U>call <SID>GotoEnvironment('bsW',v:count1,'inlinemath')<CR>
 
-nnoremap <silent> <buffer> <Plug>GotoNextDisplayedMath	 		:Nenv displayedmath<CR>
-nnoremap <silent> <buffer> <Plug>GotoPreviousDisplayedMath		:Penv displayedmath<CR>
+nnoremap <silent> <buffer> <Plug>GotoNextDisplayedMath	 	:<C-U>call <SID>GotoEnvironment('sW',v:count1,'displayedmath')<CR>
+nnoremap <silent> <buffer> <Plug>GotoPreviousDisplayedMath	:<C-U>call <SID>GotoEnvironment('bsW',v:count1,'displayedmath')<CR>
+
 nnoremap <silent> <Plug>GotoNextSubSection	:call <SID>GotoSection("", "s", '"\\\\\\%(subsection\\\\|section\\\\|chapter\\\\|part\\)\\s*{", ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', '')<CR>
 onoremap <silent> <Plug>GotoNextSubSection	:call <SID>GotoSection("", "s","\\\\\\%(subsection\\\\|section\\\\|chapter\\\\|part\\)\\s*{", 'vim')<CR>
 vnoremap <silent> <Plug>vGotoNextSubSection	m':<C-U>exe "normal! gv"<Bar>exe "normal! w"<Bar>call search('^\([^%]\|\\\@<!\\%\)*\\\%(subsection\\|section\\|chapter\\|part\)\s*{\\|\\end\s*{\s*document\s*}', 'W')<Bar>exe "normal! b"<CR>

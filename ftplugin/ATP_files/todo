@@ -239,11 +239,9 @@ To do:(simple and nice) in GotoEnvironemt: (THIS IS NOT POSSIBLE it is a feature
 	    its better to silently call the functions Search() and search()
 To do: for Okular users switch document loaded in okular when changing buffers (handsome).
 	for Xpdf it is easy to set: just put b:atp_XpdfServer="tex_files" in atprc.
-Done!: add :WrapEnvironment <env_name> command. (this will be mapped to <F4> and <F4> will be remapped to <S-F4> and <S-F4> will not be mapped).
-To do: ShowErrors w when there are no warnings should say no warnings :)
 To do: There are three completion function for environment names: Env_compl (motion.vim, GotoSection, Nenv, ...) and EnvCompletion and EnvCompletionWithoutStarEnvs (various.vim, :WrapEnvironment, :ChangeEnv), F_compl (:F, :B)
 	Make them more dependent on LocalEnvironments (to appear only what is defined!)
-To do: MakeLatex is not WINDOWS COMPATIBLE (because it uses bash syntax, I need python code to execute commands)
+Done: (debug on WINDOWS) MakeLatex is not WINDOWS COMPATIBLE (because it uses bash syntax, I need python code to execute commands)
 	If MakeLatex would be done in Python -> progress bar could be made.
 	(at least it can call Python compiler)
 To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
@@ -284,4 +282,10 @@ Done: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains
 Done: \\D \\d can work better \\D go to Debug mode if not in Debug mode
 <Nice Feature> make atprc.vim file in the gentoo style
 
-Status line should show how many instance of TeX are running.
+Done: Status line should show how many instance of TeX are running.
+
+To do: 2<e with count: when standing on \begin it behaves like <e, this is due to search(...,'b') behaviour. There is a workaround for this: map <e to   
+    for i in range(1,v:count1)|..here I should adjust flags (remove 's')...|call <SID>GotoEnvironment(...)|endfor
+
+Vim bug (?): When calling 2<e the line changes (the cursor goes two lines below, when the rhs of a map	contains <CR>)
+	No! One has to use :<C-U>call .

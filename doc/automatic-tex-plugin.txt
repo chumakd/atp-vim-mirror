@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 14 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 15 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.8)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.9)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -538,11 +538,6 @@ let g:atp_iabbrev_leader = "="
     to choose one from the list and then type <space>, just typing <space>
     should also work).
 
->
-  Changes in version 8.3
-<
-  - If g:atp_map_forward_motion_leader = "}" then there noremap }} }.
-    Similarly, for backward motion leader.
 >
   Changes in version 8.2
 <
