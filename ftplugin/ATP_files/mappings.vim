@@ -27,9 +27,16 @@ let g:atp_map_list	= [
 	    \ [ g:atp_map_backward_motion_leader, 'S', 		'<Plug>vGotoNextSubSection', 	'nmap <buffer>' ],
 	    \ ] 
 
+
+
+" MAPS:
 " Add maps, unless the user didn't want them.
 if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_maps == 0 ) && 
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
+
+nmap <buffer> <silent>	Gs		:<C-U>keepjumps exe v:count1."Sec"<CR>
+nmap <buffer> <silent>	Gc		:<C-U>keepjumps exe v:count1."Chap"<CR>
+nmap <buffer> <silent>	Gp		:<C-U>keepjumps exe v:count1."Part"<CR>
 
 if g:atp_MapCommentLines    
     nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines

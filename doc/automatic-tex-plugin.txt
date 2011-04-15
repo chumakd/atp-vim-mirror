@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 15 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.9)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.11)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -92,6 +92,11 @@ changes:
 >
   Changes in versions 9.3
 <
+	The commands |atp-:F|, |atp-:B|, and the maps |atp->e| and |atp-<e|
+	have count. With count they will be invoked several times, i.e. 3>e go
+	to third environment. The mark ' is set to the starting position (so
+	this is the difference between 3>e and 3 times >e).
+
 	For XeTeX (and XeLaTeX) users the maps ]e, [e (to go to next/previous
 	error message) in a log file (see |atp-maps-log|) will work better.
 
@@ -125,6 +130,23 @@ changes:
 
 	|atp-gw| back (was gq for very short time (since ver. 9.2), which
 	I found to be not a good idea).
+
+							*atp-map-Gs*
+							*atp-map-Gc*
+							*atp-map-Gp*
+							*atp-:SSec*
+							*atp-:Sec*
+							*atp-:Chap*
+							*atp-:Part*
+:[count]SSec
+:[count]Sec
+nmap [count]Gs
+:[count]Chap
+nmap [count]Gc
+:[count]Part
+nmap [count]Gp
+	Go to subsection/section/chapter/part [count] from beinging. Mark ' is
+	preserved.
 
 nmap \c	
 nmap \u
@@ -1467,20 +1489,20 @@ map \L
 	quite fast).
 
 							*atp-:F*
-:F {arg}							
+:[count]F {arg}							
 	Go (forward) to {arg}, {arg} might be: part, section, subsection,
 	subsubsection, and defined environment. You can use command completion
 	which uses all the locally defined environments.
 
 							*atp-:B*
-:B {arg}
+:[count]B {arg}
 	Go (backward) to {arg}, like above |atp-:F|.
 
 
 							*atp-:NEnv* *atp->e*
 :NEnv {environment}
-:F {environment}
-map >e
+:[count]F {environment}
+[count]map >e
 	Move to next environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1494,8 +1516,8 @@ map >e
 
 							*atp-:PEnv* *atp-<e*
 :PEnv {environment}
-:B {environment}
-map <e
+[count]:B {environment}
+[count]map <e
 	Move to previous environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1514,7 +1536,7 @@ map <e
 							*atp-:NSSec*	*atp->S*
 							*atp-:NSSSec*
 :NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]
-:F {section}
+[count]:F {section}
  map >p,  map >c,  map >s,  map >S
 vmap >p, vmap >c, vmap >s, vmap >S
 
@@ -1566,7 +1588,7 @@ vmap >p, vmap >c, vmap >s, vmap >S
 							*atp-:PSSec*	*atp-<S*
 							*atp-:PSSSec*
 :PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]
-:B {section}
+[count]:B {section}
  map <p,  map <c,  map <s,  map <S
 vmap <p, vmap <c, vmap <s, vmap <S
 

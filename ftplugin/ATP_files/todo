@@ -287,5 +287,16 @@ Done: Status line should show how many instance of TeX are running.
 To do: 2<e with count: when standing on \begin it behaves like <e, this is due to search(...,'b') behaviour. There is a workaround for this: map <e to   
     for i in range(1,v:count1)|..here I should adjust flags (remove 's')...|call <SID>GotoEnvironment(...)|endfor
 
+Done:
 Vim bug (?): When calling 2<e the line changes (the cursor goes two lines below, when the rhs of a map	contains <CR>)
 	No! One has to use :<C-U>call .
+add count for NSec, and friends (see doc file).	
+:B and :F are should invoke NSec,... with count.
+
+To do:
+If toc is opened update the highlighted section when using some commands (:F/:B, :NSec/:PSec/..., j/k/<DownArrow>/<UpArrow> key pressed). 
+check if updating with cursor move takes time? (if it takes, one can check if line number changes.)
+Warn when going around file (hit top/bottom) (if count greater than one do not wrap around file (?) - if wrap/nowrap (or some other vim options) is set).
+
+gg2>s	(go to section 2)
+map <
