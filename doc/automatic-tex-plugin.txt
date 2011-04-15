@@ -741,11 +741,14 @@ forth between you |b:atp_OutDir| and the temporary directory)
 			vim --servername VIM 
 < 	you have additional functionalities:
 
+							*atp-status-line-notification*
 	* STATUS LINE NOTIFICATION: status line can show if tex is running >
 		    let g:atp_status_notification = 1
 <		If unset you will get a message when compiler ends.
 		If set the number next to the name of your compiler indicates
-		how many instances are currently running.
+		how many instances are currently running. If
+		|g:atp_ProgressBar|=1 then also progress information of TeX
+		compiler  will be shown.
 	* The LOG FILE will be automatically read after compilation (|cgetfile|).
 
 							*atp-debug-mode-silent*
@@ -1665,10 +1668,12 @@ map <F4>		environment name
 							*atp-status-line*
 :Status[!]						*atp-:Status*
 (:ATPStatus[!])						*atp-:ATPStatus*
-	This function (command) sets the status line, which include: the name
-	of currently edited chapter (or section) the value of |b:atp_OutDir|
-	(unless used with bang!) and it will warn you if |b:atp_OutDir|
-	variable is not set. This function is called at startup unless the
+	This comman sets the status line, which include: the name of currently
+	edited chapter (or section) the value of |b:atp_OutDir| (unless used
+	with bang!) and it will warn you if |b:atp_OutDir| variable is not
+	set. The status line will also contain the information about
+	processing compelation: see |atp-status-line-notification|,
+	|g:atp_ProgressBar|. This function is called at startup unless the
 	variable '|g:atp_statusline|=0' is set. The status is set by the
 	autocommand: >
 		au BufWinEnter *.tex :call Status()

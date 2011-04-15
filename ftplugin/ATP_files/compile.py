@@ -163,6 +163,7 @@ def latex_progress_bar(cmd):
                 vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+")")
     child.wait()
     vim_remote_expr(servername, "atplib#ProgressBar('end',"+str(pid)+")")
+    vim_remote_expr(servername, "atplib#LatexRunning()")
     return child
 
 def xpdf_server_file_dict():
@@ -359,6 +360,7 @@ for i in range(1, int(runs+1)):
                 vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
             debug_file.write("latex pid "+str(pid)+"\n")
             latex.wait()
+            vim_remote_expr(servername, "atplib#LatexRunning()")
         latex_returncode=latex.returncode
         debug_file.write("latex return code "+str(latex_returncode)+"\n")
         tempdir_list = os.listdir(tmpdir)

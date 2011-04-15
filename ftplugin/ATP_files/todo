@@ -69,8 +69,7 @@ shuoldn't be dificult).
 
 Bug: \ref{<Tab> and the screen is redrawn (like redraw!)
 <Nice Feature> if none of completions is working use tab as a normal Tab key.
-/this will be slow/
-<Nice Feature> make atprc.vim file in the gentoo style
+/this will be slow/ and some times misleading /
 Bug: \{ ... <Tab> =? \{ ... } 	( generically it works )
 To do: add large delimiters to completion (Bracket closings: Table 3.9 in
     lshort pdfpage: 80) but also \lceil:\rceil, \lfloor:\rfloor, \vert:\vert,
@@ -261,7 +260,7 @@ Done: make a default flag for :ShowErrors
 To do: bash compiler is not reloading Xpdf.
 To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
 	Debug: MakeLatex. (implemented in compile.py)
-To do: 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
+Bad idea (gq is for sth else!): 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
 # Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
 Done: GotoLabel gives one label to choose from (it should take this one and go :).
@@ -283,3 +282,6 @@ Done: atplib#CallBack() is not working with bash compiler (it is important for I
 Done: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
 
 Done: \\D \\d can work better \\D go to Debug mode if not in Debug mode
+<Nice Feature> make atprc.vim file in the gentoo style
+
+Status line should show how many instance of TeX are running.

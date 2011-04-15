@@ -335,20 +335,20 @@ python << EOL
 import psutil, re, sys, vim
 pids = vim.eval("b:atp_LatexPIDs")
 if len(pids) > 0:
-	ps_list=psutil.get_pid_list()
-	rmpids=[]
-	for lp in pids:
-		run=False
-		for p in ps_list: 
-			if str(lp) == str(p):
-				run=True
-				break
-		if not run:
-			rmpids.append(lp)
-	rmpids.sort()
-	rmpids.reverse()
-	for pid in rmpids:
-		    vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
+    ps_list=psutil.get_pid_list()
+    rmpids=[]
+    for lp in pids:
+	run=False
+	for p in ps_list:
+	    if str(lp) == str(p):
+		run=True
+		break
+	if not run:
+	    rmpids.append(lp)
+    rmpids.sort()
+    rmpids.reverse()
+    for pid in rmpids:
+	vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
 EOL
 endfunction "}}}
 "{{{ ProgressBar
