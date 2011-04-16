@@ -13,19 +13,56 @@ if g:atp_MapCC
     imap <buffer> <c-c> <c-[>
 endif
 
+if g:atp_MapUpdateToCLine
+    nmap <buffer> <silent> <C-F> <C-F>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <S-Down> <S-Down>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <PageDown> <PageDown>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> z+	z+:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <S-ScrollWheelUp> <S-ScrollWheelUp>:call UpdateToCLine()
+    nmap <buffer> <silent> <C-ScrollWheelUp> <C-ScrollWheelUp>:call UpdateToCLine()
+    nmap <buffer> <silent> <ScrollWheelUp> <ScrollWheelUp>:call UpdateToCLine()
+    nmap <buffer> <silent> <C-U> <C-U>:call UpdateToCLine()<CR>
+"     nmap <buffer> <silent> <C-E> <C-E>:call UpdateToCLine()<CR>
+
+    nmap <buffer> <silent> <C-B> <C-B>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <S-ScrollWheelDown> <S-ScrollWheelDown>:call UpdateToCLine()
+    nmap <buffer> <silent> <C-ScrollWheelDown> <C-ScrollWheelDown>:call UpdateToCLine()
+    nmap <buffer> <silent> <ScrollWheelDown> <ScrollWheelDown>:call UpdateToCLine()
+    nmap <buffer> <silent> <S-Up> <S-Up>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <PageUp> <PageUp>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <C-D> <C-D>:call UpdateToCLine()<CR>
+"     nmap <buffer> <silent> <C-Y> <C-Y>:call YpdateToCLine()<CR>
+
+    nmap <buffer> <silent> gj	gj:call UpdateToCLine(1)<CR>
+    nmap <buffer> <silent> gk	gk:call UpdateToCLine(1)<CR>
+
+    if maparg('j', 'n') == ''
+	nmap <buffer> <silent> j	j:call UpdateToCLine(0)<CR>
+    elseif maparg('j', 'n') == 'gj'
+	nmap <buffer> <silent> j	gj:call UpdateToCLine(0)<CR>
+    endif
+
+    if maparg('k', 'n') == ''
+	nmap <buffer> <silent> k	k:call UpdateToCLine(1)<CR>
+    elseif maparg('j', 'n') == 'gj'
+	nmap <buffer> <silent> k	gk:call UpdateToCLine(1)<CR>
+    endif
+endif
+
+
 command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#OpenFdFile(<f-args>) 
 command! -buffer -nargs=* CloseLastEnvironment	:call atplib#CloseLastEnvironment(<f-args>)
 command! -buffer 	  CloseLastBracket	:call atplib#CloseLastBracket()
-let g:atp_map_list	= [ 
-	    \ [ g:atp_map_forward_motion_leader, 'i', 		':NInput<CR>', 			'nmap <buffer>' ],
-	    \ [ g:atp_map_backward_motion_leader, 'i', 		':NPnput<CR>', 			'nmap <buffer>' ],
-	    \ [ g:atp_map_forward_motion_leader, 'gf', 		':NInput<CR>', 			'nmap <buffer>' ],
-	    \ [ g:atp_map_backward_motion_leader, 'gf',		':NPnput<CR>', 			'nmap <buffer>' ],
-	    \ [ g:atp_map_forward_motion_leader, 'S', 		'<Plug>GotoNextSubSection',	'nmap <buffer>' ],
-	    \ [ g:atp_map_backward_motion_leader, 'S', 		'<Plug>vGotoNextSubSection', 	'nmap <buffer>' ],
-	    \ ] 
+" let g:atp_map_list	= [ 
+" 	    \ [ g:atp_map_forward_motion_leader, 'i', 		':NInput<CR>', 			'nmap <buffer>' ],
+" 	    \ [ g:atp_map_backward_motion_leader, 'i', 		':NPnput<CR>', 			'nmap <buffer>' ],
+" 	    \ [ g:atp_map_forward_motion_leader, 'gf', 		':NInput<CR>', 			'nmap <buffer>' ],
+" 	    \ [ g:atp_map_backward_motion_leader, 'gf',		':NPnput<CR>', 			'nmap <buffer>' ],
+" 	    \ [ g:atp_map_forward_motion_leader, 'S', 		'<Plug>GotoNextSubSection',	'nmap <buffer>' ],
+" 	    \ [ g:atp_map_backward_motion_leader, 'S', 		'<Plug>vGotoNextSubSection', 	'nmap <buffer>' ],
+" 	    \ ] 
 
 
 

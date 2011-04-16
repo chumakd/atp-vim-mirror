@@ -291,6 +291,28 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if exists("g:atp_latexpackages")
+    " Transition to nicer name:
+    let g:atp_LatexPackages = g:atp_latexpackages
+    unlet g:atp_latexpackages
+endif
+if exists("g:atp_latexclasses")
+    " Transition to nicer name:
+    let g:atp_LatexClasses = g:atp_latexclasses
+    unlet g:atp_latexclasses
+endif
+if !exists("g:atp_Python")
+    " This might be a name of python executable or full path to it (if it is not in
+    " the $PATH) 
+    if has("win32") || has("win64")
+	let g:atp_Python = "python.exe"
+    else
+	let g:atp_Python = "python"
+    endif
+endif
+if !exists("g:atp_MapUpdateToCLine")
+    let g:atp_MapUpdateToCLine = 1
+endif
 if !exists("g:atp_DeleteWithBang") || g:atp_reload
     let g:atp_DeleteWithBang = [ 'synctex.gz', 'tex.project.vim']
 endif
@@ -1825,7 +1847,7 @@ if !s:did_options
 function! <SID>Rmdir(dir)
 if executable("rmdir")
     call system("rmdir ".shellescape(a:dir))
-elseif has("python") && executable('python')
+elseif has("python") && executable(g:atp_Python)
 python << EOF
 import shutil, errno
 dir=vim.eval('a:dir')
@@ -2241,7 +2263,7 @@ except ImportError:
     vim.command('echohl ErrorMsg|echomsg "[ATP:] needs psutil python library."')
     vim.command('echomsg "You can get it from: http://code.google.com/p/psutil/"')
     test=vim.eval("has('mac')||has('macunix')||has('unix')")
-    if test:
+    if test != str(0):
 	vim.command('echomsg "Falling back to bash"')
 	vim.command("let g:atp_Compiler='bash'")
     vim.command("echohl Normal")
@@ -2252,7 +2274,7 @@ END
 endfunction
 
 if g:atp_Compiler == "python"
-    if !executable("python") || !has("python")
+    if !executable(g:atp_Python) || !has("python")
 	echohl ErrorMsg
 	echomsg "[ATP:] needs: python and python support in vim."
 	echohl Normal

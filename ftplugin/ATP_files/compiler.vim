@@ -711,7 +711,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	echomsg "[MakeLatex:] Updating files [".Compiler."]."
 	if g:atp_Compiler == 'python'
 	    let p_force= (a:force == "!" ? " --force" : " " )
-	    let python_cmd1="python ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")). 
+	    let python_cmd1=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")). 
 			\ " --cmd ".shellescape(b:atp_TexCompiler).
 			\ " --file ".shellescape(atplib#FullPath(texfile)).
 			\ " --outdir ".shellescape(b:atp_OutDir).
@@ -828,7 +828,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  echomsg "[MakeLatex:] " . message
 	  if g:atp_Compiler == 'python'
 	      let p_force= (a:force == "!" ? " --force" : " " )
-	      let python_cmd2="python ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")).
+	      let python_cmd2=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")).
 			  \ " --cmd ".shellescape(b:atp_TexCompiler).
 			  \ " --file ".shellescape(atplib#FullPath(texfile)).
 			  \ " --outdir ".shellescape(b:atp_OutDir).
@@ -969,7 +969,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let bibliographies 		= join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
 
     " Set the command
-    let cmd="python ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
+    let cmd=g:atp_Python." ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
 		\ ." --tex-options ".tex_options
 		\ ." --verbose ".a:verbose
 		\ ." --file ".shellescape(atplib#FullPath(a:filename))
@@ -1013,6 +1013,8 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 	exe ":!".cmd
     elseif g:atp_debugPythonCompiler && has("unix") 
 	call system(cmd." 2>/tmp/atp_pc.debug &")
+    elseif has("win16") || has("win32") || has("win64")
+	call system(cmd)
     else
 	call system(cmd." &")
     endif

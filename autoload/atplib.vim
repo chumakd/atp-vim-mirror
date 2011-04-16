@@ -3710,11 +3710,11 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
     "{{{3 ------------ PACKAGES
     elseif completion_method == 'package'
-	if exists("g:atp_latexpackages")
-	    let completion_list	= copy(g:atp_latexpackages)
+	if exists("g:atp_LatexPackages")
+	    let completion_list	= copy(g:atp_LatexPackages)
 	else
-	    let g:atp_latexpackages	= atplib#KpsewhichGlobPath("tex", "", "*.sty")
-	    let completion_list	= deepcopy(g:atp_latexpackages)
+	    let g:atp_LatexPackages	= atplib#KpsewhichGlobPath("tex", "", "*.sty")
+	    let completion_list	= deepcopy(g:atp_LatexPackages)
 	endif
     "{{{3 ------------ COLORS
     elseif completion_method == 'colors'
@@ -3969,11 +3969,11 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list=atplib#KpsewhichGlobPath("bst", "", "*.bst")
     "{{{3 ------------ DOCUMENTCLASS
     elseif completion_method == 'documentclass'
-	if exists("g:atp_latexclasses")
-	    let completion_list	= copy(g:atp_latexclasses)
+	if exists("g:atp_LatexClasses")
+	    let completion_list	= copy(g:atp_LatexClasses)
 	else
-	    let g:atp_latexclasses	= atplib#KpsewhichGlobPath("tex", "", "*.cls")
-	    let completion_list	= deepcopy(g:atp_latexclasses)
+	    let g:atp_LatexClasses	= atplib#KpsewhichGlobPath("tex", "", "*.cls")
+	    let completion_list		= deepcopy(g:atp_LatexClasses)
 	endif
 	" \documentclass must be closed right after the name ends:
 	if nchar != "}"

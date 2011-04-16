@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Fri Apr 15 03:00  2011 W
+" Last Change: Sat Apr 16 01:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -796,8 +796,8 @@ function! s:TeXdoc_complete(ArgLead, CmdLine, CursorPos)
 
     call filter(aliases, "v:val =~ 'alias'")
     call filter(map(aliases, "matchstr(v:val, '^\\s*alias\\s*\\zs\\S*\\ze\\s*=')"),"v:val !~ '^\\s*$'")
-    if exists("g:atp_latexpackages")
-	call extend(aliases, g:atp_latexpackages)
+    if exists("g:atp_LatexPackages")
+	call extend(aliases, g:atp_LatexPackages)
     endif
 
     return filter(copy(aliases), "v:val =~ '^' . a:ArgLead")
@@ -1575,7 +1575,7 @@ function! <SID>GetAMSRef(what, bibfile)
     else
 	let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=tex"
     endif
-    let cmd="python ".URLquery_path." ".shellescape(url)." ".shellescape(atpbib_WgetOutputFile)
+    let cmd=g:atp_Python." ".URLquery_path." ".shellescape(url)." ".shellescape(atpbib_WgetOutputFile)
     call system(cmd)
     let loclist = getloclist(0)
 
@@ -1882,7 +1882,7 @@ function! <SID>UpdateATP(bang)
 	endif
 	let url_tempname=tempname()."_ATP.html"
 " 	let g:url_tempname=url_tempname
-	let cmd="python ".s:URLquery_path." ".shellescape(url)." ".shellescape(url_tempname)
+	let cmd=g:atp_Python." ".s:URLquery_path." ".shellescape(url)." ".shellescape(url_tempname)
 " 	let g:cmd=cmd
 	call system(cmd)
 
@@ -1974,7 +1974,7 @@ function! <SID>UpdateATP(bang)
 	    endif
 	    let s:atp_tempname = tempname()."_ATP.tar.gz"
 	    let g:atp_debugUD_tempname = s:atp_tempname
-	    let cmd="python ".s:URLquery_path." ".shellescape(url)." ".shellescape(s:atp_tempname)
+	    let cmd=g:atp_Python." ".s:URLquery_path." ".shellescape(url)." ".shellescape(s:atp_tempname)
 	    if a:bang == "!"
 		echo "[ATP:] getting latest snapshot (unstable version) ..."
 	    else

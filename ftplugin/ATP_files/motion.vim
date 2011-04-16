@@ -282,6 +282,7 @@ function! s:showtoc(toc)
     " the current line number is linenumber+number
     " there are two loops: one over linenumber and the second over number.
     let numberdict	= {}
+    let s:numberdict	= numberdict
     unlockvar b:atp_Toc
     let b:atp_Toc	= {}
     " this variable will be used to set the cursor position in ToC.
@@ -448,7 +449,7 @@ function! s:showtoc(toc)
     " (current buffer)
 " 	let t:numberdict=numberdict	"DEBUG
 " 	t:atp_bufname is the full path to the current buffer.
-    let num		= get(numberdict, t:atp_bufname, 'no_number')
+    let num = get(numberdict, t:atp_bufname, 'no_number')
     if num == 'no_number'
 	call s:TOC("")
 	return
@@ -479,12 +480,48 @@ function! s:showtoc(toc)
     endif
     lockvar 3 b:atp_Toc
 endfunction
-" }}}
+" {{{3 ToCOpen()
+" This function returns toc buffer number if toc window is not open returns -1.
+function! <SID>ToCbufnr() 
+    return index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__')
+endfunction
+" {{{3 UpdateToCLine
+function! UpdateToCLine(...)
+    let toc_bufnr	= <SID>ToCbufnr()
+    let check_line 	= (a:0>=1 ? a:1 : -1) 
+    let g:check_line	= check_line 
+    if toc_bufnr == -1 || check_line != -1 && 
+		\ getline(line(".")+check_line) !~# '\\\%(part\|chapter\|\%(sub\)\{0,2}section\)\s*{'
+	return
+    endif
+    let cline  	= line(".")
+    let cbufnr 	= bufnr("")
+    let cwinnr	= bufwinnr("")
+    let g:cwinnr = cwinnr
+    let g:cbufnr = cbufnr
+    exe toc_bufnr."wincmd w"
+    let num 	= get(s:numberdict, t:atp_bufname, 'no_number')
+    if num == 'no_number'
+" Infinite loop error:
+" 	call s:TOC("")
+	exe cwinnr."wincmd w"
+	return
+    endif
+    let sorted	= sort(keys(t:atp_toc[t:atp_bufname]), "atplib#CompareNumbers")
+    for line in sorted
+	if cline>=line
+	    let num+=1
+	endif
+    keepjumps call setpos('.',[bufnr(""),num,1,0])
+    endfor
+"     exe bufwinnr(cbufnr)."wincmd w"
+    exe cwinnr."wincmd w"
+endfunction
 " This is User Front End Function 
-"{{{2 TOC
+"{{{3 TOC
 function! <SID>TOC(bang)
     " skip generating t:atp_toc list if it exists and if a:0 != 0
-    if &l:filetype != 'tex'    
+    if &l:filetype != 'tex' && &l:filetype != 'toc_atp'   
 	echoerr "Wrong 'filetype'. This command works only for latex documents."
 	return
     endif
@@ -499,7 +536,7 @@ endfunction
 nnoremap <Plug>ATP_TOC			:call <SID>TOC(1)<CR>
 
 " This finds the name of currently eddited section/chapter units. 
-" {{{2 Current TOC
+" {{{3 Current TOC
 " ToDo: make this faster!
 " {{{3 s:NearestSection
 " This function finds the section name of the current section unit with
@@ -890,7 +927,6 @@ function! <SID>GotoEnvironment(flag,count,...)
 	    " the 's' flag should be used only in the first search. 
 	    let flag=substitute(flag, 's', '', 'g') 
 	endif
-	echomsg "flag ".flag
 	if g:atp_mapNn
 	    let search_cmd 	= "S /"
 	    let search_cmd_e= "/ " . flag
@@ -928,6 +964,7 @@ function! <SID>GotoEnvironment(flag,count,...)
 	endif
     endfor
 
+    call UpdateToCLine()
     silent! call histadd("search", pattern)
     silent! let @/ 	 = pattern
     return ""
@@ -978,6 +1015,7 @@ function! <SID>GotoSection(bang, count, flag, secname, ...)
 	endif
     endfor
 
+    call UpdateToCLine()
     call histadd("search", pattern)
     let @/	= pattern
 endfunction
@@ -1014,6 +1052,7 @@ function! <SID>ggGotoSection(count,section)
     elseif a:section == "subsubsection"
 	let secname = '\\\%(part\|chapter\|section\|subsection\|subsubsection\)\>'
     endif
+    call UpdateToCLine()
     call <SID>GotoSection("", a:count, 'Ws', secname)
     call setpos("''",mark)
 endfunction
@@ -1027,6 +1066,7 @@ function! <SID>Input(flag)
     else
 	call search('^\([^%]\|\\\@<!\\%\)*' . pat, a:flag)
     endif
+    call UpdateToCLine()
     "     This pattern is quite simple and it might be not neccesary to add it to
     "     search history.
     "     call histadd("search", pat)
@@ -1654,7 +1694,7 @@ nnoremap <silent> <Plug>GotoPreviousPart	:<C-U>call <SID>GotoSection("", v:count
 onoremap <silent> <Plug>GotoPreviousPart	:<C-U>call <SID>GotoSection("", v:count1, "sb", "\\\\part\\s*{", 'vim')<CR>
 vnoremap <silent> <Plug>vGotoPreviousPart	m':<C-U>exe "normal! gv"<Bar>call search('\\\%(part\)\s*{', 'bW')<CR>
 
-command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PSSSec		:call <SID>PreviousSection('\\\%(subsubsection\|subsection\|section\|chapter\|part\)', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)
+command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PSSSec		:call <SID>GotoSection(<q-bang>, <q-count>, 'sb', '\\\%(\%(sub\)\{1,2}section\|section\|chapter\|part\)', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)
 command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PSSec		:call <SID>GotoSection(<q-bang>, <q-count>, 'sb', '\\\%(subsection\|section\|chapter\|part\)', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)
 command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PSec		:call <SID>GotoSection(<q-bang>, <q-count>, 'sb', '\\\%(section\|chapter\|part\)', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)
 command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PChap		:call <SID>GotoSection(<q-bang>, <q-count>, 'sb', '\\\%(chapter\|part\)', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)

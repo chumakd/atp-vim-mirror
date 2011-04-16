@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 15 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.11)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.2.12)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -97,6 +97,12 @@ changes:
 	to third environment. The mark ' is set to the starting position (so
 	this is the difference between 3>e and 3 times >e).
 
+	Motion commands, and mappings (like |CTRL-F|, |S-ScrollWheelUp|,
+	|CTRL-D|, etc) will update the highlighted chapter. If you do not want
+	the keys to be remaped set g:atp_MapUpdateToCLine to 0.  The keys |j|,
+	|k|, |gj| and |gk| are also remapped, if you have a defined map from
+	|j| to |gj| (or |k| to |gk|) it will be respected.
+
 	For XeTeX (and XeLaTeX) users the maps ]e, [e (to go to next/previous
 	error message) in a log file (see |atp-maps-log|) will work better.
 
@@ -130,6 +136,11 @@ changes:
 
 	|atp-gw| back (was gq for very short time (since ver. 9.2), which
 	I found to be not a good idea).
+
+	Some variables has changed the name |g:atp_LatexPackages| (from
+	g:atp_latexpackages), |g:atp_LatexClasses| (from g:atp_latexclasses),
+	|g:atp_ProjectLocalVariables| (from g:atp_cached_local_variables),
+	|g:atp_ProjectGlobalVariables| (from g:atp_cached_global_variables).
 
 							*atp-map-Gs*
 							*atp-map-Gc*
@@ -1180,7 +1191,7 @@ nmap gf
 	Found files (all not just matching ones) are stored in the variable
 	g:atp_Library. It is set by |globpath()| on g:atp_LibraryPath and then
 	filtered, only files which extensions are given in g:atp_OpenTypeDict
-	will be stored. This variable is restored by the history common file.
+	will be stored. This variable is restored by the global project script.
 	You can use {bang} "!" to regenerate the library if it has changed.
 	This is particularly useful as by default ATP remembers g:atp_Library in
 	the common project script (see |atp-ProjectScript|).
@@ -2298,7 +2309,7 @@ will be done during first completion - this is the default, if it is set to
 Note: Completion checks the preambule for definitions of LaTeX packages. If
 a supported package is present (for example: tikz) then the completion will
 contain additional commands. If you add a package or a class you should unlet
-corresponding variable: |g:atp_latexpackages| and |g:atp_latexclasses|.
+corresponding variable: |g:atp_LatexPackages| and |g:atp_LatexClasses|.
 
 							*atp-:ToggleTab*
 :ToggleTab
@@ -2754,16 +2765,15 @@ put it here).
 				 \ '\Bigl' : '\Bigr', 		'\biggl' : '\biggr' , 
 				 \ '\Biggl' : '\Biggr', 	'\' : '\' }
 <
-							*g:atp_latexpackages*
-							*g:atp_latexclasses*
+							*g:atp_LatexPackages*
+							*g:atp_LatexClasses*
 	The variables: >
-	g:atp_latexpackages
-	g:atp_latexclasses
+	g:atp_LatexPackages
+	g:atp_LatexClasses
 <	stores list of packages and classes in your tex distribution. They are
-	restored when you exit Vim from the common history file (see |atp-history-common|).
-
-	They are used for completion of the LaTeX commands \usepackage and
-	\documentclass.
+	restored when you exit Vim from the global project script (see
+	|atp-ProjectScript_global|).  They are used for completion of the LaTeX
+	commands \usepackage and \documentclass.
 
 	If you reinstall, add or remove tex classes/packages from your tex
 	distribution it is enough to unlet these variables. ATP will find new
@@ -2902,11 +2912,11 @@ bibtex documented above).
 							*atprc*
 $HOME/.atprc.vim (only on Unix/GnuLinux) or ftplugin/ATP_files/atprc.vim					
     A configuration file for ATP. You do not have to use autocommands to set
-    local-buffer variables, just place them here. The settings in atprc file
-    override the values in history files (|atp-history|).
+    local-buffer variables, just place them here. The settings in |atprc| file
+    override the values in the project script (|atp-ProjectScript|).
 
-Tip: If you want to see (almost) all the variables, type ':let g:atp-<CTRL+d>',
-and ':let b:<CTRL+d>'.
+Tip: If you want to see (almost) all the variables, type ':let g:atp_<CTRL_D>',
+and ':let b:atp_<CTRL_D>'.
 
 All buffer variables (see |b:var|), i.e. these which name begins with "b:",
 should be set in your |vimrc| or |atprc| file. If you want to use your vimrc file
@@ -2983,14 +2993,13 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	time), start with the main file and use gf (see |atp-gf|) to go to the
 	project file you want to edit. In this way all the project files will
 	have correctly set this variable. The value of this variable is used
-	by compilation functions. This variable is written in the history file
-	(see |atp-ProjectScript|). And when the history is on (see
-	|atp-ProjectScript|,
-	or set b:atp_History=1) it is restored between sessions. In this way,
-	next time, you can open any project file and the b:atp_MainFile
-	variable will be set to the correct value.
+	by compilation functions. This variable is written in the project
+	script (see |atp-ProjectScript|). And when the project script is on (see
+	|atp-ProjectScript|, or set |b:atp_ProjectScript|=1) it is restored between
+	sessions. In this way, next time, you can open any project file and
+	the b:atp_MainFile variable will be set to the correct value.
 
-	The history feature stores more variables: b:TreeOfFiles a dictionary
+	The project feature stores more variables: b:TreeOfFiles a dictionary
 	which contains the tree of input files, b:ListOfFiles - list of input
 	files, b:TypeDict dictionary of types of input files, where the type
 	is one of following: {preambule}, {input}, {bib}. The last variable is
@@ -3084,9 +3093,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
        If the project script is stored locally the it is easier to include it
        in a revision system (bzr, svn, etc.) and share it with collaborators.
 
-       The common history file (which stores two global variables:
-       g:atp_latexpackages, g:atp_latexclasses) is now
-       ~/.vim/ftplugin/ATP_files/common_var.vim 
+       The global project script (which, by default, stores global variables:
+       |g:atp_LatexPackages|, |g:atp_LatexClasses|, |g:atp_Library|) is now
+       '~/.vim/ftplugin/ATP_files/common_var.vim'.
 
        |atprc| file is executed before project script file (with local
        variables) and common_var.vim (with global variables) files are
@@ -3103,27 +3112,26 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	
 	Local and global variables are supported. The local variables which
 	are cached in this way are listed in 
-							*g:atp_cached_local_variables*
+							*g:atp_ProjectLocalVariables*
 >
-		let g:atp_cached_local_variables = [
-		\ 'b:atp_MainFile', 		'b:atp_History',
-		\ 'b:atp_LocalCommands', 	'b:atp_LocalColors',
-		\ 'b:atp_LocalEnvironments', 	'b:TreeOfFiles', 
-		\ 'b:ListOfFiles', 		'b:TypeDict', 
-		\ 'b:LevelDict', 		'b:atp_StarEnvMathDefault'
-		\ 'b:atp_StarEnvDefault', ]
-<	The each file will have separate history file which stores the values
-	of these variables.
-							*atp-ProjectScriptCommon*	
+    let g:atp_ProjectLocalVariables = [
+		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
+		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
+		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
+		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer"
+		\ ] 
+<	The each file will have separate project scrips which stores the
+	values of these variables.
+							*atp-ProjectScript_Global*	
 	There is also file for variables for all projects. It stores values of
 	global variables (by default it is "ftplugin/ATP_files/common_var.vim". 
 	The global variables that are written in this file are given in Vim
 	list: 
-    							*g:atp_cached_common_variables*
+    							*g:atp_ProjectGlobalVariables*
 >
-		let g:atp_cached_common_variables = [ 
-			\ 'g:atp_texpackages', 	
-			\ 'g:atp_texclasses', 
+		let g:atp_ProjectGlobalVariables = [ 
+			\ 'g:atp_LatexPackages', 	
+			\ 'g:atp_LatexClasses', 
 			\ 'g:atp_Library' ]
 <
 	If you want to disable this feature for some reason you can set: >
@@ -3131,13 +3139,13 @@ PROJECT SCRIPT						*atp-ProjectScript*
 <	or >
 		let b:atp_ProjectScript = 0
 <	if you want to disable this feature only for a given buffer. 
-	(The value of local variable overrides the value of global one!). 
-	Hint: (if you want to disable loading history for one file): 
+	(The value of local variable overrides the value of global one!).
+	Hint: (if you want to disable loading project script for one file): 
 	    In your .vimrc file you can set the local variable via
 	    autocommand group BufEnter or you can put an if statement in your
 	    |atprc| file: >
 		if expand("%:p") == <path_to_file>
-		    let b:atp_History = 0
+		    let b:atp_ProjectScript = 0
 		endif
 <	    or you can add to the project scrpit: 
 		 (1) write in its first line 'finish', or
@@ -3149,38 +3157,40 @@ PROJECT SCRIPT						*atp-ProjectScript*
 :DeleteProjectScript[!] [local/common]			*atp-:DeleteProjectScript*
 :ToggleProjectScript[!] [on/off]			*atp-:ToggleProjectScript*
 
-	which do the obvious thing (if g:atp_History=0 or b:atp_History=0 they
+	which do the obvious thing (if |g:atp_ProjectScript|=0 or |b:atp_ProjectScript|=0 they
 	will not work). The default value of the optional argument is "local".
-	:DeleteHistory [local] command (with optional argument [local]) deletes
-	the history file for the current buffer (only the local one), with
-	bang "!" it deletes also common history file. The bang of :WriteHistory
-	forces to write to history file even when history is turned off
-	(b:atp_History == 0 or !exists("b:atp_ProjectScript") && g:atp_ProjectScript == 0).
+	:DeleteProjectScript [local] command (with optional argument [local]) deletes
+	the project script file for the current buffer (only the local one), with
+	bang "!" it deletes also globa project scrip. The bang of
+	:WriteProjectScript forces to write to project script even when
+	project script is turned off (|b:atp_ProjectScript|==0 or
+	!exists("|b:atp_ProjectScript|") && |g:atp_ProjectScript|==0).
 
 	The command ':ToggleProjectScript [on/off]' turns on/off the feature
 	for this buffer (it sets |b:atp_ProjectScript|). When no argument is
 	given it will toggle the value. With bang it also sets the global
 	variable.  |b:atp_ProjectScript| is by default in the >
-	    g:atp_cached_local_variables 
+	    g:atp_ProjectLocalVariables 
 <	so it will be restored afterwards. |b:atp_ProjectScript| if defined
-	overrides the value of global variable g:atp_History. So you can set
+	overrides the value of global variable |g:atp_ProjectScript|. So you can set
 	in your atp file g:atp_ProjectScript = 0 and for some files using the
 	if-construction: >
 		let g:atp_ProjectScript = 0
 		if expand("%:t") == "myfile.tex"
-		    let b:atp_History = 1
+		    let b:atp_ProjectScript = 1
 		endif
 <	will turn on the feature only for myfile.tex. Something more elaborate
-	would be to set b:atp_History only for files with modification time
+	would be to set |b:atp_ProjectScript| only for files with modification time
 	less than two days for example.
 
-	Note: If you delete the history file for the current buffer it will be
-	written after exiting Vim, unless you turn off the history feature.
+	Note: If you delete the project script for the current buffer it will be
+	written after exiting Vim, unless you turn off the project feature.
 
 	The project script is disabled for files which full path matches
-	"texmf".  With the optional bang ':LoadProjectScript common' loads the
-	common project script also for them. :WriteHistory command will write
-	the history disregarding if the file is under texmf directory or not.
+	"texmf".  With the optional bang |atp-:LoadProjectScript| loads the
+	common project script also for them. |atp-:WriteProjectScript| command
+	will write the project script disregarding if the file is under texmf
+	directory or not.
 
 	Note: If you use this feature, you might need to use the commands:
 	|atp-:LocalCommands| and |atp-:InputFiles| which will update
@@ -3191,7 +3201,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	as well).
 
 	Note: Also when you add a package to tex you should remove the common
-	history file, so that the new packages will be added to completion
+	project scrip, so that the new packages will be added to completion
 	list. 
 
 								*atp-:S*
