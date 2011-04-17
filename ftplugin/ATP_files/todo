@@ -306,3 +306,6 @@ WINDOWS: Runtime error!
 	 R6034
 	 - An application has made an attempt to load the C runtime library incorrecly.
 	 - Please contact the application's supprt tema for more information.
+
+bibliograph (python) requirements:
+bibliograph-rendering, zope-schema, zope-component

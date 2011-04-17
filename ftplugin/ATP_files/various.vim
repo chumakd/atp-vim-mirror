@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 16 01:00  2011 W
+" Last Change: Sat Apr 16 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2165,8 +2165,8 @@ endif "}}}
 
 " COMMANDS AND MAPS:
 " Maps: "{{{1
-map <buffer> <Plug>CommentLines					:call CommentLine(1)<CR>
-map <buffer> <Plug>UnCommentLines 				:call CommentLine(0)<CR>
+map <buffer> <Plug>CommentLines					:call Comment(1)<CR>
+map <buffer> <Plug>UnCommentLines 				:call Comment(0)<CR>
 vmap <buffer> 	<Plug>WrapSelection				:<C-U>call <SID>WrapSelection('')<CR>i
 vmap <buffer> 	<Plug>InteligentWrapSelection			:<C-U>call <SID>InteligentWrapSelection('')<CR>i
 nnoremap <silent> <buffer> 	<Plug>ToggleStar		:call <SID>ToggleStar()<CR>

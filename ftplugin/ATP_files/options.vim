@@ -162,6 +162,13 @@ endif
 
 setl nrformats=alpha
 setl keywordprg=texdoc\ -m
+if maparg("K", "n") != ""
+    try
+	nunmap <buffer> K
+    catch E31:
+	nunmap K
+    endtry
+endif
 " Borrowed from tex.vim written by Benji Fisher:
     " Set 'comments' to format dashed lists in comments
     setlocal com=sO:%\ -,mO:%\ \ ,eO:%%,:%

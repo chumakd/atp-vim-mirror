@@ -3,7 +3,7 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " The do NOT DELETE the following line, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 16-04-11_18-04
+" Time Stamp: 17-04-11_11-09
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
 " Last Change: Sat Apr 16 01:00  2011 W

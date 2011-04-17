@@ -135,7 +135,7 @@ function! atplib#CallBack(mode,...)
     let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
     let BIBTEX = ( BIBTEX == "True" || BIBTEX == 1 ? 1 : 0 )
     if g:atp_debugCB
-	let g:BIBTEX = BIBTEX
+	" WINDOWS NOT COMPATIBLE:
 	redir! > /tmp/atp_callback
 " 	silent echo "BIBTEX =".BIBTEX
     endif
@@ -226,9 +226,9 @@ function! atplib#CallBack(mode,...)
 	    let &l:cmdheight 	= g:atp_DebugModeCmdHeight
 		let showed_message 	= 1
 		if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
-		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . ".", "ErrorMsg", "before"])
+		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . ".", (b:atp_TexReturnCode ? "ErrorMsg" : "Normal"), "before"])
 		else
-		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . " output file not reloaded.", "ErrorMsg", "before"])
+		    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code " . b:atp_TexReturnCode . " output file not reloaded.", (b:atp_TexReturnCode ? "ErrorMsg" : "Normal"), "before"])
 		endif
 	    if !t:atp_QuickFixOpen
 		let l:clist		= 1
