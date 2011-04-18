@@ -584,7 +584,11 @@ function! ATPRunning() "{{{
 	" This is very fast:
 	call LatexRunning()
 " 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs) 
-	let atp_running= len(b:atp_LatexPIDs) 
+	if exists("b:atp_LatexPIDs")
+	    let atp_running= len(b:atp_LatexPIDs) 
+	else
+	    return ''
+	endif
 	" This is slower (so the status line is updated leter)
 " 	call atplib#LatexRunning()
 " 	let atp_running= len(b:atp_LatexPIDs)

@@ -1312,6 +1312,7 @@ function! GotoFile(bang,file,...)
 	" So that bib, cls, sty files will have their file type (bib/plaintex).
 	let filetype	= &l:filetype
 	let old_file	= expand("%:p")
+	let atp_ErrorFormat	= b:atp_ErrorFormat
 	let atp_LastLatexPID 	= ( exists("b:atp_LastLatexPID") ? b:atp_LastLatexPID : 0 )
 	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") 	? b:atp_LatexPIDs : [] )
 	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") ? b:atp_ProgressBar : {} )
@@ -1329,6 +1330,11 @@ function! GotoFile(bang,file,...)
 	" Set the main file variable and pass the TreeOfFiles variables to the new
 	" buffer.
 	call RestoreProjectVariables(projectVarDict)
+	if exists("b:atp_ErrorFormat")
+	    unlockvar b:atp_ErrorFormat
+	endif
+	let b:atp_ErrorFormat	= atp_ErrorFormat
+	lockvar b:atp_ErrorFormat
 	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]	= deepcopy([tree_d, file_l_orig, type_d, level_d ])
 	if exists("b:atp_ProgressBar")
 	    unlockvar b:atp_ProgressBar

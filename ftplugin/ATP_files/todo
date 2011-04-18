@@ -309,3 +309,5 @@ WINDOWS: Runtime error!
 
 bibliograph (python) requirements:
 bibliograph-rendering, zope-schema, zope-component
+
+Todo: g:atp_XpdfSleep if 0 ...

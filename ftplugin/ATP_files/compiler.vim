@@ -186,13 +186,13 @@ function! <SID>SyncShow( page_nr, y_coord)
     endif
 endfunction "}}}
 function! <SID>SyncTex(mouse, ...) "{{{
-    let g:debug 	= (exists("g:debug")?g:debug+1:1)
+"     let g:debug 	= (exists("g:debug")?g:debug+1:1)
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
     let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
     " Mouse click <S-LeftMouse> is mapped to <LeftMouse>... => thus it first changes
     " the cursor position.
     let [ line, col ] 	= [ line("."), col(".") ]
-    let [ g:line, g:col ] 	= [ line, col ]
+"     let [ g:line, g:col ] 	= [ line, col ]
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
     let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
@@ -206,7 +206,7 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
 	"There is a bug in xpdf. We need to sleep between sending commands to it.:
-	let sleep	= 'sleep '.string(g:atp_XpdfSleepTime).'s;'
+	let sleep    = ( g:atp_XpdfSleepTime ? 'sleep '.string(g:atp_XpdfSleepTime).'s;' : '' )
 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x.")&"
 " 	let sync_cmd = sync_cmd_page.";".sync_cmd_y.";".sync_cmd_x
 	if !dryrun
@@ -214,10 +214,10 @@ function! <SID>SyncTex(mouse, ...) "{{{
 " 	    redraw!
 	    call <SID>SyncShow(page_nr, y_coord)
 	endif
-	let g:sync_cmd_page 	= sync_cmd_page
-	let g:sync_cmd_y 	= sync_cmd_y
-        let g:sync_cmd_x 	= sync_cmd_x
-	let g:sync_cmd = sync_cmd
+" 	let g:sync_cmd_page 	= sync_cmd_page
+" 	let g:sync_cmd_y 	= sync_cmd_y
+"         let g:sync_cmd_x 	= sync_cmd_x
+" 	let g:sync_cmd = sync_cmd
     elseif b:atp_Viewer == "okular"
 	let [ page_nr, y_coord, x_coord ] = <SID>GetSyncData(line, col)
 	" This will not work in project files. (so where it is mostly needed.) 
@@ -228,7 +228,7 @@ function! <SID>SyncTex(mouse, ...) "{{{
 " 	    redraw!
 	    call <SID>SyncShow(page_nr, y_coord)
 	endif
-	let g:sync_cmd = sync_cmd
+" 	let g:sync_cmd = sync_cmd
 "     elseif b:atp_Viewer == "evince"
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
@@ -243,10 +243,10 @@ function! <SID>SyncTex(mouse, ...) "{{{
 	if !dryrun
 	    call system(sync_cmd)
 	endif
-	let g:sync_cmd = sync_cmd
+" 	let g:sync_cmd = sync_cmd
     else
 	let sync_cmd=""
-	let g:sync_cmd = sync_cmd
+" 	let g:sync_cmd = sync_cmd
     endif
     return
 endfunction 
@@ -1643,9 +1643,9 @@ nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("!", "verbose")<CR>
 function! <SID>SetErrorFormat(...)
 
     let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
-    unlockvar g:atp_ErrorFormat
-    let g:atp_ErrorFormat = carg
-    lockvar g:atp_ErrorFormat
+    unlockvar b:atp_ErrorFormat
+    let b:atp_ErrorFormat = carg
+    lockvar b:atp_ErrorFormat
 "     let l:cgetfile = ( a:0 >=2 ? a:2 : 1 )
 
     let &l:errorformat=""

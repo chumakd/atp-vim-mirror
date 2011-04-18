@@ -13,6 +13,9 @@ if g:atp_MapCC
     imap <buffer> <c-c> <c-[>
 endif
 
+cmap <buffer> <C-Space> \_s\+
+cmap <buffer> <C-_> \_s\+
+
 if g:atp_MapUpdateToCLine
     nmap <buffer> <silent> <C-F> <C-F>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <S-Down> <S-Down>:call UpdateToCLine()<CR>

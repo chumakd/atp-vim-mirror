@@ -338,9 +338,9 @@ endif
 if !exists("g:atp_DefaultErrorFormat") || g:atp_reload
     let g:atp_DefaultErrorFormat = "erc"
 endif
-unlockvar g:atp_ErrorFormat
-let g:atp_ErrorFormat = g:atp_DefaultErrorFormat
-lockvar g:atp_ErrorFormat
+unlockvar b:atp_ErrorFormat
+let b:atp_ErrorFormat = g:atp_DefaultErrorFormat
+lockvar b:atp_ErrorFormat
 if !exists("g:atp_DefiSearchMaxWindowHeight") || g:atp_reload
     let g:atp_DefiSearchMaxWindowHeight=15
 endif
@@ -799,9 +799,15 @@ function! SaveProjectVariables(...)
 endfunction
 function! RestoreProjectVariables(variables_Dict)
     for var in keys(a:variables_Dict)
- 	let g:cmd =  "let " . var . "=" . string(a:variables_Dict[var])
-" 	echo g:cmd
-	exe "let " . var . "=" . string(a:variables_Dict[var])
+ 	let cmd =  "let " . var . "=" . string(a:variables_Dict[var])
+	try
+	    exe cmd
+	catch E741:
+	    "if the variable was locked
+	    exe "unlockvar ".var
+	    exe cmd
+	    exe "lockvar ".var 
+	endtry
     endfor
 endfunction
 " }}}1

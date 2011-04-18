@@ -205,7 +205,7 @@ function! atplib#CallBack(mode,...)
 	endif
 
 	cclose
-	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returned without errors (atp_ErrorFormat=".g:atp_ErrorFormat.")".(g:atp_DefaultDebugMode=='silent'&&atp_DebugMode!='silent'?"\ngoing out of debuging mode.": "."), "Normal", "after"]) 
+	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returned without errors (atp_ErrorFormat=".b:atp_ErrorFormat.")".(g:atp_DefaultDebugMode=='silent'&&atp_DebugMode!='silent'?"\ngoing out of debuging mode.": "."), "Normal", "after"]) 
 	let showed_message 	= 1
 	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
 	if g:atp_DefaultDebugMode == "silent" && t:atp_QuickFixOpen

@@ -90,6 +90,15 @@ This was quite active time for ATP, there are a lot of nice (I hope useful)
 changes:
 
 >
+ Changes in version 9.4
+<
+ cmap <buffer> <C-Sapce> \_s\+
+ cmap <buffer> <C-_> \_s\+
+ 	The <C-Space> map doesn't work in Vim (at least for me) but works in gVim. In
+	Vim, and gVim aswell, you can use |atp-Q/|, |atp-Q?| or |atp-<F2>|
+	(there <Space> is mapped to \_s\+).
+
+>
   Changes in versions 9.3
 <
 	The commands |atp-:F|, |atp-:B|, and the maps |atp->e| and |atp-<e|
@@ -122,13 +131,16 @@ changes:
 	The command |atp-:WrapSelection| uses |<f-args>| instead of |<args>|.
 
 
+								|atp-Q/|
+								|atp-Q?|
+								|atp-<F2>|
 	Q/ and Q? to enter command-line window in which <space> is mapped to
 	'\_s\+'.
 
 	<F2> acts as 'Q/i' (i.e. enters insert mode).
 	If you want Q/ and Q? enter insert mode as well you can set: >
 	    nmap Q/		q/:call ATP_CmdwinToggleSpace('on')<CR>i
-	    nmap Q?		q/:call ATP_CmdwinToggleSpace('on')<CR>i
+	    nmap Q?		q?:call ATP_CmdwinToggleSpace('on')<CR>i
 <	in your |atprc| or |vimrc| file.
 
 							*atplib-:KillAll*
