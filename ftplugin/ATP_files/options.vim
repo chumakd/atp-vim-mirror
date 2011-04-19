@@ -298,6 +298,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if exists("g:atp_BibCompiler")
+    let g:atp_BibCompiler = "bibtex"
+endif
 if exists("g:atp_latexpackages")
     " Transition to nicer name:
     let g:atp_LatexPackages = g:atp_latexpackages
@@ -312,7 +315,10 @@ if !exists("g:atp_Python")
     " This might be a name of python executable or full path to it (if it is not in
     " the $PATH) 
     if has("win32") || has("win64")
-	let g:atp_Python = "python.exe"
+	" TO BE TESTED:
+	" see why to use "pythonw.exe" on:
+	" "http://docs.python.org/using/windows.html".
+	let g:atp_Python = "pythonw.exe"
     else
 	let g:atp_Python = "python"
     endif

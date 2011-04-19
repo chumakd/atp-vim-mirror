@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 17 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 19 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.1)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -92,11 +92,15 @@ changes:
 >
  Changes in version 9.4
 <
- cmap <buffer> <C-Sapce> \_s\+
- cmap <buffer> <C-_> \_s\+
- 	The <C-Space> map doesn't work in Vim (at least for me) but works in gVim. In
-	Vim, and gVim aswell, you can use |atp-Q/|, |atp-Q?| or |atp-<F2>|
-	(there <Space> is mapped to \_s\+).
+ 	|b:atp_TexOptions| is a comma separeted list of TeX compiler options.
+	If you use |g:atp_Compiler|="bash" this might be just a white space
+	separated list.
+
+ cmap <buffer> <C-Sapce> 	\_s\+
+ cmap <buffer> <C-_> 		\_s\+
+ 	The <C-Space> map doesn't work in Vim, instead <C-@> is used which
+	works as <C-Space>. In Vim, and gVim aswell, you can also use |atp-Q/|,
+	|atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
 
 >
   Changes in versions 9.3
@@ -2918,11 +2922,11 @@ let b:atp_TexFlavor	= "tex"
 	latex document but using $$:$$ is latex is not recommended it is know
 	to break some latex specific things).
 
-let b:atp_TexOptions	= ""
-	If you want to set some additional options to your tex compiler you can
-	use this variable, note that -output-directory, and -mode, are
-	already used. You can use this to make reverse searching with xdvi see
-	|atp-xdvi|.
+let b:atp_TexOptions	= "-synctex=1"			*b:atp_TexOptions*
+	This is a comma ',' sepparated list of TeX compiler options. If you
+	want to set some additional options to your tex compiler you can use
+	this variable, note that '-output-directory' and '-interaction' are
+	set by ATP. 
 
 							*b:atp_OutDir*
 let b:atp_OutDir	= fnameescape(fnamemodify(resolve(b:atp_MainFile,":h")) . "/"

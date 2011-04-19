@@ -531,7 +531,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     let g:ml_debug 	= ""
 
     let mode 		= ( g:atp_DefaultDebugMode == 'verbose' ? 'debug' : g:atp_DefaultDebugMode )
-    let tex_options	= " -interaction=nonstopmode -output-directory=" . fnameescape(b:atp_OutDir) . " " . b:atp_TexOptions . " "
+    let tex_options	= " -interaction=nonstopmode -output-directory=" . fnameescape(b:atp_OutDir) . " " . substitute(b:atp_TexOptions, ',', ' ', 'g') . " "
 
     " This supports b:atp_OutDir
     let saved_cwd	= getcwd()
@@ -769,8 +769,8 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 
     if ( condition_force && a:force == "!" ) || ( condition_noforce && a:force == "" )
 	  let cmd	= ''
-	  let bib_cmd 	= 'bibtex ' 	. fnameescape(auxfile) . ' ; '
-	  let idx_cmd 	= 'makeindex ' 	. fnameescape(idxfile) . ' ; '
+	  let bib_cmd 	= g:atp_BibCompiler.' '.fnameescape(auxfile) . ' ; '
+	  let idx_cmd 	= 'makeindex '.fnameescape(idxfile) . ' ; '
 	  let message	=   "Making:"
 	  if ( bib_condition_force && a:force == "!" ) || ( bib_condition_noforce && a:force == "" )
 	      let bib_msg	 = ( bibtex  ? ( did_bibtex == 0 ? " [bibtex,".Compiler."]" : " [".Compiler."]" ) : " [".Compiler."]" )
@@ -1021,6 +1021,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
+		\ ." --bibcommand ".g:atp_BibCommand
 		\ ." --bibliographies ".shellescape(bibliographies)
 		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
@@ -1210,8 +1211,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 "	SET THE COMMAND 
 	let interaction = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
 	let variable	= ( a:verbose!="verbose" ? substitute(b:atp_TexCompilerVariable, ';', ' ', 'g') : '' ) 
-	let comp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " -interaction=" . interaction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
-	let vcomp	= variable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions  . " -interaction=". interaction . " -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
+	let comp	= variable . " " . b:atp_TexCompiler . " " . substitute(b:atp_TexOptions, ',', ' ','g') . " -interaction=" . interaction . " -output-directory=" . shellescape(tmpdir) . " " . shellescape(a:filename)
+	let vcomp	= variable . " " . b:atp_TexCompiler . " " . substitute(b:atp_TexOptions, ',', ' ','g')  . " -interaction=". interaction . " -output-directory=" . shellescape(tmpdir) .  " " . shellescape(a:filename)
 	
 	" make function:
 " 	let make	= "vim --servername " . v:servername . " --remote-expr 'MakeLatex\(\"".tmptex."\",1,0\)'"
@@ -1545,7 +1546,7 @@ inoremap <silent> <Plug>iATP_TeXVerbose		<Esc>:<C-U>call <SID>TeX(v:count1, "", 
 "}}}
 "{{{ Bibtex
 function! <SID>SimpleBibtex()
-    let bibcommand 	= "bibtex "
+    let bibcommand 	= g:atp_BibCompiler." "
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let auxfile		= fnamemodify(resolve(atp_MainFile),":t:r") . ".aux"
     " When oupen_out = p (in texmf.cnf) bibtex can only open files in the working
