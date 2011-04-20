@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 19 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.1)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.2)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -9,8 +9,8 @@ If you found this plugin useful or you have any kind of problems with running
 it or some ideas to share, you are cordially invited to write to me:
 mszamot@gmail.com. Voting at Vim site is also welcome ;) .
 
------------------------------------------------------------------------------
-			Abstract
+=============================================================================
+			    ABSTRACT ~
 
 This is a filetype plugin for Vim to comfortably write TeX (LaTeX, PdfLaTeX)
 documents, which provides functionality not met in other such plugins. It
@@ -26,9 +26,9 @@ nonstandard psutil library, see |atp-requirements-python| how to get it),
 pdffonts available in the package 'app-text/poppler' (at least in Gentoo).
 Another good tool is texdoc, which is a part of TexLive - these days standard
 TeX distribution for Linux, and MikTeX on Windows.
-------------------------------------------------------------------------------
+==============================================================================
 
-FEATURES INCLUDE:
+FEATURES INCLUDE: ~
 -----------------
 * background compilation with debugging mode 
 * command to make the document (cross references, references, index, tables
@@ -53,7 +53,48 @@ FEATURES INCLUDE:
  	See |atp-:FontSearch|, and |atp-:FontPreview|,
 * indentation
 
------------------------------------------------------------------------------
+==============================================================================
+SOURCEFORGE						*atp-sourceforge*
+
+  - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
+    http://sourceforge.net/projects/atp-vim/
+
+DONATE     						*atp-donate*
+    You can [DONATE] for this project through your [PayPal] account (my email
+    is <mszamot [AT] gmail [dot] com>). This will be highly appreciated. You
+    can also feel like you are supporting my [PhD] in Mathematics :). Whether
+    you donate or not you are always cordially invited to give suggestions,
+    feature requests, bug reports or just to write that you like it or not :).
+							Thank You. ~
+
+    Note: The donations are accepted thruogh PayPal, if you are from Europe
+    and you want to donate Euro, use your PayPal account rather than
+    SourceForge link where you cannot donate Euro (avoiding twice money
+    exchange).
+
+  							*atp-mailing-list*
+  - There is a mailing list which will serve for both side communications:
+    feature requests, bug reports, suggestions. You can subscribe at:
+    https://lists.sourceforge.net/lists/listinfo/atp-vim-list
+
+  							*atp-wiki-page*
+  - There is also a new wiki page: (as for now it only includes features of
+    ATP - it looks nice :)
+    http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
+
+  - For detailed list of changes you can look at:
+    http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/trunk/?sortby=rev&view=log
+
+  - Project news can be tracked through sourceforge watch feature (you need
+    sourecforge account)
+
+  - SourceForge hosts stable releases (also available on Vim web page) but
+    also snapshots of unstable developed new version. The snaphots might
+    contains fixes and new features which might not yet work well, or might
+    change (commands, maps, etc ...).
+    
+
+==============================================================================
 			TABLE OF CONTENTS			*atp*
                                                 		*atp-help-toc*
 	|atp-news|			News
@@ -86,9 +127,6 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 ================================================================================
 NEWS							*atp-news*
 
-This was quite active time for ATP, there are a lot of nice (I hope useful)
-changes:
-
 >
  Changes in version 9.4
 <
@@ -101,6 +139,9 @@ changes:
  	The <C-Space> map doesn't work in Vim, instead <C-@> is used which
 	works as <C-Space>. In Vim, and gVim aswell, you can also use |atp-Q/|,
 	|atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
+
+ nmap <LocalLeader>e
+ 	To get list of errors with current |b:atp_ErrorFormat|.
 
 >
   Changes in versions 9.3
@@ -205,34 +246,6 @@ nmap \u, vmap \u
 >
   Changes in versions 9 & 9.1 & 9.2
 <
-
-SOURCEFORGE						*atp-sourceforge*
-
-  - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
-    http://sourceforge.net/projects/atp-vim/
-
-DONATE    						*atp-donate*
-    You can DONATE for this project (on the project web page above). This will
-    be highly appreciated, and the money will be used to cover some vary basic
-    costs (internet access, hardware updates). You can also feel like you are
-    supporting my PhD in mathematics :). Whether you donate or not you are
-    always cordially invited to give suggestions, feature requests, bug
-    reports or just to write that you like it or not :).
-							Thank You.
-
-  							*atp-mailing-list*
-  - There is a mailing list which will serve for both side communications:
-    feature requests, bug reports, suggestions, but also ANNOUNCES of new
-    releases. You can subscribe at:
-    https://lists.sourceforge.net/lists/listinfo/atp-vim-list
-
-  							*atp-wiki-page*
-  - There is also a new wiki page: (as for now it only includes features of
-    ATP - it looks nice :)
-    http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
-
-  - For detailed list of changes you can look at:
-    http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/trunk/?sortby=rev&view=log
 
 NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 9.2:
@@ -609,7 +622,7 @@ note on using CTRL-C (|i_CTRL-C|) in Vim:
     possible (at least theoretically) to make it work on the fly, I found
     a bug which I could not resolve :(.
 
-Coming back to compilation ...
+Coming back to compilation ... ~
 
 Tex compiler is run with one options:
 	-output-directory 
@@ -644,7 +657,7 @@ directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
 forth between you |b:atp_OutDir| and the temporary directory)
 
-							*atp-callback*
+CALL BACK AND DEBUG MODE				*atp-callback*
 							*atp-debug-mode*
 	By default the call back mechanism is turned on (g:atp_callback=1)
 
@@ -727,7 +740,7 @@ g:atp_DebugModeQuickFixHeight = 8
 	 '|<LocalLeader>|D' for 'Debug' mode (jump to first error),
 	 '|<LocalLeader>|l' uses the default mode.
 	 						*g:atp_DefaultDebugMode*
-> 
+>
  let g:atp_DefaultDebugMode = 'silent'
 < 	This is the default debug mode in which background compilation will
 	run. It can be set to 'debug', setting it to 'verbose' will have the
@@ -779,8 +792,6 @@ reloaded).
 There is also a variable which stores the last command which executed
 your tex compiler, see |g:atp_TexCommand|.   
 
-Below I explain commands (functions) which are accessible: 
-
 :{runs}TEX[!] [debug_mode]				*atp-:TEX*
 map \l, map \d
 	If anyway you want to run TeX yourself but you do not want to see the
@@ -820,11 +831,10 @@ map \l, map \d
 	debug mode).
 
 :DTEX 							*atp-:DTEX*
-map <F5>,imap <F5> 
+map \d 
 	This is equivalent to ':TEX debug'.
 
-							*atp-:MakeLatex*
-:MakeLatex[!]
+:MakeLatex[!]						*atp-:MakeLatex*
 	With one command you can make your whole document: cross references,
 	bibliography (with or without bibtex), index, table of contents, table
 	of figures, table of theorems ([ntheorem package]), table of
@@ -844,6 +854,7 @@ map <F5>,imap <F5>
 	only).
 
 :ShowErrors [flag]					*atp-:ShowErrors*
+nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 	This command shows error/warning messages. It sets the |'errorformat'|
 	variable accordingly to the optional [flag] argument, which is a word
 	made of letters:
@@ -879,11 +890,12 @@ g:atp_DefaultErrorFormat = 'erc'
 
 ShowErrors maps:					*atp-:ShowErrors-maps* 
 
-<F6>+e			to see all errors 	(:ShowErrors e)
-<F6>+w			to see all warnings	(:ShowErrors w)
-<F6>+r			to see warnings coming	(:ShowErrors rc) 
+<LocalLeader>e		view errors with current |b:atp_ErrorFormat|	(:ShowErrors)
+<F6>+e			to see all errors 			      (:ShowErrors e)
+<F6>+w			to see all warnings			      (:ShowErrors w)
+<F6>+r			to see warnings coming			      (:ShowErrors rc) 
 			from references or citations  
-<F6>+f			to see font warnings 	(:ShowErrors f)
+<F6>+f			to see font warnings 			      (:ShowErrors f)
 
 this is not a texloganalyzer mapping but it is a good place to mention it:
 <F6>+l			to open log file in a new split window
@@ -1250,7 +1262,7 @@ map <F6>d
 	find it.
 
 							*atp-:WrapSelection*
-:WrapSelection {beginWrapper}, [endWrapper], [cursor_pos], [new_lines]
+:WrapSelection {beginWrapper} [endWrapper] [cursor_pos] [new_lines]
 
 	Puts selected text inside begin_wrapper: [endWrapper] and sets the
 	cursor position according to the variables [cursor_pos]. Possible values
@@ -1723,6 +1735,7 @@ map <F4>		environment name
 :ReloadATP 
     Reloads ATP plugin, both variables and functions (this is done mainly for
     development).
+
 ================================================================================
 TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 
@@ -1825,11 +1838,12 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 		You may want to have a map: >
 				:au FileType toc_atp nnoremap dd :DeleteSection<CR>
 <		this can be put in your '$HOME/.atp.vim' configuration file.
+
 ================================================================================
 SEARCHING IN BIB FILES 		                       		 *atp-bibsearch*
 
 		___________________________
-		Table of Contents:
+		Table of Contents: ~
 		|atp-BibSearch|
 		|atp-bibpatterns|
 		|atp-bibflags|
@@ -1848,7 +1862,7 @@ SEARCHING IN BIB FILES 		                       		 *atp-bibsearch*
 			|b:atp_BibFiles|
 
 		____________________________
-		Naming Conventions:	
+		Naming Conventions: ~
 
 		@article{<label>,					\	
 			author = { .... },		<-- bib entry   | 
@@ -2145,8 +2159,9 @@ map c, map y, map p
 	|atp-:DefiSearch| (default is 15).
 
 								
-								*atp-bibsearch-variables*
-SOME VARIABLES							*atp-variables-bib*
+=============================================================================
+SOME VARIABLES						*atp-bibsearch-variables*
+							*atp-variables-bib*
 	All the values of important variables can be shown by ShowOption
 	command.
 
@@ -2156,6 +2171,7 @@ SOME VARIABLES							*atp-variables-bib*
 <	This variable is a list and you can put here additional bib files.
 	They will be parsed by the BibSearch/BibChoose functions.
 
+INTERNALS: ~
 	The following variables you can see using the ShowOptions command (see
 	|atp-ShowOptions|). >
  s:bibfiles
@@ -2172,8 +2188,8 @@ SOME VARIABLES							*atp-variables-bib*
 
 -----------------------------------------------------------------------------------
 								*atp-bibsearch-comments*
-	Please do not hesitate to report any bug to me:
-	mszamot@gmail.com 							
+	Please do not hesitate to report any bug to the mailing list
+	|atp-mailing-list|.
 	
 	The algorithm will work only if all kind of bib entries of your bib
 	file are included in the list g:bibentries. However, changing just
@@ -2181,14 +2197,13 @@ SOME VARIABLES							*atp-variables-bib*
 	s:search) will produce correct output, but the function which displays
 	found entries, will not know how to work with the new entries. One
 	would have to add an entry to the dictionary 'g:bibflagsdict'. If
-	it is the case, please let me know: mszamot [AT] gmail [DOT] com  
+	it is the case, please let me know: |atp-mailing-list|.  
 
 	As you can see entries of the type '@string' which can be used in bib
 	files are not supported (i.e. there is no function which substitutes
 	the variables defined in @string to their values), but it is doable.
 			@string{ Name = Value }
 			
-
 ================================================================================
 COMPLETION			                        *atp-completion*
 
@@ -2244,8 +2259,8 @@ nmap, imap `<Tab>
 
 
 COMPLETION MODES		                       	*atp-completion-modes*
-
-	commands					*atp-completion-commands*
+							*atp-completion-commands*
+	commands ~
 		if g:atp_check_if_math_mode = 1 then the pull of commands
 		contains math commands only if there you are inside a math
 		environment. This works perfectly if you switch from $:$ and
@@ -2327,7 +2342,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 							*atp-completion-ref*
 							*atp-completion-label*
 							*atp-completion-cite*
-	ref/label/cite
+	ref/label/cite ~
 		For label completion puts short names, for ref and eqref
 		commands the completions are the labels found in all files
 		associated to the main file (the plugin searches the input
@@ -2385,7 +2400,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		the document class).
 
 							*atp-completion-brackets*
-	brackets					
+	brackets ~
 		Closing of brackets {:},{:},[:],(:) (also closes math modes \(:\) and
 		\[:\]). 
 		Relevant variables are: g:atp_bracket_dict a dictionary of
@@ -2394,9 +2409,9 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		which contains all the sizes of brackets in latex plus a pair
 		'\' : '\', for closing the math modes: \(:\), \[:\] and the
 		brackets \{:\}.
-															
-	environments					*atp-closing-environments*
+							*atp-closing-environments*
 							*atp-completion-env*
+	environments ~
 		Completes after '\begin{' and '\end{'. For example
 		'\begin{cen<Tab>' will give '\begin{center}' 
 		But '\begin{theorem}<Tab>' or
@@ -2414,8 +2429,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		current cursor position is in that line (sometimes one might
 		want to have a definition which only opens an environment).
 
-		EXAMPLES:
-				
+		Examples: ~
 			(the <Tab> indicates in which position the
 			<Tab> can be pressed to get the described
 			behaviour).
@@ -2507,13 +2521,13 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		support for nested environments then!
 
 							*atp-completion-abbreviations*
-	abbreviations						
+	abbreviations ~
 		There is tab completion for insert mode abbreviation names
 		(use <ctrl-y> to choose one from the list and then type
 		<space>, just typing <space> should also work).
 
 							*atp-completion-fontdeclaration*
-	font declarations				
+	font declarations ~
 		This is completion for the commands 
 		    \usefont{<encoding>}{<font_familly>}{<font_series>}{<font_shape>},
 		    \fontencoding{<encoding>},
@@ -2538,12 +2552,12 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		<font_shape> for this font (in the above encoding) is found.
 		
 							*atp-completion-bibstyle*
-	bibstyle
+	bibstyle ~
 		Completion for the command '\bibliographystyle{'. Finds all
 		"bst" files available in your tex distribution. 
 
 							*atp-completion-documentclass*
-	documentclass
+	documentclass ~
 		Completion for the command '\documentclass'. Returns list of
 		all classes available in your distribution.
 
@@ -2877,7 +2891,7 @@ HOW TO CONFIGURE ATP TO YOUR NEEDS                      *atp-configure*
 
 There are several options you can set, and they might be set in your Vimrc
 file. The default values are given below (except the completion setup and
-bibtex documented above).
+bibtex documented above). Note: not all variables are listed below.
 							*atprc*
 $HOME/.atprc.vim (only on Unix/GnuLinux) or ftplugin/ATP_files/atprc.vim					
     A configuration file for ATP. You do not have to use autocommands to set
@@ -3120,7 +3134,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		 (1) write in its first line 'finish', or
 		 (2) include in it 'let |b:atp_ProjectScript| = 0'.
 
-	There are these commands:
+	There are these commands: ~
 :LoadProjectScript[!] [local/common]			*atp-:LoadProjectScript*
 :WriteProjectScript[!] [local/common]			*atp-:WriteProjectScript*
 :DeleteProjectScript[!] [local/common]			*atp-:DeleteProjectScript*
@@ -3238,8 +3252,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	The pattern can be '\\input'. Then it goes recursively to the first
 	input line. 
 	
-							*atp-:NInput* 	*atp-}i*   *atp-]gf*
-							*atp-:PInput* 	*atp-{i*   *atp-[gf*
+							*atp-:NInput* 	*atp->i*   *atp->gf*
+							*atp-:PInput* 	*atp-<i*   *atp-<gf*
 	Now it also doesn't search inside commented input files. There two
 	commands:
 :NInput, nmap ]gf, nmap }i
@@ -3344,26 +3358,6 @@ PROJECT SCRIPT						*atp-ProjectScript*
 <	If the function which calls TeX compiler do not see that you are
 	viewing the output file it will open it for you if b:atp_OpenViewer=1.
 	Otherwise, this feature is disabled.
-							*g:rmcommand*
->
- let g:rmcommand		= "perltrash"			
-<	Used by function: Delete() (map <F6>d imap <F6>d)	
-
-	If you have another 'trash can' program you can use it here, if you do
-	not have it you can use "rm" (at your own risk). It is used to delete
-	the files produced by (La)TeX (see |apt-Delete()|). The function
-	Delete() will remove all files in the output directory (see
-	|b:atp_OutDir|), which ends with an extension defined in the list
-	|g:atp_tex_extensions|. If you set:
->
-	let g:rmcommand=''
-<
-	then the function Delete() (see |apt-Delete()|) will use the Vim
-	|delete()| command, and will delete only the files produced by the
-	current '.tex' file. The temporary directory is cleared by rm command.
-
-	The program 'perltrash' is in the package app-misc/perltrash (at least
-	for Gentoo).
 >
  let g:atp_delete_output	= 0
 <	If set to 1 then Delete function (map <F6>d) will delete also the
@@ -3761,6 +3755,10 @@ DEBUGGING						*atp-errors*
  This section describes some limitation of ATP (as you see, this section is
  not written, but the aim is to make it disappear anyway ;).
 
+ There are many debug variables with names g:atp_debug{fname} where {fname} is
+ a shortname of the function for which it will turn on the debug info. These
+ variables are documented in ftplugin/ATP_files/options.vim file.
+
 							*atp-errors-bibsearch*
 A possible error which may occur using the :BibSearch commands has a simple
 cause: we count number of brackets '()', '{}' and '"' (but nor '\"') to see
@@ -3985,7 +3983,7 @@ Xdvi								*atp-Viewers-Xdvi*
 	    http://Vim.wikia.com/wiki/Vim_can_interact_with_xdvi
 
 Zathura							
-	Perfectly works.
+	Perfectly works (but there is no reverse/inverse searching).
 
 Mupdf
 	It is the fastest pdf viewer program ever made, why? because it
@@ -4152,27 +4150,14 @@ links:
 ================================================================================
 FINAL REMARKS                               			*atp-remarks*
 	
-	To see some messages that are issued you can use :messages command
-	(see |:mes|).
+	To see some messages that are issued you can use the |:mes| command.
 
 	If you find this plugin useful and have some comments you are
-	cordially invited to write to the author: <mszamot@gmail.com>.
+	cordially invited to write to the author: <mszamot [AT] gmail [dot]
+	com>, add some "karma" poitns on vim script page, make
+	a recommendation or write a review on SourceForge: |atp-sourceforge|.
 
-	There are other ways to make such an automatic plugin. The crucial
-	step is to make the plugin know that tex is already in use (if you run
-	to tex compilers on the same file at the same time the effect won't be
-	good).
-
-	For several month I was using a different code which was not using
-	temporary copies but was checking if the tex is running or not. It was
-	working very good but I didn't understand why (silly isn't it), and
-	when I started making changes it stopped working: the issue is that
-	it is difficult to make a function sleep until tex stops working not
-	putting whole Vim into sleep - this is the time that we want to save.
-	However, the advantage of using temporary files is smoothness (changes
-	appear faster in the output file). 
-
-	Best regards, and hopefully you will find this useful :) 
+	Best, and hopefully you will find this useful :) 
 	Marcin Szamotulski
 	
 	

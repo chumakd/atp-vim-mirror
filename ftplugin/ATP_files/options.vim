@@ -226,6 +226,7 @@ let s:optionsDict= {
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
+		\ "atp_BibCompiler"		: "bibtex",
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "",
@@ -298,9 +299,6 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if exists("g:atp_BibCompiler")
-    let g:atp_BibCompiler = "bibtex"
-endif
 if exists("g:atp_latexpackages")
     " Transition to nicer name:
     let g:atp_LatexPackages = g:atp_latexpackages
@@ -667,11 +665,6 @@ if !exists("g:atp_check_if_LatexBox") || g:atp_reload
 endif
 if !exists("g:atp_autex_check_if_closed") || g:atp_reload
     let g:atp_autex_check_if_closed = 1
-endif
-if ( !exists("g:rmcommand") || g:atp_reload ) && executable("perltrash")
-    let g:rmcommand="perltrash"
-elseif !exists("g:rmcommand") || g:atp_reload   
-    let g:rmcommand		= "rm"
 endif
 if !exists("g:atp_env_maps_old") || g:atp_reload
     let g:atp_env_maps_old	= 0

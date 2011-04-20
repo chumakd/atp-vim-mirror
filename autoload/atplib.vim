@@ -205,7 +205,7 @@ function! atplib#CallBack(mode,...)
 	endif
 
 	cclose
-	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returned without errors (atp_ErrorFormat=".b:atp_ErrorFormat.")".(g:atp_DefaultDebugMode=='silent'&&atp_DebugMode!='silent'?"\ngoing out of debuging mode.": "."), "Normal", "after"]) 
+	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returned without errors [b:atp_ErrorFormat=".b:atp_ErrorFormat."]".(g:atp_DefaultDebugMode=='silent'&&atp_DebugMode!='silent'?"\ngoing out of debuging mode.": "."), "Normal", "after"]) 
 	let showed_message 	= 1
 	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
 	if g:atp_DefaultDebugMode == "silent" && t:atp_QuickFixOpen
@@ -1641,7 +1641,7 @@ function! atplib#showresults(bibresults, flags, pattern)
 endfunction
 "}}}
 "}}}
-" URL query: (by some strange reason this is not working moved to URLquery.py)
+" URL query: (by some strange reason this is not working moved to url_query.py)
 " function! atplib#URLquery(url) "{{{
 " python << EOF
 " import urllib2, tempfile, vim

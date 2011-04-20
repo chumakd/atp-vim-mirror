@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 16 07:00  2011 W
+" Last Change: Wed Apr 20 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2026,8 +2026,7 @@ function! <SID>UpdateATP(bang)
 	call <SID>Tar(s:atp_tempname, dir)
 	call delete(s:atp_tempname)
 
-	" WINDOWS NOT COMPATIBLE (?)
-	exe "helptags " . dir . "/doc"
+	exe "helptags " . finddir("doc", dir)
 	ReloadATP
 	redraw!
 	if a:bang == "!"

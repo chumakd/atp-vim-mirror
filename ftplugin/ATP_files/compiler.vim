@@ -769,7 +769,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 
     if ( condition_force && a:force == "!" ) || ( condition_noforce && a:force == "" )
 	  let cmd	= ''
-	  let bib_cmd 	= g:atp_BibCompiler.' '.fnameescape(auxfile) . ' ; '
+	  let bib_cmd 	= b:atp_BibCompiler.' '.fnameescape(auxfile) . ' ; '
 	  let idx_cmd 	= 'makeindex '.fnameescape(idxfile) . ' ; '
 	  let message	=   "Making:"
 	  if ( bib_condition_force && a:force == "!" ) || ( bib_condition_noforce && a:force == "" )
@@ -1021,7 +1021,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
-		\ ." --bibcommand ".g:atp_BibCommand
+		\ ." --bibcommand ".b:atp_BibCompiler
 		\ ." --bibliographies ".shellescape(bibliographies)
 		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
@@ -1546,7 +1546,7 @@ inoremap <silent> <Plug>iATP_TeXVerbose		<Esc>:<C-U>call <SID>TeX(v:count1, "", 
 "}}}
 "{{{ Bibtex
 function! <SID>SimpleBibtex()
-    let bibcommand 	= g:atp_BibCompiler." "
+    let bibcommand 	= b:atp_BibCompiler." "
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let auxfile		= fnamemodify(resolve(atp_MainFile),":t:r") . ".aux"
     " When oupen_out = p (in texmf.cnf) bibtex can only open files in the working

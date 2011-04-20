@@ -311,3 +311,7 @@ bibliograph (python) requirements:
 bibliograph-rendering, zope-schema, zope-component
 
 Todo: g:atp_XpdfSleep if 0 ...
+
+zathura: how to implement inverse searching using bookmarks:
+    "https://bbs.archlinux.org/viewtopic.php?pid=807105#p807105"
+    this can be done with python script.

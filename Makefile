@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.3.1
+VERSION = 9.3.2
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -48,6 +48,7 @@ ${Plugin}_${VERSION}.vba: ${SOURCE}
 
 install:
 		rsync -Rv ${SOURCE} ${HOME}/.vim/
+		vim --cmd :helptags\ ${HOME}/.vim/doc --cmd q!
 
 clean:		
 		rm ${PLUGIN}_[0-9.]*.*
