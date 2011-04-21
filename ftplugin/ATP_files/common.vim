@@ -366,10 +366,10 @@ function! TreeOfFiles(main_file,...)
 	    endif
 
 	    " type: preambule,bib,input.
-	    if lnum < end_preamb && run_nr == 1
-		let type	= "preambule"
-	    elseif strpart(line, cnum-1)  =~ '^\s*\\bibliography'
+	    if strpart(line, cnum-1)  =~ '^\s*\\bibliography'
 		let type	= "bib"
+	    elseif lnum < end_preamb && run_nr == 1
+		let type	= "preambule"
 	    else
 		let type	= "input"
 	    endif

@@ -815,26 +815,29 @@ function! <SID>Delete(delete_output)
     let atp_tex_extensions=deepcopy(g:atp_tex_extensions)
 
     if a:delete_output == "!" || g:atp_delete_output == 1
-	if b:atp_TexCompiler == "pdftex" || b:atp_TexCompiler == "pdflatex"
-	    let ext="pdf"
-	else
-	    let ext="dvi"
+	let ext = substitute(get(g:atp_CompilersDict,b:atp_TexCompiler,""), '^\s*\.', '', 'g')
+	if ext != ""
+	    call add(atp_tex_extensions,ext)
 	endif
-	call add(atp_tex_extensions,ext)
     else
 	" filter extensions which should not be deleted
 	call filter(atp_tex_extensions, "index(g:atp_DeleteWithBang, v:val) == -1")
     endif
 
     " Be sure that we are not deleting outputs:
-    for ext in filter(atp_tex_extensions, 
-		\ "v:val != 'tex' && v:val != 'pdf' && v:val != 'dvi' && v:val != 'ps'")
-	let files=split(globpath(fnamemodify(atp_MainFile, ":h"), "*.".ext), "\n")
-	if files != []
-	    echo "Removing *.".ext
-	    for f in files
-		call delete(f)
-	    endfor
+    for ext in atp_tex_extensions
+	if ext != "pdf" && ext != "dvi" && ext != "ps"
+	    let files=split(globpath(fnamemodify(atp_MainFile, ":h"), "*.".ext), "\n")
+	    if files != []
+		echo "Removing *.".ext
+		for f in files
+		    call delete(f)
+		endfor
+	    endif
+	else
+	    let f=fnamemodify(atplib#FullPath(b:atp_MainFile), ":h").".".ext
+	    echo "Removing ".f
+	    call delete(f)
 	endif
     endfor
 endfunction

@@ -396,7 +396,7 @@ endfunction
 " This is very fast (0.002 sec on file with 2500 lines) 
 " but the proble is that vimgrep greps the buffer rather than the file! 
 " so it will not indicate any differences.
-function! NewCompare()
+function! <SID>NewCompare()
     let line 		= getline(".")
     let lineNr		= line(".")
     let saved_loclist 	= getloclist(0)
@@ -1453,7 +1453,7 @@ function! <SID>auTeX()
 	    " nesting (which seems to be high enough).
 	    
 "
-" 	if NewCompare()
+" 	if <SID>NewCompare()
 	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
 	    else
@@ -1685,6 +1685,7 @@ function! <SID>SetErrorFormat(...)
 
     let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
     let b:atp_ErrorFormat = carg
+    let g:carg = carg." a:1=".a:1
 
     let &l:errorformat=""
     if ( carg =~ 'e' || carg =~# 'all' ) 
@@ -1818,7 +1819,10 @@ function! <SID>SetErrorFormat(...)
 " 			    \%-G\ ...%.%#,
     endif
     if l:cgetfile
-	cgetfile
+	try
+	    cgetfile
+	catch E40:
+	endtry
     endif
 endfunction
 "}}}
@@ -1884,7 +1888,13 @@ endfunction
 "}}}
 if !exists("*ListErrorsFlags")
 function! ListErrorsFlags(A,L,P)
-	return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw\nb"
+    return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw\nb"
+endfunction
+endif
+if !exists("*ListErrorsFlags_A")
+function! ListErrorsFlags_A(A,L,P)
+    " This has no o flag.
+    return "all\nAll\nc\ne\nF\nf\nfi\nr\nw\nb"
 endfunction
 endif
 "}}}
@@ -1912,14 +1922,14 @@ command! -buffer -bang 		MakeLatex		:call <SID>SetBiberSettings() | call <SID>Ma
 command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? -complete=custom,BibtexComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
-command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>,1)
 augroup ATP_QuickFixCmds_1
     au!
-    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags SetErrorFormat :call <SID>SetErrorFormat(<f-args>) | cg
-    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags ShowErrors :call <SID>SetErrorFormat(<f-args>) | cg
-    au FileType qf :call <SID>SetErrorFormat(g:atp_DefaultErrorFormat)
+    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A SetErrorFormat :call <SID>SetErrorFormat(<q-args>,1) | cg
+    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A ErrorFormat :call <SID>SetErrorFormat(<q-args>,1) | cg
+    au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A ShowErrors :call <SID>SetErrorFormat(<f-args>) | cg
 augroup END
-command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ErrorFormat 		:call <SID>SetErrorFormat(<q-args>,1)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A 	ErrorFormat 	:call <SID>SetErrorFormat(<q-args>,1)
 exe "SetErrorFormat ".g:atp_DefaultErrorFormat
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call ShowErrors(<f-args>)
 " }}}

@@ -1,10 +1,10 @@
-		    Automatic TeX Plugin For Vim version 7.2
+		    Automatic TeX Plugin For Vim version 7.3
 		         by Marcin Szamotulski
 
-Supported OS'es: Linux, Mac OS, Windows (need to be TESTED).
+Supported OS'es: Linux, Mac OS, Windows (it is in development).
 
-Note: support of Windows is EXPERIMENTAL (not yet TESTED!). If you want to try
-it and you find a bug use mailing list to post the bug report, thanks!)
+Note: support of Windows is not yet fully implemented. The main tools are
+not working, yet, come back in a some time (watch the news!).
 
 -------------------------------------------------------------
 The directory 'releases' contains stable releases.

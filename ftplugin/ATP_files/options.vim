@@ -242,6 +242,7 @@ let s:optionsDict= {
 		\ "atp_ProgressBar"		: {},
 		\ "atp_BibtexOutput"		: ""}
 
+" 		\ "atp_BibCompiler"		: ( getline(atplib#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 " 		\ "atp_TexCompilerVariable"	: "",
 " 			\.";TEXINPUT="
 " 			\.($TEXINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$TEXINPUTS)
@@ -258,6 +259,7 @@ let s:ask = { "ask" : "0" }
 function! s:SetOptions()
 
     let s:optionsKeys		= keys(s:optionsDict)
+    let g:optionsKeys		= copy(s:optionsKeys)
     let s:optionsinuseDict	= getbufvar(bufname("%"),"")
 
     "for each key in s:optionsKeys set the corresponding variable to its default
@@ -786,7 +788,9 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload
 		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
 		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
-		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer"
+		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
+		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
+		\ "b:LevelDict"
 		\ ] 
 endif
 " the variable a:1 is the name of the variable which stores the list of variables to

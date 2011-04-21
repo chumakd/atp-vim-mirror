@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.2)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -130,8 +130,15 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 
 >
+ ======================
  Changes in version 9.4
 <
+ 
+ Support for biber added (in |atp-:MakeLatex|, |atp-:Bibtex|, |atp-:Delete| commands), |g:keep|
+ variable will adjust on the fly (add run.xml and bcf extensions).
+ |b:atp_BibCommand| will be set to biber if the preambule contains
+ \usepackage[backend=biber]{biblatex}
+
  	|b:atp_TexOptions| is a comma separeted list of TeX compiler options.
 	If you use |g:atp_Compiler|="bash" this might be just a white space
 	separated list.
@@ -145,7 +152,29 @@ NEWS							*atp-news*
  nmap <LocalLeader>e
  	To get list of errors with current |b:atp_ErrorFormat|.
 
+:ErrorFormat {efm}					 |atp-:ErrorFormat|
+	This is new interface to :SetErrorFormat. If {efm} is not given it
+	will show the current value |b:atp_ErrorFormat|. It sets the variable
+	|b:atp_ErrorFormat| and rereads the log file with |cgetfile|.
+	The variable |b:atp_ErrorFormat| is also set when you use the command
+	|atp-:ShowErrors|.
+
+
+EasyMotion and ATP ~
+	If you want to use EaseMotion vim plugin (which is quite handy):
+	     http://www.vim.org/scripts/script.php?script_id=3526&rating=life_changing
+	You can set |g:atp_Compare|="". Alternatively, if you want to use the
+	fastest comparing method of ATP, you can add to last line of
+	s:EasyMotion() function in plugin/EasyMotion.vim add >
+	    let g:atp_changedtick = b:changedtick
+<	You might want to change g:EasyMotion_leader_key (see
+	|easymotion-leader-key| if you have EasyMotion), because some maps of
+	ATP are interfering with EasyMotion. For example "-" might be a good
+	choice. You can also try to change |maplocalleader| which is heavily
+	used by ATP.
+
 >
+  =======================
   Changes in versions 9.3
 <
 	The commands |atp-:F|, |atp-:B|, and the maps |atp->e| and |atp-<e|
@@ -246,6 +275,7 @@ nmap \u, vmap \u
     remaps the K, ATP will delete any such map - ATP first tries to delete
     the local |map-<buffer>|, then the global map).
 >
+  =================================
   Changes in versions 9 & 9.1 & 9.2
 <
 
@@ -380,16 +410,16 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 			environment name.
 
 9.2:
-  - :SetErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
+  - :ErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
     they set error format and reloads the errorfile.
 9.2:
-  - There is new flag for |atp-:ShowErrors| and |atp-:SetErrorFormat|: "all"
+  - There is new flag for |atp-:ShowErrors| and |atp-:ErrorFormat|: "all"
     and "All" - "all" is used to filter using all the flags, "All" to not
     filter at All ;).
 							|g:atp_DefaltErrorFormat|
 9.2:    
   - g:atp_DefaultErrorFormat = "erc". The value is the  same as argument to
-    |atp-:ShowErrors| and |atp-:SetErrorFormat|. This is the default argument
+    |atp-:ShowErrors| and |atp-:ErrorFormat|. This is the default argument
     for these commands when they are used without any argument. Corresponding
     'errorformat' is set at startup.
 							*g:atp_DefaultCmdHeight*
@@ -557,8 +587,7 @@ COMMANDS	                               		*atp-commands* *atp-:*
 							*atp-compilation*
 The main function is not seen by the user (it is called s:compiler, for those
 who want to read the plugin). It executes tex compiler specified by the
-variable b:atp_TexCompiler. It is executed
-as an autocommand by the line: >
+variable |b:atp_TexCompiler|. It is executed as an autocommand by the line: >
 	au! CursorHold $HOME*.tex silent call 's:auTeX()'
 < where s:auTeX() is a simple function which calls s:compiler if the file
 written on the disk and the buffer differ. There are two comparing mechanism,
@@ -643,9 +672,9 @@ On start up b:atp_autex is set to 1 if the path of opened file is not under any
 tex directory ('kpsewhich -show-path tex', except the current dir). For example,
 files located under your local texmf tree will have b:atp_autex=0.
 
-The second important variable b:atp_TexCompiler (see |b:atp_TexCompiler|) configures
-if you use TeX, PdfTeX, LaTeX, PdfLaTeX and it should point to the program
-name so please do not use capital letters.
+The second important variable |b:atp_TexCompiler| configures if you use TeX,
+PdfTeX, LaTeX, PdfLaTeX and it should point to the program name so please do
+not use capital letters.
 
 Next variable to set is |b:atp_OutDir|. It configures where TeX
 will put the output and where viewer and log analysing tools can find
@@ -702,7 +731,7 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	       option ToggleDebugMode then it will be automatically closed
 	       after first compilation with no errors. Quick fix window is
 	       closed in both 'silent' and 'debug' debug modes. This depends
-	       on |errorformat| which you can set with |atp-:SetErrorFormat|
+	       on |errorformat| which you can set with |atp-:ErrorFormat|
 	       and |atp-:ShowErrors|:
 		    ATP test for 'no errors' is 'len(|getqflist()|)'. If the
 		    debug mode was 'debug' |t:atp_DebugMode| will fall back to
@@ -886,9 +915,19 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 							*g:atp_DefaultErrorFormat*
 g:atp_DefaultErrorFormat = 'erc' 
     The value is the  same as argument to |atp-:ShowErrors| and
-    |atp-:SetErrorFormat|. This is the default argument for these commands
-    when they are used without any argument. Also corresponding 'errorformat'
-    is set up at startup.
+    |atp-:ErrorFormat|. This is the default argument for these commands when
+    they are used without any argument. Also corresponding 'errorformat' is
+    set up at startup.
+						 
+							*b:atp_ErrorFormat*
+b:atp_ErrorFormat = 'ecw'
+	This variable stores the current format of errors. It is a word with
+	letters given in [flag] argument to |atp-:ShowErrors|. You can set it
+	with |atp-:ErrorFormat| command. It is used by serveral ATP functions,
+	for example call back feature checks if there are errors looking into
+	Quick Fix list (with |getqflist()|), which will depend on the variable
+	|b:atp_ErrorFormat|.
+	    
 
 ShowErrors maps:					*atp-:ShowErrors-maps* 
 
@@ -903,10 +942,13 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 <F6>+l			to open log file in a new split window
 			this is a mapping to the |atp-:OpenLog|.
 
-:SetErrorFormat {flag} 					*atp-:SetErrorFormat*
-	This command has the same syntax as |atp-:ShowErrors|. It only sets the
-	|'erroformat'| variable.
-						 
+:ErrorFormat {flag} 					*atp-:ErrorFormat*
+	This command has the same syntax as |atp-:ShowErrors|. It sets the
+	|b:atp_ErrorFormat| variable and vim option |'erroformat'|, and the
+	rereads the log file with |cgetfile|. If {flag} is not given it only
+	shows the current value of |b:atp_ErrorFormat|.  The variable
+	|b:atp_ErrorFormat| is also set when you use the command
+	|atp-:ShowErrors|.
 
 :Compiler {compiler-program}				*atp-:Compiler*
 	Command which help to set |b:atp_TexCompiler| variable (with
@@ -2909,7 +2951,7 @@ then the best way to do that is by using an autocommand:
 >
 	au BufReadPre *.tex let b:atp_TexCompiler="latex"
 <
-If you put just let b:atp_TexCompiler, this will also work but not always: for
+If you put just let |b:atp_TexCompiler|, this will also work but not always: for
 example when you open a new buffer in existing Vim session. However, if you
 put them in your |atprc| it is enough to use the standard "let b:...=".
 
@@ -2929,6 +2971,16 @@ let b:atp_TexCompilerVariable = "max_print_line=2000" 	*b:atp_TexCompilerVariabl
 
 	Note: the gramar for this variable: it should be a semicolon separated
 	list of variables and values, i.e. 'variable_1=value_1;variable_2=value_2'
+
+let b:atp_BibCompiler	= "bibtex"			*b:atp_BibCompiler*
+	This variable sets the bibtex backend. There are other programs which
+	might be used, for example "biber" and "pybib" (not tested with ATP).
+	
+	The default value will be "biber" if the preamule contains
+	\usepackge[backend=biber]{biblatex}. If it is set to "biber" ATP will
+	adjust |g:keep| variable (add run.xml, bcf extensions) when you use
+	|atp-:TEX|, |atp-:Bibtex|, or |atp-:MakeLatex| commands.
+
 
 							*b:atp_TexFlavor*
 let b:atp_TexFlavor	= "tex"	
@@ -3372,13 +3424,13 @@ PROJECT SCRIPT						*atp-ProjectScript*
 
 							*g:atp_tex_extensions*	
 >
- let g:atp_tex_extensions=["aux", "log", "bbl", "blg", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "maf", "blg", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync" , "ind"]	
+ let g:atp_tex_extensions=["aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "maf", "blg", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync" , "ind"]	
 <
 	 This list is used by the |atp-:Delete| command which deletes all the
 	 files with the specified extension in the directory |b:atp_OutDir|.
 							*g:keep*			
 >
- let g:keep	= ["log", "aux", "toc", "bbl", "ind"]	
+ let g:keep	= ["log", "aux", "toc", "bbl", "blg", "ind", "pdfsync", "synctex.gz" ]	
 <	Files with an extension belonging to this list will be copied from
 	'b:atp_OutDir' to the temporary directory with appropriate name. Then it
 	will be used by (La)TeX. (log file will be copied after it is created,
@@ -3388,6 +3440,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	bibtex. There are possibly other classes, like beamer, or packages
 	like theorem (produce .thm files) which will need to configure this
 	variable.
+
+	If you use "biber" ATP will add "run.xml" and "bcf".
 
 	You can change this variable by the command:
 		:let g:keep+=["thm","spl"]
