@@ -1334,7 +1334,6 @@ function! GotoFile(bang,file,...)
 	    unlockvar b:atp_ErrorFormat
 	endif
 	let b:atp_ErrorFormat	= atp_ErrorFormat
-	lockvar b:atp_ErrorFormat
 	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]	= deepcopy([tree_d, file_l_orig, type_d, level_d ])
 	if exists("b:atp_ProgressBar")
 	    unlockvar b:atp_ProgressBar

@@ -2021,9 +2021,6 @@ function! atplib#SearchPackage(name,...)
 
     if getbufvar("%", "atp_MainFile") == ""
 	call SetProjectName()
-	let g:PName = 0 . " " . atp_MainFile
-    else
-	let g:PName = 1 . " " . atp_MainFile
     endif
 
 "     let time	= reltime()
@@ -2067,7 +2064,6 @@ function! atplib#SearchPackage(name,...)
 	    keepjumps let ret = search('^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
 	    keepjump call setpos(".",saved_pos)
 
-" 	    echo reltimestr(reltime(time))
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
 
@@ -2077,7 +2073,6 @@ function! atplib#SearchPackage(name,...)
 	    keepjumps let ret = search('^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
 	    keepjump call setpos(".", saved_pos)
 
-" 	    echo reltimestr(reltime(time))
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
 
@@ -2092,7 +2087,6 @@ function! atplib#SearchPackage(name,...)
 		silent! call remove(s:Preambule, stop_line+1, -1)
 	    endif
 	endif
-	let g:preambule = s:Preambule
 	let lnum = 1
 	for line in s:Preambule
 	    if line =~ '^[^%]*\\'.com."\s*{[^}]*".a:name

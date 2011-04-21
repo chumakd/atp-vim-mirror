@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 April 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.2)
 			by Marcin Szamotulski
@@ -66,6 +66,8 @@ DONATE     						*atp-donate*
     you donate or not you are always cordially invited to give suggestions,
     feature requests, bug reports or just to write that you like it or not :).
 							Thank You. ~
+    You can use this link:							
+    https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3NMU7FEEPVG7Q
 
     Note: The donations are accepted thruogh PayPal, if you are from Europe
     and you want to donate Euro, use your PayPal account rather than

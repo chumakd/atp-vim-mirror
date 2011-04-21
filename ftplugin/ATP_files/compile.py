@@ -318,9 +318,13 @@ for bib in bibliographies:
 # Latex might not run this might happedn with bibtex (?)
 latex_returncode=0
 if bibtex and os.path.exists(tmpaux):
-    debug_file.write("\nBIBTEX1"+str([bibcommand, basename+".aux"])+"\n")
+    if bibcommand == 'biber':
+        bibfname = basename
+    else:
+        bibfname = basename+".aux"
+    debug_file.write("\nBIBTEX1"+str([bibcommand, bibfname])+"\n")
     os.chdir(tmpdir)
-    bibtex_popen=subprocess.Popen([bibcommand, basename+".aux"], stdout=subprocess.PIPE)
+    bibtex_popen=subprocess.Popen([bibcommand, bibfname], stdout=subprocess.PIPE)
     bibtex_popen.wait()
     os.chdir(mainfile_dir)
     bibtex_returncode=bibtex_popen.returncode
@@ -379,12 +383,16 @@ for i in range(1, int(runs+1)):
     if verbose != "verbose":
         vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_returncode)+"')")
     if bibtex and i == 1:
-        debug_file.write("BIBTEX2 "+str([bibcommand, basename+".aux"])+"\n")
+        if bibcommand == 'biber':
+            bibfname = basename
+        else:
+            bibfname = basename+".aux"
+        debug_file.write("BIBTEX2 "+str([bibcommand, bibfname])+"\n")
         debug_file.write(os.getcwd()+"\n")
         tempdir_list = os.listdir(tmpdir)
         debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
         os.chdir(tmpdir)
-        bibtex_popen=subprocess.Popen([bibcommand, basename+".aux"], stdout=subprocess.PIPE)
+        bibtex_popen=subprocess.Popen([bibcommand, bibfname], stdout=subprocess.PIPE)
         bibtex_popen.wait()
         os.chdir(mainfile_dir)
         bibtex_returncode=bibtex_popen.returncode

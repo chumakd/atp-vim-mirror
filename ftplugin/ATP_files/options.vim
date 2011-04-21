@@ -11,7 +11,9 @@
 " Some options (functions) should be set once:
 let s:did_options 	= exists("s:did_options") ? 1 : 0
 
-let g:atp_reload	= 0
+if !exists("g:atp_reload")
+    let g:atp_reload	= 0
+endif
 "{{{ tab-local variables
 " We need to know bufnumber and bufname in a tabpage.
 " ToDo: we can set them with s: and call them using <SID> stack
@@ -226,7 +228,7 @@ let s:optionsDict= {
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
-		\ "atp_BibCompiler"		: "bibtex",
+		\ "atp_BibCompiler"		: ( getline(atplib#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "",
@@ -342,9 +344,7 @@ endif
 if !exists("g:atp_DefaultErrorFormat") || g:atp_reload
     let g:atp_DefaultErrorFormat = "erc"
 endif
-unlockvar b:atp_ErrorFormat
 let b:atp_ErrorFormat = g:atp_DefaultErrorFormat
-lockvar b:atp_ErrorFormat
 if !exists("g:atp_DefiSearchMaxWindowHeight") || g:atp_reload
     let g:atp_DefiSearchMaxWindowHeight=15
 endif
@@ -676,13 +676,18 @@ if !exists("g:atp_no_math_command_completion") || g:atp_reload
     let g:atp_no_math_command_completion = 0
 endif
 if !exists("g:atp_tex_extensions") || g:atp_reload
-    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
+    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
 endif
 if !exists("g:atp_delete_output") || g:atp_reload
     let g:atp_delete_output	= 0
 endif
 if !exists("g:keep") || g:atp_reload
-    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync", "synctex.gz" ]
+    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync", "synctex.gz", "blg" ]
+    " biber stuff is added before compelation, this makes it possible to change 
+    " to biber on the fly
+    if b:atp_BibCompiler =~ '^\s*biber\>'
+	let g:keep += [ "run.xml", "bcf" ]
+    endif
 endif
 if !exists("g:atp_ssh") || g:atp_reload
     " WINDOWS NOT COMPATIBLE
@@ -1187,7 +1192,7 @@ function! ATP_ToggleDebugMode(mode,...)
     if a:mode != ""
 	let set_new 		= 1
 	let new_debugmode 	= ( t:atp_DebugMode ==# a:mode ? g:atp_DefaultDebugMode : a:mode )
-	let copen 		= ( a:mode =~# '^D\%[ebug]' && t:atp_DebugMode !=# 'Debug' && !t:atp_QuickFixOpen )
+	let copen 		= ( a:mode =~? '^d\%[ebug]' && t:atp_DebugMode !=? 'debug' && !t:atp_QuickFixOpen )
 	let on 			= ( a:mode !=# t:atp_DebugMode )
 	if t:atp_DebugMode ==# 'Debug' && a:mode ==# 'debug' || t:atp_DebugMode ==# 'debug' && a:mode ==# 'Debug'
 	    let change_menu 	= 0
@@ -1367,6 +1372,7 @@ catch /E741:/
 endtry
 
 if !exists("g:atp_completion_modes_normal_mode") || g:atp_reload
+    unlockvar g:atp_completion_modes_normal_mode
     let g:atp_completion_modes_normal_mode=[ 
 		\ 'close environments' , 'brackets', 'algorithmic' ]
     lockvar g:atp_completion_modes_normal_mode

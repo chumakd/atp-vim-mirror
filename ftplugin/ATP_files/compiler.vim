@@ -590,11 +590,17 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 
     " Check what to use to make the 'Bibliography':
     let saved_llist	= getloclist(0)
-    execute 'silent! lvimgrep /\\bibdata\s*{/j ' . fnameescape(auxfile)
+    try
+	execute 'silent! lvimgrep /\\bibdata\s*{/j ' . fnameescape(auxfile)
+    catch E480:
+    endtry
     " Note: if the auxfile is not there it returns 0 but this is the best method for
     " looking if we have to use 'bibtex' as the bibliography might be not written in
     " the main file.
     let bibtex		= len(getloclist(0)) == 0 ? 0 : 1
+    if !bibtex
+	let bibtex	= atplib#SearchPackage('biblatex')
+    endif
     call setloclist(0, saved_llist)
 
 	if g:atp_debugML
@@ -716,6 +722,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	    let p_force= (a:force == "!" ? " --force" : " " )
 	    let python_cmd1=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")). 
 			\ " --cmd ".shellescape(b:atp_TexCompiler).
+			\ " --bibcmd " . shellescape(b:atp_BibCompiler).
 			\ " --file ".shellescape(atplib#FullPath(texfile)).
 			\ " --outdir ".shellescape(b:atp_OutDir).
 			\ " --run ".a:run." ".p_force.
@@ -773,7 +780,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  let idx_cmd 	= 'makeindex '.fnameescape(idxfile) . ' ; '
 	  let message	=   "Making:"
 	  if ( bib_condition_force && a:force == "!" ) || ( bib_condition_noforce && a:force == "" )
-	      let bib_msg	 = ( bibtex  ? ( did_bibtex == 0 ? " [bibtex,".Compiler."]" : " [".Compiler."]" ) : " [".Compiler."]" )
+	      let bib_msg	 = ( bibtex  ? ( did_bibtex == 0 ? " [".b:atp_BibCompiler.",".Compiler."]" : " [".Compiler."]" ) : " [".Compiler."]" )
 	      let message	.= " references".bib_msg."," 
 	  endif
 	  if toc && a:run <= 2
@@ -833,6 +840,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	      let p_force= (a:force == "!" ? " --force" : " " )
 	      let python_cmd2=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")).
 			  \ " --cmd ".shellescape(b:atp_TexCompiler).
+			  \ " --bibcmd " . shellescape(b:atp_BibCompiler).
 			  \ " --file ".shellescape(atplib#FullPath(texfile)).
 			  \ " --outdir ".shellescape(b:atp_OutDir).
 			  \ " --run ".a:run.
@@ -927,9 +935,26 @@ for pid in pids:
 END
 endfunction "}}}
 
+function! <SID>SetBiberSettings()
+    if b:atp_BibCompiler !~# '^\s*biber\>'
+	return
+    elseif !exists("s:biber_keep_done")
+	let s:biber_keep_done = 1
+	if index(g:keep, "run.xml") == -1
+	    g:keep += [ "run.xml" ]
+	endif
+	if index(g:keep, "bcf") == -1
+	    g:keep += [ "bcf" ]
+	endif
+    endif
+endfunction
+
 " THE MAIN COMPILER FUNCTIONs:
 " {{{ s:PythonCompiler
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
+
+    " Set biber setting on the fly
+    call <SID>SetBiberSettings()
 
     if !has('gui') && a:verbose == 'verbose' && len(b:atp_LatexPIDs) > 0
 	redraw!
@@ -1072,6 +1097,9 @@ endfunction
 " 		2 start viewer and make reverse search
 "
 function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
+    
+    " Set biber setting on the fly
+    call <SID>SetBiberSettings()
 
     if !has('gui') && a:verbose == 'verbose' && b:atp_running > 0
 	redraw!
@@ -1548,7 +1576,12 @@ inoremap <silent> <Plug>iATP_TeXVerbose		<Esc>:<C-U>call <SID>TeX(v:count1, "", 
 function! <SID>SimpleBibtex()
     let bibcommand 	= b:atp_BibCompiler." "
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-    let auxfile		= fnamemodify(resolve(atp_MainFile),":t:r") . ".aux"
+    if b:atp_BibCompiler =~ '^\s*biber\>'
+	let file	= fnamemodify(resolve(atp_MainFile),":t:r")
+    else
+	let file	= fnamemodify(resolve(atp_MainFile),":t:r") . ".aux"
+    endif
+    let auxfile	= fnamemodify(resolve(atp_MainFile),":t:r") . ".aux"
     " When oupen_out = p (in texmf.cnf) bibtex can only open files in the working
     " directory and they should no be given with full path:
     "  		p (paranoid)   : as `r' and disallow going to parent directories, and
@@ -1557,7 +1590,7 @@ function! <SID>SimpleBibtex()
     exe "lcd " . fnameescape(b:atp_OutDir)
     let g:cwd = getcwd()
     if filereadable(auxfile)
-	let command	= bibcommand . shellescape(l:auxfile)
+	let command	= bibcommand . shellescape(file)
 	let b:atp_BibtexOutput=system(command)
 	let b:atp_BibtexReturnCode=v:shell_error
 	echo b:atp_BibtexOutput
@@ -1643,11 +1676,15 @@ nnoremap <silent> <Plug>BibtexVerbose	:call <SID>Bibtex("!", "verbose")<CR>
 " the default is a:1=e /show only error messages/
 function! <SID>SetErrorFormat(...)
 
+    let l:cgetfile = ( a:0 >=2 ? a:2 : 0 )
+    " This l:cgetfile == 1 only if run by the command :ErrorFormat 
+    if l:cgetfile  == 1 && a:1 == ''	
+	echo "[ATP:] current error format: ".b:atp_ErrorFormat 
+	return
+    endif
+
     let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
-    unlockvar b:atp_ErrorFormat
     let b:atp_ErrorFormat = carg
-    lockvar b:atp_ErrorFormat
-"     let l:cgetfile = ( a:0 >=2 ? a:2 : 1 )
 
     let &l:errorformat=""
     if ( carg =~ 'e' || carg =~# 'all' ) 
@@ -1780,9 +1817,9 @@ function! <SID>SetErrorFormat(...)
 " 			    removed after GType
 " 			    \%-G\ ...%.%#,
     endif
-"     if l:cgetfile
-" 	cgetfile
-"     endif
+    if l:cgetfile
+	cgetfile
+    endif
 endfunction
 "}}}
 "{{{ ShowErrors
@@ -1818,7 +1855,7 @@ function! ShowErrors(...)
     call writefile(log, errorfile)
     
     " set errorformat 
-    let l:arg = ( a:0 >= 1 ? a:1 : g:atp_DefaultErrorFormat )
+    let l:arg = ( a:0 >= 1 ? a:1 : b:atp_ErrorFormat )
 
     if l:arg =~ 'o'
 	OpenLog
@@ -1851,6 +1888,18 @@ function! ListErrorsFlags(A,L,P)
 endfunction
 endif
 "}}}
+" function! <SID>SetErrorFormat(efm)
+" 
+"     if a:efm == ""
+" 	return
+"     endif
+" 
+"     unlockvar b:atp_ErrorFormat
+"     let b:atp_ErrorFormat = a:efm
+"     cgetfile
+" 
+" endfunction
+
 endif "}}}
 
 " Commands: 
@@ -1859,7 +1908,7 @@ command! -buffer 		KillAll			:call <SID>KillAll(b:atp_LatexPIDs)
 command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
 command! -buffer 		SyncTex			:call <SID>SyncTex(0)
 command! -buffer 		PID			:call <SID>GetPID()
-command! -buffer -bang 		MakeLatex		:call <SID>MakeLatex(( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile ), 0,0, [],1,1,<q-bang>,1)
+command! -buffer -bang 		MakeLatex		:call <SID>SetBiberSettings() | call <SID>MakeLatex(( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile ), 0,0, [],1,1,<q-bang>,1)
 command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? -complete=custom,BibtexComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
@@ -1870,7 +1919,7 @@ augroup ATP_QuickFixCmds_1
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags ShowErrors :call <SID>SetErrorFormat(<f-args>) | cg
     au FileType qf :call <SID>SetErrorFormat(g:atp_DefaultErrorFormat)
 augroup END
-command! -buffer -nargs=? 	SetErrorFormat 		:call <SID>SetErrorFormat(<f-args>)
+command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ErrorFormat 		:call <SID>SetErrorFormat(<q-args>,1)
 exe "SetErrorFormat ".g:atp_DefaultErrorFormat
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call ShowErrors(<f-args>)
 " }}}
