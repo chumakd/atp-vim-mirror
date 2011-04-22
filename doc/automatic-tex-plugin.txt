@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -134,10 +134,17 @@ NEWS							*atp-news*
  Changes in version 9.4
 <
  
- Support for biber added (in |atp-:MakeLatex|, |atp-:Bibtex|, |atp-:Delete| commands), |g:keep|
- variable will adjust on the fly (add run.xml and bcf extensions).
- |b:atp_BibCommand| will be set to biber if the preambule contains
- \usepackage[backend=biber]{biblatex}
+ Support for biber and biblatex added (in |atp-:MakeLatex|, |atp-:Bibtex|,
+ |atp-:Delete|, |atp-:InputFiles| commands), |g:keep| variable will adjust on
+ the fly (add run.xml and bcf extensions).  |b:atp_BibCommand| will be set to
+ biber if the preambule contains \usepackage[backend=biber]{biblatex}
+
+ If you use biblatex, it allows for putting \bibliography{} type commands only
+ in the preambule. Thus ATP will search for them only there. The
+ |g:atp_inputfile_pattern| might not contain any pattern for bibliographies
+ (\addbibresource, \bibliography, etc.). The |atp-:InputFiles| command will search
+ for them in a special subrutine which only searches in the preambule. This
+ makes it work slightly faster.
 
  	|b:atp_TexOptions| is a comma separeted list of TeX compiler options.
 	If you use |g:atp_Compiler|="bash" this might be just a white space
@@ -159,7 +166,6 @@ NEWS							*atp-news*
 	The variable |b:atp_ErrorFormat| is also set when you use the command
 	|atp-:ShowErrors|.
 
-
 EasyMotion and ATP ~
 	If you want to use EaseMotion vim plugin (which is quite handy):
 	     http://www.vim.org/scripts/script.php?script_id=3526&rating=life_changing
@@ -172,6 +178,9 @@ EasyMotion and ATP ~
 	ATP are interfering with EasyMotion. For example "-" might be a good
 	choice. You can also try to change |maplocalleader| which is heavily
 	used by ATP.
+
+	Select Comments nmap and vmap is now |_c| (previously \sc was
+	interfering with an ATP font map).
 
 >
   =======================
@@ -1139,6 +1148,13 @@ nmap gf
 :InputFiles				
 	List input files of the current project. It also updates the
 	|b:ListOfFiles| and |b:TreeOfFiles| variables to the current values.
+
+	The variable *g:atp_inputfile_pattern* is used as a pattern to find
+	input files. If you use 'biblatex' you do not need to put any pattern
+	matching bibliographies (\addbibresource, \bibliography, ...), ATP has
+	special way of dealing with them which is faster. If you use 'subfile'
+	package ATP will add \\subfile pattern.
+
 							*atp-:Open*
 :Open[!] [pattern] 
 	If you configure g:atp_LibraryPath, this function will find files
@@ -1777,8 +1793,8 @@ map <F4>		environment name
 
   							*atp-:ReloadATP*
 :ReloadATP 
-    Reloads ATP plugin, both variables and functions (this is done mainly for
-    development).
+    Reloads ATP plugin: variables, functions, and maps. Note that maps are not
+    deleted.
 
 ================================================================================
 TABLE OF CONTENTS WINDOW					 *atp-toc-window*
@@ -3870,14 +3886,14 @@ normal and mode: <LocalLeader>sc.
 		stack (the resulting are will be wide). Some syntax groups are
 		filtered out (like 'texDocZone') which not always are
 		synchronised.
-								*atp-sc*
-								*atp-vsc*
-	<LocalLeader>sc	
+								*atp-_c*
+								*atp-_c*
+	_c	
 		select comment lines which begin with '^\s*%'. If not in
-		comment line, end visual mode.
-		It works both in normal and viaual mode (both |s| and |c|
-		have a meaning in vim in both normal and visual mode, that's
-		why <LocalLeader> is used).
+		comment line, end visual mode. You can change this map with
+		variables g:atp_MapSelectComment (this can be only changed in
+		atprc or vimrc file, you need restart Vim, or use
+		|atp-:ReloadATP|) .
 
 								*atp-gw*	
 nmap gw

@@ -303,6 +303,9 @@ call s:SetOptions()
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_MapSelectComment")
+    let g:atp_MapSelectComment = "_c"
+endif
 if exists("g:atp_latexpackages")
     " Transition to nicer name:
     let g:atp_LatexPackages = g:atp_latexpackages

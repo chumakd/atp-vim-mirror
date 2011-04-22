@@ -287,8 +287,8 @@ nmap <C-k> <Plug>TexJMotionBackward
     vnoremap <silent> <buffer> [% :<C-U>exe "normal! gv"<Bar>call search('\%(^\s*%.*\n\)\%(^\s*%\)\@!', "bW")<CR>
 
     " Select comment
-    vmap <silent> <buffer> <LocalLeader>sc		<Plug>vSelectComment
-    nmap <silent> <buffer> <LocalLeader>sc		v<Plug>vSelectComment
+    exe "vmap <silent> <buffer> ".g:atp_MapSelectComment." <Plug>vSelectComment"
+    exe "map <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
 
     " Normal mode maps (mostly)
     if mapcheck('<LocalLeader>v') == ""

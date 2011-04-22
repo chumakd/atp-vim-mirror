@@ -931,7 +931,14 @@ import os, signal
 from signal import SIGTERM
 pids=vim.eval("a:pids")
 for pid in pids:
-    os.kill(int(pid),SIGTERM)
+    try:
+	os.kill(int(pid),SIGTERM)
+    except OSError, e:
+	if e.errno == 3:
+            # No such process error.
+            pass
+	else:
+            raise
 END
 endfunction "}}}
 

@@ -340,11 +340,11 @@ if len(pids) > 0:
     for lp in pids:
 	run=False
 	for p in ps_list:
-	    if str(lp) == str(p):
+            if str(lp) == str(p):
 		run=True
 		break
 	if not run:
-	    rmpids.append(lp)
+            rmpids.append(lp)
     rmpids.sort()
     rmpids.reverse()
     for pid in rmpids:
