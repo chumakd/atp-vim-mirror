@@ -632,7 +632,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     endif
 
 	if g:atp_debugML
-	silent echo a:run . " index=" . index . " makeidx=" . makeidx . " idx_cdm=" . idx_cmd . " a:did_index=" . a:did_index 
+	silent echo a:run . " index=" . index . " makeidx=" . makeidx . " idx_cmd=" . idx_cmd . " a:did_index=" . a:did_index 
 	endif
 
     " Check table of contents:
@@ -768,14 +768,14 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
     endif
     let bib_condition_force 	= ( (references && !bibtex) || bibtex ) && did_bibtex <= 1  
     let bib_condition_noforce	= ( references 	&& did_bibtex <= 1 )
-    let condition_force 	= bib_condition_force 	|| cross_references || index && !a:did_index || 
+    let condition_force 	= bib_condition_force 	|| cross_references || index && a:did_index <= 1 || 
 		\ ( ( toc || lof || lot || thm ) && a:run < 2 )
-    let condition_noforce 	= bib_condition_noforce || cross_references || index && !a:did_index || 
+    let condition_noforce 	= bib_condition_noforce || cross_references || index && a:did_index <= 1 || 
 		\ ( ( toc || lof || lot || thm ) && a:run < 2 )
 
 	if g:atp_debugML
 	silent echo a:run . " Run Second NoForce:" . ( condition_noforce && a:force == "" ) . " Force:" . ( condition_force && a:force == "!" )
-	silent echo a:run . " BIBTEX: did_bibtex[updated]=" . did_bibtex . " references=" . references . " CROSSREF:" . cross_references . " INDEX:" . (index  && !a:did_index)
+	silent echo a:run . " BIBTEX: did_bibtex[updated]=" . did_bibtex . " references=" . references . " CROSSREF:" . cross_references . " INDEX:" . (index  && a:did_index <= 1) . " index=".index." a:did_index=".a:did_index
 	endif
 
     if ( condition_force && a:force == "!" ) || ( condition_noforce && a:force == "" )
@@ -818,11 +818,11 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  " If index was done:
 	  let make_index	= " "
 	  if a:did_index
-	      let did_index	= 1
+	      let did_index	= a:did_index+1
 	  " If not and should be and the idx_file is readable
 	  elseif index && idxfile_readable
 	      let cmd		.= idx_cmd . " "
-	      let did_index 	= 1
+	      let did_index 	= a:did_index+1
 	      let make_index	= " --index "
 	  " If index should be done, wasn't but the idx_file is not readable (we need
 	  " to make it first)
@@ -830,7 +830,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	      let did_index	= 0
 	  " If the index should not be done:
 	  else
-	      let did_index	= 1
+	      let did_index	= 2
 	  endif
 	  let callback_cmd = v:progname . " --servername " . v:servername . " --remote-expr \"" . compiler_SID .
 		      \ "MakeLatex\(\'".fnameescape(texfile)."\', ".did_bibtex." , ".did_index.", [".time[0].",".time[1]."], ".

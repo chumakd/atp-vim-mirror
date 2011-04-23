@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.6)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.7)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -180,7 +180,7 @@ NEWS							*atp-news*
 
 EasyMotion and ATP ~
 	If you want to use EaseMotion vim plugin (which is quite handy):
-	     http://www.vim.org/scripts/script.php?script_id=3526&rating=life_changing
+	     http://www.vim.org/scripts/script.php?script_id=3526
 	You can set |g:atp_Compare|="". Alternatively, if you want to use the
 	fastest comparing method of ATP, you can add to last line of
 	s:EasyMotion() function in plugin/EasyMotion.vim add >
@@ -3904,7 +3904,6 @@ normal and mode: <LocalLeader>sc.
 		filtered out (like 'texDocZone') which not always are
 		synchronised.
 								*atp-_c*
-								*atp-_c*
 	_c	
 		select comment lines which begin with '^\s*%'. If not in
 		comment line, end visual mode. You can change this map with
@@ -4231,6 +4230,7 @@ links:
     the default). If it is set to positive value then the default values of
     these variables should give the same colour as the status line has.
 
+    								*g:atp_StatusLine*
     The variable g:atp_StatusLine is stores the value of Vim option
     'statusline'; actually 'statusline' option is set by: >
 		set statusline=%!g:atp_StatusLine

@@ -340,7 +340,7 @@ endfunction "}}}
 "Store MakeindexPIDs in a variable
 function! atplib#MakeindexPID(pid)
     call add(b:atp_MakeindexPIDs, a:pid)
-    call atplib#PIDsRunning("b:atp_BibtexPIDs")
+    call atplib#PIDsRunning("b:atp_MakeindexPIDs")
     let b:atp_LastMakeindexPID =a:pid
 endfunction "}}}
 "{{{ LatexRunning

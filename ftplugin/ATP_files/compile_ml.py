@@ -136,15 +136,18 @@ if bibtex:
     vim_remote_expr(servername, "atplib#Bibtex('"+str(bibtex_returncode)+"')")
 
 # MAKE INDEX
-if index:
-    idxfile     = basename+".idx"
+if index == 1:
     did_index   = 1
-    index=subprocess.Popen(['makeindex', idxfile])
+    idxfile     = os.path.basename(basename)+".idx"
+    debug_file.write("mkidx: cmd="+str(['makeindex', idxfile])+"\n")
+    index=subprocess.Popen(['makeindex', idxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     vim_remote_expr(servername, "atplib#MakeindexPID('"+str(bibtex.pid)+"')")
     vim_remote_expr(servername, "atplib#redrawstatus()")
     index.wait()
     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_MakeindexPIDs\")")
     index_returncode=index.returncode
+    debug_file.write("mkdix: returncode="+str(index_returncode)+"\n")
+    debug_file.write("mkdix: output="+str(index.stdout.read()))
 
 
 if re.match('\s*$', tex_options):
