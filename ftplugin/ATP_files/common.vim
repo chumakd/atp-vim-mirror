@@ -611,15 +611,20 @@ function! ATPRunning() "{{{
     if g:atp_Compiler == "python" 
         " For python compiler
 	" This is very fast:
-	call LatexRunning()
+" 	call LatexRunning()
+	call atplib#PIDsRunning("b:atp_LatexPIDs")
+	call atplib#PIDsRunning("b:atp_BibtexPIDs")
+	call atplib#PIDsRunning("b:atp_MakeindexPIDs")
 " 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs) 
 	if exists("b:atp_LatexPIDs")
 	    let atp_running= len(b:atp_LatexPIDs) 
+	elseif exists("b:atp_BibtexPIDs")
+	    let atp_running= len(b:atp_BibtexPIDs)
 	else
 	    return ''
 	endif
 	" This is slower (so the status line is updated leter)
-" 	call atplib#LatexRunning()
+" 	call atplib#PIDsRunning("b:atp_LatexPIDs")
 " 	let atp_running= len(b:atp_LatexPIDs)
 " 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs)
     else
@@ -627,29 +632,26 @@ function! ATPRunning() "{{{
 	let atp_running=b:atp_running
     endif
 
-    let g:atp_running = atp_running
 
-    if exists("b:atp_running") && exists("g:atp_callback") && atp_running && g:atp_callback
-" 	let b:atp_running	= b:atp_running < 0 ? 0 : b:atp_running
-" 	redrawstatus
+    if exists("g:atp_callback") && g:atp_callback
+	if exists("b:atp_LatexPIDs") && len(b:atp_LatexPIDs)>0  
 
-	for cmd in keys(g:CompilerMsg_Dict) 
-	    if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
-		let Compiler = g:CompilerMsg_Dict[cmd]
-		break
+	    for cmd in keys(g:CompilerMsg_Dict) 
+		if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
+		    let Compiler = g:CompilerMsg_Dict[cmd]
+		    break
+		else
+		    let Compiler = b:atp_TexCompiler
+		endif
+	    endfor
+
+	    if exists("b:atp_ProgressBar") && b:atp_ProgressBar != {}
+		let max = max(values(b:atp_ProgressBar))
+		let progress_bar="[".max."]".( g:atp_statusOutDir ? " " : "" )
 	    else
-		let Compiler = b:atp_TexCompiler
+		let progress_bar=""
 	    endif
-	endfor
 
-	if exists("b:atp_ProgressBar") && b:atp_ProgressBar != {}
-	    let max = max(values(b:atp_ProgressBar))
-	    let progress_bar="[".max."]".( g:atp_statusOutDir ? " " : "" )
-	else
-	    let progress_bar=""
-	endif
-
-" 	if atp_running
 	    if atp_running >= 2
 		return atp_running." ".Compiler." ".progress_bar
 	    elseif atp_running >= 1
@@ -657,9 +659,13 @@ function! ATPRunning() "{{{
 	    else
 		return ""
 	    endif
-" 	endif
+	elseif exists("b:atp_BibtexPIDs") && len(b:atp_BibtexPIDs)>0
+	    return b:atp_BibCompiler
+	elseif exists("b:atp_MakeindexPIDs") && len(b:atp_MakeindexPIDs)>0
+	    return "makeindex"
+	endif
     endif
-    return ''
+    return ""
 endfunction "}}}
 
 " {{{ Syntax and Hilighting
@@ -769,6 +775,7 @@ function! ATPStatus(bang) "{{{
 
     let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) %='.status_CTOC." ".status_NotifHi.status_Notif.status_NotifHiPost.'%{g:status_OutDir} %-14.16(%l,%c%V%)%P'
     set statusline=%!g:atp_StatusLine
+
 endfunction
 
     try

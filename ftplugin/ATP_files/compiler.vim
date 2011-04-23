@@ -277,7 +277,7 @@ for pr in ps_list:
 	try:
 		name=psutil.Process(pr).name
 		cmdline=psutil.Process(pr).cmdline
-		if name == latex: 
+		if name == latex:
 			latex_pid=pr
 			latex_running=True
 			break
@@ -287,7 +287,7 @@ for pr in ps_list:
 if latex_running:
 	vim.command("let s:var="+str(latex_pid))
 else:
-	vim.command("let s:var=''") 
+	vim.command("let s:var=''")
 EOF
 endfunction
 function! <SID>GetPID()
@@ -300,7 +300,7 @@ function! <SID>GetPID()
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
 	endif
     else
-	call atplib#LatexRunning()
+	call atplib#PIDsRunning("b:atp_LatexPIDs")
 	if len(b:atp_LatexPIDs) > 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ", ") 
 	else
@@ -716,8 +716,11 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	" COMPILATION
 	let cmd	= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
-	redraw
-	echomsg "[MakeLatex:] Updating files [".Compiler."]."
+	if !g:atp_statusNotif || !g:atp_callback
+	    redraw
+	    echomsg "[MakeLatex:] Updating files [".Compiler."]."
+	endif
+
 	if g:atp_Compiler == 'python'
 	    let p_force= (a:force == "!" ? " --force" : " " )
 	    let python_cmd1=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")). 
@@ -734,6 +737,7 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 			\ " --nobibtex ".
 			\ " --noindex ".
 			\ " &"
+	    let g:python_cmd1=python_cmd1
 	    if g:atp_debugML
 	    silent echo a:run . " PYTHON_CMD1=".python_cmd1
 	    redir END
@@ -835,7 +839,9 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	  " COMPILATION
 	  let cmd	.= b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . tex_options . fnameescape(atplib#FullPath(texfile)) . " ; " . callback_cmd
 
-	  echomsg "[MakeLatex:] " . message
+	  if !g:atp_statusNotif || !g:atp_callback
+	      echomsg "[MakeLatex:] " . message
+	  endif
 	  if g:atp_Compiler == 'python'
 	      let p_force= (a:force == "!" ? " --force" : " " )
 	      let python_cmd2=g:atp_Python." ".shellescape(globpath(&rtp, "ftplugin/ATP_files/compile_ml.py")).
@@ -864,7 +870,6 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	      endif
 
 	      call system(python_cmd2)
-
 	  else
 	      if g:atp_debugML
 	      silent echo a:run . " a:did_bibtex="a:did_bibtex . " did_bibtex=" . did_bibtex
@@ -888,11 +893,13 @@ function! <SID>MakeLatex(texfile, did_bibtex, did_index, time, did_firstrun, run
 	let show_time	= matchstr(reltimestr(reltime(time)), '\d\+\.\d\d')
     endif
 
-    redraw
-    if max([(a:run-1), 0]) == 1
-	echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " time in " . show_time . "sec."
-    else
-	echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " times in " . show_time . "sec."
+    if !g:atp_statusNotif || !g:atp_callback
+	redraw
+	if max([(a:run-1), 0]) == 1
+	    echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " time in " . show_time . "sec."
+	else
+	    echomsg "[MakeLatex:] " . max([(a:run-1), 0]) . " times in " . show_time . "sec."
+	endif
     endif
 
     if b:atp_running >= 1

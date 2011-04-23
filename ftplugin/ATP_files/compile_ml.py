@@ -113,7 +113,7 @@ def latex_progress_bar(cmd):
                 vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+")")
     child.wait()
     vim_remote_expr(servername, "atplib#ProgressBar('end',"+str(pid)+")")
-    vim_remote_expr(servername, "atplib#LatexRunning()")
+    vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_LatexPIDs\")")
     return child
 
 cwd=os.getcwd()
@@ -128,7 +128,10 @@ if bibtex:
     else:
         auxfile = os.path.basename(basename)+".aux"
     bibtex=subprocess.Popen([bibcmd, auxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    vim_remote_expr(servername, "atplib#BibtexPID('"+str(bibtex.pid)+"')")
+    vim_remote_expr(servername, "atplib#redrawstatus()")
     bibtex.wait()
+    vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_BibtexPIDs\")")
     bibtex_returncode=bibtex.returncode
     vim_remote_expr(servername, "atplib#Bibtex('"+str(bibtex_returncode)+"')")
 
@@ -137,7 +140,10 @@ if index:
     idxfile     = basename+".idx"
     did_index   = 1
     index=subprocess.Popen(['makeindex', idxfile])
+    vim_remote_expr(servername, "atplib#MakeindexPID('"+str(bibtex.pid)+"')")
+    vim_remote_expr(servername, "atplib#redrawstatus()")
     index.wait()
+    vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_MakeindexPIDs\")")
     index_returncode=index.returncode
 
 

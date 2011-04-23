@@ -322,3 +322,5 @@ ToDo: Make commands which changes error format and rescans the log file.
 ToDo: g:keep for biber, biber uses 'biber hgt' not like 'bibtex hgt.aux'.
 Done: biblatex support requires changes in TreeOfFiles, \bibliography command is placed in the preambule!
 ToDo: add biber to status notification (like pdfLaTeX)
+ToDo: b:atp_LastLatexPID is not necessary!
+ToDo: g:atp_inputfile_pattern : maybe it should be updated by :InputFiles if somebody added/removed biblatex.

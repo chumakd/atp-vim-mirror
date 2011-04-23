@@ -171,6 +171,18 @@ if maparg("K", "n") != ""
 	nunmap K
     endtry
 endif
+
+exe "setlocal complete+=".
+	    \ "k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/greek").
+	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary").
+	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits")
+if atplib#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams'
+    exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
+endif
+
+" The suffixes option is also set after g:atp_tex_extensions is set.
+setlocal suffixes+=pdf
+
 " Borrowed from tex.vim written by Benji Fisher:
     " Set 'comments' to format dashed lists in comments
     setlocal com=sO:%\ -,mO:%\ \ ,eO:%%,:%
@@ -192,9 +204,9 @@ endif
 	    \ . '\|DeclareFixedFont\s*{\s*'
     let g:filetype = &l:filetype
     if &l:filetype != "plaintex"
-	setlocal include=\\\\input\\(\\s*{\\)\\=\\\\|\\\\include\\s*{
+	setlocal include=^[^%]*\\%(\\\\input\\(\\s*{\\)\\=\\\\|\\\\include\\s*{\\)
     else
-	setlocal include=\\\\input
+	setlocal include=^[^%]*\\\\input
     endif
     setlocal suffixesadd=.tex
 
@@ -236,6 +248,8 @@ let s:optionsDict= {
 		\ "atp_StarEnvDefault"		: "",
 		\ "atp_StarMathEnvDefault"	: "",
 		\ "atp_LatexPIDs"		: [],
+		\ "atp_BibtexPIDs"		: [],
+		\ "atp_MakeindexPIDs"		: [],
 		\ "atp_LastLatexPID"		: 0,
 		\ "atp_VerboseLatexInteractionMode" : "errorstopmode",
 		\ "atp_BibtexReturnCode"	: 0,
@@ -683,6 +697,12 @@ endif
 if !exists("g:atp_tex_extensions") || g:atp_reload
     let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
 endif
+for ext in g:atp_tex_extensions
+    let suffixes = split(&suffixes, ",")
+    if index(suffixes, ".".ext) == -1
+	exe "setlocal suffixes+=.".ext
+    endif
+endfor
 if !exists("g:atp_delete_output") || g:atp_reload
     let g:atp_delete_output	= 0
 endif
@@ -2320,3 +2340,4 @@ if g:atp_Compiler == "python"
     endif
 endif
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
+

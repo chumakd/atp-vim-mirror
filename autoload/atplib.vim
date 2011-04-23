@@ -326,14 +326,31 @@ endfunction "}}}
 "Store LatexPIDs in a variable
 function! atplib#LatexPID(pid)
     call add(b:atp_LatexPIDs, a:pid)
-    call atplib#LatexRunning()
+    call atplib#PIDsRunning("b:atp_BitexPIDs")
     let b:atp_LastLatexPID =a:pid
 endfunction "}}}
+"{{{ BibtexPID
+"Store BibtexPIDs in a variable
+function! atplib#BibtexPID(pid)
+    call add(b:atp_BibtexPIDs, a:pid)
+    call atplib#PIDsRunning("b:atp_BibtexPIDs")
+    let b:atp_LastBibtexPID =a:pid
+endfunction "}}}
+"{{{ MakeindexPID
+"Store MakeindexPIDs in a variable
+function! atplib#MakeindexPID(pid)
+    call add(b:atp_MakeindexPIDs, a:pid)
+    call atplib#PIDsRunning("b:atp_BibtexPIDs")
+    let b:atp_LastMakeindexPID =a:pid
+endfunction "}}}
 "{{{ LatexRunning
-function! atplib#LatexRunning()
+function! atplib#PIDsRunning(var)
+" a:var is a string, and might be one of 'b:atp_LatexPIDs', 'b:atp_BibtexPIDs' or
+" 'b:atp_MakeindexPIDs'
 python << EOL
 import psutil, re, sys, vim
-pids = vim.eval("b:atp_LatexPIDs")
+var  = vim.eval("a:var")
+pids = vim.eval(var)
 if len(pids) > 0:
     ps_list=psutil.get_pid_list()
     rmpids=[]
@@ -348,7 +365,7 @@ if len(pids) > 0:
     rmpids.sort()
     rmpids.reverse()
     for pid in rmpids:
-	vim.eval("filter(b:atp_LatexPIDs, 'v:val !~ \""+str(pid)+"\"')")
+	vim.eval("filter("+var+", 'v:val !~ \""+str(pid)+"\"')")
 EOL
 endfunction "}}}
 "{{{ ProgressBar
@@ -364,6 +381,9 @@ function! atplib#ProgressBar(value,pid)
 "     redraw
 "     echomsg a:value
 endfunction "}}}
+function! atplib#redrawstatus()
+    redrawstatus
+endfunction
 " }}}
 
 " Toggle On/Off Completion 

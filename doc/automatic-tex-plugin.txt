@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.5)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -133,7 +133,19 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+
+ I added (and extended) the dictionaries of latex-suite to ATP (the files
+ dictionaries/dictionary and dictionary/SIunits). The are added to
+ |'complete'| vim option, so you can use them through |ins-completion|.
+ I made one more dictionary (dictionaries/ams_dictionary) with ams commands
+ and environemnt names. It will be added to the vim |'complete'| option if you
+ use amsmath package or if the document class is one of the ams classes or of
+ |g:atp_amsmath| is set to 1.
  
+ Status notifications has the ability to show if |b:atp_BibCompiler|, or
+ "makeindex" are running. Unless |g:atp_statusNotif|=0 or |g:atp_callback|=0
+ |atp-:MakeLatex| will not echo messages (the info appears in staus line).
+
  Support for biber and biblatex added (in |atp-:MakeLatex|, |atp-:Bibtex|,
  |atp-:Delete|, |atp-:InputFiles| commands), |g:keep| variable will adjust on
  the fly (add run.xml and bcf extensions).  |b:atp_BibCommand| will be set to
@@ -2360,8 +2372,11 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		propositions, and also it makes completion for \ref{ nicer
 		- you can list only labels for theorems), so if you do not
 		want it anyway: 'let g:atp_no_short_names=1' will make the
-		work.
-
+		work. 
+							*g:atp_amsmath*
+		If |g:atp_amsmath|=1 or you use one of ams classes, or the
+		package amsmath is found by ATP ams math commands and
+		environment names will be added to the list of completions.
 
 							*atp-variables-local_completion*
 							*b:atp_LocalColors*
@@ -2488,6 +2503,8 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		'\newcommand', '\renewcommand') will not be closed unless the
 		current cursor position is in that line (sometimes one might
 		want to have a definition which only opens an environment).
+
+		See |g:atp_amsmath|.
 
 		Examples: ~
 			(the <Tab> indicates in which position the
@@ -4254,9 +4271,12 @@ COPY RIGHTS							*atp-copy-rights*
     You should have received a copy of the GNU General Public License along
     with Automatic Tex Plugin for Vim.  If not, see <http://www.gnu.org/licenses/>.
 
-    This licence applies to all files shipped with Automatic Tex Plugin.
-
-
+    This licence applies to all files shipped with Automatic Tex Plugin,
+    exluding the following two dictionary files: >
+	"ftplugin/ATP_files/dictionaries/dictionary",
+	"ftplugin/ATP_files/dictionaries/SIunits" 
+<   where taken from latex-suite Vim plugin and are under Vim charity
+    |license|.
 
 
 " vim:tw=75:ts=8:ft=help:norl:

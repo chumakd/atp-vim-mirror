@@ -174,7 +174,7 @@ def latex_progress_bar(cmd):
                 vim_remote_expr(servername, "atplib#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+")")
     child.wait()
     vim_remote_expr(servername, "atplib#ProgressBar('end',"+str(pid)+")")
-    vim_remote_expr(servername, "atplib#LatexRunning()")
+    vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_LatexPIDs\")")
     return child
 
 def xpdf_server_file_dict():
@@ -325,7 +325,10 @@ if bibtex and os.path.exists(tmpaux):
     debug_file.write("\nBIBTEX1"+str([bibcommand, bibfname])+"\n")
     os.chdir(tmpdir)
     bibtex_popen=subprocess.Popen([bibcommand, bibfname], stdout=subprocess.PIPE)
+    vim_remote_expr(servername, "atplib#BibtexPID('"+str(bibtex_popen.pid)+"')")
+    vim_remote_expr(servername, "atplib#redrawstatus()")
     bibtex_popen.wait()
+    vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_BibtexPIDs\")")
     os.chdir(mainfile_dir)
     bibtex_returncode=bibtex_popen.returncode
     bibtex_output=re.sub('"', '\\"', bibtex_popen.stdout.read())
@@ -374,7 +377,7 @@ for i in range(1, int(runs+1)):
                 vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
             debug_file.write("latex pid "+str(pid)+"\n")
             latex.wait()
-            vim_remote_expr(servername, "atplib#LatexRunning()")
+            vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_LatexPIDs\")")
         latex_returncode=latex.returncode
         debug_file.write("latex return code "+str(latex_returncode)+"\n")
         tempdir_list = os.listdir(tmpdir)
@@ -393,7 +396,10 @@ for i in range(1, int(runs+1)):
         debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
         os.chdir(tmpdir)
         bibtex_popen=subprocess.Popen([bibcommand, bibfname], stdout=subprocess.PIPE)
+        vim_remote_expr(servername, "atplib#BibtexPID('"+str(bibtex_popen.pid)+"')")
+        vim_remote_expr(servername, "atplib#redrawstatus()")
         bibtex_popen.wait()
+        vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_BibtexPIDs\")")
         os.chdir(mainfile_dir)
         bibtex_returncode=bibtex_popen.returncode
         bibtex_output=re.sub('"', '\\"', bibtex_popen.stdout.read())
