@@ -25,20 +25,20 @@ if g:atp_MapUpdateToCLine
     nmap <buffer> <silent> <S-Down> <S-Down>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <PageDown> <PageDown>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> z+	z+:call UpdateToCLine()<CR>
-    nmap <buffer> <silent> <S-ScrollWheelUp> <S-ScrollWheelUp>:call UpdateToCLine()
-    nmap <buffer> <silent> <C-ScrollWheelUp> <C-ScrollWheelUp>:call UpdateToCLine()
-    nmap <buffer> <silent> <ScrollWheelUp> <ScrollWheelUp>:call UpdateToCLine()
+    nmap <buffer> <silent> <S-ScrollWheelUp> <S-ScrollWheelUp>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <C-ScrollWheelUp> <C-ScrollWheelUp>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <ScrollWheelUp> <ScrollWheelUp>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <C-U> <C-U>:call UpdateToCLine()<CR>
 "     nmap <buffer> <silent> <C-E> <C-E>:call UpdateToCLine()<CR>
 
     nmap <buffer> <silent> <C-B> <C-B>:call UpdateToCLine()<CR>
-    nmap <buffer> <silent> <S-ScrollWheelDown> <S-ScrollWheelDown>:call UpdateToCLine()
-    nmap <buffer> <silent> <C-ScrollWheelDown> <C-ScrollWheelDown>:call UpdateToCLine()
-    nmap <buffer> <silent> <ScrollWheelDown> <ScrollWheelDown>:call UpdateToCLine()
+    nmap <buffer> <silent> <S-ScrollWheelDown> <S-ScrollWheelDown>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <C-ScrollWheelDown> <C-ScrollWheelDown>:call UpdateToCLine()<CR>
+    nmap <buffer> <silent> <ScrollWheelDown> <ScrollWheelDown>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <S-Up> <S-Up>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <PageUp> <PageUp>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <C-D> <C-D>:call UpdateToCLine()<CR>
-"     nmap <buffer> <silent> <C-Y> <C-Y>:call YpdateToCLine()<CR>
+"     nmap <buffer> <silent> <C-Y> <C-Y>:call UpdateToCLine()<CR>
 
     nmap <buffer> <silent> gj	gj:call UpdateToCLine(1)<CR>
     nmap <buffer> <silent> gk	gk:call UpdateToCLine(1)<CR>
@@ -78,9 +78,10 @@ command! -buffer 	  CloseLastBracket	:call atplib#CloseLastBracket()
 if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_maps == 0 ) && 
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
-nmap <buffer> <silent>	Gs		:<C-U>keepjumps exe v:count1."Sec"<CR>
-nmap <buffer> <silent>	Gc		:<C-U>keepjumps exe v:count1."Chap"<CR>
-nmap <buffer> <silent>	Gp		:<C-U>keepjumps exe v:count1."Part"<CR>
+" They are interfering with vim GG.
+" nmap <buffer> <silent>	Gs		:<C-U>keepjumps exe v:count1."Sec"<CR>
+" nmap <buffer> <silent>	Gc		:<C-U>keepjumps exe v:count1."Chap"<CR>
+" nmap <buffer> <silent>	Gp		:<C-U>keepjumps exe v:count1."Part"<CR>
 
 if g:atp_MapCommentLines    
     nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines

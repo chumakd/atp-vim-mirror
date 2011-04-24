@@ -585,21 +585,21 @@ endfunction
 
 " There is a copy of this variable in compiler.vim
 
-function! LatexRunning()
-python << EOL
-import psutil, vim
-if vim.eval("exists('b:atp_LastLatexPID')"):
-	lpid = int(vim.eval("exists('b:atp_LastLatexPID') ? b:atp_LastLatexPID : -1"))
-	if lpid != -1:
-                try:
-			name=psutil.Process(lpid).name
-                except psutil.NoSuchProcess:
-			lpid=0
-	vim.command(":let b:atp_LastLatexPID="+str(lpid))
-else:
-	vim.command(":let b:atp_LastLatexPID=0")
-EOL
-endfunction
+" function! LatexRunning()
+" python << EOL
+" import psutil, vim
+" if vim.eval("exists('b:atp_LastLatexPID')"):
+" 	lpid = int(vim.eval("exists('b:atp_LastLatexPID') ? b:atp_LastLatexPID : -1"))
+" 	if lpid != -1:
+"                 try:
+" 			name=psutil.Process(lpid).name
+"                 except psutil.NoSuchProcess:
+" 			lpid=0
+" 	vim.command(":let b:atp_LastLatexPID="+str(lpid))
+" else:
+" 	vim.command(":let b:atp_LastLatexPID=0")
+" EOL
+" endfunction
 
 function! ATPRunning() "{{{
 
@@ -614,7 +614,7 @@ function! ATPRunning() "{{{
 " 	call LatexRunning()
 	call atplib#PIDsRunning("b:atp_LatexPIDs")
 	call atplib#PIDsRunning("b:atp_BibtexPIDs")
-	call atplib#PIDsRunning("b:atp_MakeindexPIDs")
+" 	call atplib#PIDsRunning("b:atp_MakeindexPIDs")
 " 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs) 
 	if exists("b:atp_LatexPIDs")
 	    let atp_running= len(b:atp_LatexPIDs) 

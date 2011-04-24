@@ -230,6 +230,9 @@ function! s:buflist()
     " this names are used in TOC and passed to s:maketoc, which
     " makes a dictionary whose keys are the values of name defined
     " just below:
+    if !exists("t:buflist")
+	let t:buflist = []
+    endif
     let name=resolve(fnamemodify(bufname("%"),":p"))
     " add an entry to the list t:buflist if it is not there.
     if bufname("") =~ ".tex" && index(t:buflist,name) == -1
@@ -1313,9 +1316,11 @@ function! GotoFile(bang,file,...)
 	let filetype	= &l:filetype
 	let old_file	= expand("%:p")
 	let atp_ErrorFormat	= b:atp_ErrorFormat
-	let atp_LastLatexPID 	= ( exists("b:atp_LastLatexPID") ? b:atp_LastLatexPID : 0 )
-	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") 	? b:atp_LatexPIDs : [] )
-	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") ? b:atp_ProgressBar : {} )
+	let atp_LastLatexPID 	= ( exists("b:atp_LastLatexPID") 	? b:atp_LastLatexPID 	: 0 )
+	let atp_LatexPIDs	= ( exists("b:atp_LatexPIDs") 		? b:atp_LatexPIDs 	: [] )
+	let atp_BibtexPIDs	= ( exists("b:atp_BibtexPIDs") 		? b:atp_BibtexPIDs 	: [] )
+	let atp_MakeindexPIDs	= ( exists("b:atp_MakeindexPIDs") 	? b:atp_MakeindexPIDs 	: [] )
+	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") 	? b:atp_ProgressBar 	: {} )
 	execute "edit " . fnameescape(file)
 	if &l:filetype =~ 'tex$' && file =~ '\.tex$' && &l:filetype != filetype  
 	    let &l:filetype	= filetype
@@ -1339,6 +1344,7 @@ function! GotoFile(bang,file,...)
 	    unlockvar b:atp_ProgressBar
 	endif
 	let [ b:atp_LastLatexPID, b:atp_LatexPIDs, b:atp_ProgressBar ] = [ atp_LastLatexPID, atp_LatexPIDs, atp_ProgressBar ]
+	let [ b:atp_BibtexPIDs, b:atp_MakeindexPIDs ] = [ atp_BibtexPIDs, atp_MakeindexPIDs ]
 	lockvar b:atp_ProgressBar
 	if !&l:autochdir
 	    exe "lcd " . fnameescape(cwd)

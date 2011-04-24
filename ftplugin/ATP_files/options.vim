@@ -176,12 +176,11 @@ exe "setlocal complete+=".
 	    \ "k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/greek").
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary").
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits")
-if atplib#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams'
-    exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
-endif
+" The ams_dictionary is added after g:atp_amsmath variable is defined.
 
-" The suffixes option is also set after g:atp_tex_extensions is set.
 setlocal suffixes+=pdf
+" As a base we use the standard value defined in 
+" The suffixes option is also set after g:atp_tex_extensions is set.
 
 " Borrowed from tex.vim written by Benji Fisher:
     " Set 'comments' to format dashed lists in comments
@@ -238,7 +237,7 @@ let s:optionsDict= {
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
 		\ "atp_okularOptions"		: "--unique",
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
-		\ "atp_TmpDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
+		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
 		\ "atp_BibCompiler"		: ( getline(atplib#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
@@ -691,6 +690,9 @@ endif
 if !exists("g:atp_amsmath") || g:atp_reload
     let g:atp_amsmath=atplib#SearchPackage('ams')
 endif
+if atplib#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams'
+    exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
+endif
 if !exists("g:atp_no_math_command_completion") || g:atp_reload
     let g:atp_no_math_command_completion = 0
 endif
@@ -813,7 +815,7 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict"
+		\ "b:LevelDict", 	"b:atp_BibCompiler"
 		\ ] 
 endif
 " the variable a:1 is the name of the variable which stores the list of variables to
@@ -1319,7 +1321,9 @@ function! ATP_ToggleDebugMode(mode,...)
 	endif
 	let winnr = bufwinnr("%")
 	if copen
+	    let efm=b:atp_ErrorFormat
 	    silent copen
+	    exe "ErrorFormat ".efm
 	    silent! cg
 	    exe winnr . " wincmd w"
 	endif
@@ -1916,7 +1920,10 @@ endfunction
 
     augroup ATP_deltmpdir
 	au!
-	au VimLeave *.tex :call <SID>Rmdir(b:atp_TmpDir)
+	" Remove b:atp_TempDir (where compelation is done).
+	au VimLeave *.tex :call <SID>Rmdir(b:atp_TempDir)
+	" Remove TempDir for debug files.
+	au VimLeave *.tex :call <SID>RmTempDir()
     augroup END
 
     augroup ATP_updatetime
@@ -2299,6 +2306,7 @@ endfunction
 "}}}1
 
 " Python test if libraries are present
+" {{{
 function! <SID>TestPythonLibs()
 python << END
 import vim
@@ -2339,5 +2347,49 @@ if g:atp_Compiler == "python"
 	call <SID>TestPythonLibs()
     endif
 endif
+" }}}
+
+"Make g:atp_TempDir, where log files are stored.
+"{{{
+function! <SID>TempDir() 
+    " Return temporary directory, unique for each user.
+if has("python") && executable(g:atp_Python)
+function! ATP_SetTempDir(tmp)
+    let g:atp_TempDir=a:tmp
+endfunction
+python << END
+import tempfile, os
+USER=os.getenv("USER")
+tmp=tempfile.mkdtemp(suffix="", prefix="ATP_"+USER+"_")
+vim.eval("ATP_SetTempDir('"+tmp+"')")
+END
+delfunction ATP_SetTempDir
+else
+    let g:atp_TempDir=substitute(tempname(), '\d\+$', "ATP_debug", '')
+    call mkdir(g:atp_TempDir, "p", 0700)
+endif
+endfunction
+call <SID>TempDir()
+"}}}
+
+" Remove g:atp_TempDir tree where log files are stored.
+" {{{
+function! <SID>RmTempDir()
+if has("python") && executable(g:atp_Python)
+python << END
+import shutil
+temp=vim.eval("g:atp_TempDir")
+print(temp)
+shutil.rmtree(temp)
+END
+elseif has("unix") && has("macunix")
+    call system("rm -rf ".shellescape(g:atp_TempDir))
+else
+    echohl ErrorMsg
+    echomsg "[ATP:] Leaving temporary directory ".g:atp_TempDir
+    echohl Normal
+endif
+endfunction "}}}
+
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
 

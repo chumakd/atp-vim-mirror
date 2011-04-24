@@ -324,3 +324,8 @@ Done: biblatex support requires changes in TreeOfFiles, \bibliography command is
 ToDo: add biber to status notification (like pdfLaTeX)
 ToDo: b:atp_LastLatexPID is not necessary!
 ToDo: g:atp_inputfile_pattern : maybe it should be updated by :InputFiles if somebody added/removed biblatex.
+ToDo: b:atp_BibCompiler is add g:atp_ProjectLocalVariables.
+ToDo: GG stopped working.
+ToDo: test :MakeLatex on different files.
+ToDo: add ReloadViewer to MakeLatex
+ToDo: make ToC work with tabs: find file in another tab and go there (?)

@@ -2,7 +2,7 @@
 # Author: Marcin Szamotulski <mszamot[@]gmail[.]com>
 # This file is a part of Automatic TeX Plugin for Vim.
 
-import sys, os.path, subprocess, re, optparse 
+import sys, os.path, subprocess, re, optparse
 from collections import deque
 from optparse import OptionParser
 
@@ -82,7 +82,7 @@ def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
 
 # expr must be well quoted:
-#       vim_remote_expr('GVIM', "atplib#CatchStatus()")
+#       vim_remote_expr('GVIM', "atplib#TeXReturnCode('1')")
 # (this is the only way it works)
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
     debug_file.write(str(cmd)+"\n")
@@ -141,7 +141,7 @@ if index == 1:
     idxfile     = os.path.basename(basename)+".idx"
     debug_file.write("mkidx: cmd="+str(['makeindex', idxfile])+"\n")
     index=subprocess.Popen(['makeindex', idxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    vim_remote_expr(servername, "atplib#MakeindexPID('"+str(bibtex.pid)+"')")
+    vim_remote_expr(servername, "atplib#MakeindexPID('"+str(index.pid)+"')")
     vim_remote_expr(servername, "atplib#redrawstatus()")
     index.wait()
     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_MakeindexPIDs\")")
@@ -164,7 +164,7 @@ os.putenv("max_print_line", "2000")
 latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+outdir]+tex_options_list+[file_fp])
 latex.wait()
 latex_return_code=latex.returncode
-vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex_return_code)+"')")
+vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex_return_code)+"')")
 debug_file.write("LATEX RETURN CODE="+str(latex_return_code)+"\n")
 
 run+=1

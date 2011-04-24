@@ -326,24 +326,22 @@ endfunction "}}}
 "Store LatexPIDs in a variable
 function! atplib#LatexPID(pid)
     call add(b:atp_LatexPIDs, a:pid)
-    call atplib#PIDsRunning("b:atp_BitexPIDs")
+"     call atplib#PIDsRunning("b:atp_BitexPIDs")
     let b:atp_LastLatexPID =a:pid
 endfunction "}}}
 "{{{ BibtexPID
 "Store BibtexPIDs in a variable
 function! atplib#BibtexPID(pid)
     call add(b:atp_BibtexPIDs, a:pid)
-    call atplib#PIDsRunning("b:atp_BibtexPIDs")
-    let b:atp_LastBibtexPID =a:pid
+"     call atplib#PIDsRunning("b:atp_BibtexPIDs")
 endfunction "}}}
 "{{{ MakeindexPID
 "Store MakeindexPIDs in a variable
 function! atplib#MakeindexPID(pid)
     call add(b:atp_MakeindexPIDs, a:pid)
-    call atplib#PIDsRunning("b:atp_MakeindexPIDs")
     let b:atp_LastMakeindexPID =a:pid
 endfunction "}}}
-"{{{ LatexRunning
+"{{{ PIDsRunning
 function! atplib#PIDsRunning(var)
 " a:var is a string, and might be one of 'b:atp_LatexPIDs', 'b:atp_BibtexPIDs' or
 " 'b:atp_MakeindexPIDs'
@@ -381,9 +379,16 @@ function! atplib#ProgressBar(value,pid)
 "     redraw
 "     echomsg a:value
 endfunction "}}}
+"{{{ redrawstatus
 function! atplib#redrawstatus()
     redrawstatus
-endfunction
+endfunction "}}}
+"{{{ echo
+function! atplib#Echo(msg,cmd,hlgroup)
+    exe "echohl ".a:hlgroup
+    exe a:cmd." '".a:msg."'"
+    echohl Normal
+endfunction "}}}
 " }}}
 
 " Toggle On/Off Completion 

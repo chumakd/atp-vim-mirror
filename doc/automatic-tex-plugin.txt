@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 25 April 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.7)
 			by Marcin Szamotulski
@@ -133,6 +133,10 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+ |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
+
+ All python scripts are compatible with Python 3.1. Traceback info is
+ forwarded to vim (and log file) in case exceptions are handled.
 
  I added (and extended) the dictionaries of latex-suite to ATP (the files
  dictionaries/dictionary and dictionary/SIunits). The are added to
@@ -154,9 +158,9 @@ NEWS							*atp-news*
  If you use biblatex, it allows for putting \bibliography{} type commands only
  in the preambule. Thus ATP will search for them only there. The
  |g:atp_inputfile_pattern| might not contain any pattern for bibliographies
- (\addbibresource, \bibliography, etc.). The |atp-:InputFiles| command will search
- for them in a special subrutine which only searches in the preambule. This
- makes it work slightly faster.
+ (\addbibresource, \bibliography, etc.). The |atp-:InputFiles| command will
+ search for them in a special subrutine which only searches in the preambule.
+ This makes it work slightly faster.
 
  	|b:atp_TexOptions| is a comma separeted list of TeX compiler options.
 	If you use |g:atp_Compiler|="bash" this might be just a white space
@@ -312,7 +316,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     the python script executable (it is 'ftplugin/ATP_files/compile.py' under
     vim |'runtimepath'|).
 
-    The python code has two debug files '/tmp/atp_PythonCompiler.debug' will
+    The python code has a debug file compile.py.log under |g:atp_TempDir| will
     contain all the errors issued by python, and '/tmp/atp_compile.py.debug'
     - debugging info printed by the |compile.py| script.
 
@@ -417,7 +421,7 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
   - Reverse searching python script atp_RevSearch.py is slightly better now!
 
 9.1!!: IMPORTANT: The default is: >
-	let b:atp_TmpDir='.tmp'
+	let b:atp_TempDir='.tmp'
 <   ATP will make this directory under |b:atp_OutDir|. Every latex process
     will be run in a private directory under it. Every private directory is
     removed when compiler ends (after copying files), the tmp directory is
@@ -678,7 +682,7 @@ Coming back to compilation ... ~
 
 Tex compiler is run with one options:
 	-output-directory 
-which points to a unique temporary file in a temporary directory |b:atp_TmpDir| 
+which points to a unique temporary file in a temporary directory |b:atp_TempDir| 
 
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
 the local to buffer variable b:autex=1 (on) b:autex=0 (off). It is useful in
@@ -3495,9 +3499,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		:TEX!
 		:echo g:atp_TexCommand
 <	It is read-only variable.	
-							*b:atp_TmpDir*
+							*b:atp_TempDir*
 >
- b:atp_TmpDir =	b:atp_OutDir/.tmp
+ b:atp_TempDir =	b:atp_OutDir/.tmp
 <	In this directory vim (or python) will make a temporary directory
 	(with a unique name) to which output files will be put by your TeX
 	compiler. This is done so to prevent overwriting the output file while
@@ -3937,7 +3941,7 @@ can get from here:
     http://code.google.com/p/psutil/
 Other libraries are standard ones so they should be available. If you have
 a problem you can try to set g:atp_debugPythonCompiler=1 and then look at the
-file /tmp/atp_PythonCompiler.debug it will contain python errors.
+file PythonCompiler.log under |g:atp_TempDir| it will contain python errors.
 
 It is nice to have 'texdoc' program. This plugin maps <F1> to a function which
 calls it. This allows to speed up searches for documentation. Also the option
