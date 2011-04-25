@@ -2398,8 +2398,8 @@ function! atplib#CloseLastEnvironment(...)
 
     if g:atp_debugCLE
 	exe "redir! > " . g:atp_TempDir."/CloseLastEnvironment.log"
-	silent echo "args=".g:args
 	let g:args 	= l:com . " " . l:close . " " . l:env_name . " " . string(l:bpos_env)
+	silent echo "args=".g:args
 	let g:com	= l:com
 	let g:close 	= l:close
 	let g:env_name	= l:env_name
@@ -2505,6 +2505,7 @@ function! atplib#CloseLastEnvironment(...)
 	    silent echo "g:begin_line=".g:begin_line
 	    silent echo "g:bound=".string(g:bound)
 	    silent echo "g:math=".string(g:math)
+	    silent echo "math_mode=".( exists("math_mode") ? math_mode : "None" )
 	endif
     elseif ( l:close == "0" || l:close == "math" )
 	let string = getline(l:bpos_env[0])[l:bpos_env[1]-2] . getline(l:bpos_env[0])[l:bpos_env[1]-1] . getline(l:bpos_env[0])[l:bpos_env[1]]
@@ -2552,11 +2553,14 @@ function! atplib#CloseLastEnvironment(...)
 	endif
 	if exists("math_mode")
 	    let l:begin_line 	= l:bpos_env[0]
-	else
 	    if g:atp_debugCLE
+		silent echo "math_mode=".math_mode
+		silent echo "l:begin_line=".l:begin_line
 		redir END
 	    endif
+	else
 	    if g:atp_debugCLE
+		silent echo "Given coordinates are closed."
 		redir END
 	    endif
 	    return " Given coordinates are closed."
@@ -2584,9 +2588,7 @@ let l:env=l:env_name
 
 if l:close == "0" || l:close == 'math' && !exists("begin_line")
     if g:atp_debugCLE
-	redir END
-    endif
-    if g:atp_debugCLE
+	silent echo "there was nothing to close"
 	redir END
     endif
     return "there was nothing to close"
@@ -2597,12 +2599,14 @@ if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4"
     echomsg "       You can set b:atp_TexFlavor = 'plaintex', and ATP will ignore this. "
     echohl Normal
     if g:atp_debugCLE
+	silent echo "return A"
 	redir END
     endif
     return 
 endif
 if l:env_name =~ '^\s*document\s*$'
     if g:atp_debugCLE
+	silent echo "return B"
 	redir END
     endif
     return ""
@@ -2727,6 +2731,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		if getline(l:line_nr) =~ '\%(%.*\)\@<!\%(\\def\|\%(re\)\?newcommand\)' && l:line_nr != line(".")
 " 		    let b:cle_return="def"
 		    if g:atp_debugCLE
+			silent echo "return C"
 			redir END
 		    endif
 		    return
@@ -2781,6 +2786,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    " belongs to the g:atp_no_complete list.
 		    if len(l:str) == 0
 			if g:atp_debugCLE
+			    silent echo "return D"
 			    redir END
 			endif
 			return 0
@@ -2864,12 +2870,14 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			    endif
 			endif 
 			if g:atp_debugCLE
+			    silent echo "return E"
 			    redir END
 			endif
 			return 1
 		    endif
 		else
 		    if g:atp_debugCLE
+			silent echo "return F"
 			redir END
 		    endif
 		    return "this is too hard?"
@@ -2970,6 +2978,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 	endif "}}3
     endif
     if g:atp_debugCLE
+	silent echo "return G"
 	redir END
     endif
     "}}}2
