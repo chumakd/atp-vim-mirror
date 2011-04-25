@@ -4,7 +4,9 @@
 # This file is a part of AutomaticTexPlugin plugin for Vim.
 # It is distributed under General Public Licence v3 or higher.
 
-import shutil, os.path, re, optparse, subprocess, traceback
+# To do: compile in temp dir.
+
+import shutil, os.path, re, optparse, subprocess, traceback, psutil
 from optparse import OptionParser
 import os
 from os import getcwd
@@ -19,10 +21,16 @@ parser.add_option("--cmd",              dest="cmd",             default="pdflate
 parser.add_option("--bibcmd",           dest="bibcmd",          default="bibtex"                        )
 parser.add_option("--tex-options",      dest="tex_options",     default=""                              )
 parser.add_option("--outdir",           dest="outdir"                                                   )
-parser.add_option("--tempdir",           dest="tempdir")
+parser.add_option("--tempdir",          dest="tempdir"                                                  )
 parser.add_option("--progname",         dest="progname",        default="gvim"                          )
-parser.add_option("--servername",       dest="servername")
-# This is not yet used.
+parser.add_option("--servername",       dest="servername"                                               )
+parser.add_option("--viewer",           dest="viewer",          default="xpdf"                          )
+parser.add_option("--xpdf-server",      dest="xpdf_server",                                             )
+parser.add_option("--viewer-options",   dest="viewer_opt",      default="",                             )
+parser.add_option("--start",            dest="start",           default=0,              type="int"      )
+parser.add_option("--reload-viewer",    dest="reload_viewer",   default=False,          action="store_true")
+parser.add_option("--reload-on-error",  dest="reload_on_error", default=False,          action="store_true")
+# This is not yet used:
 parser.add_option("--force",            dest="force",           default=False,          action="store_true")
 parser.add_option("--env",              dest="env",             default=""                              )
 
@@ -80,6 +88,19 @@ outdir		= options.outdir
 debug_file.write("outdir="+outdir+"\n")
 force		= options.force
 debug_file.write("force="+str(force)+"\n")
+start           = options.start
+viewer          = options.viewer
+XpdfServer      = options.xpdf_server
+reload_viewer   = options.reload_viewer
+reload_on_error = options.reload_on_error
+viewer_rawopt   = options.viewer_opt.split(',')
+viewer_it       = list(filter(nonempty,viewer_rawopt))
+viewer_opt      =[]
+for opt in viewer_it:
+    viewer_opt.append(opt)
+viewer_rawopt   = viewer_opt
+if viewer == "xpdf" and XpdfServer != None:
+    viewer_opt.extend(["-remote", XpdfServer])
 
 def mysplit(string):
         return re.split('\s*=\s*', string)
@@ -93,7 +114,7 @@ else:
 run   = 0
 # BOUND (do not run pdflatex more than this) 
 # echoerr in Vim if bound is reached.
-bound = 7
+bound = 6
 
 # FUNCTIONS
 
@@ -136,6 +157,46 @@ def latex_progress_bar(cmd):
     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_LatexPIDs\")")
     return child
 
+def xpdf_server_file_dict():
+# Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
+
+# to test if the server host file use:
+# basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
+# this dictionary always contains the full path (Linux).
+# TODO: this is not working as I want to:
+#    when the xpdf was opened first without a file it is not visible in the command line
+#    I can use 'xpdf -remote <server> -exec "run('echo %f')"'
+#    where get_filename is a simple program which returns the filename. 
+#    Then if the file matches I can just reload, if not I can use:
+#          xpdf -remote <server> -exec "openFile(file)"
+    ps_list=psutil.get_pid_list()
+    server_file_dict={}
+    for pr in ps_list:
+        try:
+            name=psutil.Process(pr).name
+            cmdline=psutil.Process(pr).cmdline
+            if name == 'xpdf':
+                try:
+                    ind=cmdline.index('-remote')
+                except:
+                    ind=0
+                if ind != 0 and len(cmdline) >= 1:
+                    server_file_dict[cmdline[ind+1]]=[cmdline[len(cmdline)-1], pr]
+        except psutil.NoSuchProcess:
+            pass
+    return server_file_dict
+
+def reload_xpdf():
+# Reload xpdf if asked,
+
+    if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
+        cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_'] 
+        if cond and ( reload_on_error or latex_returncode == 0 or bang ):
+            debug_file.write("Reloading Xpdf\n")
+            run=['xpdf', '-remote', XpdfServer, '-reload']
+            devnull=open(os.devnull, "w+")
+            subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
+            devnull.close()
 
 try:
     cwd = getcwd()
@@ -154,6 +215,7 @@ try:
     run  += 1
     latex.wait()
     vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex.returncode)+"')")
+    reload_xpdf()
 
 # AFTER FIRST TIME LOG FILE SHOULD EXISTS:
     if os.path.isfile(logfile):
@@ -265,6 +327,7 @@ try:
             run  += 1
             latex.wait()
             vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex.returncode)+"')")
+            reload_xpdf()
 
 #CONDITION
             log_file=open(logfile, "r")
@@ -294,6 +357,30 @@ try:
 
             condition = ( (citations and run <= need_runs) or labels or makeidx or run <= need_runs ) and run <= bound
             debug_file.write(str(run)+"condition="+str(condition)+"\n")
+
+    # Start viewer: (reloading xpdf is done after each compelation) 
+    if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
+        # The condition tests if the server XpdfServer is running
+        xpdf_server_dict=xpdf_server_file_dict()
+        cond = xpdf_server_dict.get(XpdfServer, ['_no_file_']) != ['_no_file_']
+        if start == 1:
+            debug_file.write("Starting Xpdf\n")
+            run=['xpdf']
+            run.extend(viewer_opt)
+            run.append(output_fp)
+            subprocess.Popen(run)
+    else:
+        if start >= 1:
+            debug_file.write("Starting "+str(viewer))
+            run=[viewer]
+            run.extend(viewer_opt)
+            run.append(output_fp)
+            devnull=open(os.devnull, "w+")
+            subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
+            devnull.close()
+        if start == 2:
+            debug_file.write("SyncTex with "+str(viewer))
+            vim_remote_expr(servername, "atplib#SyncTex()")
 # else:
 # THERE IS NO LOG FILE AFTER FIRST TIME: exit with error.
 except Exception:
