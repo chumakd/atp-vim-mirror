@@ -6,7 +6,7 @@
 
 # To do: compile in temp dir.
 
-import shutil, os.path, re, optparse, subprocess, traceback, psutil
+import shutil, os.path, re, optparse, subprocess, traceback, psutil, tempfile
 from optparse import OptionParser
 import os
 from os import getcwd
@@ -18,6 +18,7 @@ parser  = OptionParser(usage=usage)
 
 parser.add_option("--texfile",          dest="texfile"                                                  )
 parser.add_option("--cmd",              dest="cmd",             default="pdflatex"                      )
+parser.add_option("--output-format",    dest="output_format",   default="pdf"                           )
 parser.add_option("--bibcmd",           dest="bibcmd",          default="bibtex"                        )
 parser.add_option("--tex-options",      dest="tex_options",     default=""                              )
 parser.add_option("--outdir",           dest="outdir"                                                   )
@@ -28,8 +29,10 @@ parser.add_option("--viewer",           dest="viewer",          default="xpdf"  
 parser.add_option("--xpdf-server",      dest="xpdf_server",                                             )
 parser.add_option("--viewer-options",   dest="viewer_opt",      default="",                             )
 parser.add_option("--start",            dest="start",           default=0,              type="int"      )
+parser.add_option("--keep",             dest="keep",            default="aux,toc,bbl,ind,pdfsync,synctex.gz")
 parser.add_option("--reload-viewer",    dest="reload_viewer",   default=False,          action="store_true")
 parser.add_option("--reload-on-error",  dest="reload_on_error", default=False,          action="store_true")
+parser.add_option("--bibliographies",   dest="bibliographies",  default="",                             )
 # This is not yet used:
 parser.add_option("--force",            dest="force",           default=False,          action="store_true")
 parser.add_option("--env",              dest="env",             default=""                              )
@@ -44,6 +47,7 @@ texfile = options.texfile
 basename = os.path.splitext(os.path.basename(texfile))[0]
 texfile_dir = os.path.dirname(texfile)
 logfile = basename+".log"
+debug_file.write("logfile="+logfile)
 auxfile = basename+".aux"
 bibfile = basename+".bbl"
 idxfile = basename+".idx"
@@ -60,18 +64,27 @@ def nonempty(str):
 	else:
             return True
 servername      = options.servername
-debug_file.write("servername="+servername+"\n")
+debug_file.write("SERVERNAME="+servername+"\n")
 progname        = options.progname
-debug_file.write("progname="+progname+"\n")
+debug_file.write("PROGNAME="+progname+"\n")
 cmd		= options.cmd
-debug_file.write("cmd="+cmd+"\n")
+debug_file.write("CMD="+cmd+"\n")
 tex_options	= options.tex_options
-debug_file.write("tex_options="+tex_options+"\n")
+debug_file.write("TEX_OPTIONS="+tex_options+"\n")
+output_format   = options.output_format
+if output_format == "pdf":
+    output_ext = ".pdf"
+else:
+    output_ext = ".dvi"
+output_fp       = os.path.join(texfile_dir,basename+output_ext)
+debug_file.write("OUTPUT_FORMAT="+output_format+"\n")
 bibcmd		= options.bibcmd
-debug_file.write("bibcmd="+bibcmd+"\n")
+debug_file.write("BIBCMD="+bibcmd+"\n")
 biber=False
 if re.search(bibcmd, '^\s*biber'):
     biber=True
+bibliographies  = options.bibliographies.split(",")
+bibliographies  = list(filter(nonempty, bibliographies))
 
 tex_options	= options.tex_options
 if re.match('\s*$', tex_options):
@@ -82,12 +95,12 @@ else:
         tex_options_list=list(filter(nonempty,tex_options_list))
     else:
         tex_options_list=[tex_options]
-debug_file.write("tex_options_list="+str(tex_options_list)+"\n")
+debug_file.write("TEX_OPTIONS_LIST="+str(tex_options_list)+"\n")
 
 outdir		= options.outdir
-debug_file.write("outdir="+outdir+"\n")
+debug_file.write("OUTDIR="+outdir+"\n")
 force		= options.force
-debug_file.write("force="+str(force)+"\n")
+debug_file.write("FORCE="+str(force)+"\n")
 start           = options.start
 viewer          = options.viewer
 XpdfServer      = options.xpdf_server
@@ -101,6 +114,20 @@ for opt in viewer_it:
 viewer_rawopt   = viewer_opt
 if viewer == "xpdf" and XpdfServer != None:
     viewer_opt.extend(["-remote", XpdfServer])
+keep            = options.keep.split(',')
+keep            = list(filter(nonempty, keep))
+
+def keep_filter_aux(string):
+    if string == 'aux':
+        return False
+    else:
+        return True
+
+def keep_filter_log(string):
+    if string == 'log':
+        return False
+    else:
+        return True
 
 def mysplit(string):
         return re.split('\s*=\s*', string)
@@ -133,7 +160,7 @@ def vim_remote_expr(servername, expr):
 def latex_progress_bar(cmd):
 # Run latex and send data for progress bar,
 
-    debug_file.write("RUN "+str(run)+" cmd"+str(cmd)+"\n")
+    debug_file.write("RUN "+str(run)+" CMD"+str(cmd)+"\n")
 
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     pid   = child.pid
@@ -192,11 +219,24 @@ def reload_xpdf():
     if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_'] 
         if cond and ( reload_on_error or latex_returncode == 0 or bang ):
-            debug_file.write("Reloading Xpdf\n")
+            debug_file.write("reloading Xpdf\n")
             run=['xpdf', '-remote', XpdfServer, '-reload']
             devnull=open(os.devnull, "w+")
             subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
             devnull.close()
+
+def copy_back_output():
+    os.chdir(tmpdir)
+    shutil.copy(basename+output_ext, texfile_dir)
+    os.chdir(texfile_dir)
+
+def copy_back():
+    os.chdir(tmpdir)
+    for ext in list(filter(keep_filter_aux,keep)):
+        file_cp=basename+"."+ext
+        if os.path.exists(file_cp):
+            shutil.copy(file_cp, texfile_dir)
+    os.chdir(texfile_dir)
 
 try:
     cwd = getcwd()
@@ -205,24 +245,57 @@ try:
 # Note always run first time.
 # this ensures that the aux, ... files are uptodate.
 
+# COPY FILES TO TEMP DIR
+    if not os.path.exists(os.path.join(texfile_dir, ".tmp")):
+            # This is the main tmp dir (./.tmp) 
+            # it will not be deleted by this script
+            # as another instance might be using it.
+            # it is removed by Vim on exit.
+        os.mkdir(os.path.join(texfile_dir,".tmp"))
+    tmpdir  = tempfile.mkdtemp(dir=os.path.join(texfile_dir,".tmp"),prefix="")
+    debug_file.write("TMPDIR="+tmpdir+"\n")
+    tmplog  = os.path.join(tmpdir,basename+".log")
+    debug_file.write("TMPLOG="+tmplog+"\n")
+    tmpaux  = os.path.join(tmpdir,basename+".aux")
+
+    for ext in filter(keep_filter_log,keep):
+        file_cp=basename+"."+ext
+        if os.path.exists(file_cp):
+            shutil.copy(file_cp, tmpdir)
+
+    tempdir_list = os.listdir(tmpdir)
+    debug_file.write("ls tmpdir "+str(tempdir_list)+"\n")
+    for bib in bibliographies:
+        if os.path.exists(os.path.join(texfile_dir,os.path.basename(bib))):
+            os.symlink(os.path.join(texfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
+
+# SET ENVIRONMENT
+    for var in env:
+        os.putenv(var[0], var[1])
+
 # WE RUN FOR THE FIRST TIME:
 # Set Environment:
     if len(env) > 0:
         for var in env:
             os.putenv(var[0], var[1])
 
-    latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+outdir]+tex_options_list+[texfile])
+    output_exists=os.path.exists(os.path.join(texfile_dir,basename+output_ext))
+    debug_file.write("OUTPUT_EXISTS="+str(output_exists)+":"+os.path.join(texfile_dir,basename+output_ext)+"\n")
+    latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options_list+[texfile])
     run  += 1
     latex.wait()
     vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex.returncode)+"')")
-    reload_xpdf()
+    os.chdir(tmpdir)
+    if not output_exists:
+        copy_back_output()
+        reload_xpdf()
 
 # AFTER FIRST TIME LOG FILE SHOULD EXISTS:
-    if os.path.isfile(logfile):
+    if os.path.isfile(tmplog):
 
         need_runs = 1
 
-        log_file  = open(logfile, "r")
+        log_file  = open(tmplog, "r")
         log       = log_file.read()
         log_file.close()
 # undefined references|Citations undefined|Label(s) may have changed|Writing index file
@@ -277,7 +350,7 @@ try:
         lotfile_readable = os.path.isfile(lotfile)
         thmfile_readable = os.path.isfile(thmfile)
 
-        aux_file=open(auxfile, "r")
+        aux_file=open(tmpaux, "r")
         aux=aux_file.read()
         aux_file.close()
         bibtex=re.search('\\\\bibdata\s*{', aux)
@@ -303,6 +376,7 @@ try:
 # BIBTEX
                 if bibtex:
                     bibtex=False
+                    os.chdir(tmpdir)
                     if re.search(bibcmd, '^\s*biber'):
                         auxfile = basename
                     bibtex=subprocess.Popen([bibcmd, auxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -312,44 +386,44 @@ try:
                     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_BibtexPIDs\")")
                     bibtex_output=re.sub('"', '\\"', bibtex.stdout.read().decode())
                     vim_remote_expr(servername, "atplib#BibtexReturnCode('"+str(bibtex.returncode)+"',\""+str(bibtex_output)+"\")")
+                    os.chdir(texfile_dir)
 # MAKEINDEX
                 if makeidx:
                     makeidx=False
+                    os.chdir(tmpdir)
                     index=subprocess.Popen(['makeindex', idxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     vim_remote_expr(servername, "atplib#MakeindexPID('"+str(index.pid)+"')")
                     vim_remote_expr(servername, "atplib#redrawstatus()")
                     index.wait()
                     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_MakeindexPIDs\")")
                     index_returncode=index.returncode
+                    os.chdir(texfile_dir)
 
 # LATEX
-            latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+outdir]+tex_options_list+[texfile])
+            os.chdir(texfile_dir)
+            latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options_list+[texfile])
             run  += 1
             latex.wait()
             vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex.returncode)+"')")
             reload_xpdf()
+            copy_back_output()
 
 #CONDITION
-            log_file=open(logfile, "r")
+            log_file=open(tmplog, "r")
             log=log_file.read()
             log_file.close()
 
 # Citations undefined|Label(s) may have changed
 #         log_list=re.findall('(C\n?i\n?t\n?a\n?t\n?i\n?o\n?n\n?s\s+u\n?n\n?d\n?e\n?f\n?i\n?n\n?e\n?d)|(L\n?a\n?b\n?e\n?l\(s\)\s+m\n?a\n?y\s+h\n?a\n?v\n?e\s+c\n?h\n?a\n?n\n?g\n?e\n?d)',log)
             log_list=re.findall('(undefined references)|(Citations undefined)|(Label\(s\) may have changed)|(Writing index file)',log)
-#         citations_pre   =citations
             citations       =False
             labels          =False
-#             makeidx         =False
             for el in log_list:
                 if el[0] != '' or el[1] != '':
                     citations       =True
                 if el[2] != '':
                     labels          =True
-#             if el[2] != '':
-#                 makeidx         =True
             debug_file.write(str(run)+"citations="+str(citations)+"\n")
-#         debug_file.write(str(run)+"citations_pre="+str(citations_pre)+"\n")
             debug_file.write(str(run)+"labels="+str(labels)+"\n")
             debug_file.write(str(run)+"makeidx="+str(makeidx)+"\n")
 
@@ -381,6 +455,7 @@ try:
         if start == 2:
             debug_file.write("SyncTex with "+str(viewer))
             vim_remote_expr(servername, "atplib#SyncTex()")
+    copy_back()
 # else:
 # THERE IS NO LOG FILE AFTER FIRST TIME: exit with error.
 except Exception:
@@ -390,3 +465,4 @@ except Exception:
 
 os.chdir(cwd)
 debug_file.close()
+shutil.rmtree(tmpdir)
