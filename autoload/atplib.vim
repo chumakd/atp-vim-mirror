@@ -341,6 +341,18 @@ function! atplib#MakeindexPID(pid)
     call add(b:atp_MakeindexPIDs, a:pid)
     let b:atp_LastMakeindexPID =a:pid
 endfunction "}}}
+"{{{ PythonPID
+"Store PythonPIDs in a variable
+function! atplib#PythonPID(pid)
+    call add(b:atp_PythonPIDs, a:pid)
+"     call atplib#PIDsRunning("b:atp_PythonPIDs")
+endfunction "}}}
+"{{{ MakeindexPID
+"Store MakeindexPIDs in a variable
+function! atplib#PythonPIDs(pid)
+    call add(b:atp_PythonPIDs, a:pid)
+    let b:atp_LastPythonPID =a:pid
+endfunction "}}}
 "{{{ PIDsRunning
 function! atplib#PIDsRunning(var)
 " a:var is a string, and might be one of 'b:atp_LatexPIDs', 'b:atp_BibtexPIDs' or

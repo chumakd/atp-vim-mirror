@@ -298,9 +298,6 @@ If toc is opened update the highlighted section when using some commands (:F/:B,
 check if updating with cursor move takes time? (if it takes, one can check if line number changes.)
 Warn when going around file (hit top/bottom) (if count greater than one do not wrap around file (?) - if wrap/nowrap (or some other vim options) is set).
 
-gg2>s	(go to section 2)
-map <
-
 WINDOWS: Runtime error!
 	 Program ...\gvim.exe
 	 R6034
@@ -310,21 +307,14 @@ WINDOWS: Runtime error!
 bibliograph (python) requirements:
 bibliograph-rendering, zope-schema, zope-component
 
-Todo: g:atp_XpdfSleep if 0 ...
-
 zathura: how to implement inverse searching using bookmarks:
     "https://bbs.archlinux.org/viewtopic.php?pid=807105#p807105"
     this can be done with python script.
 
-Done: \\d should also open quickfix window (like \\D). 
-Done: Make commands which changes error format and rescans the log file.
-
-Done: g:keep for biber, biber uses 'biber hgt' not like 'bibtex hgt.aux'.
-Done: biblatex support requires changes in TreeOfFiles, \bibliography command is placed in the preambule!
-Done: add biber to status notification (like pdfLaTeX)
-Done: b:atp_LastLatexPID is not necessary!
 ToDo: g:atp_inputfile_pattern : maybe it should be updated by :InputFiles if somebody added/removed biblatex.
 # ToDo: GG stopped working.
 ToDo: test :MakeLatex on different files.
-# ToDo: add ReloadViewer to MakeLatex
 ToDo: make ToC work with tabs: find file in another tab and go there (?)
+ToDo: The following line is not recognized by TOC: \chapter[Decomposition of values]{Decomposition of Banzhaf and Shapley values}\label{chap:decomposition-of-values}
+MakeLatex: There ware undefined references this should be shown in debug mode (THIS BEGIN SPECIAL DEBUG MODE FOR MakeLatex).
+ToDo: in insert mode auTeX can wait until compilation stops.

@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Mon Apr 25 09:00  2011 W
+" Last Change: Tue Apr 26 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1482,7 +1482,7 @@ function! <SID>ReloadATP(bang)
     let common_file	= globpath(&rtp, 'ftplugin/ATP_files/common.vim')
     let options_file	= globpath(&rtp, 'ftplugin/ATP_files/options.vim')
     let g:atp_reload_functions = ( a:bang == "!" ? 1 : 0 ) 
-    let g:atp_reload	= 1
+    let g:atp_reload_variables = 0
     if a:bang == ""
 	execute "source " . common_file
 	execute "source " . options_file 
@@ -1519,8 +1519,8 @@ function! <SID>ReloadATP(bang)
 	    endif
 	endfor
     endif
-    let g:atp_reload		= 0
     let g:atp_reload_functions 	= 0
+    let g:atp_reload_variables  = 0
 endfunction
 catch /E127:/
     " Cannot redefine function, function is in use.

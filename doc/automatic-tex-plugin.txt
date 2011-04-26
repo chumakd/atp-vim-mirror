@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 25 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 26 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.10)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.12)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -14,7 +14,7 @@ mszamot@gmail.com. Voting at Vim site is also welcome ;) .
 
 This is a filetype plugin for Vim to comfortably write TeX (LaTeX, PdfLaTeX)
 documents, which provides functionality not met in other such plugins. It
-makes you FREE from compiling procedure, making this process automatic using
+makes you [FREE] from compiling procedure, making this process automatic using
 autocommands. It also provides useful mappings and other functions: to analyse
 your .log file, to see the table contents, to search for a label, to search in
 bib files or to find a macro definition matching a pattern, or even to find
@@ -30,7 +30,7 @@ TeX distribution for Linux, and MikTeX on Windows.
 
 FEATURES INCLUDE: ~
 -----------------
-* background compilation with debugging mode 
+* background compilation, debugging modes, progress bar
 * command to make the document (cross references, references, index, tables
   of contents) |atp-:MakeLatex|,
 * completion for commands, closing environments (even nested), package names,
@@ -56,7 +56,7 @@ FEATURES INCLUDE: ~
 ==============================================================================
 SOURCEFORGE						*atp-sourceforge*
 
-  - THE PROJECT HAS MOVED FROM Launchpad to SOURCEFORGE!
+  - The project is hosted on SourceForge:
     http://sourceforge.net/projects/atp-vim/
 
 DONATE     						*atp-donate*
@@ -75,11 +75,10 @@ DONATE     						*atp-donate*
     exchange).
 
   							*atp-mailing-list*
-  - There is a mailing list which will serve for both side communications:
-    feature requests, bug reports, suggestions. You can subscribe at:
+  - There is a mailing list which will serve for: feature requests, bug
+    reports, suggestions. You can subscribe at:
     https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 
-  							*atp-wiki-page*
   - There is also a new wiki page: (as for now it only includes features of
     ATP - it looks nice :)
     http://sourceforge.net/apps/mediawiki/atp-vim/index.php?title=Main_Page
@@ -133,10 +132,18 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+ |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
+ requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
+ 
+ |atp-]S|, |atp-]s|, |atp-]c|, |atp-]p| new maps for |atp-:SSec|, |atp-:Sec|,
+ |atp-:Chap| and |atp-:Part|. They also works relatievly to the current unit
+ (section/chapter/part), i.e. 2]s will jump to second section of the current
+ chapter.
+
  |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
  <C-L> nmap to call this command.
 
- All python scripts are compatible with Python 3.1. Traceback info is
+ All python scripts are compatible with Python 3. Traceback info is
  forwarded to vim (and log file) in case exceptions are handled.
 
  I added (and extended) the dictionaries of latex-suite to ATP (the files
@@ -199,6 +206,8 @@ EasyMotion and ATP ~
 	Select Comments nmap and vmap is now |_c| (previously \sc was
 	interfering with an ATP font map).
 
+ (Almost all) maps became |:map-silent|.   
+
 >
   =======================
   Changes in versions 9.3
@@ -245,10 +254,10 @@ EasyMotion and ATP ~
 	    nmap Q?		q?:call ATP_CmdwinToggleSpace('on')<CR>i
 <	in your |atprc| or |vimrc| file.
 
-							*atplib-:KillAll*
-	:KillAll
-	Kill all instances of b:atp_LatexPIDs, this only works with
-	|g:atp_Compiler|="python".
+							*atplib-:Kill*
+:Kill
+	Kill python scripts running (b:atp_PythonPIDs) and all pids in
+	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
 
 							*g:atp_DeleteWithBang*
 	g:atp_DeleteWithBang = ['synctex.gz', 'tex.project.vim']
@@ -263,22 +272,22 @@ EasyMotion and ATP ~
 	|g:atp_ProjectLocalVariables| (from g:atp_cached_local_variables),
 	|g:atp_ProjectGlobalVariables| (from g:atp_cached_global_variables).
 
-							*atp-map-Gs*
-							*atp-map-Gc*
-							*atp-map-Gp*
-							*atp-:SSec*
-							*atp-:Sec*
-							*atp-:Chap*
+							*atp-:SSec* *atp-]S*
+							*atp-:Sec* *atp-]s*
+							*atp-:Chap* *atp-]c*
 							*atp-:Part*
+							*atp-]p*
 :[count]SSec
+nmap ]S
 :[count]Sec
-nmap [count]Gs
+nmap ]s
 :[count]Chap
-nmap [count]Gc
+nmap ]c
 :[count]Part
-nmap [count]Gp
-	Go to subsection/section/chapter/part [count] from beinging. Mark ' is
-	preserved.
+nmap ]p
+	Go to subsection/section/chapter/part [count] from beinging of the
+	section/chapter/document, i.e. 3]s will jump to section 3 in current
+	chapter. Mark ' is preserved.
 
 nmap \c, vmap \c
 nmap \u, vmap \u
@@ -662,22 +671,18 @@ note on using CTRL-C (|i_CTRL-C|) in Vim:
  g:atp_updatetime_normal = 1000
 < - These variables sets the value of |'updatetime'| vim option.
     Separate settings are for normal and insert mode. You can make
-    g:atp_updatetime_normal even smaller so that the file is processed
+    |g:atp_updatetime_normal| even smaller so that the file is processed
     whenever you go out from insert mode to normal mode. These values will
-    overwrite the original value of |'updatetime'| so you should adjust them
-    in order for the change to have an effect.
+    overwrite the original value of |'updatetime'| (unless you set both
+    variables to 0)  so you should adjust them in order for the change to have
+    an effect.
 
     If you set |g:atp_updatetime_insert|=0 the TeX compiler will not be called
     while Vim is in the insert mode. 
 
     If you set |g:atp_updatetime_normal|=0 the TeX compiler will not be called
-    while Vim is in the normal mode. 
+    while Vim is in the normal mode.
 
-    Note: this will only work if you set this in your |atprc| or |vimrc| file.
-    Also changing this to non zero will only work after restarting Vim (so
-    this requires changing this in |atprc|/|vimrc| files. Though it is
-    possible (at least theoretically) to make it work on the fly, I found
-    a bug which I could not resolve :(.
 
 Coming back to compilation ... ~
 
@@ -3013,7 +3018,7 @@ let b:atp_TexCompilerVariable = "max_print_line=2000" 	*b:atp_TexCompilerVariabl
 
 let b:atp_BibCompiler	= "bibtex"			*b:atp_BibCompiler*
 	This variable sets the bibtex backend. There are other programs which
-	might be used, for example "biber" and "pybib" (not tested with ATP).
+	might be used, for example biber and pybib (not tested with ATP).
 	
 	The default value will be "biber" if the preamule contains
 	\usepackge[backend=biber]{biblatex}. If it is set to "biber" ATP will
@@ -3503,7 +3508,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 <	It is read-only variable.	
 							*b:atp_TempDir*
 >
- b:atp_TempDir =	b:atp_OutDir/.tmp
+ b:atp_TempDir = b:atp_OutDir/.tmp
 <	In this directory vim (or python) will make a temporary directory
 	(with a unique name) to which output files will be put by your TeX
 	compiler. This is done so to prevent overwriting the output file while
@@ -3512,7 +3517,13 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	file). The output files are copied back to b:atp_OutDir after
 	compelation. The tmporary directory is passed to your TeX compiler
 	using '-output-directory' switch.  
-
+							*g:atp_TempDir*
+>
+ g:atp_TempDir 
+<	In this direcory the logs of ATP are stored. If vim has python support
+	is created by python in most secure way available (readable only by
+	the user) if not it is made using mkdir() vim function with 0700
+	permissions.
 							*g:atp_CompilersDict*
 >
  let g:atp_CompilersDict 	= { 
@@ -3623,6 +3634,10 @@ Note: in all mappings '\' is set to your |<LocalLeader>| (and thus, in fact, the
 maps listed below might differ).
 
 Note: The list of commands might not be complete.
+
+Note: There are many internal maps defined |<Plug>|, they are not documented,
+but you can easily find them (you can start with
+ftplugin/ATP_files/mappings.vim, where they are used in rhs of maps). 
 
 						*atp-j_motion* *atp-k_motion*
 imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)

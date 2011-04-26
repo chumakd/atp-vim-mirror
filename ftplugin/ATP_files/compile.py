@@ -3,11 +3,12 @@
 # This file is a part of Automatic TeX Plugin for Vim.
 
 import sys, errno, os.path, shutil, subprocess, psutil, re, tempfile, optparse, glob
-import traceback
+import traceback, atexit
 
 from os import chdir, mkdir, putenv, devnull
 from optparse import OptionParser
 from collections import deque
+
 
 # readlink is not available on Windows.
 readlink=True
@@ -64,6 +65,14 @@ def nonempty(string):
 
 logdir          = options.logdir
 script_logfile  = os.path.join(logdir, 'compile.log')
+debug_file      = open(script_logfile, 'w')
+
+# Cleanup on exit:
+def cleanup(debug_file):
+    debug_file.close()
+    shutil.rmtree(tmpdir)
+atexit.register(cleanup, debug_file)
+
 command         = options.command
 bibcommand      = options.bibcommand
 progname        = options.progname
@@ -123,7 +132,6 @@ reload_on_error = options.reload_on_error
 gui_running     = options.gui_running
 progress_bar    = options.progress_bar
 
-debug_file      = open(script_logfile, 'w')
 debug_file.write("COMMAND "+command+"\n")
 debug_file.write("BIBCOMMAND "+bibcommand+"\n")
 debug_file.write("AUCOMMAND "+aucommand+"\n")
@@ -252,6 +260,8 @@ mainfile_dir    = os.path.normcase(mainfile_dir)
 output_fp       = os.path.splitext(mainfile_fp)[0]+extension
 
 try:
+    # Send pid to ATP:
+    vim_remote_expr(servername, "atplib#PythonPID("+str(os.getpid())+")")
 ####################################
 #
 #       Make temporary directory,
@@ -480,5 +490,5 @@ except Exception:
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     traceback.print_exc(None, debug_file)
     vim_remote_expr(servername, "atplib#Echo(\"[ATP:] error in compile.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in compile.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
-debug_file.close()
-shutil.rmtree(tmpdir)
+
+sys.exit(latex_returncode)

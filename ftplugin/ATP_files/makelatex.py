@@ -4,14 +4,17 @@
 # This file is a part of AutomaticTexPlugin plugin for Vim.
 # It is distributed under General Public Licence v3 or higher.
 
-# To do: compile in temp dir.
+# import signal, os
+# def handler(signum, frame):
 
-import shutil, os.path, re, optparse, subprocess, traceback, psutil, tempfile
+
+import shutil, os.path, re, optparse, subprocess, traceback, psutil
+import tempfile, os, atexit, sys
+
 from optparse import OptionParser
-import os
 from os import getcwd
+from signal import SIGKILL
 from collections import deque
-
 
 usage   = "usage: %prog [options]"
 parser  = OptionParser(usage=usage)
@@ -57,6 +60,31 @@ loffile = basename+".lof"
 lotfile = basename+".lot"
 thmfile = basename+".thm"
 
+if not os.path.exists(os.path.join(texfile_dir, ".tmp")):
+        # This is the main tmp dir (./.tmp) 
+        # it will not be deleted by this script
+        # as another instance might be using it.
+        # it is removed by Vim on exit.
+    os.mkdir(os.path.join(texfile_dir,".tmp"))
+tmpdir  = tempfile.mkdtemp(dir=os.path.join(texfile_dir,".tmp"),prefix="")
+
+# List of pids runing.
+pids    = []
+# Cleanup on exit:
+def cleanup(debug_file, tmpdir, pids):
+    debug_file.close()
+    shutil.rmtree(tmpdir)
+# Will this function be called when scripts get SIGKILL, if yes
+# then this code might be helpful:
+# THIS NEEDS sys MODULE AND SIGKILL from SIGNAL MODULE
+#     for pid in pids:
+#         try:
+#             os.kill(pid,SIGKILL)
+#         except OSError:
+#             # No such process error.
+#             pass
+atexit.register(cleanup, debug_file, tmpdir, pids)
+
 # FILTER:
 def nonempty(str):
 	if re.match('\s*$', str):
@@ -86,16 +114,16 @@ if re.search(bibcmd, '^\s*biber'):
 bibliographies  = options.bibliographies.split(",")
 bibliographies  = list(filter(nonempty, bibliographies))
 
-tex_options	= options.tex_options
-if re.match('\s*$', tex_options):
-    tex_options_list=[]
-else:
-    if re.search('\s', tex_options):
-        tex_options_list=' '.split(tex_options)
-        tex_options_list=list(filter(nonempty,tex_options_list))
-    else:
-        tex_options_list=[tex_options]
-debug_file.write("TEX_OPTIONS_LIST="+str(tex_options_list)+"\n")
+tex_options     = list(filter(nonempty,re.split('\s*,\s*',options.tex_options)))
+# if re.match('\s*$', tex_options):
+#     tex_options_list=[]
+# else:
+#     if re.search(',', tex_options):
+#         tex_options_list=tex_options.split(',')
+#         tex_options_list=list(filter(nonempty,tex_options_list))
+#     else:
+#         tex_options_list=[tex_options]
+debug_file.write("TEX_OPTIONS_LIST="+str(tex_options)+"\n")
 
 outdir		= options.outdir
 debug_file.write("OUTDIR="+outdir+"\n")
@@ -164,6 +192,7 @@ def latex_progress_bar(cmd):
 
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     pid   = child.pid
+    pids.append(pid)
 
     vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
     stack = deque([])
@@ -218,19 +247,19 @@ def reload_xpdf():
 
     if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_'] 
-        if cond and ( reload_on_error or latex_returncode == 0 or bang ):
+        if cond and ( reload_on_error or latex.returncode == 0 or bang ):
             debug_file.write("reloading Xpdf\n")
             run=['xpdf', '-remote', XpdfServer, '-reload']
             devnull=open(os.devnull, "w+")
             subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
             devnull.close()
 
-def copy_back_output():
+def copy_back_output(tmpdir):
     os.chdir(tmpdir)
     shutil.copy(basename+output_ext, texfile_dir)
     os.chdir(texfile_dir)
 
-def copy_back():
+def copy_back(tmpdir):
     os.chdir(tmpdir)
     for ext in list(filter(keep_filter_aux,keep)):
         file_cp=basename+"."+ext
@@ -239,6 +268,8 @@ def copy_back():
     os.chdir(texfile_dir)
 
 try:
+    # Send pid to ATP:
+    vim_remote_expr(servername, "atplib#PythonPID("+str(os.getpid())+")")
     cwd = getcwd()
     os.chdir(texfile_dir)
 
@@ -246,13 +277,6 @@ try:
 # this ensures that the aux, ... files are uptodate.
 
 # COPY FILES TO TEMP DIR
-    if not os.path.exists(os.path.join(texfile_dir, ".tmp")):
-            # This is the main tmp dir (./.tmp) 
-            # it will not be deleted by this script
-            # as another instance might be using it.
-            # it is removed by Vim on exit.
-        os.mkdir(os.path.join(texfile_dir,".tmp"))
-    tmpdir  = tempfile.mkdtemp(dir=os.path.join(texfile_dir,".tmp"),prefix="")
     debug_file.write("TMPDIR="+tmpdir+"\n")
     tmplog  = os.path.join(tmpdir,basename+".log")
     debug_file.write("TMPLOG="+tmplog+"\n")
@@ -281,19 +305,19 @@ try:
 
     output_exists=os.path.exists(os.path.join(texfile_dir,basename+output_ext))
     debug_file.write("OUTPUT_EXISTS="+str(output_exists)+":"+os.path.join(texfile_dir,basename+output_ext)+"\n")
-    latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options_list+[texfile])
+    latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options+[texfile])
     run  += 1
     latex.wait()
     vim_remote_expr(servername, "atplib#TexReturnCode('"+str(latex.returncode)+"')")
     os.chdir(tmpdir)
     if not output_exists:
-        copy_back_output()
+        copy_back_output(tmpdir)
         reload_xpdf()
 
 # AFTER FIRST TIME LOG FILE SHOULD EXISTS:
     if os.path.isfile(tmplog):
 
-        need_runs = 1
+        need_runs = [1]
 
         log_file  = open(tmplog, "r")
         log       = log_file.read()
@@ -308,13 +332,16 @@ try:
         for el in log_list:
             if el[0] != '' or el[1] != '':
                 citations       =True
-                if not biber:
-                    need_runs   =1
+                if biber:
+                    need_runs.append(1)
+                else:
+                    # Bibtex:
+                    need_runs.append(2)
             if el[2] != '':
                 labels          =True
             if el[3] != '':
                 makeidx         =True
-                need_runs       =2
+                need_runs.append(1)
 
         debug_file.write("citations="+str(citations)+"\n")
         debug_file.write("labels="+str(labels)+"\n")
@@ -329,16 +356,17 @@ try:
         for el in openout_list:
             if re.search('\.toc$',el):
                 toc=True
-                need_runs=2
+                need_runs.append(1)
+                # We need only one more run, because of the 0-run.
             if re.search('\.lof$',el):
                 lof=True
-                need_runs=2
+                need_runs.append(1)
             if re.search('\.lot$',el):
                 lot=True
-                need_runs=2
+                need_runs.append(1)
             if re.search('\.thm$',el):
                 thm=True
-                need_runs=2
+                need_runs.append(1)
 
         debug_file.write("A0 need_runs="+str(need_runs)+"\n")
 
@@ -382,6 +410,7 @@ try:
                     bibtex=subprocess.Popen([bibcmd, auxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     vim_remote_expr(servername, "atplib#BibtexPID('"+str(bibtex.pid)+"')")
                     vim_remote_expr(servername, "atplib#redrawstatus()")
+                    pids.append(bibtex.pid)
                     bibtex.wait()
                     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_BibtexPIDs\")")
                     bibtex_output=re.sub('"', '\\"', bibtex.stdout.read().decode())
@@ -394,6 +423,7 @@ try:
                     index=subprocess.Popen(['makeindex', idxfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     vim_remote_expr(servername, "atplib#MakeindexPID('"+str(index.pid)+"')")
                     vim_remote_expr(servername, "atplib#redrawstatus()")
+                    pids.append(index.pid)
                     index.wait()
                     vim_remote_expr(servername, "atplib#PIDsRunning(\"b:atp_MakeindexPIDs\")")
                     index_returncode=index.returncode
@@ -401,12 +431,12 @@ try:
 
 # LATEX
             os.chdir(texfile_dir)
-            latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options_list+[texfile])
+            latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options+[texfile])
             run  += 1
             latex.wait()
             vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex.returncode)+"')")
             reload_xpdf()
-            copy_back_output()
+            copy_back_output(tmpdir)
 
 #CONDITION
             log_file=open(tmplog, "r")
@@ -415,7 +445,7 @@ try:
 
 # Citations undefined|Label(s) may have changed
 #         log_list=re.findall('(C\n?i\n?t\n?a\n?t\n?i\n?o\n?n\n?s\s+u\n?n\n?d\n?e\n?f\n?i\n?n\n?e\n?d)|(L\n?a\n?b\n?e\n?l\(s\)\s+m\n?a\n?y\s+h\n?a\n?v\n?e\s+c\n?h\n?a\n?n\n?g\n?e\n?d)',log)
-            log_list=re.findall('(undefined references)|(Citations undefined)|(Label\(s\) may have changed)|(Writing index file)',log)
+            log_list=re.findall('(undefined references)|(Citations undefined)|(Label\(s\) may have changed)',log)
             citations       =False
             labels          =False
             for el in log_list:
@@ -429,7 +459,7 @@ try:
 
             debug_file.write(str(run)+"need_runs="+str(need_runs)+"\n")
 
-            condition = ( (citations and run <= need_runs) or labels or makeidx or run <= need_runs ) and run <= bound
+            condition = ( (citations and run <= max(need_runs)) or labels or makeidx or run <= max(need_runs) ) and run <= bound
             debug_file.write(str(run)+"condition="+str(condition)+"\n")
 
     # Start viewer: (reloading xpdf is done after each compelation) 
@@ -455,7 +485,7 @@ try:
         if start == 2:
             debug_file.write("SyncTex with "+str(viewer))
             vim_remote_expr(servername, "atplib#SyncTex()")
-    copy_back()
+    copy_back(tmpdir)
 # else:
 # THERE IS NO LOG FILE AFTER FIRST TIME: exit with error.
 except Exception:
@@ -463,6 +493,5 @@ except Exception:
     traceback.print_exc(None, debug_file)
     vim_remote_expr(servername, "atplib#Echo(\"[ATP:] error in makelatex.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in makelatex.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
 
-os.chdir(cwd)
-debug_file.close()
-shutil.rmtree(tmpdir)
+debug_file.write("PIDS="+str(pids))
+sys.exit(latex.returncode)

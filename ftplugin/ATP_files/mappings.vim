@@ -79,9 +79,9 @@ if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_ma
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
 " They are interfering with vim GG.
-" nmap <buffer> <silent>	Gs		:<C-U>keepjumps exe v:count1."Sec"<CR>
-" nmap <buffer> <silent>	Gc		:<C-U>keepjumps exe v:count1."Chap"<CR>
-" nmap <buffer> <silent>	Gp		:<C-U>keepjumps exe v:count1."Part"<CR>
+nmap <buffer> <silent>	]s		:<C-U>keepjumps exe v:count1."Sec"<CR>
+nmap <buffer> <silent>	]c		:<C-U>keepjumps exe v:count1."Chap"<CR>
+nmap <buffer> <silent>	]p		:<C-U>keepjumps exe v:count1."Part"<CR>
 
 if g:atp_MapCommentLines    
     nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines

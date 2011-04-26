@@ -1043,17 +1043,29 @@ endfunction
 
 function! <SID>ggGotoSection(count,section)
     let mark  = getpos("''")
-    call cursor(1,1)
     if a:section == "part"
 	let secname = '\\part\>'
+	call cursor(1,1)
     elseif a:section == "chapter"
 	let secname = '\\\%(part\|chapter\)\>'
+	if !search('\\part\>', 'bc')
+	    call cursor(1,1)
+	endif
     elseif a:section == "section"
 	let secname = '\\\%(part\|chapter\|section\)\>'
+	if !search('\\chapter\>\|\\part\>', 'bc')
+	    call cursor(1,1)
+	endif
     elseif a:section == "subsection"
 	let secname = '\\\%(part\|chapter\|section\|subsection\)\>'
+	if !search('\\section\>\|\\chapter\>\|\\part\>', 'bc')
+	    call cursor(1,1)
+	endif
     elseif a:section == "subsubsection"
 	let secname = '\\\%(part\|chapter\|section\|subsection\|subsubsection\)\>'
+	if !search('\subsection\>\|\\section\>\|\\chapter\>\|\\part\>', 'bc')
+	    call cursor(1,1)
+	endif
     endif
     call UpdateToCLine()
     call <SID>GotoSection("", a:count, 'Ws', secname)

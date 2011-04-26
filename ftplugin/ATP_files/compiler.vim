@@ -490,34 +490,46 @@ endfunction
 
 " This function kills all running latex processes.
 " a slightly better approach would be to kill compile.py scripts
-"{{{ s:KillAll
+"{{{ <SID>KillAll
 " the argument is a list of pids
 " a:1 if present supresses a message.
-function! <SID>KillAll(pids,...)
-    if g:atp_Compiler != 'python'  
-	echohl WarningMsg
-	echomsg "[ATP:] This works only with python compiler (see :help atp-compile.py)" 
-	echohl Normal
-	return
-    endif
+function! <SID>KillPIDs(pids,...)
     if len(a:pids) == 0 && a:0 == 0
-	echo "[ATP:] No instance of ".get(g:CompilerMsg_Dict,b:atp_TexCompiler,'TeX')." is running."
+	return
     endif
 python << END
 import os, signal
-from signal import SIGTERM
+from signal import SIGKILL
 pids=vim.eval("a:pids")
 for pid in pids:
     try:
-	os.kill(int(pid),SIGTERM)
+	os.kill(int(pid),SIGKILL)
     except OSError, e:
 	if e.errno == 3:
-            # No such process error.
-            pass
-	else:
-            raise
+             # No such process error.
+             pass
+        else:
+             raise
 END
-endfunction "}}}
+endfunction 
+function! <SID>Kill(bang)
+    if !has("python")
+	if a:bang != "!"
+	    echohl WarningMsg
+	    echomsg "[ATP:] you need python suppor" 
+	    echohl Normal
+	endif
+	return
+    endif
+    if len(b:atp_PythonPIDs)
+	call <SID>KillPIDs(b:atp_PythonPIDs)
+    endif
+    if len(b:atp_LatexPIDs)
+	call <SID>KillPIDs(b:atp_LatexPIDs)
+    endif
+endfunction
+
+"}}}
 
 function! <SID>SetBiberSettings()
     if b:atp_BibCompiler !~# '^\s*biber\>'
@@ -547,7 +559,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 
 	" This is not working: (I should kill compile.py scripts)
 	echomsg "[ATP:] killing all instances of ".get(g:CompilerMsg_Dict,b:atp_TexCompiler,'TeX')
-	call <SID>KillAll(b:atp_LatexPIDs,1)
+	call <SID>KillPIDs(b:atp_LatexPIDs,1)
 	sleep 1
 	PID
     endif
@@ -737,7 +749,8 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	if exists("*mkdir")
 	    call mkdir(tmpdir, "p", 0700)
 	else
-	    echoerr "Your vim doesn't have mkdir function"
+	    echoerr "[ATP:] Your vim doesn't have mkdir function, please try the python compiler."
+	    return
 	endif
 
 	" SET THE NAME OF OUTPUT FILES
@@ -1012,6 +1025,10 @@ augroup END
 
 function! <SID>auTeX()
 
+    if mode()=='i' && g:atp_updatetime_insert == 0 ||
+		\ mode()=='n' && g:atp_updatetime_normal == 0
+	return "autex is off for the mode: ".mode()." (see :help mode())"
+    endif
 
     " Using vcscommand plugin the diff window ends with .tex thus the autocommand
     " applies but the filetype is 'diff' thus we can switch tex processing by:
@@ -1091,9 +1108,7 @@ endfunction
 augroup ATP_auTeX
     au!
     au CursorHold 	*.tex call s:auTeX()
-    if g:atp_updatetime_insert
-	au CursorHoldI 	*.tex call s:auTeX()
-    endif
+    au CursorHoldI 	*.tex call s:auTeX()
 augroup END 
 "}}}
 
@@ -1509,7 +1524,7 @@ endif "}}}
 
 " Commands: 
 " {{{
-command! -buffer 		KillAll			:call <SID>KillAll(b:atp_LatexPIDs)
+command! -buffer -bang 		Kill			:call <SID>Kill(<q-bang>)
 command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
 command! -buffer 		SyncTex			:call <SID>SyncTex(0)
 command! -buffer 		PID			:call <SID>GetPID()

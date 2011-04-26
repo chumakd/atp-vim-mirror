@@ -3,10 +3,10 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 25-04-11_12-19
+" Time Stamp: 26-04-11_23-04
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Sun Apr 17 06:00  2011 W
+" Last Change: Tue Apr 26 09:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -31,6 +31,9 @@ let b:did_ftplugin	= 1
 
 if !exists("g:atp_reload_functions")
 	let g:atp_reload_functions = 0
+endif
+if !exists("g:atp_reload_variables")
+	let g:atp_reload_variables = 0
 endif
 
 if &cpoptions =~ '<'
