@@ -325,7 +325,7 @@ try:
 # AFTER FIRST TIME LOG FILE SHOULD EXISTS:
     if os.path.isfile(tmplog):
 
-        need_runs = [1]
+        need_runs = [0]
 
         log_file  = open(tmplog, "r")
         log       = log_file.read()

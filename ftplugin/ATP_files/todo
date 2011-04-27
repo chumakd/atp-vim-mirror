@@ -321,4 +321,4 @@ ToDo: in insert mode auTeX can wait until compilation stops: when compilers ends
 ToDo: CallBack is not working for bash compiler.
 ToDo: MakeLatex on hgt_field.tex (under BZR) pdflatex+bibtex+pdflatex (should do one pdflatex more).
 ToDo: Test <C-Space>
-ToDo: After :YankSectionn :SectionStack sias section stack is empty.
+Done: After :YankSectionn :SectionStack sais section stack is empty.

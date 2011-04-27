@@ -14,11 +14,11 @@ if g:atp_MapCC
 endif
 
 if has("gui")
-    cmap <silent> <buffer> <C-Space> \_s\+
+    cmap <buffer> <C-Space> \_s\+
 else
-    cmap <silent> <buffer> <C-@> \_s\+
+    cmap <buffer> <C-@> \_s\+
 endif
-cmap <silent> <buffer> <C-_> \_s\+
+cmap <buffer> <C-_> \_s\+
 
 if g:atp_MapUpdateToCLine
     nmap <buffer> <silent> <C-F> <C-F>:call UpdateToCLine()<CR>
