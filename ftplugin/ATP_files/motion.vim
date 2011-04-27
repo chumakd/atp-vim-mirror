@@ -1640,7 +1640,7 @@ call s:buflist()
 command! -buffer -count=1 Part		:call <SID>ggGotoSection(<q-count>, 'part')
 command! -buffer -count=1 Chap		:call <SID>ggGotoSection(<q-count>, 'chapter')
 command! -buffer -count=1 Sec		:call <SID>ggGotoSection(<q-count>, 'section')
-command! -buffer -count=1 GSSec		:call <SID>ggGotoSection(<q-count>, 'subsection')
+command! -buffer -count=1 SSec		:call <SID>ggGotoSection(<q-count>, 'subsection')
 
 command! -buffer -nargs=1 -complete=custom,<SID>CompleteDestinations GotoNamedDest	:call <SID>GotoNamedDestination(<f-args>)
 command! -buffer SkipCommentForward  	:call <SID>SkipComment('fs', 'n')

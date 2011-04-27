@@ -457,7 +457,7 @@ function! <SID>MakeLatex(bang, verbose, start)
     let bibliographies 		= join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
 
     let cmd=g:atp_Python." ".PythonMakeLatexPath.
-		\ " --texfile ".atplib#FullPath(b:atp_MainFile).
+		\ " --texfile ".shellescape(atplib#FullPath(b:atp_MainFile)).
 		\ " --start ".a:start.
 		\ " --output-format ".ext.
 		\ " --cmd ".b:atp_TexCompiler.
@@ -467,11 +467,11 @@ function! <SID>MakeLatex(bang, verbose, start)
 		\ " --keep ". shellescape(join(g:keep, ',')).
 		\ " --tex-options ".tex_options.
 		\ " --servername ".v:servername.
-		\ " --viewer ".b:atp_Viewer.
+		\ " --viewer ".shellescape(b:atp_Viewer).
 		\ " --xpdf-server ".b:atp_XpdfServer.
 		\ " --viewer-options ".shellescape(viewer_options).
 		\ " --progname ".v:progname.
-		\ " --tempdir ".g:atp_TempDir.
+		\ " --tempdir ".shellescape(g:atp_TempDir).
 		\ (t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
 		\ reload_viewer . reload_on_error
     unlockvar g:atp_TexCommand
@@ -629,8 +629,9 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let gui_running 		= ( has("gui_running") ? ' --gui-running ' : '' )
     let reload_viewer 		= ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' )
     let aucommand 		= ( a:command == "AU" ? ' --aucommand ' : '' )
-    let progress_bar 		= ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
+    let no_progress_bar 	= ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
     let bibliographies 		= join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
+    let autex_wait		= ( b:atp_autex_wait ? ' --autex_wait ' : '') 
 
     " Set the command
     let cmd=g:atp_Python." ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
@@ -650,7 +651,8 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ ." --bibliographies ".shellescape(bibliographies)
 		\ ." --logdir ".g:atp_TempDir 
 		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
-		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . progress_bar
+		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . no_progress_bar
+		\ . autex_wait
 
     " Write file
     let backup=&backup
@@ -678,7 +680,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     if a:verbose == "verbose"
 	exe ":!".cmd
     elseif g:atp_debugPythonCompiler && has("unix") 
-	call system(cmd." 2>/tmp/atp_pc.debug &")
+	call system(cmd." 2".g:atp_TempDir."/PythonCompiler.log &")
     elseif has("win16") || has("win32") || has("win64")
 	call system(cmd)
     else
@@ -709,7 +711,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
     endif
 
     if g:atp_debugCompiler
-	exe "redir! > ".g:atp_Tempdir."/Compiler.log"
+	exe "redir! > ".g:atp_TempDir."/Compiler.log"
 	silent echomsg "________ATP_COMPILER_LOG_________"
 	silent echomsg "changedtick=" . b:changedtick . " atp_changedtick=" . b:atp_changedtick
 	silent echomsg "a:bibtex=" . a:bibtex . " a:start=" . a:start . " a:runs=" . a:runs . " a:verbose=" . a:verbose . " a:command=" . a:command . " a:filename=" . a:filename . " a:bang=" . a:bang
@@ -746,12 +748,19 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
 	let tmpdir=b:atp_TempDir . matchstr(tempname(), '\/\w\+\/\d\+')
 	let tmpfile=atplib#append(tmpdir, "/") . fnamemodify(a:filename,":t:r")
-	if exists("*mkdir")
-	    call mkdir(tmpdir, "p", 0700)
-	else
-	    echoerr "[ATP:] Your vim doesn't have mkdir function, please try the python compiler."
-	    return
+	if g:atp_debugCompiler
+	    let g:tmpdir=tmpdir
+	    let g:tmpfile=tmpfile
+	    silent echo "tmpdir=".tmpdir
+	    silent echo "tmpfile=".tmpfile
 	endif
+	call system("mkdir -m 0700 -p ".shellescape(tmpdir))
+" 	if exists("*mkdir")
+" 	    call mkdir(tmpdir, "p", 0700)
+" 	else
+" 	    echoerr "[ATP:] Your vim doesn't have mkdir function, please try the python compiler."
+" 	    return
+" 	endif
 
 	" SET THE NAME OF OUTPUT FILES
 	" first set the extension pdf/dvi
@@ -1023,12 +1032,42 @@ augroup ATP_changedtick
     au BufWritePost 	*.tex 	:let b:atp_changedtick = b:changedtick
 augroup END 
 
-function! <SID>auTeX()
+function! <SID>auTeX(...)
 
     if mode()=='i' && g:atp_updatetime_insert == 0 ||
 		\ mode()=='n' && g:atp_updatetime_normal == 0
 	return "autex is off for the mode: ".mode()." (see :help mode())"
     endif
+
+    " Wait if the compiler is running. The problem is that CursorHoldI autocommands
+    " are not triggered more than once after 'updatetime'.
+"     echomsg "***"
+"     echomsg "b:atp_autex_wait=".b:atp_autex_wait
+"     echomsg "mode=".mode()
+    if index(split(g:atp_autex_wait, ','), mode()) != -1
+" 	\ !b:atp_autex_wait
+	if g:atp_Compiler == "python"
+	    call atplib#PIDsRunning("b:atp_PythonPIDs")
+	    echomsg string(b:atp_PythonPIDs)
+	else
+	    call atplib#PIDsRunning("b:atp_LatexPIDs")
+	endif
+	call atplib#PIDsRunning("b:atp_BibtexPIDs")
+	echo string(b:atp_BibtexPIDs)
+	if g:atp_Compiler == "python" && len(b:atp_PythonPIDs) ||
+	    \ g:atp_Compiler == "bash" && len(b:atp_LatexPIDs) ||
+	    \ len(b:atp_BibtexPIDs)
+" 	    unlockvar b:atp_autex_wait
+" 	    let b:atp_autex_wait=1
+" 	    lockvar b:atp_autex_wait
+	    return
+	endif
+"     else
+" 	unlockvar b:atp_autex_wait
+" 	let b:atp_autex_wait=0
+" 	lockvar b:atp_autex_wait
+    endif
+
 
     " Using vcscommand plugin the diff window ends with .tex thus the autocommand
     " applies but the filetype is 'diff' thus we can switch tex processing by:
@@ -1049,7 +1088,7 @@ function! <SID>auTeX()
 	if g:atp_Compare == "changedtick"
 	    let cond = ( b:changedtick != b:atp_changedtick )
 	else
-	    let cond = ( s:compare(readfile(expand("%"))) )
+	    let cond = ( <SID>compare(readfile(expand("%"))) )
 	endif
 	let g:cond=cond
 	if cond
@@ -1103,6 +1142,9 @@ function! <SID>auTeX()
     endif
     return "files does not differ"
 endfunction
+" function! ATP_auTeX()
+"     call <SID>auTeX()
+" endfunction
 
 " This is set by SetProjectName (options.vim) where it should not!
 augroup ATP_auTeX

@@ -395,6 +395,16 @@ endfunction "}}}
 function! atplib#redrawstatus()
     redrawstatus
 endfunction "}}}
+"{{{ CursorMoveI
+" function! atplib#CursorMoveI()
+"     if mode() != "i"
+" 	return
+"     endif
+"     let cursor_pos=[ line("."), col(".")]
+"     call feedkeys("\<left>", "n")
+"     call cursor(cursor_pos)
+" endfunction "}}}
+
 "{{{ echo
 function! atplib#Echo(msg,cmd,hlgroup)
     exe "echohl ".a:hlgroup

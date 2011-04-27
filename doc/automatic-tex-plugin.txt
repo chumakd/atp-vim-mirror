@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 26 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 27 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.12)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.13)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -135,13 +135,12 @@ NEWS							*atp-news*
  |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
  requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
  
- |atp-]S|, |atp-]s|, |atp-]c|, |atp-]p| new maps for |atp-:SSec|, |atp-:Sec|,
+ |atp-}S|, |atp-}s|, |atp-}c|, |atp-}p| new maps for |atp-:SSec|, |atp-:Sec|,
  |atp-:Chap| and |atp-:Part|. They also works relatievly to the current unit
  (section/chapter/part), i.e. 2]s will jump to second section of the current
  chapter.
 
  |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
- <C-L> nmap to call this command.
 
  All python scripts are compatible with Python 3. Traceback info is
  forwarded to vim (and log file) in case exceptions are handled.
@@ -272,19 +271,18 @@ EasyMotion and ATP ~
 	|g:atp_ProjectLocalVariables| (from g:atp_cached_local_variables),
 	|g:atp_ProjectGlobalVariables| (from g:atp_cached_global_variables).
 
-							*atp-:SSec* *atp-]S*
-							*atp-:Sec* *atp-]s*
-							*atp-:Chap* *atp-]c*
-							*atp-:Part*
-							*atp-]p*
+							*atp-:SSec* *atp-}S*
+							*atp-:Sec* *atp-}s*
+							*atp-:Chap* *atp-}c*
+							*atp-:Part* *atp-}p*
 :[count]SSec
-nmap ]S
+nmap }S
 :[count]Sec
-nmap ]s
+nmap }s
 :[count]Chap
-nmap ]c
+nmap }c
 :[count]Part
-nmap ]p
+nmap }p
 	Go to subsection/section/chapter/part [count] from beinging of the
 	section/chapter/document, i.e. 3]s will jump to section 3 in current
 	chapter. Mark ' is preserved.
@@ -897,7 +895,6 @@ map \d
 	This is equivalent to ':TEX debug'.
 
 :MakeLatex[!]						*atp-:MakeLatex*
-nmap <C-L>
 	With one command you can make your whole document: cross references,
 	bibliography (with or without bibtex), index, table of contents, table
 	of figures, table of theorems ([ntheorem package]), table of

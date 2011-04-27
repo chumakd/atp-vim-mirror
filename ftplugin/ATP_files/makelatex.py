@@ -50,7 +50,7 @@ texfile = options.texfile
 basename = os.path.splitext(os.path.basename(texfile))[0]
 texfile_dir = os.path.dirname(texfile)
 logfile = basename+".log"
-debug_file.write("logfile="+logfile)
+debug_file.write("logfile="+logfile+"\n")
 auxfile = basename+".aux"
 bibfile = basename+".bbl"
 idxfile = basename+".idx"
@@ -111,6 +111,7 @@ debug_file.write("BIBCMD="+bibcmd+"\n")
 biber=False
 if re.search(bibcmd, '^\s*biber'):
     biber=True
+debug_file.write("BIBER="+str(biber)+"\n")
 bibliographies  = options.bibliographies.split(",")
 bibliographies  = list(filter(nonempty, bibliographies))
 
@@ -197,7 +198,13 @@ def latex_progress_bar(cmd):
     vim_remote_expr(servername, "atplib#LatexPID("+str(pid)+")")
     stack = deque([])
     while True:
-        out = child.stdout.read(1).decode()
+        try:
+            out = child.stdout.read(1).decode()
+        except UnicodeDecodeError:
+            debug_file.write("UNICODE DECODE ERROR:\n")
+            debug_file.write(child.stdout.read(1))
+            debug_file.write("\n")
+            out = ""
         if out == '' and child.poll() != None:
             break
         if out != '':
@@ -256,7 +263,8 @@ def reload_xpdf():
 
 def copy_back_output(tmpdir):
     os.chdir(tmpdir)
-    shutil.copy(basename+output_ext, texfile_dir)
+    if os.path.exists(file_cp):
+        shutil.copy(basename+output_ext, texfile_dir)
     os.chdir(texfile_dir)
 
 def copy_back(tmpdir):
@@ -491,7 +499,7 @@ try:
 except Exception:
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     traceback.print_exc(None, debug_file)
-    vim_remote_expr(servername, "atplib#Echo(\"[ATP:] error in makelatex.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in makelatex.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
+    vim_remote_expr(servername, "atplib#Echo(\"[ATP:] error in makelatex.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in makelatex.log under g:atp_TempDir\",'echo','ErrorMsg')")
 
 debug_file.write("PIDS="+str(pids))
 sys.exit(latex.returncode)

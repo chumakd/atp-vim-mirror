@@ -317,4 +317,8 @@ ToDo: test :MakeLatex on different files.
 ToDo: make ToC work with tabs: find file in another tab and go there (?)
 ToDo: The following line is not recognized by TOC: \chapter[Decomposition of values]{Decomposition of Banzhaf and Shapley values}\label{chap:decomposition-of-values}
 MakeLatex: There ware undefined references this should be shown in debug mode (THIS BEGIN SPECIAL DEBUG MODE FOR MakeLatex).
-ToDo: in insert mode auTeX can wait until compilation stops.
+ToDo: in insert mode auTeX can wait until compilation stops: when compilers ends it should generate CursorMovedI event if the mode is insert mode - this can be done by a simple function atplib#CursorMoveI(), hmm this is not good, b:atp_PythonPIDs will be not 0
+ToDo: CallBack is not working for bash compiler.
+ToDo: MakeLatex on hgt_field.tex (under BZR) pdflatex+bibtex+pdflatex (should do one pdflatex more).
+ToDo: Test <C-Space>
+ToDo: After :YankSectionn :SectionStack sias section stack is empty.

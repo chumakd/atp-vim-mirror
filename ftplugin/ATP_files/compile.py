@@ -49,6 +49,7 @@ parser.add_option("--bibtex",           action="store_true",    default=False,  
 parser.add_option("--reload-on-error",  action="store_true",    default=False,  dest="reload_on_error"  )
 parser.add_option("--bang",             action="store_false",   default=False,  dest="bang"             )
 parser.add_option("--gui-running",      action="store_true",    default=False,  dest="gui_running"      )
+parser.add_option("--autex_wait",       action="store_true",    default=False,  dest="autex_wait"       )
 parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar"     )
 parser.add_option("--bibliographies",                           default="",     dest="bibliographies"   )
 
@@ -92,6 +93,7 @@ runs            = options.runs
 servername      = options.servername
 start           = options.start
 viewer          = options.viewer
+autex_wait      = options.autex_wait
 XpdfServer      = options.xpdf_server
 viewer_rawopt   = options.viewer_opt.split(',')
 viewer_it       = list(filter(nonempty,viewer_rawopt))
@@ -176,7 +178,13 @@ def latex_progress_bar(cmd):
     debug_file.write("latex pid "+str(pid)+"\n")
     stack = deque([])
     while True:
-        out = child.stdout.read(1).decode()
+        try:
+            out = child.stdout.read(1).decode()
+        except UnicodeDecodeError:
+            debug_file.write("UNICODE DECODE ERROR:\n")
+            debug_file.write(child.stdout.read(1))
+            debug_file.write("\n")
+            out = ""
         if out == '' and child.poll() != None:
             break
         if out != '':

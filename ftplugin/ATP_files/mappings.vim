@@ -16,9 +16,9 @@ endif
 if has("gui")
     cmap <silent> <buffer> <C-Space> \_s\+
 else
-    cmap <silent> <buffer> <C-@>	\_s\+
+    cmap <silent> <buffer> <C-@> \_s\+
 endif
-cmap <silent> <buffer> <C-_> 	\_s\+
+cmap <silent> <buffer> <C-_> \_s\+
 
 if g:atp_MapUpdateToCLine
     nmap <buffer> <silent> <C-F> <C-F>:call UpdateToCLine()<CR>
@@ -79,9 +79,9 @@ if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_ma
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
 " They are interfering with vim GG.
-nmap <buffer> <silent>	]s		:<C-U>keepjumps exe v:count1."Sec"<CR>
-nmap <buffer> <silent>	]c		:<C-U>keepjumps exe v:count1."Chap"<CR>
-nmap <buffer> <silent>	]p		:<C-U>keepjumps exe v:count1."Part"<CR>
+nmap <buffer> <silent>	}s		:<C-U>keepjumps exe v:count1."Sec"<CR>
+nmap <buffer> <silent>	}c		:<C-U>keepjumps exe v:count1."Chap"<CR>
+nmap <buffer> <silent>	}p		:<C-U>keepjumps exe v:count1."Part"<CR>
 
 if g:atp_MapCommentLines    
     nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
@@ -326,7 +326,7 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <silent> <buffer> <LocalLeader>l 		<Plug>ATP_TeXCurrent
     nmap  <silent> <buffer> <LocalLeader>d 		<Plug>ATP_TeXdebug
     nmap  <silent> <buffer> <LocalLeader>D 		<Plug>ATP_TeXDebug
-    nmap           <buffer> <c-l>			<Plug>ATP_MakeLatex
+"     nmap           <buffer> <c-l>			<Plug>ATP_MakeLatex
     "ToDo: imaps!
     nmap  <silent> <buffer> <F5> 			<Plug>ATP_TeXVerbose
     nmap  <silent> <buffer> <s-F5> 			<Plug>ToggleAuTeX

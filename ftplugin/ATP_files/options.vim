@@ -232,6 +232,7 @@ let s:optionsDict= {
 	        \ "atp_ReloadOnError" 		: "1", 
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
+		\ "atp_autex_wait"		: 0,
 		\ "atp_ProjectScript"		: "1",
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
@@ -314,11 +315,17 @@ function! s:SetOptions()
 endfunction
 "}}}
 call s:SetOptions()
+lockvar b:atp_autex_wait
 
 "}}}
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_autex_wait")
+    " the value is a comma speareted list of modes, for modes see mode() function.
+"     let g:atp_autex_wait = "i,R,Rv,no,v,V,c,cv,ce,r,rm,!"
+    let g:atp_autex_wait = ""
+endif
 if !exists("g:atp_MapSelectComment") || g:atp_reload_variables
     let g:atp_MapSelectComment = "_c"
 endif
