@@ -321,4 +321,11 @@ ToDo: in insert mode auTeX can wait until compilation stops: when compilers ends
 ToDo: CallBack is not working for bash compiler.
 ToDo: MakeLatex on hgt_field.tex (under BZR) pdflatex+bibtex+pdflatex (should do one pdflatex more).
 ToDo: Test <C-Space>
-Done: After :YankSectionn :SectionStack sais section stack is empty.
+Done: After :YankSection :SectionStack sais section stack is empty.
+ToDo: Status line for QuickFix Window.
+ToDo: ChangeEnv \(:\) => \begin{equation}:\end{equation}
+ToDo: CTOC doesn't change when I change the title. Only after running TOC!
+Done: <s if on line \section... go to one section back.
+ToDo: gw on \end{proposition} joints this line with the next one.
+
+Look at: bibweb

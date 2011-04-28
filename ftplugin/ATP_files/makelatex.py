@@ -356,7 +356,7 @@ try:
         debug_file.write("makeidx="+str(makeidx)+"\n")
 
 # Scan for openout files to know if we are makeing: toc, lot, lof, thm
-        openout_list=re.findall("\\\\openout\d+\s*=\s*`([^']*)'",log)
+        openout_list=re.findall("\\\\openout\d+\s*=\s*`\"?([^'\"]*)\"?'",log)
         toc     =False
         lot     =False
         lof     =False
@@ -390,8 +390,11 @@ try:
         aux=aux_file.read()
         aux_file.close()
         bibtex=re.search('\\\\bibdata\s*{', aux)
+# This can be used to make it faster and use the old bbl file.
+# For this I have add a switch (bang).
+#         bibtex=re.search('No file '+basename+'\.bbl\.', log)
         if not bibtex:
-# Then search for biblatex package.
+# Then search for biblatex package. Alternatively, I can search for biblatex messages in log file.
             for line in open(texfile):
                 if re.match('[^%]*\\\\usepackage\s*(\[[^]]*\])?\s*{(\w\|,)*biblatex',line):
                     bibtex=True
@@ -502,4 +505,5 @@ except Exception:
     vim_remote_expr(servername, "atplib#Echo(\"[ATP:] error in makelatex.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in makelatex.log under g:atp_TempDir\",'echo','ErrorMsg')")
 
 debug_file.write("PIDS="+str(pids))
+vim_remote_expr(servername, "atplib#Echo('[ATP:] MakeLatex finished.', 'echomsg', 'Normal')")
 sys.exit(latex.returncode)

@@ -79,9 +79,10 @@ if ( !exists("g:no_plugin_maps") || exists("g:no_plugin_maps") && g:no_plugin_ma
 	    \ ( !exists("g:no_atp_maps") || exists("g:no_plugin_maps") && g:no_atp_maps == 0 ) 
 
 " They are interfering with vim GG.
-nmap <buffer> <silent>	}s		:<C-U>keepjumps exe v:count1."Sec"<CR>
-nmap <buffer> <silent>	}c		:<C-U>keepjumps exe v:count1."Chap"<CR>
-nmap <buffer> <silent>	}p		:<C-U>keepjumps exe v:count1."Part"<CR>
+exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."S		:<C-U>keepjumps exe v:count1.\"SSec\"<CR>"
+exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."s		:<C-U>keepjumps exe v:count1.\"Sec\"<CR>"
+exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."c		:<C-U>keepjumps exe v:count1.\"Chap\"<CR>"
+exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."p		:<C-U>keepjumps exe v:count1.\"Part\"<CR>"
 
 if g:atp_MapCommentLines    
     nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
@@ -155,11 +156,15 @@ nmap <C-k> <Plug>TexJMotionBackward
     execute "vmap <silent> <buffer> ".g:atp_map_backward_motion_leader."p 	<Plug>vGotoPreviousPart"
 
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."e		<Plug>GotoNextEnvironment"
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."e		<Plug>GotoPreviousEnvironment"
+    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."E		%<Plug>GotoNextEnvironment"
+    map <silent> <buffer> <C-F> <Plug>GotoNextEnvironment
+    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."e	<Plug>GotoPreviousEnvironment"
+    execute 'map <silent> <buffer> '.g:atp_map_backward_motion_leader.'E ?^\([^%]\|\\%\)*\\end<CR>%'
+    map <silent> <buffer> <C-B> <Plug>GotoPreviousEnvironment
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."m		<Plug>GotoNextMath"
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."m		<Plug>GotoPreviousMath"
+    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."m	<Plug>GotoPreviousMath"
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."M		<Plug>GotoNextDisplayedMath"
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."M		<Plug>GotoPreviousDisplayedMath"
+    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."M	<Plug>GotoPreviousDisplayedMath"
 
     " Goto File Map:
     if has("path_extra")
@@ -336,7 +341,7 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <silent> <buffer> <LocalLeader>B		<Plug>SimpleBibtex
     nmap  <silent> <buffer> <LocalLeader>b		<Plug>BibtexDefault
     nmap  <silent> <buffer> <F6>d 			<Plug>Delete
-    imap  <silent> <buffer> <F6>d			<Esc><Plug>Deletea
+    imap  <silent> <buffer> <F6>d			<Esc><Plug>Delete
     nmap  <silent> <buffer> <F6>l 		<Plug>OpenLog
     imap  <silent> <buffer> <F6>l 		<Esc><Plug>OpenLog
     nnoremap  <silent> <buffer> <F6> 			:ShowErrors e<CR>
@@ -351,27 +356,27 @@ nmap <C-k> <Plug>TexJMotionBackward
     nnoremap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
     inoremap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
     nnoremap  <silent> <buffer> <F6>g 			<Plug>PdfFonts
-    nnoremap  <silent> <buffer> <F1>			:TexDoc<space>
-    inoremap  <silent> <buffer> <F1> <esc> 		:TexDoc<space>
+    nnoremap           <buffer> <F1>			:TexDoc<space>
+    inoremap           <buffer> <F1> <esc> 		:TexDoc<space>
 
     " FONT MAPPINGS
     if g:atp_imap_first_leader == "]" || g:atp_imap_second_leader == "]" || g:atp_imap_third_leader == "]" || g:atp_imap_fourth_leader == "]" 
 	inoremap <silent> <buffer> ]] ]
     endif
 "     execute 'imap <silent> <buffer> '.g:atp_imap_second_leader.'rm \textrm{}<Left>'
-    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'rm <Esc>:call Insert("\\textrm{", "\\mathrm{")<Cr>a'
+    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'rm <Esc>:call Insert("\\textrm{", "\\mathrm{")<CR>a'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'up \textup{}<Left>'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'md \textmd{}<Left>'
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'it \textit{}<Left>'
-    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'it <Esc>:call Insert("\\textit{", "\\mathit{")<Cr>a'
+    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'it <Esc>:call Insert("\\textit{", "\\mathit{")<CR>a'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'sl \textsl{}<Left>'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'sc \textsc{}<Left>'
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'sf \textsf{}<Left>'
-    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'sf <Esc>:call Insert("\\textsf{", "\\mathsf{")<Cr>a'
+    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'sf <Esc>:call Insert("\\textsf{", "\\mathsf{")<CR>a'
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'bf \textbf{}<Left>'
-    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'bf <Esc>:call Insert("\\textbf{", "\\mathbf{")<Cr>a'
+    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'bf <Esc>:call Insert("\\textbf{", "\\mathbf{")<CR>a'
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'tt \texttt{}<Left>'
-    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'tt <Esc>:call Insert("\\texttt{", "\\mathtt{")<Cr>a'
+    execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'tt <Esc>:call Insert("\\texttt{", "\\mathtt{")<CR>a'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'em \emph{}<Left>'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'no <Esc>:call Insert("\\textnormal{", "\\mathnormal{")<Cr>a'
 	    

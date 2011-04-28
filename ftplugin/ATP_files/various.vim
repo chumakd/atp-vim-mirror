@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Tue Apr 26 09:00  2011 W
+" Last Change: Thu Apr 28 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -835,7 +835,8 @@ function! <SID>Delete(delete_output)
 		endfor
 	    endif
 	else
-	    let f=fnamemodify(atplib#FullPath(b:atp_MainFile), ":h").".".ext
+	    " Delete output file (pdf|dvi|ps) (though ps is not supported by ATP).
+	    let f=fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".".ext
 	    echo "Removing ".f
 	    call delete(f)
 	endif

@@ -3,10 +3,10 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 27-04-11_23-32
+" Time Stamp: 28-04-11_23-11
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Tue Apr 26 09:00  2011 W
+" Last Change: Thu Apr 28 05:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -124,7 +124,5 @@ endif
 
 	" Help functions.
 	runtime ftplugin/ATP_files/helpfunctions.vim
-
-	" Execute the atprc file.
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

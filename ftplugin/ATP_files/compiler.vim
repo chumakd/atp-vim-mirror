@@ -1576,7 +1576,7 @@ command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <S
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? -complete=custom,BibtexComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>,1)
-augroup ATP_QuickFixCmds_1
+augroup ATP_QuickFix_1
     au!
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A SetErrorFormat :call <SID>SetErrorFormat(<q-args>,1) | cg
     au FileType qf command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A ErrorFormat :call <SID>SetErrorFormat(<q-args>,1) | cg

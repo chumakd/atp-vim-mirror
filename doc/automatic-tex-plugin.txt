@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 27 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 28 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.13)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.14)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -132,10 +132,22 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+ These two maps are looked up from TeX_9 vim plugin (though they work
+ in a slightly different way), simplyfying they do:
+ <C-F>	/\\begin
+ <C-B>  ?\\begin
+ You can specify count, they are equivalent to |atp->e| and |atp-<e| (and
+ |atp-:F|, |atp-:B| commands).
+
+ There is one more nice map >E which is %>e, i.e. jump over the current
+ environment and go to next one. The reverse <E is alos implemented, thought
+ it is not simply <e%. They do not support count (yet), and actually count
+ breaks them.
+
  |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
  requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
  
- |atp-}S|, |atp-}s|, |atp-}c|, |atp-}p| new maps for |atp-:SSec|, |atp-:Sec|,
+ |atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|, |atp-:Sec|,
  |atp-:Chap| and |atp-:Part|. They also works relatievly to the current unit
  (section/chapter/part), i.e. 2]s will jump to second section of the current
  chapter.
@@ -271,21 +283,23 @@ EasyMotion and ATP ~
 	|g:atp_ProjectLocalVariables| (from g:atp_cached_local_variables),
 	|g:atp_ProjectGlobalVariables| (from g:atp_cached_global_variables).
 
-							*atp-:SSec* *atp-}S*
-							*atp-:Sec* *atp-}s*
-							*atp-:Chap* *atp-}c*
-							*atp-:Part* *atp-}p*
+							*atp-:SSec* *atp--S*
+							*atp-:Sec*  *atp--s*
+							*atp-:Chap* *atp--c*
+							*atp-:Part* *atp--p*
 :[count]SSec
-nmap }S
+nmap -S
 :[count]Sec
-nmap }s
+nmap -s
 :[count]Chap
-nmap }c
+nmap -c
 :[count]Part
-nmap }p
+nmap -p
 	Go to subsection/section/chapter/part [count] from beinging of the
 	section/chapter/document, i.e. 3]s will jump to section 3 in current
 	chapter. Mark ' is preserved.
+
+	You can set the leader for the maps with *g:atp_goto_section_leader* .
 
 nmap \c, vmap \c
 nmap \u, vmap \u
@@ -1525,10 +1539,11 @@ map \L
 	Go (backward) to {arg}, like above |atp-:F|.
 
 
-							*atp-:NEnv* *atp->e*
+							*atp-:NEnv* *atp->e* *atp-<C-F>*
 :NEnv {environment}
 :[count]F {environment}
 [count]map >e
+[count]map <C-F>
 	Move to next environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1540,10 +1555,11 @@ map \L
 	If g:atp_mapNn is set to one (see |atp-:ToggleNn|) then this command
 	is using |atp-:S|.
 
-							*atp-:PEnv* *atp-<e*
+							*atp-:PEnv* *atp-<e* *atp-<C-B>*
 :PEnv {environment}
 [count]:B {environment}
 [count]map <e
+[count]map <C-B>
 	Move to previous environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.

@@ -321,6 +321,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_goto_section_leader")
+    let g:atp_goto_section_leader="-"
+endif
 if !exists("g:atp_autex_wait")
     " the value is a comma speareted list of modes, for modes see mode() function.
 "     let g:atp_autex_wait = "i,R,Rv,no,v,V,c,cv,ce,r,rm,!"
@@ -1268,11 +1271,11 @@ function! ATP_ToggleDebugMode(mode,...)
 	endif
     endif
 
-    let g:on = on
-    let g:set_new = set_new
-    let g:new_debugmode = new_debugmode
-    let g:copen = copen
-    let g:change_menu = change_menu
+"     let g:on = on
+"     let g:set_new = set_new
+"     let g:new_debugmode = new_debugmode
+"     let g:copen = copen
+"     let g:change_menu = change_menu
 
     " on == 0 set debug off
     " on == 1 set debug on
@@ -1333,10 +1336,22 @@ function! ATP_ToggleDebugMode(mode,...)
 	let winnr = bufwinnr("%")
 	if copen
 	    let efm=b:atp_ErrorFormat
-	    silent copen
 	    exe "ErrorFormat ".efm
 	    silent! cg
-	    exe winnr . " wincmd w"
+	    " Compute lines:
+	    let lines = 1
+	    " i.e. open with one more line than needed.
+	    for qf in getqflist()
+		let text=substitute(qf['text'], '\_s\+', ' ', 'g')
+		let lines+=(len(text))/&l:columns+1
+	    endfor
+" 	    let g:lines = lines
+	    if len(getqflist()) > 0
+		exe "silent copen ".min([lines, g:atp_DebugModeQuickFixHeight])
+		exe winnr . " wincmd w"
+	    else
+		echo "[ATP:] no errors for b:atp_ErrorFormat=".efm
+	    endif
 	endif
     endif
 endfunction
@@ -1924,9 +1939,10 @@ else
 endif
 endfunction
 
-    augroup ATP_QuickFixCmds_2
+    augroup ATP_QuickFix_2
 	au!
 	au FileType qf command! -bang -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
+	au FileType qf set statusline="There are %{len(getqflist())} messages"
     augroup END
 
     augroup ATP_VimLeave
@@ -2414,4 +2430,3 @@ endif
 endfunction "}}}
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
-

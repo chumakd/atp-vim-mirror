@@ -363,7 +363,7 @@ function! TreeOfFiles(main_file,...)
 	    let [ line, lnum, cnum ] = entry
 	    " input name (iname) as appeared in the source file
 	    let iname	= substitute(matchstr(line, pattern . '\(''\|"\)\=\zs\f\%(\f\|\s\)*\ze\1\='), '\s*$', '', '') 
-	    if iname == ""  
+	    if iname == "" && biblatex 
 		let iname	= substitute(matchstr(line, biblatex_pattern . '\(''\|"\)\=\zs\f\%(\f\|\s\)*\ze\1\='), '\s*$', '', '') 
 	    endif
 	    if g:atp_debugToF
@@ -607,14 +607,17 @@ function! ATPRunning() "{{{
         " For python compiler
 	" This is very fast:
 " 	call LatexRunning()
-	call atplib#PIDsRunning("b:atp_LatexPIDs")
-	call atplib#PIDsRunning("b:atp_BibtexPIDs")
-	call atplib#PIDsRunning("b:atp_PythonPIDs")
+        for var in [ "Latex", "Bibtex", "Python" ] 
+	    if !exists("b:atp_".var."PIDs")
+		let b:atp_{var}PIDs = []
+	    endif
+	    call atplib#PIDsRunning("b:atp_".var."PIDs")
+	endfor
 " 	call atplib#PIDsRunning("b:atp_MakeindexPIDs")
 " 	let atp_running= ( b:atp_LastLatexPID != 0 ? 1 : 0 ) * len(b:atp_LatexPIDs) 
-	if exists("b:atp_LatexPIDs")
+	if len(b:atp_LatexPIDs) > 0
 	    let atp_running= len(b:atp_LatexPIDs) 
-	elseif exists("b:atp_BibtexPIDs")
+	elseif len(b:atp_BibtexPIDs) > 0
 	    let atp_running= len(b:atp_BibtexPIDs)
 	else
 	    return ''
@@ -753,7 +756,7 @@ let s:errormsg = 0
 function! ATPStatus(bang) "{{{
 
     let g:status_OutDir	= a:bang == "" && g:atp_statusOutDir || a:bang == "!" && !g:atp_statusOutDir ? s:StatusOutDir() : ""
-    let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? CTOC("return") : ''
+    let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? 'CTOC("return")' : ''
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0
 	let g:atp_statusNotifHi = 9
 	if !s:errormsg
@@ -769,7 +772,7 @@ function! ATPStatus(bang) "{{{
     let status_KeyMap	= ( has("keymap") && g:atp_babel && exists("b:keymap_name") 	
 								\ ? b:keymap_name 	: '' )
 
-    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) %='.status_CTOC." ".status_NotifHi.status_Notif.status_NotifHiPost.'%{g:status_OutDir} %-14.16(%l,%c%V%)%P'
+    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) %=%{'.status_CTOC."} ".status_NotifHi.status_Notif.status_NotifHiPost.'%{g:status_OutDir} %-14.16(%l,%c%V%)%P'
     set statusline=%!g:atp_StatusLine
 
 endfunction

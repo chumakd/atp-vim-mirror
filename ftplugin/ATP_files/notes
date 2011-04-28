@@ -1,3 +1,17 @@
+No file juicer.bbl 
+No file juicer.ind
+(./juicer.aux)
+
+(after first compilation! -> can be used to know that we have to run bibtex)
+
+Package biblatex Warning: Please (re)run Biber on the file:
+(biblatex)                juicer
+(biblatex)                and rerun LaTeX afterwards.
+
+Package biblatex Warning: Please (re)run BibTeX on the file(s):
+(biblatex)                juicer
+(biblatex)                and rerun LaTeX afterwards.
+
 Named Destinations:
 \hypertarget{dest_name}{text}
 
