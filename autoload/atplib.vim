@@ -3367,7 +3367,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	\ begin !~ '{\|}\|,\|-\|\^\|\$\|(\|)\|&\|-\|+\|=\|#\|:\|;\|\.\|,\||\|?$' &&
 	\ begin !~ '^\[\|\]\|-\|{\|}\|(\|)' &&
 	\ cbegin =~ '^\\' && !normal_mode &&
-	\ l !~ '\\\%(no\)\?cite[^}]*$'
+	\ l !~ '\\\%(no\)\?cite[^}]*$' &&
+	\ l !~ '\\ref\s*{\S*$'
 
 	" in this case we are completing a command
 	" the last match are the things which for sure do not ends any
@@ -3401,7 +3402,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	" DEBUG:
 	let b:comp_method='colors'
     "{{{3 --------- label
-    elseif pline =~ '\\\%(eq\)\?ref\s*$' && strpart(l, 0, col(".")) !~ '\\\%(eq\)\?ref\s*{[^}]*}$' && !normal_mode
+    elseif l =~ '\\\%(eq\)\?ref\s*{[^}]*$' && !normal_mode
 	if index(g:atp_completion_active_modes, 'labels') != -1 
 	    let completion_method='labels'
 	    " DEBUG:
@@ -4191,6 +4192,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		let col -= 1
 	endwhile
 	let pat=strpart(l,col)
+	let g:pat=pat
 	let bibitems_list=values(atplib#searchbib(pat))
 	if g:atp_debugTC
 	    let g:pat = pat
@@ -4355,10 +4357,11 @@ function! atplib#TabCompletion(expert_mode,...)
 		
 		let aux_data	= atplib#GrepAuxFile()
 		let completions = []
+		let pattern 	= matchstr(l, '\%(.\|\\ref\)*\\ref\s*{\zs\S*$')  
 		for data in aux_data
 		    " match label by string or number
-		    if ( data[0] =~ '^' . begin || data[1] =~ '^'. begin . '$' ) && a:expert_mode || 
-				\ ( data[0] =~ begin || data[1] =~ '^'. begin ) && !a:expert_mode
+		    if ( data[0] =~ '^' . pattern || data[1] =~ '^'. pattern . '$' ) && a:expert_mode || 
+				\ ( data[0] =~ pattern || data[1] =~ '^'. pattern ) && !a:expert_mode
 			let close = nchar == '}' ? '' : '}'
 			call add(completions, data[0] . close)
 		    endif
@@ -4394,7 +4397,7 @@ function! atplib#TabCompletion(expert_mode,...)
     let b:completions=completions 
     " {{{2 COMPLETE 
     " {{{3 labels, package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding and input files 
-    if completion_method == 'labels' 			|| 
+    if
 		\ completion_method == 'package' 	|| 
 		\ completion_method == 'tikz libraries'    || 
 		\ completion_method == 'environment_names' ||
@@ -4413,6 +4416,9 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'missingfigure options' ||
 		\ completion_method == 'inputfiles' 
 	call complete(nr+2,completions)
+    "{{{3 labels
+    elseif completion_method == 'labels'
+	call complete(match(l, '\%(.\|\\ref\)*\\ref\s*{\zs\S*$')+1,completions)
     "{{{3 colors
     elseif completion_method == 'colors'
 	call complete(color_nr+2,completions)

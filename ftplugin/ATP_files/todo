@@ -6,10 +6,6 @@
 
 pedit for openning without changing the window number! 
 
-Make defisearch use location list (in more vim style).
-		(This was imposible for some reason)
-
-ToDo: GotoNextSection --> GoTo 3rd section :) using count!
 SOLUTION: I can use the "= register (see map-examples)
 
 ToDo: completion of user defined command \mpr{} (with {}) position the cursor
@@ -24,8 +20,6 @@ ToDo: :2match (and :3match)  in HighlightMatchingPair and Search function - it
 is better to use matchadd().
 
 ToDo: Disable mapping # before \ (make an IMAP function)
-Bug: \ref{2.\d<Tab> will try to complete label instead of passing a regexp to
-label completion.
 Doc: updatetime setting in insert mode 
 Bug: syntax groups for status don't work in vim 7.3d (in common.vim)
 
@@ -64,13 +58,7 @@ In 'plaintex' MakeLatex results in an infinte loop.
 	probably not needed.
 	/needed only for xpdf/
 
-<Nice Feature> YankSection -> in toc (there is delete section so yank
-shuoldn't be dificult).
 
-Bug: \ref{<Tab> and the screen is redrawn (like redraw!)
-<Nice Feature> if none of completions is working use tab as a normal Tab key.
-/this will be slow/ and some times misleading /
-Bug: \{ ... <Tab> =? \{ ... } 	( generically it works )
 To do: add large delimiters to completion (Bracket closings: Table 3.9 in
     lshort pdfpage: 80) but also \lceil:\rceil, \lfloor:\rfloor, \vert:\vert,
     \Vert:\Vert (make this fast, count all $,\vert,\Vert at once)
@@ -329,3 +317,7 @@ Done: <s if on line \section... go to one section back.
 ToDo: gw on \end{proposition} joints this line with the next one.
 
 Look at: bibweb
+Note: { \{ <Tab>  \} => { \{ \}  \}
+
+Done: \ref{2.\d<Tab> will try to complete command instead of passing a regexp to
+label completion.

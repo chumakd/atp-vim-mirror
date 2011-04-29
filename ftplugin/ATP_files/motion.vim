@@ -992,13 +992,13 @@ function! <SID>JumptoEnvironment(backward)
 		    \ strpart(getline(line(".")), col) !~ '^\s*{\s*document\s*}'
 	    exe "normal %"
 	endif
-	call search('^\%([^%]\|\\%\)*\\begin\>', 'W')
+	call search('^\%([^%]\|\\%\)*\zs\\begin\>', 'W')
     else
 	let found =  search('^\%([^%]\|\\%\)*\\end\>', 'bW')
 	if getline(line(".")) !~ '^\%([^%]\|\\%\)*\\end\s*{\s*document\s*}' && found
 	    exe "normal %"
 	elseif !found
-	    call search('^\%([^%]\|\\%\)*\\begin\>', 'bW')
+	    call search('^\%([^%]\|\\%\)*\zs\\begin\>', 'bW')
 	endif
     endif
     let &l:lazyredraw=lazyredraw

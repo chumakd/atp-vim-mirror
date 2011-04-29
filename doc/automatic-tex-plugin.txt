@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 29 April 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.14)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.15)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -35,7 +35,7 @@ FEATURES INCLUDE: ~
   of contents) |atp-:MakeLatex|,
 * completion for commands, closing environments (even nested), package names,
   citations and labels. Support for some latex packages.
-	See |atp-Completion|, 
+	See |atp-completion|, 
 * table of contents which allows to switch between different sections, files, 
   but also to delete and paste sections:
 	See |atp-:TOC|, |atp-toc-window|,
@@ -138,8 +138,8 @@ NEWS							*atp-news*
  implemented, thought it is not simply <e%. They do not support count (yet),
  and actually count breaks them. If you want to add |zz|, (|zt| or |zb|) after
  >E you can put this in your |atprc| file:
-     map <buffer> <silent> >E	<Plug>JumptoNextEnvironment<bar>zz
-     map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironment<bar>zz
+     map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
+     map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
 
 
  |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it

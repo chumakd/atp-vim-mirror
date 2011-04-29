@@ -293,7 +293,7 @@ nmap <C-k> <Plug>TexJMotionBackward
     vnoremap <silent> <buffer> [% :<C-U>exe "normal! gv"<Bar>call search('\%(^\s*%.*\n\)\%(^\s*%\)\@!', "bW")<CR>
 
     " Select comment
-    exe "vmap <silent> <buffer> ".g:atp_MapSelectComment." <Plug>vSelectComment"
+"     exe "vmap <silent> <buffer> ".g:atp_MapSelectComment." <Plug>vSelectComment"
     exe "map <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
 
     " Normal mode maps (mostly)
@@ -439,61 +439,68 @@ nmap <C-k> <Plug>TexJMotionBackward
 
 if g:atp_no_env_maps != 1
     if g:atp_env_maps_old == 1
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'b \begin{}<Left>'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'e \end{}<Left>'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'c \begin{center}<CR>\end{center}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'c \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'d \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'u \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'i \item'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+" Clash: \item and {itemize} 
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' \item'
 execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'i \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'l \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'p \begin{proof}<CR>\end{proof}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'p \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'t \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'t \begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+" Clash: proof and propostion 
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>'
 
 	if g:atp_extra_env_maps == 1
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'r \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'l \begin{flushleft}<CR>\end{flushleft}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'r \begin{flushright}<CR>\end{flushright}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'f \begin{frame}<CR>\end{frame}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'q \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'n \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'o \begin{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'x \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_observation.' \begin{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 	endif
     else
     " New mapping for the insert mode. 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'b \begin{}<Left>'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'e \end{}<Left>'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'t \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'d \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer>  '.g:atp_imap_third_leader.'P \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'l \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'r \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'C \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'p \begin{proof}<CR>\end{proof}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'x \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'n \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+" Clash: proof and propostion 
+execute 'imap <silent> <buffer>  '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+" Clash: proof and propostion 
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'E \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'I \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'i 	<Esc>:call InsertItem()<CR>a'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
+" Clash: \item and itemize
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_itemize.' \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
+" Clash: \item and itemize
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' <Esc>:call InsertItem()<CR>a'
 
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'a \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'q \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'c \begin{center}<CR>\end{center}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'L \begin{flushleft}<CR>\end{flushleft}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'R \begin{flushright}<CR>\end{flushright}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_center.' \begin{center}<CR>\end{center}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'T \begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.'f \begin{frame}<CR>\end{frame}<Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O'
+execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
 endif
 
 	" imap }c \begin{corollary*}<CR>\end{corollary*}<Esc>O

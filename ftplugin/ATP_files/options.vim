@@ -321,6 +321,72 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_imap_begin")
+    let g:atp_imap_begin="beg"
+endif
+if !exists("g:atp_imap_end")
+    let g:atp_imap_end="end"
+endif
+if !exists("g:atp_imap_theorem")
+    let g:atp_imap_theorem="the"
+endif
+if !exists("g:atp_imap_definition")
+    let g:atp_imap_definition="def"
+endif
+if !exists("g:atp_imap_proposition")
+    let g:atp_imap_proposition="Pro"
+endif
+if !exists("g:atp_imap_lemma")
+    let g:atp_imap_lemma="lem"
+endif
+if !exists("g:atp_imap_remark")
+    let g:atp_imap_remark="rem"
+endif
+if !exists("g:atp_imap_corollary")
+    let g:atp_imap_corollary="cor"
+endif
+if !exists("g:atp_imap_proof")
+    let g:atp_imap_proof="pro"
+endif
+if !exists("g:atp_imap_example")
+    let g:atp_imap_example="exa"
+endif
+if !exists("g:atp_imap_note")
+    let g:atp_imap_note="not"
+endif
+if !exists("g:atp_imap_enumerate")
+    let g:atp_imap_enumerate="enu"
+endif
+if !exists("g:atp_imap_itemize")
+    let g:atp_imap_itemize="ite"
+endif
+if !exists("g:atp_imap_item")
+    let g:atp_imap_item="I"
+endif
+if !exists("g:atp_imap_align")
+    let g:atp_imap_align="ali"
+endif
+if !exists("g:atp_imap_abstract")
+    let g:atp_imap_abstract="abs"
+endif
+if !exists("g:atp_imap_equation")
+    let g:atp_imap_equation="equ"
+endif
+if !exists("g:atp_imap_center")
+    let g:atp_imap_center="cen"
+endif
+if !exists("g:atp_imap_flushleft")
+    let g:atp_imap_flushleft="lef"
+endif
+if !exists("g:atp_imap_flushright")
+    let g:atp_imap_flushright="rig"
+endif
+if !exists("g:atp_imap_tikzpicture")
+    let g:atp_imap_tikzpicture="tik"
+endif
+if !exists("g:atp_imap_frame")
+    let g:atp_imap_frame="fra"
+endif
 if !exists("g:atp_goto_section_leader")
     let g:atp_goto_section_leader="-"
 endif
