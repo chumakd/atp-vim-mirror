@@ -320,7 +320,7 @@ MakeLatex: There ware undefined references this should be shown in debug mode (T
 ToDo: in insert mode auTeX can wait until compilation stops: when compilers ends it should generate CursorMovedI event if the mode is insert mode - this can be done by a simple function atplib#CursorMoveI(), hmm this is not good, b:atp_PythonPIDs will be not 0
 ToDo: CallBack is not working for bash compiler.
 ToDo: MakeLatex on hgt_field.tex (under BZR) pdflatex+bibtex+pdflatex (should do one pdflatex more).
-ToDo: Test <C-Space>
+Done: Test <C-Space> (must not be <silent>)
 Done: After :YankSection :SectionStack sais section stack is empty.
 ToDo: Status line for QuickFix Window.
 ToDo: ChangeEnv \(:\) => \begin{equation}:\end{equation}

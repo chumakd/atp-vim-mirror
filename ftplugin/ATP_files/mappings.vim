@@ -156,11 +156,11 @@ nmap <C-k> <Plug>TexJMotionBackward
     execute "vmap <silent> <buffer> ".g:atp_map_backward_motion_leader."p 	<Plug>vGotoPreviousPart"
 
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."e		<Plug>GotoNextEnvironment"
-    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."E		%<Plug>GotoNextEnvironment"
-    map <silent> <buffer> <C-F> <Plug>GotoNextEnvironment
+    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."E		<Plug>JumptoNextEnvironment"
+"     map <silent> <buffer> <C-F> <Plug>GotoNextEnvironment
     execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."e	<Plug>GotoPreviousEnvironment"
-    execute 'map <silent> <buffer> '.g:atp_map_backward_motion_leader.'E ?^\([^%]\|\\%\)*\\end<CR>%'
-    map <silent> <buffer> <C-B> <Plug>GotoPreviousEnvironment
+    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."E 	<Plug>JumptoPreviousEnvironment"
+"     map <silent> <buffer> <C-B> <Plug>GotoPreviousEnvironment
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."m		<Plug>GotoNextMath"
     execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."m	<Plug>GotoPreviousMath"
     execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."M		<Plug>GotoNextDisplayedMath"

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 28 April 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 29 April 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.14)
 			by Marcin Szamotulski
@@ -132,17 +132,15 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
- These two maps are looked up from TeX_9 vim plugin (though they work
- in a slightly different way), simplyfying they do:
- <C-F>	/\\begin
- <C-B>  ?\\begin
- You can specify count, they are equivalent to |atp->e| and |atp-<e| (and
- |atp-:F|, |atp-:B| commands).
+ 							*atp->E* *atp-<E*
+ There are two more nice map >E which is something like %>e, i.e. jump over
+ the current environment and go to next one. The reverse <E is alos
+ implemented, thought it is not simply <e%. They do not support count (yet),
+ and actually count breaks them. If you want to add |zz|, (|zt| or |zb|) after
+ >E you can put this in your |atprc| file:
+     map <buffer> <silent> >E	<Plug>JumptoNextEnvironment<bar>zz
+     map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironment<bar>zz
 
- There is one more nice map >E which is %>e, i.e. jump over the current
- environment and go to next one. The reverse <E is alos implemented, thought
- it is not simply <e%. They do not support count (yet), and actually count
- breaks them.
 
  |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
  requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
@@ -309,10 +307,10 @@ nmap \u, vmap \u
 	default it is '% '). If you do not want this maps or you want to
 	remap them to something else you can set g:atp_MapCommentLines=0 in
 	your |vimrc| or |atprc| file and use <Plug>CommentLines,
-	<Plug>UnCommentLines (these are normal maps), for example: >
+	<Plug>UnCommentLines (these are normal maps), for example:
 		nmap <LocalLeader>C 	<Plug>UnCommentLines
 		vmap <LocalLeader>C 	<Plug>UnCommentLines
-<	A usefull map for uncommenting |atp-sc|.
+	A usefull map for uncommenting |atp-sc|.
 
     |atp-sc|: {s}elect {c}omment in normal mode with <LocalLeader>sc.
     (there used to be only map in visual mode).
@@ -2993,11 +2991,14 @@ HOW TO CONFIGURE ATP TO YOUR NEEDS                      *atp-configure*
 There are several options you can set, and they might be set in your Vimrc
 file. The default values are given below (except the completion setup and
 bibtex documented above). Note: not all variables are listed below.
+
 							*atprc*
-$HOME/.atprc.vim (only on Unix/GnuLinux) or ftplugin/ATP_files/atprc.vim					
+$HOME/.atprc.vim (only on Unix/GnuLinux) or $VIMRUNTIME/ftplugin/ATP_files/atprc.vim					
     A configuration file for ATP. You do not have to use autocommands to set
     local-buffer variables, just place them here. The settings in |atprc| file
-    override the values in the project script (|atp-ProjectScript|).
+    override the values in the project script (|atp-ProjectScript|). You can
+    also overwrite the plugin maps there it you want to have different
+    behaviour on the key map used by ATP.
 
 Tip: If you want to see (almost) all the variables, type ':let g:atp_<CTRL_D>',
 and ':let b:atp_<CTRL_D>'.

@@ -980,6 +980,29 @@ endfunction
 " 	call <SID>GotoEnvironment(flag,1,env_name)
 "     endfor
 " endfunction
+" Jump over current \begin and go to next one. {{{3
+" i.e. if on line =~ \begin => % and then search, else search
+function! <SID>JumptoEnvironment(backward)
+    call setpos("''", getpos("."))
+    let lazyredraw=&l:lazyredraw
+    set lazyredraw
+    if !a:backward
+	let col	= searchpos('\w*\>\zs', 'n')[1]-1
+	if strpart(getline(line(".")), 0, col) =~ '\\begin\>$' &&
+		    \ strpart(getline(line(".")), col) !~ '^\s*{\s*document\s*}'
+	    exe "normal %"
+	endif
+	call search('^\%([^%]\|\\%\)*\\begin\>', 'W')
+    else
+	let found =  search('^\%([^%]\|\\%\)*\\end\>', 'bW')
+	if getline(line(".")) !~ '^\%([^%]\|\\%\)*\\end\s*{\s*document\s*}' && found
+	    exe "normal %"
+	elseif !found
+	    call search('^\%([^%]\|\\%\)*\\begin\>', 'bW')
+	endif
+    endif
+    let &l:lazyredraw=lazyredraw
+endfunction 
 " Go to next section {{{3 
 " The extra argument is a pattern to match for the
 " section title. The first, obsolete argument stands for:
@@ -1644,6 +1667,8 @@ call s:buflist()
 
 " Commands And Maps:
 " {{{1
+map	<buffer> <silent> <Plug>JumptoPreviousEnvironment		:call <SID>JumptoEnvironment(1)<CR>
+map	<buffer> <silent> <Plug>JumptoNextEnvironment			:call <SID>JumptoEnvironment(0)<CR>
 command! -buffer -count=1 Part		:call <SID>ggGotoSection(<q-count>, 'part')
 command! -buffer -count=1 Chap		:call <SID>ggGotoSection(<q-count>, 'chapter')
 command! -buffer -count=1 Sec		:call <SID>ggGotoSection(<q-count>, 'section')

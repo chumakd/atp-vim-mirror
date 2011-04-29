@@ -3,10 +3,10 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 28-04-11_23-11
+" Time Stamp: 29-04-11_11-12
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Thu Apr 28 05:00  2011 W
+" Last Change: Fri Apr 29 09:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -46,7 +46,7 @@ endif
     let s:atprc_file = globpath($HOME, '.atprc.vim', 1)
     " They override cached variables
     function! <SID>ReadATPRC()
-	    if filereadable(s:atprc_file) && has("unix")
+	    if filereadable(s:atprc_file) && ( has("unix") || has("max") || has("macunix") )
 
 		    " Note: in $HOME/.atprc file the user can set all the local buffer
 		    " variables without using autocommands
@@ -124,5 +124,8 @@ endif
 
 	" Help functions.
 	runtime ftplugin/ATP_files/helpfunctions.vim
+
+	" Read ATPRC once again (to set mapps).
+	call <SID>ReadATPRC()
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
