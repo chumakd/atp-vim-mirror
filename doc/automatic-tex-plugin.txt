@@ -3881,9 +3881,11 @@ imap ]let	\begin{letter}{<cursor>}
 
 MATH IMAPS						*atp-imap-math*
 These are very useful mappings for typing mathematics:
-imap __ 	_{}<Left>
-imap ^^ 	^{}<Left>
-			(both above maps are taken from TeX_9 plugin)
+
+These two maps are only valid inside math environment and when ^ (_) is not
+after \ (\^ and \_ has no special meaning for LaTeX):  
+imap _ 		_{}<Left>
+imap ^ 		^{}<Left>
 
 imap ]m 	\[\]<Left><Left>
 imap ]M 	\[\]<Left><Left>
@@ -3913,11 +3915,16 @@ imap #.		\dot		[#.s will put \dots]
 These maps are only valid inside a math environment. They work around |'timeout'|
 vim setting (behave like |'notimeout'| was set):
 imap ==		&=
+imap =~		\equiv
 imap ~~		\approx
-
 imap o+		\oplus
+imap O+		\bigoplus
 imap o-		\ominus
-imap o.		\otimes
+imap o.		\odot
+imap O.		\bigodot
+imap o*		\otimes
+imap O*		\bigotimes
+If you want to write 'o*' you can wait until |'timeoutlen'| passes or write 'o *'.
 
 LOG FILE MAPS						*atp-maps-log*
     This are available maps in the log file, when it was opened with

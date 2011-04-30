@@ -303,10 +303,10 @@ nmap <C-k> <Plug>TexJMotionBackward
 "     nmap  <silent> <buffer> <F2> 			<Plug>ToggleSpace
     nmap  <silent> <buffer> <F2> 			q/:call ATP_CmdwinToggleSpace('on')<CR>i
     if mapcheck('Q/', 'n') == ""
-	nmap <silent> <buffer> Q/					q/:call ATP_CmdwinToggleSpace('on')<CR>
+	nmap <silent> <buffer> Q/			q/:call ATP_CmdwinToggleSpace('on')<CR>
     endif
     if mapcheck('Q?', 'n') == ""
-	nmap <silent> <buffer> Q?					q?:call ATP_CmdwinToggleSpace('on')<CR>
+	nmap <silent> <buffer> Q?			q?:call ATP_CmdwinToggleSpace('on')<CR>
     endif
     if mapcheck('<LocalLeader>s') == ""
 	nmap  <silent> <buffer> <LocalLeader>s		<Plug>ToggleStar
@@ -314,8 +314,8 @@ nmap <C-k> <Plug>TexJMotionBackward
 
     nmap  <silent> <buffer> <LocalLeader><Localleader>d	<Plug>ToggledebugMode
     nmap  <silent> <buffer> <LocalLeader><Localleader>D	<Plug>ToggleDebugMode
-    vmap  <silent> <buffer> <F4>				<Plug>WrapEnvironment
-    nmap  <silent> <buffer> <F4>				<Plug>ChangeEnv
+    vmap  <silent> <buffer> <F4>			<Plug>WrapEnvironment
+    nmap  <silent> <buffer> <F4>			<Plug>ChangeEnv
     nmap  <silent> <buffer> <S-F4>			<Plug>ToggleEnvForward
 "     nmap  <silent> <buffer> <S-F4>			<Plug>ToggleEnvBackward
     nmap  <silent> <buffer> <C-S-F4>			<Plug>LatexEnvPrompt
@@ -519,59 +519,75 @@ execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_letter.
 execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
 endif
 
-	" imap }c \begin{corollary*}<CR>\end{corollary*}<Esc>O
-	" imap }d \begin{definition*}<CR>\end{definition*}<Esc>O
-	" imap }x \begin{example*}\normalfont<CR>\end{example*}<Esc>O
-	" imap }l \begin{lemma*}<CR>\end{lemma*}<Esc>O
-	" imap }n \begin{note*}<CR>\end{note*}<Esc>O
-	" imap }o \begin{observation*}<CR>\end{observation*}<Esc>O
-	" imap }p \begin{proposition*}<CR>\end{proposition*}<Esc>O
-	" imap }r \begin{remark*}<CR>\end{remark*}<Esc>O
-	" imap }t \begin{theorem*}<CR>\end{theorem*}<Esc>O
-
-    endif
+endif
 
     function! <SID>IsLeft(lchar,...)
 	let nr = ( a:0 >= 1 ? a:1 : 0 )
-	" From TeX_nine plugin
+	" From TeX_nine plugin:
 	    let left = getline('.')[col('.')-2-nr]
-	    if left == a:lchar
+	    if left ==# a:lchar
 		return 1
 	    else
 		return 0
 	    endif
     endfunction
 
-    " This makes a diference only if 'timeout' is set.
-    if !mapcheck('_', 'i') && !mapcheck('^', 'i')
-	inoremap <buffer> <expr> _ <SID>IsLeft('_') && 
-		    \ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		    \ !atplib#CheckSyntaxGroups(['texMathText']) ? '{}<Left>' : '_'
-	inoremap <buffer> <expr> ^ <SID>IsLeft('^') && 
-		    \ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		    \ !atplib#CheckSyntaxGroups(['texMathText']) ? '{}<Left>' : '^'
-    else
-	inoremap <buffer> <expr> <silent> __ ( atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		    \ !atplib#CheckSyntaxGroups(['texMathText']) ?  '_{}<Left>' : '' )
-	inoremap <buffer> <expr> <silent> ^^ ( atplib#CheckSyntaxGroups(g:atp_MathZones) ?  '^{}<Left>' : '' )
-    endif
+    " These maps extend ideas from TeX_9 plugin:
+    inoremap <buffer> <expr> _  !<SID>IsLeft('\') &&
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '_{}<Left>' : '_'
+    inoremap <buffer> <expr> ^  !<SID>IsLeft('\') &&
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '^{}<Left>' : '_'
 
     inoremap <buffer> <expr> = <SID>IsLeft('=') && !<SID>IsLeft('&', 1) &&
 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
 		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>&=' : '='
-    inoremap <buffer> <expr> ~ <SID>IsLeft('~') && 
+    inoremap <buffer> <expr> ~  
 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\approx' : '~'
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ ( <SID>IsLeft('~') ? '<BS>\approx' : ( <SID>IsLeft('=')  ? '<BS>\equiv' : '~' ) ) : '~' 
+    inoremap <buffer> <expr> o+  
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\oplus' :  '' 
+    inoremap <buffer> <expr> O+  
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\bigoplus' :  '' 
 
-    inoremap <buffer> <expr> + <SID>IsLeft('o') && 
+    inoremap <buffer> <expr> o- 
 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\oplus' : '+'
-    inoremap <buffer> <expr> - <SID>IsLeft('o') && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '\ominus' : ''
+"     inoremap <buffer> <expr> - <SID>IsLeft('o') && 
+" 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+" 		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\ominus' : '-'
+
+    inoremap <buffer> <expr> o.  
 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\ominus' : '-'
-    inoremap <buffer> <expr> . <SID>IsLeft('o') && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\odot' :  '.' 
+    inoremap <buffer> <expr> O.  
 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\otimes' : '.'
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\bigodot' :  '.' 
+"     inoremap <buffer> <expr> .  
+" 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+" 		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+" 		    \ ( <SID>IsLeft('o') ? '<BS>\odot' :  ( <SID>IsLeft('O') ? '<BS>\bigodot' : '.' ) ) : '.' 
+
+    inoremap <buffer> <expr> o*  
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\otimes' :  '' 
+    inoremap <buffer> <expr> O*  
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+		    \ '\bigotimes' :  '' 
+"     inoremap <buffer> <expr> *  
+" 		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+" 		\ !atplib#CheckSyntaxGroups(['texMathText']) ? 
+" 		    \ ( <SID>IsLeft('o') ? '<BS>\otimes' :  ( <SID>IsLeft('O') ? '<BS>\bigotimes' : '.' ) ) : '.' 
 
     execute "imap <silent> <buffer> ".g:atp_imap_third_leader."m \\(\\)<Left><Left>"
     execute "imap <silent> <buffer> ".g:atp_imap_third_leader."M \\[\\]<Left><Left>"
