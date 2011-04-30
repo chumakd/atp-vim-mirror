@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Thu Apr 28 07:00  2011 W
+" Last Change: Sat Apr 30 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -380,9 +380,34 @@ endfunction
 " {{{ InsertItem()
 " ToDo: indent
 function! InsertItem()
-    let begin_line	= searchpair( '\\begin\s*{\s*\%(enumerate\|itemize\)\s*}', '', '\\end\s*{\s*\%(enumerate\|itemize\)\s*}', 'bnW')
+    let begin_line	= searchpair( '\\begin\s*{\s*\%(enumerate\|itemize\|thebibliography\)\s*}', '', '\\end\s*{\s*\%(enumerate\|itemize\|thebibliography\)\s*}', 'bnW')
     let saved_pos	= getpos(".")
     call cursor(line("."), 1)
+
+    if getline(begin_line) =~ '\\begin\s*{\s*thebibliography\s*}'
+	call cursor(saved_pos[1], saved_pos[2])
+	let new_line	= strpart(getline("."), 0, col(".")) . '\bibitem' . strpart(getline("."), col("."))
+	let g:new_line	= new_line
+	call setline(line("."), new_line)
+
+	" Indent the line:
+	if &l:indentexpr != ""
+	    execute "let indent = " . &l:indentexpr
+	    let i 	= 1
+	    let ind 	= ""
+	    while i <= indent
+		let ind	.= " "
+		let i	+= 1
+	    endwhile
+	else
+	    indent	= -1
+	    ind 	=  matchstr(getline("."), '^\s*')
+	endif
+	call setline(line("."), ind . substitute(getline("."), '^\s*', '', ''))
+	let saved_pos[2]	+= len('\bibitem') + indent
+	call cursor(saved_pos[1], saved_pos[2])
+	return
+    endif
 
     " This will work with \item [[1]], but not with \item [1]]
     let [ bline, bcol]	= searchpos('\\item\s*\zs\[', 'b', begin_line) 

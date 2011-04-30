@@ -206,18 +206,14 @@ Note: do not set b:atp_okularOptions="--unique" by default.
 To do:
 When opening skeleton file -> the g:atp_MathZone is like it was for file type plaintex, but the file type has changed.
 The only solution is to set the variable g:tex_flavor="tex"
-To do: node{\(...\)<tab>
+Done: node{\(...\)<tab>
 to do: gm (end math) gM (begin math)
-To do: test debug mode.
 To do: find a better way of dealing with g:atp_latexpackages (update them)
 To do: statusNotifHi -> change in to a highliht group name.
 To do: xpdfpid() function should be writtine in Python.
 To do: rewrite MakeLatex in python (this will help with the screen isue)
 To do: SyncTex for (log file --> viewer) can be rewritten to use synctex (usually there is line number of error around -> we can get the position of the pdf file) - but since this is not very useful, this is not urgent.
 To do: write python script to parse log file and return list of dictionaries { file : '', line : '', page : '', errormsg : '', errortype : '' )
-Check: check from time to time if atp_RevSearch.py (/tmp/atp_RevSearch.py) in output has byte strings ( b'...'\n ) maybe I do not need matching them (now they disapeard!, Ivo Lopez is reporting that he doesn't have them.).
-To do: write completion for \includegraphics{}
-Done: TabComp input files \include{...} \com<Tab> -> comp_method=inputfiles (one cannot complete commands).
 Fixed: Open every time sth changes I have to use Open! it is strange!
 	I think WriteProjectScript global is not saving the variable.
 (?)To do: map t :SyncTex is not working 
@@ -237,15 +233,10 @@ To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't
 		THIS IS BECAUSE: skeleton file opens as a tex file and the variables are not reloaded. 
 # To do: inner paragraph should be (?) ended with \pause (beamer)
 # To do: \{:} are matched as brackets.
-Done: :YankSection (like :DeleteSection in ToC)
 # Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
 # To do: :WrapSelection make better interface.
 To do: debug why sometimes generating g:atp_latexpackages takes so much time.
-Done: make a default flag for :ShowErrors 
 # TEST: progress bar for project files (project variables).
-To do: bash compiler is not reloading Xpdf.
-To do: [MakeLatex] if bibtex (makeindex) has errors -> exclude the conditions on bibtex (makeindex)
-	Debug: MakeLatex. (implemented in compile.py)
 Bad idea (gq is for sth else!): 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
 # Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
@@ -265,12 +256,7 @@ SyncTex:
 
 Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 
 
-Done: <NEW FEATURE> \c which adds % before \begin and \end (if the line contains \begin)
-
-Done: \\D \\d can work better \\D go to Debug mode if not in Debug mode
 <Nice Feature> make atprc.vim file in the gentoo style
-
-Done: Status line should show how many instance of TeX are running.
 
 To do: 2<e with count: when standing on \begin it behaves like <e, this is due to search(...,'b') behaviour. There is a workaround for this: map <e to   
     for i in range(1,v:count1)|..here I should adjust flags (remove 's')...|call <SID>GotoEnvironment(...)|endfor
@@ -321,3 +307,13 @@ Note: { \{ <Tab>  \} => { \{ \}  \}
 
 Done: \ref{2.\d<Tab> will try to complete command instead of passing a regexp to
 label completion.
+
+To do: 
+    \begin{e1}
+	\begin{e2}
+	... 'vae'
+	\end{e2}
+    \end{e1}
+    Then move to end of e1 and type agina 'ae', it will contain only e2, unlike going to the end of e2 and 'vae'.
+    This is a problem with getpos(".") in visual mode in LatexBox_GetCurrentEnvironment.
+    See comments in LatexBox_GetCurrentEnvironment.

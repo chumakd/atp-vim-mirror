@@ -321,6 +321,21 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_imap_wide")
+    let g:atp_imap_wide=0
+endif
+if !exists("g:atp_letter_opening")
+    let g:atp_letter_opening="Dear Sir,"
+endif
+if !exists("g:atp_letter_closing")
+    let g:atp_letter_closing="Bye bye."
+endif
+if !exists("g:atp_imap_bibiliography")
+    let g:atp_imap_letter="let"
+endif
+if !exists("g:atp_imap_bibiliography")
+    let g:atp_imap_bibliography="bib"
+endif
 if !exists("g:atp_imap_begin")
     let g:atp_imap_begin="beg"
 endif
@@ -1607,26 +1622,26 @@ endif
 	\ "\\usefont{", "\\fontsize{", "\\selectfont", "\\fontencoding{", "\\fontfamiliy{", "\\fontseries{", "\\fontshape{",
 	\ "\\rmdefault", "\\sfdefault", "\\ttdefault", "\\bfdefault", "\\mddefault", "\\itdefault",
 	\ "\\sldefault", "\\scdefault", "\\updefault",  "\\renewcommand{", "\\newcommand{",
-	\ "\\addcontentsline{", "\\addtocontents",
 	\ "\\input", "\\include", "\\includeonly", "\\includegraphics",  
 	\ "\\savebox", "\\sbox", "\\usebox", "\\rule", "\\raisebox{", 
 	\ "\\parbox{", "\\mbox{", "\\makebox{", "\\framebox{", "\\fbox{",
 	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", "\\vbox",
 	\ "\\hrulefill", "\\dotfill", "\\hbox",
 	\ "\\thispagestyle{", "\\mathnormal", "\\markright{", "\\markleft{", "\\pagestyle{", "\\pagenumbering{",
-	\ "\\author{", "\\date{", "\\thanks{", "\\title{",
+	\ "\\author{", "\\address{", "\\date{", "\\thanks{", "\\title{",
 	\ "\\maketitle",
 	\ "\\marginpar", "\\indent", "\\par", "\\sloppy", "\\pagebreak", "\\nopagebreak",
 	\ "\\newpage", "\\newline", "\\newtheorem{", "\\linebreak", "\\line", "\\linespread{",
 	\ "\\hyphenation{", "\\fussy", "\\eject",
 	\ "\\enlagrethispage{", "\\clearpage", "\\cleardoublepage",
 	\ "\\caption{",
-	\ "\\opening{", "\\name{", "\\makelabels{", "\\location{", "\\closing{", "\\address{", 
+	\ "\\opening{", "\\name{", "\\makelabels{", "\\location{", "\\closing{", 
 	\ "\\signature{", "\\stopbreaks", "\\startbreaks",
 	\ "\\newcounter{", "\\refstepcounter{", 
 	\ "\\roman{", "\\Roman{", "\\stepcounter{", "\\setcounter{", 
 	\ "\\usecounter{", "\\value{", 
 	\ "\\newlength{", "\\setlength{", "\\addtolength{", "\\settodepth{", "\\nointerlineskip", 
+	\ "\\addcontentsline{", "\\addtocontents",
 	\ "\\settoheight{", "\\settowidth{", "\\stretch{",
 	\ "\\width", "\\height", "\\depth", "\\totalheight",
 	\ "\\footnote{", "\\footnotemark", "\\footnotetetext", 

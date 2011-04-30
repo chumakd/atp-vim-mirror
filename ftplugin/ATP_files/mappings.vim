@@ -385,122 +385,138 @@ nmap <C-k> <Plug>TexJMotionBackward
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'msf \mathsf{}<Left>'
 "     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'mbf \mathbf{}<Left>'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'bb \mathbb{}<Left>'
-"     execute 'imap <silent> <buffer>' .g:atp_imap_second_leader.'mtt \mathtt{}<Left>'
+"     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'mtt \mathtt{}<Left>'
     execute 'inoremap <silent> <buffer>' .g:atp_imap_second_leader.'cal \mathcal{}<Left>'
 
     " GREEK LETTERS
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'a \alpha'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'b \beta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'c \chi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'d \delta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'e \epsilon'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'ve \varepsilon'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'f \phi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'y \psi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'g \gamma'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'h \eta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'k \kappa'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'l \lambda'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'i \iota'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'m \mu'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'n \nu'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'p \pi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'o \theta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'r \rho'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'s \sigma'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'t \tau'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'u \upsilon'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'vs \varsigma'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'vo \vartheta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'w \omega'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'x \xi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'z \zeta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'a \alpha'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'b \beta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'c \chi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'d \delta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'e \epsilon'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'ve \varepsilon'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'f \phi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'y \psi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'g \gamma'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'h \eta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'k \kappa'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'l \lambda'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'i \iota'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'m \mu'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'n \nu'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'p \pi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'o \theta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'r \rho'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'s \sigma'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'t \tau'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'u \upsilon'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'vs \varsigma'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'vo \vartheta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'w \omega'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'x \xi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'z \zeta'
 
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'D \Delta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'Y \Psi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'F \Phi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'G \Gamma'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'L \Lambda'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'M \Mu'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'N \Nu'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'P \Pi'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'O \Theta'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'S \Sigma'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'T \Tau'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'U \Upsilon'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'W \Omega'
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'Z \mathrm{Z}'  
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'D \Delta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'Y \Psi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'F \Phi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'G \Gamma'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'L \Lambda'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'M \Mu'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'P \Pi'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'O \Theta'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'S \Sigma'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'T \Tau'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'U \Upsilon'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'W \Omega'
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'Z \mathrm{Z}'  
 
-    let infty_leader = (g:atp_imap_first_leader == "#" ? "_" : g:atp_imap_first_leader ) 
-    execute 'imap <silent> <buffer> '.infty_leader.'8 \infty'  
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'& \wedge'  
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'+ \bigcup' 
-    execute 'imap <silent> <buffer> '.g:atp_imap_first_leader.'- \setminus' 
+    let leader = (g:atp_imap_first_leader == '#' ? '<LocalLeader>' : g:atp_imap_first_leader ) 
+    execute 'inoremap <silent> <buffer> '.leader.'8 \infty'  
+    execute 'inoremap <silent> <buffer> '.leader.'6 \partial' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'& \wedge'  
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'ve \vee'  
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'V \Vee'  
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'+ \bigcup' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'- \bigcap' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'\ \setminus' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'N \Nabla' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'@ \circ' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'= \equiv' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'> \geq' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'< \leq' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'~ \=(g:atp_imap_wide ? "wide" : "")<CR>tilde{}<Left>' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'^ \=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>' 
+"     execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'_ \bar{}<Left>' 
+    execute 'inoremap <silent> <buffer> '.g:atp_imap_first_leader.'. \dot' 
+    execute 'inoremap <buffer> '.g:atp_imap_first_leader.'/ \frac{}{}<Esc>F}i'
 
 if g:atp_no_env_maps != 1
     if g:atp_env_maps_old == 1
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
 " Clash: \item and {itemize} 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' \item'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.'i \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' \item'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.'i \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 " Clash: proof and propostion 
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>'
 
 	if g:atp_extra_env_maps == 1
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_observation.' \begin{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_fourth_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_observation.' \begin{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameObservation<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 	endif
     else
     " New mapping for the insert mode. 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_begin.' \begin{}<Left>'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_end.' \end{}<Left>'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_abstract.' \begin{abstract}<CR>\end{abstract}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_theorem.' \begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_definition.' \begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 " Clash: proof and propostion 
-execute 'imap <silent> <buffer>  '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer>  '.g:atp_imap_third_leader.g:atp_imap_proposition.' \begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_lemma.' \begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_remark.' \begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_corollary.' \begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 " Clash: proof and propostion 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_proof.' \begin{proof}<CR>\end{proof}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_example.' \begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_note.' \begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_enumerate.' \begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item'
 " Clash: \item and itemize
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_itemize.' \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_itemize.' \begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item'
 " Clash: \item and itemize
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' <Esc>:call InsertItem()<CR>a'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_item.' <Esc>:call InsertItem()<CR>a'
 
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_align.' \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_equation.' \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_center.' \begin{center}<CR>\end{center}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_center.' \begin{center}<CR>\end{center}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushleft.' \begin{flushleft}<CR>\end{flushleft}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_flushright.' \begin{flushright}<CR>\end{flushright}<Esc>O'
 
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O'
-execute 'imap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_bibliography.' \begin{thebibliography}<CR>\end{thebibliography}<Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_tikzpicture.' \begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_letter.' \begin{letter}{}<CR>\opening{'.g:atp_letter_opening.'}<CR>\closing{'.g:atp_letter_closing.'}<CR>\end{letter}<Up><Esc>?\\begin{letter}{\zs<CR>i'
+execute 'inoremap <silent> <buffer> '.g:atp_imap_third_leader.g:atp_imap_frame.' \begin{frame}<CR>\end{frame}<Esc>O'
 endif
 
 	" imap }c \begin{corollary*}<CR>\end{corollary*}<Esc>O
@@ -515,55 +531,47 @@ endif
 
     endif
 
-    " Taken from AucTex:
-    " Typing __ results in _{}
-    function! <SID>SubBracket()
-	let s:insert = "_"
-	let s:left = getline(line("."))[col(".")-2]
-	if s:left == '_'
-	    let s:insert = "{}\<Left>"
-	endif
-	return s:insert
+    function! <SID>IsLeft(lchar,...)
+	let nr = ( a:0 >= 1 ? a:1 : 0 )
+	" From TeX_nine plugin
+	    let left = getline('.')[col('.')-2-nr]
+	    if left == a:lchar
+		return 1
+	    else
+		return 0
+	    endif
     endfunction
-    if g:atp_imap_first_leader == "_" || g:atp_imap_first_leader == "_" || 
-		\ g:atp_imap_third_leader == "_" || g:atp_imap_fourth_leader == "_"   
-	imap <silent> <buffer> __ _{}<Left>
+
+    " This makes a diference only if 'timeout' is set.
+    if !mapcheck('_', 'i') && !mapcheck('^', 'i')
+	inoremap <buffer> <expr> _ <SID>IsLeft('_') && 
+		    \ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		    \ !atplib#CheckSyntaxGroups(['texMathText']) ? '{}<Left>' : '_'
+	inoremap <buffer> <expr> ^ <SID>IsLeft('^') && 
+		    \ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		    \ !atplib#CheckSyntaxGroups(['texMathText']) ? '{}<Left>' : '^'
     else
-	inoremap <silent> <buffer> _ <C-R>=<SID>SubBracket()<CR>
+	inoremap <buffer> <expr> <silent> __ ( atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		    \ !atplib#CheckSyntaxGroups(['texMathText']) ?  '_{}<Left>' : '' )
+	inoremap <buffer> <expr> <silent> ^^ ( atplib#CheckSyntaxGroups(g:atp_MathZones) ?  '^{}<Left>' : '' )
     endif
 
-    " Taken from AucTex:
-    " Typing ^^ results in ^{}
-    function! <SID>SuperBracket()
-	let s:insert = "^"
-	let s:left = getline(line("."))[col(".")-2]
-	if s:left == '^'
-	    let s:insert = "{}\<Left>"
-	endif
-	return s:insert
-    endfunction
-    if g:atp_imap_first_leader == "_" || g:atp_imap_first_leader == "_" || 
-		\ g:atp_imap_third_leader == "_" || g:atp_imap_fourth_leader == "_"   
-	imap <silent> <buffer> ^^ ^{}<Left>
-    else
-	inoremap <silent> <buffer> ^ <C-R>=<SID>SuperBracket()<CR>
-    endif
+    inoremap <buffer> <expr> = <SID>IsLeft('=') && !<SID>IsLeft('&', 1) &&
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>&=' : '='
+    inoremap <buffer> <expr> ~ <SID>IsLeft('~') && 
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\approx' : '~'
 
-"     function! <SID>Infty()
-" 	let g:insert 	= g:atp_imap_first_leader
-" 	let g:left 	= getline(line("."))[col(".")-2]
-" 	if g:left == g:atp_imap_first_leader
-" 	    let g:insert = "\\infty"
-" 	    let g:new_line = strpart(getline("."),0 ,col(".")) . g:insert . strpart(getline("."), col("."))
-" 	    call setline(line("."), g:new_line)
-" 	    echomsg "new_line:" . g:new_line
-" 	else
-" 	    normal a
-" 	endif
-" 	echomsg "col:" . col(".") . " insert:" . g:insert . " left:" . g:left
-" 	return g:insert
-"     endfunction
-"     execute "inoremap <silent> <buffer> 8 <ESC>:call <SID>Infty()<CR>"
+    inoremap <buffer> <expr> + <SID>IsLeft('o') && 
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\oplus' : '+'
+    inoremap <buffer> <expr> - <SID>IsLeft('o') && 
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\ominus' : '-'
+    inoremap <buffer> <expr> . <SID>IsLeft('o') && 
+		\ atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		\ !atplib#CheckSyntaxGroups(['texMathText']) ? '<BS>\otimes' : '.'
 
     execute "imap <silent> <buffer> ".g:atp_imap_third_leader."m \\(\\)<Left><Left>"
     execute "imap <silent> <buffer> ".g:atp_imap_third_leader."M \\[\\]<Left><Left>"
