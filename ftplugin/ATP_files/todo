@@ -317,3 +317,6 @@ To do:
     Then move to end of e1 and type agina 'ae', it will contain only e2, unlike going to the end of e2 and 'vae'.
     This is a problem with getpos(".") in visual mode in LatexBox_GetCurrentEnvironment.
     See comments in LatexBox_GetCurrentEnvironment.
+    
+ToDo: :TEX, :MakeLatex with SetXdvi. 
+ToDo: see b:atp_{viewer}Options - does compile.py need this to be a comma separated list?

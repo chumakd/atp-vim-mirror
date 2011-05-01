@@ -1125,9 +1125,10 @@ function! <SID>SetXdvi()
     endtry
 
     " Set new options:
-    let b:atp_TexCompiler	= "latex "
-    let b:atp_TexOptions	= " -src-specials "
-    let b:atp_Viewer="xdvi " . " -editor '" . v:progname . " --servername " . v:servername . " --remote-wait +%l %f'" 
+    let b:atp_TexCompiler	= "latex"
+    let b:atp_TexOptions	= "-src-specials"
+    let b:atp_Viewer		= "xdvi" . "-editor '" . v:progname . " --servername " . v:servername . " --remote-wait +%l %f'" 
+
     map <buffer> <LocalLeader>rs				:call RevSearch()<CR>
     try
 	nmenu 550.65 &LaTeX.Reverse\ Search<Tab>:map\ <LocalLeader>rs	:RevSearch<CR>

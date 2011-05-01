@@ -611,7 +611,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 
     " Set options for compile.py
     let interaction 		= ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
-    let tex_options		= shellescape(b:atp_TexOptions.',-interaction='.interaction)
+    let tex_options		= b:atp_TexOptions.',-interaction='.interaction
 "     let g:tex_options=tex_options
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
@@ -619,7 +619,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let global_options 		= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
     let local_options 		= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
     if global_options !=  "" 
-	let viewer_options  	= global_options.",".local_options
+	let viewer_options  	= global_options." ".local_options
     else
 	let viewer_options  	= local_options
     endif
@@ -635,21 +635,21 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 
     " Set the command
     let cmd=g:atp_Python." ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
-		\ ." --tex-options ".tex_options
+		\ ." --tex-options ".shellescape(tex_options)
 		\ ." --verbose ".a:verbose
 		\ ." --file ".shellescape(atplib#FullPath(a:filename))
 		\ ." --output-format ".ext
 		\ ." --runs ".a:runs
 		\ ." --servername ".v:servername
 		\ ." --start ".a:start 
-		\ ." --viewer ".b:atp_Viewer
-		\ ." --xpdf-server ".b:atp_XpdfServer
+		\ ." --viewer ".shellescape(b:atp_Viewer)
+		\ ." --xpdf-server ".shellescape(b:atp_XpdfServer)
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:keep, ','))
 		\ ." --progname ".v:progname
 		\ ." --bibcommand ".b:atp_BibCompiler
 		\ ." --bibliographies ".shellescape(bibliographies)
-		\ ." --logdir ".g:atp_TempDir 
+		\ ." --logdir ".shellescape(g:atp_TempDir)
 		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . no_progress_bar
 		\ . autex_wait

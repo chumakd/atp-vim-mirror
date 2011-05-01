@@ -82,7 +82,7 @@ if aucommand_bool:
     aucommand="AU"
 else:
     aucommand="COM"
-command_opt     = list(filter(nonempty,options.tex_options.split(',')))
+command_opt     = list(filter(nonempty,re.split('\s*,\s*', options.tex_options)))
 mainfile_fp     = options.mainfile
 output_format   = options.output_format
 if output_format == "pdf":
