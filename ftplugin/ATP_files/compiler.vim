@@ -40,10 +40,8 @@ function! <SID>ViewOutput(...)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
 
     " Read the global options from g:atp_{b:atp_Viewer}Options variables
-    let global_options 	= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
-    let local_options 	= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
-
-"     let g:options	= global_options ." ". local_options
+    let global_options 	= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), " ")
+    let local_options 	= join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), " ")
 
     " Follow the symbolic link
     let link=resolve(atp_MainFile)
@@ -56,15 +54,17 @@ function! <SID>ViewOutput(...)
     if b:atp_Viewer == "xpdf"	
 	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer)
     else
-	let viewer	= b:atp_Viewer
+	let viewer	= b:atp_Viewer . " "
     endif
 
 
     let sync_args 	= ( fwd_search ?  <SID>SyncTex(0,1) : "" )
-    let g:global_options = global_options
-    let g:local_options = local_options
-    let g:sync_args	= sync_args
-    let g:viewer	= viewer
+    if g:atp_debugV
+	let g:global_options = global_options
+	let g:local_options = local_options
+	let g:sync_args	= sync_args
+	let g:viewer	= viewer
+    endif
     if b:atp_Viewer =~ '\<okular\>' && fwd_search
 	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args.")&"
     elseif b:atp_Viewer =~ '^\s*xdvi\>'
@@ -445,10 +445,10 @@ function! <SID>MakeLatex(bang, verbose, start)
     let tex_options	    = shellescape(b:atp_TexOptions.',-interaction='.interaction)
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
-    let global_options 		= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
-    let local_options 		= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
+    let global_options 		= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";")
+    let local_options 		= join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), ";")
     if global_options !=  "" 
-	let viewer_options  	= global_options.",".local_options
+	let viewer_options  	= global_options.";".local_options
     else
 	let viewer_options  	= local_options
     endif
@@ -616,10 +616,10 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
 
-    let global_options 		= exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : ""
-    let local_options 		= getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options")
+    let global_options 		= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";") 
+    let local_options 		= join(( exists("atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), ";")
     if global_options !=  "" 
-	let viewer_options  	= global_options." ".local_options
+	let viewer_options  	= global_options.";".local_options
     else
 	let viewer_options  	= local_options
     endif
@@ -844,7 +844,7 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 " 	IF OPENING NON EXISTING OUTPUT FILE
 "	only xpdf needs to be run before (we are going to reload it)
 	if a:start && b:atp_Viewer == "xpdf"
-	    let xpdf_options	= ( exists("g:atp_xpdfOptions")  ? g:atp_xpdfOptions : "" )." ".getbufvar(0, "atp_xpdfOptions")
+	    let xpdf_options	= ( exists("g:atp_xpdfOptions")  ? join(g:atp_xpdfOptions, " ") : "" )." ".(exists("b:xpdfOptions") ? join(getbufvar(0, "atp_xpdfOptions"), " ") : " ")
 	    let start 	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . xpdf_options . " & "
 	else
 	    let start = ""	

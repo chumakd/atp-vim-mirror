@@ -95,7 +95,7 @@ start           = options.start
 viewer          = options.viewer
 autex_wait      = options.autex_wait
 XpdfServer      = options.xpdf_server
-viewer_rawopt   = options.viewer_opt.split(',')
+viewer_rawopt   = re.split('\s*;\s*', options.viewer_opt)
 viewer_it       = list(filter(nonempty,viewer_rawopt))
 viewer_opt      =[]
 for opt in viewer_it:

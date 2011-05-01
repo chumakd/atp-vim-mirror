@@ -135,7 +135,7 @@ viewer          = options.viewer
 XpdfServer      = options.xpdf_server
 reload_viewer   = options.reload_viewer
 reload_on_error = options.reload_on_error
-viewer_rawopt   = options.viewer_opt.split(',')
+viewer_rawopt   = re.split('\s*;\s*', options.viewer_opt)
 viewer_it       = list(filter(nonempty,viewer_rawopt))
 viewer_opt      =[]
 for opt in viewer_it:

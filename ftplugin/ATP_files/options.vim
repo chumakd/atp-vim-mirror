@@ -237,7 +237,7 @@ let s:optionsDict= {
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
-		\ "atp_okularOptions"		: "--unique",
+		\ "atp_okularOptions"		: ["--unique"],
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
@@ -1127,7 +1127,14 @@ function! <SID>SetXdvi()
     " Set new options:
     let b:atp_TexCompiler	= "latex"
     let b:atp_TexOptions	= "-src-specials"
-    let b:atp_Viewer		= "xdvi" . "-editor '" . v:progname . " --servername " . v:servername . " --remote-wait +%l %f'" 
+    let b:atp_Viewer		= "xdvi"
+    if exists("g:atp_xdviOptions")
+	let g:atp_xdviOptions	+= index(g:atp_xdviOptions, '-editor') != -1 && 
+		    \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
+		    \ ? ["-editor", "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"] : []
+    else
+	let g:atp_xdviOptions = ["-editor",  "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"]
+    endif
 
     map <buffer> <LocalLeader>rs				:call RevSearch()<CR>
     try

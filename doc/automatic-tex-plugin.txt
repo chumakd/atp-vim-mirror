@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.18)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.19)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -132,6 +132,10 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+
+ Note: the format of viewer options has changed from a string to a vim list.
+ Every option and its value should be placed as a seprate element of vim list.
+ See |atp-Viewers_Options| for examples.
 
  New imaps for some commonly used math commands: see |atp-imap-math|.
 
@@ -3449,26 +3453,29 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	for acroread. Read more about viewers in |atp-viewers|. 
 
 	If you use program b:atp_Viewer then you can use the variable
-	b:atp_{b:atp_Viewer}Options to set the options, for example if b:atp_Viewer="xpdf"
-	then you might use:
+	b:atp_{b:atp_Viewer}Options to set the options (it is a vim list), for
+	example if b:atp_Viewer="xpdf" then you might use:
 
 							*atp-Viewers_Options*
 							*b:atp_xdviOptions*
     							*b:atp_xpdfOptions*
     							*b:atp_okularOptions*
     							*b:atp_evinceOptions*
-    b:atp_xpdfOptions					
-    b:atp_xdviOptions
-    b:atp_okularOptions
-    b:atp_evinceOptions, etc ... (and also g:atp_...Options variables)
+    |b:atp_xpdfOptions|
+    |b:atp_xdviOptions|
+    |b:atp_okularOptions|
+    |b:atp_evinceOptions|, etc ... (also global variables g:atp_...Options)
 	Used by function: ViewOutput() (map \v, map <F3>, imap <F3>)
+
+	These are lists in which every viewer switch and its value should be
+	placed as element (seprate!). See examples below. 
 
 	For example, if you want to have different look of one document you can
 	set it to "-bg gray20". Some examples:
 >
- 	let b:atp_xpdfOptions	= "-bg Grey30 -mattecolor SlateBlue2 -papercolor White"
-	let g:atp_xpdfOptions	= "-bg NavajoWhite4 -fg black -mattecolor burlywood"
-	let b:atp_xdviOptions	= "-expertmode 0 -s 6"
+ 	let b:atp_xpdfOptions	= ['-bg', 'Grey30', '-mattecolor', 'SlateBlue2', '-papercolor', 'White']
+	let g:atp_xpdfOptions	= ['-bg', 'NavajoWhite4', '-fg', 'black', '-mattecolor', 'burlywood']
+	let b:atp_xdviOptions	= ['-expertmode', '0', '-s', '6']
 <	
 							*g:atp_XpdfServer* 
 >
@@ -4095,9 +4102,9 @@ Xpdf								*atp-Viewers-Xpdf*
 		map <S-LeftMouse>
 <	Read also |atp-:SyncTex_Xpdf-hack| and see |atp-:SetXpdf| command
 	description.  You can set your own options of Xpdf using
-	|b:atp_xpdfOptions|, for example
+	|b:atp_xpdfOptions| (or g:atp_xpdfOptions), for example:
 >
-	    let b:atp_xpdfOptions="-bg NavajoWhite4 -fg black -mattecolor burylwood"
+	    let b:atp_xpdfOptions=['-bg', 'NavajoWhite4', '-fg', 'black', '-mattecolor', 'burylwood']
 <
 	will make Xpdf view different. This is helpful when you edit to
 	files, and do not want to mix them. Another nice example:
@@ -4137,7 +4144,7 @@ Okular
 <
 								*atp-:SyncTex_with_Okular*
 	NOTE: :SyncTex command uses "--unique" switch for okular. However,
-	when you do not set b:atp_okularOptions to "--unique" as well, then
+	when you do not set |b:atp_okularOptions| to ["--unique"] as well, then
 	using :SyncTex will open new instance of Okular regardless if it was
 	openned or not. You can use "--unique" as an Okular option (in
 	g:atp_okularOptins or b:atp_okularOptions), but the if you open many
@@ -4191,8 +4198,9 @@ Xdvi								*atp-Viewers-Xdvi*
 	Xdvi. The forward search is set by ATP (see |atp:SyncTex|), the
 	inverse search is set by: >
 	    let b:atp_TexCompiler	= "latex"
-	    let b:atp_TexOptions	= "-src-specials"
-	    let b:atp_Viewer		= "xdvi -editor 'gvim --remote-wait +%l %f'"
+	    let b:atp_TexOptions	= ["-src-specials"]
+	    let b:atp_Viewer		= "xdvi" 
+	    let b:atp_xdviOptions	= ["-editor", "'gvim --remote-wait +%l %f'"]
 <	They are not set by default, however there is simple command to set
 	them at once |atp-:SetXdvi|.	
 	This are excellent sources of information on this:
