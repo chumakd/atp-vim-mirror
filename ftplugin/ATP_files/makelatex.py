@@ -145,6 +145,7 @@ if viewer == "xpdf" and XpdfServer != None:
     viewer_opt.extend(["-remote", XpdfServer])
 keep            = options.keep.split(',')
 keep            = list(filter(nonempty, keep))
+debug_file.write("KEEP="+str(keep)+"\n")
 
 def keep_filter_aux(string):
     if string == 'aux':
@@ -267,9 +268,14 @@ def copy_back_output(tmpdir):
         shutil.copy(basename+output_ext, texfile_dir)
     os.chdir(texfile_dir)
 
-def copy_back(tmpdir):
+def copy_back(tmpdir, latex_returncode):
+
     os.chdir(tmpdir)
-    for ext in list(filter(keep_filter_aux,keep)):
+    if not latex_returncode or not os.path.exists(os.path.join(texfile_dir, auxfile)):
+        ext_list=list(keep)
+    else:
+        ext_list=list(filter(keep_filter_aux, keep))
+    for ext in ext_list:
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
             shutil.copy(file_cp, texfile_dir)
@@ -496,7 +502,7 @@ try:
         if start == 2:
             debug_file.write("SyncTex with "+str(viewer))
             vim_remote_expr(servername, "atplib#SyncTex()")
-    copy_back(tmpdir)
+    copy_back(tmpdir, latex.returncode)
 # else:
 # THERE IS NO LOG FILE AFTER FIRST TIME: exit with error.
 except Exception:

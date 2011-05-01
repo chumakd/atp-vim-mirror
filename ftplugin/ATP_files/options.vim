@@ -321,6 +321,15 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_imap_subscript")
+    let g:atp_imap_subscript="__"
+endif
+if !exists("g:atp_imap_supscript")
+    let g:atp_imap_supscript="^^"
+endif
+if !exists("g:atp_imaps")
+    let g:atp_imaps=1
+endif
 if !exists("g:atp_imap_wide")
     let g:atp_imap_wide=0
 endif
@@ -1452,17 +1461,35 @@ function! ATP_ToggleTab(...)
 	let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : mapcheck('<Tab>','i') !~# 'atplib#TabCompletion' )
 	if !on 
 	    iunmap <buffer> <Tab>
-	    echo '<Tab> map turned off'
+	    echo '[ATP:] <Tab> map OFF'
 	else
 	    imap <buffer> <Tab> <C-R>=atplib#TabCompletion(1)<CR>
-	    echo '<Tab> map turned on'
+	    echo '[ATP:] <Tab> map ON'
 	endif
+    endif
+endfunction
+" }}}
+
+" {{{ ATP_ToggleIMaps
+" switches on/off the <Tab> map for TabCompletion
+function! ATP_ToggleIMaps(...)
+    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_imaps )
+    if !on 
+	let g:atp_imaps=0
+	echo '[ATP:] imaps OFF'
+    else
+	let g:atp_imaps=1
+	echo '[ATP:] imaps ON'
     endif
 endfunction
 " }}}
 endif
  
 "  Commands And Maps:
+command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleIMaps	 	:call ATP_ToggleIMaps(<f-args>)
+nnoremap <silent> <buffer> 	<Plug>ToggleIMaps		:call ATP_ToggleIMaps()<CR>
+inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<Esc>:call ATP_ToggleIMaps()<CR>
+
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleAuTeX 		:call ATP_ToggleAuTeX()<CR>
 
@@ -1680,7 +1707,7 @@ endif
 	\ "\\mathbf{", "\\mathsf{", "\\mathrm{", "\\mathit{", "\\mathtt{", "\\mathcal{", 
 	\ "\\mathop{", "\\mathversion", "\\limits", "\\text{", "\\leqslant", "\\leq", "\\geqslant", "\\geq",
 	\ "\\gtrsim", "\\lesssim", "\\gtrless", "\\left", "\\right", 
-	\ "\\rightarrow", "\\Rightarrow", "\\leftarrow", "\\Leftarrow", "\\iff", 
+	\ "\\rightarrow", "\\Rightarrow", "\\leftarrow", "\\Leftarrow", "\\infty", "\\iff", 
 	\ "\\oplus", "\\otimes", "\\odot", "\\oint",
 	\ "\\leftrightarrow", "\\Leftrightarrow", "\\downarrow", "\\Downarrow", 
 	\ "\\overline", "\\underline", "\\overbrace{", "\\Uparrow",

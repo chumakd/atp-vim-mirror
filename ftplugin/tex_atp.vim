@@ -3,10 +3,10 @@
 " URL:			https://sourceforge.net/projects/atp-vim/
 " BUGS:			https://lists.sourceforge.net/lists/listinfo/atp-vim-list
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 30-04-11_16-10
+" Time Stamp: 01-05-11_11-54
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Fri Apr 29 09:00  2011 W
+" Last Change: Sun May 01 07:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -56,7 +56,7 @@ endif
 		    " It also should be run at the end if the user defines mapping that
 		    " should be overwrite the ATP settings (this is done via
 		    " autocommand).
-		    let path = globpath($HOME, '/.atprc.vim', 1)
+		    let path = globpath($HOME, '.atprc.vim', 1)
 		    execute 'source ' . fnameescape(path)
 
 	    else
@@ -66,7 +66,6 @@ endif
 		    endif
 	    endif
     endfunction
-
 
 	" Source Project Script
 	runtime ftplugin/ATP_files/project.vim

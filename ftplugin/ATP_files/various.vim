@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Apr 30 10:00  2011 W
+" Last Change: Sun May 01 11:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -926,8 +926,10 @@ function! s:OpenLog()
 
 	let projectVarDict = SaveProjectVariables()
 	let g:projectVarDict = projectVarDict
-	let s:winnr		= bufwinnr("")
+	let s:winnr	= bufwinnr("")
+	let atp_TempDir	= b:atp_TempDir
 	exe "rightbelow split +setl\\ nospell\\ ruler\\ syn=log_atp\\ autoread " . fnameescape(&l:errorfile)
+	let b:atp_TempDir = atp_TempDir
 	call RestoreProjectVariables(projectVarDict)
 
 	map <buffer> q :bd!<CR>
@@ -1012,6 +1014,9 @@ function! s:OpenLog()
 	    let nr	= 0
 	    " There should be a finer way to get the file name if it is split in two
 	    " lines.
+	    if g:atp_debugST
+		let g:fname_list = []
+	    endif
 	    while !test
 		" Some times in the lof file there is a '(' from the source tex file
 		" which might be not closed, then this while loop is used to find
@@ -1055,8 +1060,10 @@ function! s:OpenLog()
 		    let end = get(StrIdx, idx, "")
 		    let fname .= strpart(getline(startline+1), 0, idx + len(end) + 1)
 		endif
+		let fname=substitute(fname, escape(fnamemodify(b:atp_TempDir, ":t"), '.').'\/[^\/]*\/', '', '')
 		if g:atp_debugST
-		    let g:fname = fnamemodify(fname, ":t")
+		    call add(g:fname_list, fname)
+		    let g:fname = fname
 		    let g:dir	= fnamemodify(g:fname, ":p:h")
 		    let g:pat	= pat
 " 		    if g:fname =~# '^' .  escape(fnamemodify(tempname(), ":h"), '\/')
@@ -1069,7 +1076,7 @@ function! s:OpenLog()
 	    endwhile
 	    keepjumps call setpos(".", saved_pos)
 		if g:atp_debugST
-		    let g:fname = fname
+		    let g:fname_post = fname
 		endif
 
 	    " if the file is under texmf directory return unless g:atp_developer = 1
