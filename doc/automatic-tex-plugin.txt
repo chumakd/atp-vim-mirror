@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 02 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.19)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.21)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -139,16 +139,23 @@ NEWS							*atp-news*
 
  New imaps for some commonly used math commands: see |atp-imap-math|.
 
- Now environment imaps have three letter abreviations: ]the for theorem. Use
- |atp-:HelpEnvIMaps| to see them all. There is also one new environemt ]let 
- which input letter. You can set |g:atp_letter_opening| and |g:atp_letter_closing| 
- to  customize default opening and closing statements.
+ There is an option to have environment imaps with three letter abreviations:
+ for example ]the for theorem. If you want longer, but more intuitive
+ abbreviation set |g:atp_ShortEnvIMaps|=0.  Use |atp-:HelpEnvIMaps| to see
+ them. There is also one new environemt ]let which inputs a letter
+ environment. But only when you use long maps, but if you want a short imap
+ for it you can set g:atp_imap_letter="w" and ATP will make a map ]w for it.
+ Note that "l", and "L" are already taken and using "le" will slow down
+ "l", also "e" and "r" are used. You can set |g:atp_letter_opening| and
+ |g:atp_letter_closing| to customize default opening and closing
+ statements.
 
  The abreviations are customizable: g:atp_imap_{envname}, also the leader is
  customizable with |g:atp_imap_third_leader| and environment names for example 
  if you set |g:atp_EnvNameTheorem|="thm" then ]the imap will insert
  \begin{thm}:\end{thm} pair. You can list supported environments with
- ':let g:atp_EnvName<C-d>'.
+ ':let g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
+ the corresponding imap will not be defined.
 
  							*atp->E* *atp-<E*
  There are two more nice map >E which is something like %>e, i.e. jump over
@@ -315,7 +322,7 @@ nmap -p
 	section/chapter/document, i.e. 3]s will jump to section 3 in current
 	chapter. Mark ' is preserved.
 
-	You can set the leader for the maps with *g:atp_goto_section_leader* .
+	You can set the leader for maps with *g:atp_goto_section_leader* .
 
 nmap \c, vmap \c
 nmap \u, vmap \u
@@ -628,21 +635,17 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
 
 ================================================================================
 INSTALLATION                               		*atp-installation*
->
-	 :filetype plugin on is required to run this plugin, see
-	 |:filetype-plugin-on| and |:filetype-indent-on| if you want to have
-	 automatic indentation for TeX files. Also |:syntax on| is required as
-	 several features (but not basic ones) requires syntax.
-<
-To install you just need to copy tex.Vim file to ~your ~/.Vim/ftplugin/
-directory copy this help file to ~/.Vim/doc and then run :helptags ~/.Vim/doc
-and that's all, now you can just type your story ... :)
+
+     Neccessary vim settings:
+     |:filetype-plugin-on|
+     |:filetype-indent-on|	(if you want to have automatic indentation for TeX files)
+     |:syntax-enable|		(several features will not work properly without this option)
 
 If you do not like colours you can still set syntax on but clear the highlight
 colours (you should make a simple function which clears all the highlight
 groups, because ':hi clear' will not give you what you want).
 
-See |atp-requirements| for ATP requirements. 
+See |atp-requirements| for other  ATP requirements. 
 
 ================================================================================
 COMMANDS	                               		*atp-commands* *atp-:*
@@ -3836,24 +3839,36 @@ imap #W 	\Omega
 imap #Z 	\mathrm{Z}
 
 ENVIRONMENT IMAPS				*atp-imap-environments*
+						*g:atp_imap_ShortEnvIMaps*
+g:atp_imap_ShortEnvIMaps=1 by default the short environment imaps are defined,
+but if you set this variable to 0 you will get three letter abbreviations.
+The only clashes is for proof (pro) and proposition (Pro) environments and
+itemize (ite) and \item (I). You can also reconfigure them using the
+variables: g:atp_imap_{env_name} (for example g:atp_imap_theorem, if you don't
+want a map for particular environment set the corresponding variable to empty
+string ""), |g:atp_imap_third_leader| is used as a leader (the default is ]).
+Map for letter environment is not defined when you use short imaps.
+
 Note: you can list this mappings using the command |atp-:HelpEnvIMaps|.
-imap ]beg 	\begin{}<Left>
-imap ]end 	\end{}<Left>
-imap ]cen 	\begin{center}<Cr>\end{center}<Esc>O
 
-imap ]def 	\begin{definition}<Cr>\end{definition}<Esc>O
-imap ]the 	\begin{theorem}<Cr>\end{theorem}<Esc>O
-imap ]Pro	\begin{proposition}<Cr>\end{proposition}<Esc>O
-imap ]lem 	\begin{lemma}<Cr>\end{lemma}<Esc>O
-imap ]rem 	\begin{remark}<Cr>\end{remark}<Esc>O
-imap ]cor 	\begin{corollary}<Cr>\end{corollary}<Esc>O
-imap ]pro	\begin{proof}<Cr>\end{proof}<Esc>O
-imap ]exa 	\begin{example}<Cr>\end{example}<Esc>O
-imap ]not 	\begin{note}<Cr>\end{note}<Esc>O
+imap ]b   ]beg 		\begin{}<Left>
+imap ]e   ]end		\end{}<Left>
+imap ]C   ]cen 		\begin{center}<Cr>\end{center}<Esc>O
 
-imap ]enu 	\begin{enumerate}<Cr>\end{enumerate}<Esc>O
-imap ]ite 	\begin{itemize}<Cr>\end{itemize}<Esc>O
-imap ]I 	\item					*atp-item*
+imap ]d   ]def 		\begin{definition}<Cr>\end{definition}<Esc>O
+imap ]t   ]the 		\begin{theorem}<Cr>\end{theorem}<Esc>O
+imap ]P   ]Pro		\begin{proposition}<Cr>\end{proposition}<Esc>O
+imap ]l	  ]lem 		\begin{lemma}<Cr>\end{lemma}<Esc>O
+imap ]r   ]rem 		\begin{remark}<Cr>\end{remark}<Esc>O
+imap ]c   ]cor 		\begin{corollary}<Cr>\end{corollary}<Esc>O
+imap ]p   ]pro		\begin{proof}<Cr>\end{proof}<Esc>O
+imap ]x   ]exa 		\begin{example}<Cr>\end{example}<Esc>O
+imap ]n   ]not 		\begin{note}<Cr>\end{note}<Esc>O
+
+imap ]E   ]enu 		\begin{enumerate}<Cr>\end{enumerate}<Esc>O
+imap ]i   ]ite 		\begin{itemize}<Cr>\end{itemize}<Esc>O
+
+imap ]I   ]I		\item					*atp-item*
 		This map has more features: if the preceding line is of the
 		form:
 			\item[(1)]
@@ -3864,19 +3879,19 @@ imap ]I 	\item					*atp-item*
 		but also (1a) -> (1b). 
 			
 
-imap ]ali 	\begin{align}<Cr>\end{align}<Esc>O
-imap ]equ 	\begin{equation}<Cr>\end{equation}<Esc>O
+imap ]a   ]ali 		\begin{align}<Cr>\end{align}<Esc>O
+imap ]q   ]equ 		\begin{equation}<Cr>\end{equation}<Esc>O
 
-imap ]lef 	\begin{flushleft}<Cr>\end{flushleft}<Esc>O
-imap ]rig 	\begin{flushright}<Cr>\end{flushright}<Esc>O
+imap ]l   ]lem 		\begin{flushleft}<Cr>\end{flushleft}<Esc>O
+imap ]R   ]rig 		\begin{flushright}<Cr>\end{flushright}<Esc>O
 
-imap ]tik 	\begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>
-imap ]fra 	\begin{frame}<Cr>\end{frame}<Esc>O
+imap ]T   ]tik 		\begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>
+imap ]f   ]fra 		\begin{frame}<Cr>\end{frame}<Esc>O
 
-imap ]let	\begin{letter}{<cursor>}
-		    \opening{g:atp_letter_opening} 
-		    \closing{g:atp_letter_closing}
-		\end{letter}
+imap      ]let		\begin{letter}{<cursor>}
+			    \opening{g:atp_letter_opening} 
+			    \closing{g:atp_letter_closing}
+			\end{letter}
 								*g:atp_letter_opening*
 								*g:atp_letter_closing*
 		By default g:atp_letter_opening and g:atp_letter_closing are ''.
@@ -4062,14 +4077,14 @@ nmaps: g>, g<, 2g>, ..., 6g>
 ================================================================================
 REQUIREMENTS							*atp-requirements*
 
-This plugin requires Vim version 7.2. Several tools uses syntax, so even if
+This plugin requires Vim version 7.3.  Several tools uses syntax, so even if
 you do not like colours on the screen you should set "syntax on". For example,
 the recognition of math mode used by |atp-completion|, and |atp-:TexAlign|
-command (but also some other things).
+command (but also some other things, and some maps!).
 
 								*atp-requirements-python*
-ATP uses python 2.7 (also works with 3.0). You need psutil library which you
-can get from here:
+ATP uses python 2.7 (also works with python 3). You need psutil library which
+you can get from here:
     http://code.google.com/p/psutil/
 Other libraries are standard ones so they should be available. If you have
 a problem you can try to set g:atp_debugPythonCompiler=1 and then look at the

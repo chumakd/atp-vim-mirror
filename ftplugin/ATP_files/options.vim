@@ -321,97 +321,196 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_imap_subscript")
+if !exists("g:atp_imap_ShortEnvIMaps") || g:atp_reload_variables
+    let g:atp_imap_ShortEnvIMaps = 1
+endif
+if !exists("g:atp_imap_subscript") || g:atp_reload_variables
     let g:atp_imap_subscript="__"
 endif
-if !exists("g:atp_imap_supscript")
+if !exists("g:atp_imap_supscript") || g:atp_reload_variables
     let g:atp_imap_supscript="^^"
 endif
-if !exists("g:atp_imaps")
+if !exists("g:atp_imaps") || g:atp_reload_variables
     let g:atp_imaps=1
 endif
-if !exists("g:atp_imap_wide")
+if !exists("g:atp_imap_wide") || g:atp_reload_variables
     let g:atp_imap_wide=0
 endif
-if !exists("g:atp_letter_opening")
-    let g:atp_letter_opening="Dear Sir,"
+if !exists("g:atp_letter_opening") || g:atp_reload_variables
+    let g:atp_letter_opening=""
 endif
-if !exists("g:atp_letter_closing")
-    let g:atp_letter_closing="Bye bye."
+if !exists("g:atp_letter_closing") || g:atp_reload_variables
+    let g:atp_letter_closing=""
 endif
-if !exists("g:atp_imap_bibiliography")
-    let g:atp_imap_letter="let"
+if !exists("g:atp_imap_bibiliography") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_letter=""
+    else
+	let g:atp_imap_letter="let"
+    endif
 endif
-if !exists("g:atp_imap_bibiliography")
-    let g:atp_imap_bibliography="bib"
+if !exists("g:atp_imap_bibiliography") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_bibliography="B"
+    else
+	let g:atp_imap_bibliography="bib"
+    endif
 endif
-if !exists("g:atp_imap_begin")
-    let g:atp_imap_begin="beg"
+if !exists("g:atp_imap_begin") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_begin="b"
+    else
+	let g:atp_imap_begin="beg"
+    endif
 endif
-if !exists("g:atp_imap_end")
-    let g:atp_imap_end="end"
+if !exists("g:atp_imap_end") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_end="e"
+    else
+	let g:atp_imap_end="end"
+    endif
 endif
-if !exists("g:atp_imap_theorem")
-    let g:atp_imap_theorem="the"
+if !exists("g:atp_imap_theorem") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_theorem="t"
+    else
+	let g:atp_imap_theorem="the"
+    endif
 endif
-if !exists("g:atp_imap_definition")
-    let g:atp_imap_definition="def"
+if !exists("g:atp_imap_definition") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_definition="d"
+    else
+	let g:atp_imap_definition="def"
+    endif
 endif
-if !exists("g:atp_imap_proposition")
-    let g:atp_imap_proposition="Pro"
+if !exists("g:atp_imap_proposition") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_proposition="P"
+    else
+	let g:atp_imap_proposition="Pro"
+    endif
 endif
-if !exists("g:atp_imap_lemma")
-    let g:atp_imap_lemma="lem"
+if !exists("g:atp_imap_lemma") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_lemma="l"
+    else
+	let g:atp_imap_lemma="lem"
+    endif
 endif
-if !exists("g:atp_imap_remark")
-    let g:atp_imap_remark="rem"
+if !exists("g:atp_imap_remark") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_remark="r"
+    else
+	let g:atp_imap_remark="rem"
+    endif
 endif
-if !exists("g:atp_imap_corollary")
-    let g:atp_imap_corollary="cor"
+if !exists("g:atp_imap_corollary") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_corollary="c"
+    else
+	let g:atp_imap_corollary="cor"
+    endif
 endif
-if !exists("g:atp_imap_proof")
-    let g:atp_imap_proof="pro"
+if !exists("g:atp_imap_proof") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_proof="p"
+    else
+	let g:atp_imap_proof="pro"
+    endif
 endif
-if !exists("g:atp_imap_example")
-    let g:atp_imap_example="exa"
+if !exists("g:atp_imap_example") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_example="x"
+    else
+	let g:atp_imap_example="exa"
+    endif
 endif
-if !exists("g:atp_imap_note")
-    let g:atp_imap_note="not"
+if !exists("g:atp_imap_note") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_note="n"
+    else
+	let g:atp_imap_note="not"
+    endif
 endif
-if !exists("g:atp_imap_enumerate")
-    let g:atp_imap_enumerate="enu"
+if !exists("g:atp_imap_enumerate") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_enumerate="E"
+    else
+	let g:atp_imap_enumerate="enu"
+    endif
 endif
-if !exists("g:atp_imap_itemize")
-    let g:atp_imap_itemize="ite"
+if !exists("g:atp_imap_itemize") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_itemize="i"
+    else
+	let g:atp_imap_itemize="ite"
+    endif
 endif
-if !exists("g:atp_imap_item")
-    let g:atp_imap_item="I"
+if !exists("g:atp_imap_item") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_item="I"
+    else
+	let g:atp_imap_item="I"
+    endif
 endif
-if !exists("g:atp_imap_align")
-    let g:atp_imap_align="ali"
+if !exists("g:atp_imap_align") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_align="a"
+    else
+	let g:atp_imap_align="ali"
+    endif
 endif
-if !exists("g:atp_imap_abstract")
-    let g:atp_imap_abstract="abs"
+if !exists("g:atp_imap_abstract") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_abstract="A"
+    else
+	let g:atp_imap_abstract="abs"
+    endif
 endif
-if !exists("g:atp_imap_equation")
-    let g:atp_imap_equation="equ"
+if !exists("g:atp_imap_equation") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_equation="q"
+    else
+	let g:atp_imap_equation="equ"
+    endif
 endif
-if !exists("g:atp_imap_center")
-    let g:atp_imap_center="cen"
+if !exists("g:atp_imap_center") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_center="C"
+    else
+	let g:atp_imap_center="cen"
+    endif
 endif
-if !exists("g:atp_imap_flushleft")
-    let g:atp_imap_flushleft="lef"
+if !exists("g:atp_imap_flushleft") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_flushleft="L"
+    else
+	let g:atp_imap_flushleft="lef"
+    endif
 endif
-if !exists("g:atp_imap_flushright")
-    let g:atp_imap_flushright="rig"
+if !exists("g:atp_imap_flushright") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_flushright="R"
+    else
+	let g:atp_imap_flushright="rig"
+    endif
 endif
-if !exists("g:atp_imap_tikzpicture")
-    let g:atp_imap_tikzpicture="tik"
+if !exists("g:atp_imap_tikzpicture") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_tikzpicture="T"
+    else
+	let g:atp_imap_tikzpicture="tik"
+    endif
 endif
-if !exists("g:atp_imap_frame")
-    let g:atp_imap_frame="fra"
+if !exists("g:atp_imap_frame") || g:atp_reload_variables
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_frame="f"
+    else
+	let g:atp_imap_frame="fra"
+    endif
 endif
-if !exists("g:atp_goto_section_leader")
+if !exists("g:atp_goto_section_leader") || g:atp_reload_variables
     let g:atp_goto_section_leader="-"
 endif
 if !exists("g:atp_autex_wait")

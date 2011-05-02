@@ -7,18 +7,20 @@
 
 
 " maps is a list of list of the form:
-" [ "map", "map_args", "lhs", "rhs", "help rhs" ]
+" [ "map", "map_args", "mapleader", "lhs", "rhs", "help msg" ]
 " for example
 " [ "inoremap", "<buffer>", "#a", "\\alpha", "\\alpha" ]
     function! <SID>MakeMaps(maps)
 	for map in a:maps
-	    exe map[0]." ".map[1]." ".map[2]." ".map[3]
+	    if map[3] != ""
+		exe map[0]." ".map[1]." ".map[2].map[3]." ".map[4]
+	    endif
 	endfor
     endfunction
     function! <SID>DelMaps(maps)
 	for map in a:maps
 	    cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
-	    exe cmd." ".map[1]." ".map[2]." ".map[3]
+	    exe cmd." ".map[1].map[2]." ".map[3]." ".map[4]
 	endfor
     endfunction
 
@@ -79,6 +81,7 @@ command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#OpenFdFile(<f-args>) 
 command! -buffer -nargs=* CloseLastEnvironment	:call atplib#CloseLastEnvironment(<f-args>)
 command! -buffer 	  CloseLastBracket	:call atplib#CloseLastBracket()
+
 " let g:atp_map_list	= [ 
 " 	    \ [ g:atp_map_forward_motion_leader, 'i', 		':NInput<CR>', 			'nmap <buffer>' ],
 " 	    \ [ g:atp_map_backward_motion_leader, 'i', 		':NPnput<CR>', 			'nmap <buffer>' ],
@@ -126,10 +129,10 @@ omap <buffer> <silent> [*	:SkipCommentBackward<CR>
 nmap <buffer> <silent> gC	:SkipCommentBackward<CR>
 omap <buffer> <silent> gC	:SkipCommentBackward<CR>
 
-execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."i				:NInput<CR>"
-execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."i				:PInput<CR>"
-execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."gf				:NInput<CR>"
-execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf				:PInput<CR>"
+execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."i			:NInput<CR>"
+execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."i			:PInput<CR>"
+execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."gf			:NInput<CR>"
+execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf			:PInput<CR>"
 
 " Syntax motions:
 " imap <C-j> <Plug>TexSyntaxMotionForward
@@ -151,12 +154,12 @@ nmap <C-k> <Plug>TexJMotionBackward
 
     " ToDo to doc. + vmaps!
     execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."S 	<Plug>GotoNextSubSection"
-    execute "vmap <silent> <buffer> ".g:atp_map_forward_motion_leader."S		<Plug>vGotoNextSubSection"
+    execute "vmap <silent> <buffer> ".g:atp_map_forward_motion_leader."S	<Plug>vGotoNextSubSection"
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."S 	<Plug>GotoPreviousSubSection"
     execute "vmap <silent> <buffer> ".g:atp_map_backward_motion_leader."S 	<Plug>vGotoPreviousSubSection"
     " Toggle this maps on/off!
     execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."s 	<Plug>GotoNextSection"
-    execute "vmap <silent> <buffer> ".g:atp_map_forward_motion_leader."s		<Plug>vGotoNextSection"
+    execute "vmap <silent> <buffer> ".g:atp_map_forward_motion_leader."s	<Plug>vGotoNextSection"
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."s 	<Plug>GotoPreviousSection"
     execute "vmap <silent> <buffer> ".g:atp_map_backward_motion_leader."s 	<Plug>vGotoPreviousSection"
     if !( g:atp_map_forward_motion_leader == "]" && &l:diff )
@@ -354,9 +357,9 @@ nmap <C-k> <Plug>TexJMotionBackward
     nmap  <silent> <buffer> <s-F5> 			<Plug>ToggleAuTeX
     imap  <silent> <buffer> <s-F5> 			<Esc><Plug>ToggleAuTeXa
     nmap  <silent> <buffer> `<Tab>			<Plug>ToggleTab
-    imap  <silent> <buffer> `<Tab>			<Plug>ToggleTab
+    imap  <silent> <buffer> `<Tab>			<Plug>ToggleTaba
     nmap  <silent> <buffer> '<Tab>			<Plug>ToggleIMaps
-    imap  <silent> <buffer> '<Tab>			<Plug>ToggleIMaps
+    imap  <silent> <buffer> '<Tab>			<Plug>ToggleIMapsa
     nmap  <silent> <buffer> <LocalLeader>B		<Plug>SimpleBibtex
     nmap  <silent> <buffer> <LocalLeader>b		<Plug>BibtexDefault
     nmap  <silent> <buffer> <F6>d 			<Plug>Delete
@@ -383,118 +386,128 @@ nmap <C-k> <Plug>TexJMotionBackward
 	inoremap <silent> <buffer> ]] ]
     endif
 "     execute 'imap <silent> <buffer> '.g:atp_imap_second_leader.'rm \textrm{}<Left>'
-    let g:atp_imap_fonts = [
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'rm', '<Esc>:call Insert("\\textrm{", "\\mathrm{")<CR>a', 'rm font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'up', '\textup{}<Left>', 'up font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'md', '\textmd{}<Left>', 'md font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'it', '<Esc>:call Insert("\\textit{", "\\mathit{")<CR>a', 'it font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'sl', '\textsl{}<Left>', ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'sc', '\textsc{}<Left>', ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'sf', '<Esc>:call Insert("\\textsf{", "\\mathsf{")<CR>a', 'sf font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'bf', '<Esc>:call Insert("\\textbf{", "\\mathbf{")<CR>a', 'bf font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'tt', '<Esc>:call Insert("\\texttt{", "\\mathtt{")<CR>a', 'tt font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'em', '\emph{}<Left>', ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'no', '<Esc>:call Insert("\\textnormal{", "\\mathnormal{")<Cr>a', 'normal font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'bb', '\mathbb{}<Left>', 'mathbb font'],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader.'cal', '\mathcal{}<Left>', 'mathcal font'],
+    if !exists("g:atp_imap_fonts")
+	let g:atp_imap_fonts = [
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'rm', '<Esc>:call Insert("\\textrm{", "\\mathrm{")<CR>a', 'rm font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'up', '\textup{}<Left>', 'up font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'md', '\textmd{}<Left>', 'md font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'it', '<Esc>:call Insert("\\textit{", "\\mathit{")<CR>a', 'it font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sl', '\textsl{}<Left>', ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sc', '\textsc{}<Left>', ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sf', '<Esc>:call Insert("\\textsf{", "\\mathsf{")<CR>a', 'sf font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'bf', '<Esc>:call Insert("\\textbf{", "\\mathbf{")<CR>a', 'bf font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'tt', '<Esc>:call Insert("\\texttt{", "\\mathtt{")<CR>a', 'tt font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'em', '\emph{}<Left>', ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'no', '<Esc>:call Insert("\\textnormal{", "\\mathnormal{")<Cr>a', 'normal font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'bb', '\mathbb{}<Left>', 'mathbb font'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'cal', '\mathcal{}<Left>', 'mathcal font'],
 	\ ]
+    endif
     call <SID>MakeMaps(g:atp_imap_fonts)
 	    
     " GREEK LETTERS
-    let g:atp_imap_greek_letters= [
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'a', '\alpha',	 '\alpha' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'b', '\beta',	 '\beta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'c', '\chi',	 '\chi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'d', '\delta',	 '\delta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'e', '\epsilon',	 '\epsilon' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'v', '\varepsilon', '\varepsilon' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'f', '\phi',	 '\phi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'y', '\psi',	 '\psi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'g', '\gamma',	 '\gamma' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'h', '\eta',	 '\eta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'k', '\kappa',	 '\kappa' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'l', '\lambda',	 '\lambda' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'i', '\iota',	 '\iota' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'m', '\mu',	 '\mu' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'n', '\nu',	 '\nu' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'p', '\pi',	 '\pi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'o', '\theta',	 '\theta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'r', '\rho',	 '\rho' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'s', '\sigma',	 '\sigma' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'t', '\tau',	 '\tau' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'u', '\upsilon',	 '\upsilon' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'v', '\varsigma',	 '\varsigma' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'v', '\vartheta',	 '\vartheta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'w', '\omega',	 '\omega' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'x', '\xi',	 '\xi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'z', '\zeta',	 '\zeta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'D', '\Delta',	 '\Delta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'Y', '\Psi',	 '\Psi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'F', '\Phi',	 '\Phi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'G', '\Gamma',	 '\Gamma' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'L', '\Lambda',	 '\Lambda' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'M', '\Mu',	 '\Mu' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'P', '\Pi',	 '\Pi' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'O', '\Theta',	 '\Theta' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'S', '\Sigma',	 '\Sigma' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'T', '\Tau',	 '\Tau' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'U', '\Upsilon',	 '\Upsilon' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'W', '\Omega',	 '\Omega' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'Z', '\mathrm',	 '\mathrm' ],
+    if !exists("g:atp_imap_greek_letters")
+	let g:atp_imap_greek_letters= [
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'a', '\alpha',	 '\alpha' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'b', '\beta',	 '\beta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'c', '\chi',	 '\chi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'd', '\delta',	 '\delta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'e', '\epsilon',	 '\epsilon' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'v', '\varepsilon', '\varepsilon' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'f', '\phi',	 '\phi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'y', '\psi',	 '\psi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'g', '\gamma',	 '\gamma' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'h', '\eta',	 '\eta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'k', '\kappa',	 '\kappa' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'l', '\lambda',	 '\lambda' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'i', '\iota',	 '\iota' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'm', '\mu',	 '\mu' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'n', '\nu',	 '\nu' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'p', '\pi',	 '\pi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'o', '\theta',	 '\theta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'r', '\rho',	 '\rho' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 's', '\sigma',	 '\sigma' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 't', '\tau',	 '\tau' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'u', '\upsilon',	 '\upsilon' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'v', '\varsigma',	 '\varsigma' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'v', '\vartheta',	 '\vartheta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'w', '\omega',	 '\omega' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'x', '\xi',	 '\xi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'z', '\zeta',	 '\zeta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'D', '\Delta',	 '\Delta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'Y', '\Psi',	 '\Psi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'F', '\Phi',	 '\Phi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'G', '\Gamma',	 '\Gamma' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'L', '\Lambda',	 '\Lambda' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'M', '\Mu',	 '\Mu' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'P', '\Pi',	 '\Pi' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'O', '\Theta',	 '\Theta' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'S', '\Sigma',	 '\Sigma' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'T', '\Tau',	 '\Tau' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'U', '\Upsilon',	 '\Upsilon' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'W', '\Omega',	 '\Omega' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'Z', '\mathrm',	 '\mathrm' ],
 		\ ]
+    endif
 
     call <SID>MakeMaps(g:atp_imap_greek_letters)
 
-    let leader = (g:atp_imap_first_leader == '#' ? '`' : g:atp_imap_first_leader ) 
-    let g:atp_imap_math_misc = [
-		\ [ 'inoremap', '<silent> <buffer>', leader.'8', '\infty' ],
-		\ [ 'inoremap', '<silent> <buffer>', leader.'6', '\partial', '\partial' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'&', '\wedge', '\wedge' ], 
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'ve', '\vee', '\vee' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'V', '\Vee', '\Vee' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'+', '\bigcup', '\bigcup' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'-', '\bigcap', '\bigcap' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'\', '\setminus', '\setminus' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'N', '\Nabla', '\Nabla' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'@', '\circ', '\circ' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'=', '\equiv', '\equiv' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'>', '\geq', '\geq' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'<', '\leq', '\leq' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'.', '\dot', '\dot' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'/', '\frac{}{}<Esc>F}i', '\frac{}{}' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'~', '\=(g:atp_imap_wide ? "wide" : "")<CR>tilde{}<Left>', '''\''.(g:atp_imap_wide ? "wide" : "")."tilde"' ],
-		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader.'^', '\=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>', '''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ] 
+    if !exists("g:atp_imap_math_misc")
+	let leader = (g:atp_imap_first_leader == '#' ? '`' : g:atp_imap_first_leader ) 
+	let g:atp_imap_math_misc = [
+		\ [ 'inoremap', '<silent> <buffer>', leader, '8', '\infty' ],
+		\ [ 'inoremap', '<silent> <buffer>', leader, '6', '\partial', '\partial' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '&', '\wedge', '\wedge' ], 
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 've', '\vee', '\vee' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'V', '\Vee', '\Vee' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '+', '\bigcup', '\bigcup' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '-', '\bigcap', '\bigcap' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '\', '\setminus', '\setminus' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 'N', '\Nabla', '\Nabla' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '@', '\circ', '\circ' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '=', '\equiv', '\equiv' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '>', '\geq', '\geq' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '<', '\leq', '\leq' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '.', '\dot', '\dot' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '/', '\frac{}{}<Esc>F}i', '\frac{}{}' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '~', '\=(g:atp_imap_wide ? "wide" : "")<CR>tilde{}<Left>', '''\''.(g:atp_imap_wide ? "wide" : "")."tilde"' ],
+		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '^', '\=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>', '''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ] 
 		\ ]
+    endif
     call <SID>MakeMaps(g:atp_imap_math_misc)
 
 if g:atp_no_env_maps != 1
     " New mapping for the insert mode. 
+    if !exists("g:atp_imap_environments")
     let g:atp_imap_environments = [
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_begin, '\begin{}<Left>', 	'\begin{}' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_end, '\end{}<Left>', 	'\end{}' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_abstract, '\begin{abstract}<CR>\end{abstract}<Esc>O', 	'abstract' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_theorem, '\begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O',  'theorem'],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_definition, '\begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'definition'],
-	\ [ 'inoremap', '<silent> <buffer> ',	g:atp_imap_third_leader.g:atp_imap_proposition, '\begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'proposition' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_lemma, '\begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'lemma' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_remark, '\begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'remark' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_corollary, '\begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'corollary' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_proof, '\begin{proof}<CR>\end{proof}<Esc>O', 'proof' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_example, '\begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'example' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_note, '\begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'note' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_enumerate, '\begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item', 'enumerate' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_itemize, '\begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item', 'itemize' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_item, '<Esc>:call InsertItem()<CR>a', 'item' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_align, '\begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 'align' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_equation, '\begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'equation' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_center, '\begin{center}<CR>\end{center}<Esc>O', 'center' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_flushleft, '\begin{flushleft}<CR>\end{flushleft}<Esc>O', 'flushleft' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_flushright, '\begin{flushright}<CR>\end{flushright}<Esc>O', 'flushright' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_bibliography, '\begin{thebibliography}<CR>\end{thebibliography}<Esc>O', 'bibliography' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_tikzpicture, '\begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O', 'tikzpicture' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_letter, '\begin{letter}{}<CR>\opening{'.g:atp_letter_opening.'}<CR>\closing{'.g:atp_letter_closing.'}<CR>\end{letter}<Up><Esc>?\\begin{letter}{\zs<CR>i', 'letter' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader.g:atp_imap_frame, '\begin{frame}<CR>\end{frame}<Esc>O', 'frame' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_begin, '\begin{}<Left>', 	'\begin{}' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_end, '\end{}<Left>', 	'\end{}' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_abstract, '\begin{abstract}<CR>\end{abstract}<Esc>O', 	'abstract' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_theorem, '\begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O',  'theorem'],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_definition, '\begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'definition'],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_proposition, '\begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'proposition' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_lemma, '\begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'lemma' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_remark, '\begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'remark' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_corollary, '\begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'corollary' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_proof, '\begin{proof}<CR>\end{proof}<Esc>O', 'proof' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_example, '\begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'example' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_note, '\begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'note' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_enumerate, '\begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>\end{enumerate}<Esc>O\item', 'enumerate' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_itemize, '\begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>\end{itemize}<Esc>O\item', 'itemize' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_item, '<Esc>:call InsertItem()<CR>a', 'item' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_align, '\begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 'align' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_equation, '\begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 'equation' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_center, '\begin{center}<CR>\end{center}<Esc>O', 'center' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_flushleft, '\begin{flushleft}<CR>\end{flushleft}<Esc>O', 'flushleft' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_flushright, '\begin{flushright}<CR>\end{flushright}<Esc>O', 'flushright' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_bibliography, '\begin{thebibliography}<CR>\end{thebibliography}<Esc>O', 'bibliography' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_tikzpicture, '\begin{center}<CR>\begin{tikzpicture}<CR>\end{tikzpicture}<CR>\end{center}<Up><Esc>O', 'tikzpicture' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_frame, '\begin{frame}<CR>\end{frame}<Esc>O', 'frame' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_letter, '\begin{letter}{}<CR>\opening{=g:atp_letter_opening<CR>}<CR>\closing{=g:atp_letter_closing<CR>}<CR>\end{letter}<Esc>?\\begin{letter}{\zs<CR>i', 'letter' ],
+	\ [ "inoremap", "<buffer> <silent>", g:atp_imap_third_leader, "m", '\(\)<Left><Left>', 'inlince math' ],
+	\ [ "inoremap", "<buffer> <silent>", g:atp_imap_third_leader, "M", '\[\]<Left><Left>', 'displayed math' ]
 	\ ]
+    endif
     call <SID>MakeMaps(g:atp_imap_environments)
 endif
 
@@ -511,49 +524,39 @@ endif
     endfunction
 
     " These maps extend ideas from TeX_9 plugin:
-
-    let g:condd={}
-    let g:arg={}
-    let g:isleft={}
-
     function! <SID>IsInMath()
 	return atplib#CheckSyntaxGroups(g:atp_MathZones) && 
 			\ !atplib#CheckSyntaxGroups(['texMathText'])
     endfunction
 
-    let g:atp_math_imaps= [ 
-	\ [ "inoremap", "<buffer> <silent> <expr>", g:atp_imap_subscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '_{}<Left>' : '_' ", '_{}'], 
-	\ [ "inoremap", "<buffer> <silent> <expr>", g:atp_imap_supscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '^{}<Left>' : '^' ", '^{}'], 
-	\ [ "inoremap", "<buffer> <silent> <expr>", "=", "g:atp_imaps && <SID>IsInMath() ? <BS>&= : '='", 		'&=' ],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "o+", "g:atp_imaps && <SID>IsInMath() ? '\\oplus' : 'o+' ", 	'\\oplus' ],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "O+", "g:atp_imaps && <SID>IsInMath() ? '\\bigoplus' : 'O+' ",	'\\bigoplus'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "o-", "g:atp_imaps && <SID>IsInMath() ? '\\ominus' : 'o-' ",	'\\ominus'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "o.", "g:atp_imaps && <SID>IsInMath() ? '\\odot : 'o.' ",		'\\odot'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "O.", "g:atp_imaps && <SID>IsInMath() ? '\\bigodot : 'O.' ",	'\\bigodot'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "o*", "g:atp_imaps && <SID>IsInMath() ? '\\otimes : 'o*' ",		'\\otimes'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "O*", "g:atp_imaps && <SID>IsInMath() ? '\\bigotimes : 'O*' ",	'\\bigotimes'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "s+", "g:atp_imaps && <SID>IsInMath() ? '\\cup : 's+' ",		'\\cup'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "S+", "g:atp_imaps && <SID>IsInMath() ? '\\bigcup : 'S+' ",		'\\bigcup'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "s*", "g:atp_imaps && <SID>IsInMath() ? '\\cap : 's*' ",		'\\cap'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "S*", "g:atp_imaps && <SID>IsInMath() ? '\\bigcap : 'S*' ",		'\\bigcap'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "c*", "g:atp_imaps && <SID>IsInMath() ? '\\prod : 'c*' ",		'\\prod'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "c+", "g:atp_imaps && <SID>IsInMath() ? '\\coprod : 'c+' ",		'\\coprod'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "t<", "g:atp_imaps && <SID>IsInMath() ? '\\triangleleft : 't<' ",	'\\triangleleft'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "t>", "g:atp_imaps && <SID>IsInMath() ? '\\triangleright : 't>' ",	'\\triangleright'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "s<", "g:atp_imaps && <SID>IsInMath() ? '\\subseteq : 's<' ",	'\\subseteq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "s>", "g:atp_imaps && <SID>IsInMath() ? '\\supseteq : 's>' ",	'\\supseteq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "<=", "g:atp_imaps && <SID>IsInMath() ? '\\leq : '<=' ",		'\\leq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", ">=", "g:atp_imaps && <SID>IsInMath() ? '\\geq : '>=' ",		'\\geq'],
+    if !exists("g:atp_imap_math")
+    let g:atp_imap_math= [ 
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '_{}<Left>' : '_' ", '_{}'], 
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_supscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '^{}<Left>' : '^' ", '^{}'], 
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=", "g:atp_imaps && <SID>IsInMath() ? <BS>&= : '='", 		'&=' ],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o+", "g:atp_imaps && <SID>IsInMath() ? '\\oplus' : 'o+' ", 	'\\oplus' ],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O+", "g:atp_imaps && <SID>IsInMath() ? '\\bigoplus' : 'O+' ",	'\\bigoplus'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o-", "g:atp_imaps && <SID>IsInMath() ? '\\ominus' : 'o-' ",	'\\ominus'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o.", "g:atp_imaps && <SID>IsInMath() ? '\\odot' : 'o.' ",		'\\odot'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O.", "g:atp_imaps && <SID>IsInMath() ? '\\bigodot' : 'O.' ",	'\\bigodot'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o*", "g:atp_imaps && <SID>IsInMath() ? '\\otimes' : 'o*' ",		'\\otimes'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O*", "g:atp_imaps && <SID>IsInMath() ? '\\bigotimes' : 'O*' ",	'\\bigotimes'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s+", "g:atp_imaps && <SID>IsInMath() ? '\\cup' : 's+' ",		'\\cup'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S+", "g:atp_imaps && <SID>IsInMath() ? '\\bigcup' : 'S+' ",		'\\bigcup'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s*", "g:atp_imaps && <SID>IsInMath() ? '\\cap' : 's*' ",		'\\cap'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S*", "g:atp_imaps && <SID>IsInMath() ? '\\bigcap' : 'S*' ",		'\\bigcap'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c*", "g:atp_imaps && <SID>IsInMath() ? '\\prod' : 'c*' ",		'\\prod'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c+", "g:atp_imaps && <SID>IsInMath() ? '\\coprod' : 'c+' ",		'\\coprod'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t<", "g:atp_imaps && <SID>IsInMath() ? '\\triangleleft' : 't<' ",	'\\triangleleft'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t>", "g:atp_imaps && <SID>IsInMath() ? '\\triangleright' : 't>' ",	'\\triangleright'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s<", "g:atp_imaps && <SID>IsInMath() ? '\\subseteq' : 's<' ",	'\\subseteq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "g:atp_imaps && <SID>IsInMath() ? '\\supseteq' : 's>' ",	'\\supseteq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "g:atp_imaps && <SID>IsInMath() ? '\\leq' : '<=' ",		'\\leq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "g:atp_imaps && <SID>IsInMath() ? '\\geq' : '>=' ",		'\\geq'],
 	\ ]
+    endif
+    call <SID>MakeMaps(g:atp_imap_math)
 
-    call <SID>MakeMaps(g:atp_math_imaps)
-
-
-
-
-" 
-    execute "imap <silent> <buffer> ".g:atp_imap_third_leader."m \\(\\)<Left><Left>"
-    execute "imap <silent> <buffer> ".g:atp_imap_third_leader."M \\[\\]<Left><Left>"
 endif
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
