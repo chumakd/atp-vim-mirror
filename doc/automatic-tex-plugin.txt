@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 02 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.21)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.22)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -132,6 +132,11 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+
+ ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj| and
+ |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move the
+ cursor and update the ToC line if ToC is opened. This makes them comatible
+ with |i_CTRL-O| and |i_CTRL_\_CTRL-O|.
 
  Note: the format of viewer options has changed from a string to a vim list.
  Every option and its value should be placed as a seprate element of vim list.
@@ -3899,7 +3904,8 @@ imap      ]let		\begin{letter}{<cursor>}
 MATH IMAPS						*atp-imap-math*
 These are very useful mappings for typing mathematics:
 
-These two maps are only valid inside math environment:  
+These two maps are only valid inside math environment (credits belongs to
+AuTeX plugin author Carl Mueller):
 imap __ 	_{}<Left>
 imap ^^		^{}<Left>
 You can set the leader for these two maps using g:atp_imap_subscript,
@@ -3909,8 +3915,6 @@ not be fired if you type \_ or \^ (which means literal _ or ^ in LaTeX).
 							*g:atp_imaps*
 Both above maps can be turned on/off on the fly with |g:atp_imaps| (1 - on,
 0 - off). Use |atp-:ToggleIMaps| (mapped to '<Tab>) to switch it on/off.
-
-
 
 imap ]m 	\[\]<Left><Left>
 imap ]M 	\[\]<Left><Left>
@@ -3936,9 +3940,10 @@ imap #^		\hat{}		[as above]
 imap #_		\bat{}
 imap #.		\dot		[#.s will put \dots]
 
-				TeX_nine plugin maps:
 These maps are only valid inside a math environment. They work around
 |'timeout'| vim setting (behave like |'notimeout'| was set):
+
+Some of the ideas were taken from TeX_9 by Elias Toivanen.
 
 The following imaps can be turned on/off on the fly with |g:atp_imaps|
 variable (0 - off, 1 - on). You can use |atp-:ToggleIMaps| (mapped to '<Tab>).

@@ -116,14 +116,6 @@ bibliographies  = options.bibliographies.split(",")
 bibliographies  = list(filter(nonempty, bibliographies))
 
 tex_options     = list(filter(nonempty,re.split('\s*,\s*',options.tex_options)))
-# if re.match('\s*$', tex_options):
-#     tex_options_list=[]
-# else:
-#     if re.search(',', tex_options):
-#         tex_options_list=tex_options.split(',')
-#         tex_options_list=list(filter(nonempty,tex_options_list))
-#     else:
-#         tex_options_list=[tex_options]
 debug_file.write("TEX_OPTIONS_LIST="+str(tex_options)+"\n")
 
 outdir		= options.outdir

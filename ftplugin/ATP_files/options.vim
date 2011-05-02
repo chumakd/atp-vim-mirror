@@ -1500,7 +1500,7 @@ function! ATP_ToggleDebugMode(mode,...)
 	endif
 
 	if set_new
-	    let t:atp_DebugMode	= g:new_debugmode
+	    let t:atp_DebugMode	= new_debugmode
 	endif
 	silent cclose
     else

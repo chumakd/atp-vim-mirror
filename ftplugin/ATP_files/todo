@@ -319,3 +319,5 @@ i_CTRL-Oj - has a strange behaviour.
 
 Bug: atplib#CloseLastEnvironment() if invoked without arguments: the variable l:begin_line_env in line 193 is not defined.
 ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
+Solution: gk map with :call UpdateToCLine() - it should be done as a one command. Note: its better that EVERY nmap is done by one command (might be hidden in one function call) - this is because of i_CTRL-O feature, if there are more commands some are put as a text. Another solution might be to use <expr> in nmaps.
+ToDo: -S goes to next section if there is no subsection, this might be OK, but then should be documented.

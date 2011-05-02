@@ -56,23 +56,45 @@ if g:atp_MapUpdateToCLine
     nmap <buffer> <silent> <ScrollWheelDown> <ScrollWheelDown>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <S-Up> <S-Up>:call UpdateToCLine()<CR>
     nmap <buffer> <silent> <PageUp> <PageUp>:call UpdateToCLine()<CR>
-    nmap <buffer> <silent> <C-D> <C-D>:call UpdateToCLine()<CR>
+    map <buffer> <silent> <C-D> <C-D>:call UpdateToCLine()<CR>
 "     nmap <buffer> <silent> <C-Y> <C-Y>:call UpdateToCLine()<CR>
 
-    nmap <buffer> <silent> gj	gj:call UpdateToCLine(1)<CR>
-    nmap <buffer> <silent> gk	gk:call UpdateToCLine(1)<CR>
+    function! ATP_GJ(i)
+	exe "normal! j"
+	call UpdateToCLine(a:i)
+    endfunction
+    nnoremap <buffer> <silent> gj	:call ATP_GJ(0)<CR>
+
+    function! ATP_GK(i)
+	exe "normal! gk"
+	call UpdateToCLine(a:i)
+    endfunction
+    nnoremap <buffer> <silent> gk	:call ATP_GK(0)<CR>
+
+    function! ATP_J(i)
+	exe "normal! j"
+	call UpdateToCLine(a:i)
+    endfunction
+    function! ATP_K(i)
+	exe "normal! k"
+	call UpdateToCLine(a:i)
+    endfunction
+
+    nmap <buffer> <silent> gj	:call ATP_GJ(1)<CR>
+    nmap <buffer> <silent> gk	:call ATP_GK(1)<CR>
 
     if maparg('j', 'n') == ''
-	nmap <buffer> <silent> j	j:call UpdateToCLine(0)<CR>
+	nnoremap <buffer> <silent> j	:call ATP_J(0)<CR>
     elseif maparg('j', 'n') == 'gj'
-	nmap <buffer> <silent> j	gj:call UpdateToCLine(0)<CR>
+	nmap <buffer> <silent> j	:call ATP_GJ(0)<CR>
     endif
 
     if maparg('k', 'n') == ''
-	nmap <buffer> <silent> k	k:call UpdateToCLine(1)<CR>
+	nnoremap <buffer> <silent> k	:call ATP_K(1)<CR>
     elseif maparg('j', 'n') == 'gj'
-	nmap <buffer> <silent> k	gk:call UpdateToCLine(1)<CR>
+	nnoremap <buffer> <silent> k	:call ATP_GK(1)<CR>
     endif
+
 endif
 
 
