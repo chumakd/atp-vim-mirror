@@ -555,7 +555,7 @@ endif
     let g:atp_imap_math= [ 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '_{}<Left>' : '_' ", '_{}'], 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_supscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '^{}<Left>' : '^' ", '^{}'], 
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=", "g:atp_imaps && <SID>IsInMath() ? <BS>&= : '='", 		'&=' ],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=", "g:atp_imaps && <SID>IsInMath() && <SID>IsLeft('=') && !<SID>IsLeft('&',1) ? '<BS>&=' : '='", 		'&=' ],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o+", "g:atp_imaps && <SID>IsInMath() ? '\\oplus' : 'o+' ", 	'\\oplus' ],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O+", "g:atp_imaps && <SID>IsInMath() ? '\\bigoplus' : 'O+' ",	'\\bigoplus'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o-", "g:atp_imaps && <SID>IsInMath() ? '\\ominus' : 'o-' ",	'\\ominus'],
