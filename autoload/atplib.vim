@@ -2643,14 +2643,14 @@ let l:eindent=atplib#CopyIndentation(l:line)
 	" unless it starts in a serrate line,
 	" \( \): close in the same line. 
 	"{{{3 close environment in the same line
-	if l:line !~ '^\s*\%(\$\|\$\$\|[^\\]\\(\|\\\@<!\\\[\)\?\s*\\begin\s*{[^}]*}\s*\%(([^)]*)\s*\|{[^}]*}\s*\|\[[^\]]*\]\s*\)\{,3}\%(\\label\s*{[^}]*}\s*\)\?$'
+	if l:line !~ '^\s*\%(\$\|\$\$\|[^\\]\\(\|\\\@<!\\\[\)\?\s*\\begin\s*{[^}]*}\s*\%(([^)]*)\s*\|{[^}]*}\s*\|\[[^\]]*\]\s*\)\{,3}\%(\s*\\label\s*{[^}]*}\s*\|\s*\\hypertarget\s*{[^}]*}\s*{[^}]*}\s*\)\{0,2}$'
 " 	    	This pattern matches:
 " 	    		^ $
 " 	    		^ $$
 " 	    		^ \(
 " 	    		^ \[
-" 	    		^ (one of above or space) \begin { env_name } ( args1 ) [ args2 ] { args3 } \label {label}
-" 	    		There are at most 3 args of any type with any order \label is matched optionaly.
+" 	    		^ (one of above or space) \begin { env_name } ( args1 ) [ args2 ] { args3 } \label {label} \hypertarget {} {}
+" 	    		There are at most 3 args of any type with any order \label and \hypertarget are matched optionaly.
 " 	    		Any of these have to be followd by white space up to end of line.
 	    "
 	    " The line above cannot contain "\|^\s*$" pattern! Then the
@@ -2807,7 +2807,9 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			" pair (below l:pos[1]). (I assume every env is in
 			" a seprate line!
 			let l:end=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{','\%(%.*\)\@<!\\end\s*{',l:line_nr,g:atp_completion_limits[2],1)
-" 			let g:info= " l:max=".l:max." l:end=".l:end." line('.')=".line(".")." l:line_nr=".l:line_nr
+			if g:atp_debugCLE
+			    let g:info= " l:max=".l:max." l:end=".l:end." line('.')=".line(".")." l:line_nr=".l:line_nr
+			endif
 			" if the line was found append just befor it.
 			if l:end != 0 
 				if line(".") <= l:max
@@ -2851,28 +2853,38 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			let l:cline	= getline(l:pos_saved[1])
 			let g:cline	= l:cline
 			let g:line	= l:pos_saved[1]
+			let g:debug	= 0
 			let l:iline=searchpair('\\begin{','','\\end{','nW')
 			if l:iline > l:line_nr && l:iline <= l:pos_saved[1]
+			    let g:debug=1
 			    call append(l:iline-1, l:eindent . l:str)
 			    echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:iline
 			    let l:pos_saved[2]+=len(l:str)
 			    call setpos(".",[0,l:iline,len(l:eindent.l:str)+1,0])
 			else
 			    if l:cline =~ '\\begin{\%('.l:uenv.'\)\@!'
+				let g:debug=2
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1],len(l:eindent.l:str)+1,0])
 			    elseif l:cline =~ '^\s*$'
+				let g:debug=3
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 			    else
+				let g:debug=4
 				call append(l:pos_saved[1], l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]+1
 				let l:pos_saved[2]+=len(l:str)
-				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
+				" Do not move corsor if: '\begin{env_name}<Tab>'
+				if l:cline !~  '\\begin\s*{\s*\%('.l:uenv.'\)\s*}'
+				    call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
+				else
+				    cal setpos(".", l:pos_saved)
+				endif
 			    endif
 			endif 
 			if g:atp_debugCLE

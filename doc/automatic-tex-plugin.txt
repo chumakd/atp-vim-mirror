@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 02 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.22)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.24)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -3931,8 +3931,9 @@ imap `8		\infty		[the default '#' is not working, ` is used intead,
 imap `6		\partial	[as above, you can also use \p<Tab>]
 imap #@		\circ
 imap #=		\equiv
-imap #-		\bigcap
+imap #*		\bigcap
 imap #+		\bigcup
+imap #\		\backslash
 imap #>		\geq
 imap #<		\leq
 imap #~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
@@ -3960,6 +3961,7 @@ imap O.		\bigodot
 imap o*		\otimes
 imap O*		\bigotimes
 imap s+		\cup		[    set +]		/set = set theoretic/
+imap s-		\setminus	[    set -]
 imap S+		\bigcup		[big set +]
 imap s*		\cap		[    set *]
 imap S*		\bigcap		[big set *]
