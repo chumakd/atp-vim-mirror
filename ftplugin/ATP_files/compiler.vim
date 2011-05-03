@@ -130,7 +130,7 @@ function! <SID>GetSyncData(line, col)
 	    " Write better test (above)
 	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
 	    let synctex_output=split(system(synctex_cmd), "\n")
-	    call add(g:debug,get(synctex_output, 1, ''))
+" 	    call add(g:debug,get(synctex_output, 1, ''))
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
 	    endif
@@ -186,7 +186,6 @@ function! <SID>SyncShow( page_nr, y_coord)
     endif
 endfunction "}}}
 function! <SID>SyncTex(mouse, ...) "{{{
-"     let g:debug 	= (exists("g:debug")?g:debug+1:1)
     let output_check 	= ( a:0 >= 1 && a:1 == 0 ? 0 : 1 )
     let dryrun 		= ( a:0 >= 2 && a:2 == 1 ? 1 : 0 )
     " Mouse click <S-LeftMouse> is mapped to <LeftMouse>... => thus it first changes

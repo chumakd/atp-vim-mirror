@@ -42,7 +42,7 @@ endif
 " {{{ debug variables
 if !exists("g:atp_debugUpdateATP")
     " debug UpdateATP (various.vim)
-    let g:atp_debugUpdateATP = 0
+    let g:atp_debugUpdateATP 	= 0
 endif
 if !exists("g:atp_debugPythonCompiler")
     " debug MakeLatex (compiler.vim)
@@ -50,19 +50,23 @@ if !exists("g:atp_debugPythonCompiler")
 endif
 if !exists("g:atp_debugML")
     " debug MakeLatex (compiler.vim)
-    let g:atp_debugML	= 0
+    let g:atp_debugML		= 0
 endif
 if !exists("g:atp_debugGAF")
     " debug aptlib#GrepAuxFile
-    let g:atp_debugGAF	= 0
+    let g:atp_debugGAF		= 0
 endif
 if !exists("g:atp_debugSCP")
     " debug s:SelectCurrentParapgrahp (LatexBox_motion.vim)
-    let g:atp_debugSCP	= 0
+    let g:atp_debugSCP		= 0
 endif
 if !exists("g:atp_debugSIT")
     " debug <SID>SearchInTree (search.vim)
     let g:atp_debugSIT		= 0
+endif
+if !exists("g:atp_debugRS")
+    " debug <SID>RecursiveSearch (search.vim)
+    let g:atp_debugRS		= 0
 endif
 if !exists("g:atp_debugSync")
     " debug forward search (vim->viewer) (search.vim)
@@ -321,6 +325,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_atpdev")
+    let g:atp_atpdev = 0
+endif
 if !exists("g:atp_imap_ShortEnvIMaps") || g:atp_reload_variables
     let g:atp_imap_ShortEnvIMaps = 1
 endif
@@ -1353,14 +1360,9 @@ endfunction
 function! ATP_CmdwinToggleSpace(on)
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
     if on
-	let g:debug = 1
 	imap <space> \_s\+
     else
-	let g:debug = 0
-" 	try
-	    iunmap <space>
-" 	catch /E31:/
-" 	endtry
+	iunmap <space>
     endif
 endfunction
 "}}}
@@ -2212,7 +2214,6 @@ endfunction
 
     " Experimental:
 	" This doesn't work !
-" 	    let g:debug=0
 " 	    fun! GetSynStackI()
 " 		let synstack=[]
 " 		let synstackI=synstack(line("."), col("."))
@@ -2225,7 +2226,6 @@ endfunction
 " 		if b:return == 0
 " 		    return []
 " 		else
-" 		    let g:debug+= 1
 " 		    return map(synstack, "synIDattr(v:val, 'name')")
 " 		endif
 " 	    endfunction

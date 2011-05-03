@@ -216,7 +216,6 @@ function! atplib#CallBack(mode,...)
 		let g:debugCB .= 4
 	    endif
 
-	    let g:debug		= 1
 	    let &l:cmdheight 	= g:atp_DebugModeCmdHeight
 		let showed_message 	= 1
 		if b:atp_ReloadOnError || b:atp_Viewer !~ '^\s*xpdf\>'
@@ -895,7 +894,7 @@ function! atplib#showlabels(labels)
 	    let space	= join(map(range(space_len), '" "'), "")
 	    let set_line 	= label[2] . "\t[" . label[3][0] . "] " . label[1] . space . "(" . label[0] . ")"
 	    call setline(line_nr, set_line ) 
-	    cal extend(b:atp_Labels, { line_nr : [ file, label[0] ]}) 
+	    call extend(b:atp_Labels, { line_nr : [ file, label[0] ]}) 
 	    let line_nr+=1
 	endfor
     endfor
@@ -2708,6 +2707,9 @@ let l:eindent=atplib#CopyIndentation(l:line)
 
 		let l:pos=getpos(".")
 		let l:pos_saved=deepcopy(l:pos)
+		if g:atp_debugCLE
+		    let g:pos_saved0 = copy(l:pos_saved)
+		endif
 
 		while l:line_nr >= 0
 			let l:line_nr=search('\%(%.*\)\@<!\\begin\s*{','bW')
@@ -2851,39 +2853,37 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			" found
 			keepjumps call setpos(".",[0,l:line_nr,len(getline(l:line_nr)),0])
 			let l:cline	= getline(l:pos_saved[1])
-			let g:cline	= l:cline
-			let g:line	= l:pos_saved[1]
-			let g:debug	= 0
+			if g:atp_debugCLE
+			    let g:cline		= l:cline
+			    let g:pos_saved 	= copy(l:pos_saved)
+			    let g:line		= l:pos_saved[1]
+			endif
 			let l:iline=searchpair('\\begin{','','\\end{','nW')
 			if l:iline > l:line_nr && l:iline <= l:pos_saved[1]
-			    let g:debug=1
 			    call append(l:iline-1, l:eindent . l:str)
 			    echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:iline
 			    let l:pos_saved[2]+=len(l:str)
 			    call setpos(".",[0,l:iline,len(l:eindent.l:str)+1,0])
 			else
 			    if l:cline =~ '\\begin{\%('.l:uenv.'\)\@!'
-				let g:debug=2
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1],len(l:eindent.l:str)+1,0])
 			    elseif l:cline =~ '^\s*$'
-				let g:debug=3
 				call append(l:pos_saved[1]-1, l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]
 				let l:pos_saved[2]+=len(l:str)
 				call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 			    else
-				let g:debug=4
 				call append(l:pos_saved[1], l:eindent . l:str)
 				echomsg "[ATP:] closing " . l:env_name . " from line " . l:bpos_env[0] . " at line " . l:pos_saved[1]+1
-				let l:pos_saved[2]+=len(l:str)
 				" Do not move corsor if: '\begin{env_name}<Tab>'
 				if l:cline !~  '\\begin\s*{\s*\%('.l:uenv.'\)\s*}'
+				    let l:pos_saved[2]+=len(l:str)
 				    call setpos(".",[0,l:pos_saved[1]+1,len(l:eindent.l:str)+1,0])
 				else
-				    cal setpos(".", l:pos_saved)
+				    call setpos(".", l:pos_saved)
 				endif
 			    endif
 			endif 
@@ -3652,19 +3652,15 @@ function! atplib#TabCompletion(expert_mode,...)
 		    let begMathZone = searchpos(pattern, 'bnW')
 " 		    let g:begMathZone = copy(begMathZone)
 		    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
-" 			let g:debug = 1
 			call atplib#CloseLastEnvironment(append, 'math')
 		    else
-" 			let g:debug = 2
 			call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
 		    endif
 		else
-" 		    let g:debug = 3
 		    call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
 		endif
 		return '' 
 	    else
-" 		let g:debug = 4
 		let b:comp_method='brackets fast return'
 		return ''
 	    endif
@@ -4100,7 +4096,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list = g:atp_BeamerFontThemes
     "{{{3 ------------ FONT FAMILY
     elseif completion_method == 'font family'
-	let g:debug =1
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
 	let epos=searchpos('\\selectfont','nW',line("."))[1]-1
 	if epos == -1

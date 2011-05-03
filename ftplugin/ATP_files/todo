@@ -6,11 +6,6 @@
 
 pedit for openning without changing the window number! 
 
-SOLUTION: I can use the "= register (see map-examples)
-
-ToDo: completion of user defined command \mpr{} (with {}) position the cursor
-in the right place)
-
 ToDo: add support for plain TeX users in the function atplib#SearchPackage()
 	in TeX one writes: '\input tikz.tex' instead of '\usepackage{tikz}'
 	in while in ConTeXt '\usemodule[tikz]'
@@ -294,12 +289,9 @@ MakeLatex: There ware undefined references this should be shown in debug mode (T
 ToDo: in insert mode auTeX can wait until compilation stops: when compilers ends it should generate CursorMovedI event if the mode is insert mode - this can be done by a simple function atplib#CursorMoveI(), hmm this is not good, b:atp_PythonPIDs will be not 0
 ToDo: CallBack is not working for bash compiler.
 ToDo: MakeLatex on hgt_field.tex (under BZR) pdflatex+bibtex+pdflatex (should do one pdflatex more).
-Done: Test <C-Space> (must not be <silent>)
-Done: After :YankSection :SectionStack sais section stack is empty.
 ToDo: Status line for QuickFix Window.
 ToDo: ChangeEnv \(:\) => \begin{equation}:\end{equation}
 ToDo: CTOC doesn't change when I change the title. Only after running TOC!
-Done: <s if on line \section... go to one section back.
 ToDo: gw on \end{proposition} joints this line with the next one.
 
 Look at: bibweb
@@ -315,9 +307,13 @@ To do:
     This is a problem with getpos(".") in visual mode in LatexBox_GetCurrentEnvironment.
     See comments in LatexBox_GetCurrentEnvironment.
 
-i_CTRL-Oj - has a strange behaviour.
+Done:i_CTRL-Oj - has a strange behaviour.
 
 Bug: atplib#CloseLastEnvironment() if invoked without arguments: the variable l:begin_line_env in line 193 is not defined.
 ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
-Solution: gk map with :call UpdateToCLine() - it should be done as a one command. Note: its better that EVERY nmap is done by one command (might be hidden in one function call) - this is because of i_CTRL-O feature, if there are more commands some are put as a text. Another solution might be to use <expr> in nmaps.
-ToDo: -S goes to next section if there is no subsection, this might be OK, but then should be documented.
+Done: gk map with :call UpdateToCLine() - it should be done as a one command. Note: its better that EVERY nmap is done by one command (might be hidden in one function call) - this is because of i_CTRL-O feature, if there are more commands some are put as a text. Another solution might be to use <expr> in nmaps.
+ToDo: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
+
+# DONE: completion of user defined command \mpr{} (with {}) position the cursor
+# in the right place) + :DefiSearch without argument should not highlight
+# anything!

@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun May 01 11:00  2011 W
+" Last Change: Tue May 03 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1030,7 +1030,6 @@ function! s:OpenLog()
 " THIS CODE IS NOT WORKING:
 " 		if nr >= 1 && [ startline, startcol ] == [ startline_o, startcol_o ] && !test
 " 		    keepjumps call setpos(".", saved_pos)
-" 		    let g:debug = "return " . nr
 " 		    break
 " 		endif
 		if !startline
@@ -2225,6 +2224,34 @@ function! Comment(arg) "{{{
     endif
 
 endfunction "}}}
+
+" DebugPrint
+" cat files under g:atp_TempDir (with ATP debug info)
+" {{{
+if has("unix") && g:atp_atpdev
+    function! <SID>DebugPrint(file)
+	if a:file == ""
+	    return
+	endif
+	let dir = getcwd()
+	exe "lcd ".g:atp_TempDir
+	if filereadable(a:file)
+	    echo join(readfile(a:file), "\n")
+	else
+	    echomsg "No such file."
+	endif
+	exe "lcd ".dir
+    endfunction
+    function! <SID>DebugPrintComp(A,C,L)
+	let list = split(globpath(g:atp_TempDir, "*"), "\n")
+	let dir = getcwd()
+	exe "lcd ".g:atp_TempDir
+	call map(list, "fnamemodify(v:val, ':.')")
+	exe "lcd ".dir
+	return join(list, "\n")
+    endfunction
+    command! -nargs=? -complete=custom,<SID>DebugPrintComp DebugPrint	:call <SID>DebugPrint(<q-args>)
+endif "}}}
 endif "}}}
 
 

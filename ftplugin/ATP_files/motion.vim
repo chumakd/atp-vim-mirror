@@ -492,7 +492,6 @@ endfunction
 function! UpdateToCLine(...)
     let toc_bufnr	= <SID>ToCbufnr()
     let check_line 	= (a:0>=1 ? a:1 : -1) 
-    let g:check_line	= check_line 
     if toc_bufnr == -1 || check_line != -1 && 
 		\ getline(line(".")+check_line) !~# '\\\%(part\|chapter\|\%(sub\)\{0,2}section\)\s*{'
 	return
@@ -500,13 +499,9 @@ function! UpdateToCLine(...)
     let cline  	= line(".")
     let cbufnr 	= bufnr("")
     let cwinnr	= bufwinnr("")
-    let g:cwinnr = cwinnr
-    let g:cbufnr = cbufnr
     exe toc_bufnr."wincmd w"
     let num 	= get(s:numberdict, t:atp_bufname, 'no_number')
     if num == 'no_number'
-" Infinite loop error:
-" 	call s:TOC("")
 	exe cwinnr."wincmd w"
 	return
     endif
@@ -517,7 +512,6 @@ function! UpdateToCLine(...)
 	endif
     keepjumps call setpos('.',[bufnr(""),num,1,0])
     endfor
-"     exe bufwinnr(cbufnr)."wincmd w"
     exe cwinnr."wincmd w"
 endfunction
 " This is User Front End Function 

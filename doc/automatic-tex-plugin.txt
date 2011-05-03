@@ -132,6 +132,14 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+ Small but nice change in closing environments: If you type
+ \begin{envname}<Tab> the cursor position will not change. You can use
+ |i_CTRL-M| (|i_CTRL-J| is used by |atp-j_motion|) after <Tab> to open new
+ line inside {envname}.  Otherwise the cursor position will be right after the
+ closing \end{envname}.
+
+ |atp-:LocalCommands|		  -- do not search in comments,
+ 				-- add single { if command has defined arguments.
 
  ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj| and
  |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move the
@@ -246,6 +254,10 @@ EasyMotion and ATP ~
 	interfering with an ATP font map).
 
  (Almost all) maps became |:map-silent|.   
+
+ :DebugPrint	if yuo want to develop/debug ATP set g:atp_atpdev to 1 run
+ |atp-:ReloadATP| and this command will allow to fast printing of debug files
+ under |g:atp_TempDir|.
 
 >
   =======================
@@ -2543,14 +2555,21 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		situations: for example when it did found less than one command
 		completion. It closes the right environment when they are
 		nested (however not in right place!) and it preserves the
-		indention. When after \begin{center}\label{...} XXX is
-		something (in place of XXX) it will close the environment in
-		after the cursor position otherwise in next line.
+		indention. When after \begin{center}\label{...} XXX there is
+		something (in place of XXX) it will close the environment
+		after the cursor position otherwise in next line
+		(\hypertarget{...}{...} command is treated like \lebl{...}).
 
 		The environments opened in tex definitions ('\def',
 		'\newcommand', '\renewcommand') will not be closed unless the
 		current cursor position is in that line (sometimes one might
 		want to have a definition which only opens an environment).
+
+		If you type \begin{envname}<Tab> the cursor position will not
+		change. You can use |i_CTRL-M| (|i_CTRL-J| is used by
+		|atp-j_motion|) after <Tab> to open new line inside {envname}.
+		Otherwise the cursor position will be right after the closing
+		\end{envname}.
 
 		See |g:atp_amsmath|.
 
