@@ -1671,7 +1671,6 @@ endfunction
 " EOF
 " endfunction "}}}
 
-
 " This function sets the window options common for toc and bibsearch windows.
 "{{{1 atplib#setwindow
 " this function sets the options of BibSearch, ToC and Labels windows.
@@ -2580,13 +2579,20 @@ if a:0 <= 1
     " texMathZoneW, texMathZoneX, texMathZoneY.
     if math_1 + math_2 + math_3 + math_4 >= 1
 	let l:close = 'math'
-    elseif l:begin_line_env
+    elseif l:env_name
 	let l:close = 'environment'
+    else
+	if g:atp_debugCLE
+	    silent echo "return: l:env_name=".string(l:env_name)." && math_1+...+math_4=".string(math_1+math_2+math_3+math_4)
+	    redir END
+	endif
+	return
     endif
 endif
 if g:atp_debugCLE
     let g:close = l:close
     silent echo "g:close=".string(l:close)
+    silent echo "l:env_name=".l:env_name
 endif
 let l:env=l:env_name
 "}}}2
@@ -3020,6 +3026,7 @@ function! atplib#CheckBracket(bracket_dict)
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[1])])
     let pos_saved 	= getpos(".")
 
+    " Bracket sizes:
     let ket_pattern	= '\%(' . join(values(filter(copy(g:atp_sizes_of_brackets), "v:val != '\\'")), '\|') . '\)'
 
 
@@ -3037,7 +3044,8 @@ function! atplib#CheckBracket(bracket_dict)
     let bracket_list= keys(a:bracket_dict)
     for ket in bracket_list
 	let pos		= deepcopy(pos_saved)
-	let pair_{i}	= searchpairpos(escape(ket,'\[]'),'', escape(a:bracket_dict[ket], '\[]'). '\|'.ket_pattern.'\.' ,'bnW',"",limit_line)
+	let pair_{i}	= searchpairpos(escape(ket,'\[]'),'', escape(a:bracket_dict[ket], '\[]'). 
+		    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) ,'bnW',"",limit_line)
 	if g:atp_debugCB >= 2
 	    echomsg escape(ket,'\[]') . " pair_".i."=".string(pair_{i}) . " limit_line=" . limit_line
 	endif

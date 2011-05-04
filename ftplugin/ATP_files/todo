@@ -306,19 +306,18 @@ To do:
     This is a problem with getpos(".") in visual mode in LatexBox_GetCurrentEnvironment.
     See comments in LatexBox_GetCurrentEnvironment.
 
-Done:i_CTRL-Oj - has a strange behaviour.
-
 Bug: atplib#CloseLastEnvironment() if invoked without arguments: the variable l:begin_line_env in line 193 is not defined.
-ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
-Done: gk map with :call UpdateToCLine() - it should be done as a one command. Note: its better that EVERY nmap is done by one command (might be hidden in one function call) - this is because of i_CTRL-O feature, if there are more commands some are put as a text. Another solution might be to use <expr> in nmaps.
-ToDo: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
 
-# DONE: completion of user defined command \mpr{} (with {}) position the cursor
-# in the right place) + :DefiSearch without argument should not highlight
-# anything!
+ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
+ToDo: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
 
 Done: LocalCommands! remove bang (see doc) I think it is not needed anymore.
 	b:atp_PackageList can be removed 
-ToDo: bash compiler: pdflatex running message is not shown.
+Done: bash compiler: pdflatex running message is not shown.
 
 ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
+
+ToDo: ErrorFormat -{flag}
+	This will not work with -fi and -f flags.
+
+ToDo: k j missbehave when count is given.

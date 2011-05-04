@@ -254,7 +254,8 @@ NEWS							*atp-news*
 	will show the current value |b:atp_ErrorFormat|. It sets the variable
 	|b:atp_ErrorFormat| and rereads the log file with |cgetfile|.
 	The variable |b:atp_ErrorFormat| is also set when you use the command
-	|atp-:ShowErrors|.
+	|atp-:ShowErrors|. In addition you can use +{flag} and -{flag} as an
+	argument, then {flag} will be added/removed from |b:atp_ErrorFormat|.
 
  EasyMotion and ATP ~
 	If you want to use EaseMotion vim plugin (which is quite handy):
@@ -1049,6 +1050,10 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 	shows the current value of |b:atp_ErrorFormat|.  The variable
 	|b:atp_ErrorFormat| is also set when you use the command
 	|atp-:ShowErrors|.
+
+	As an argument you mey use +{flag} and -{flag} then {flag} will be
+	added/removed from |b:atp_ErrorFormat|.
+
 
 :Compiler {compiler-program}				*atp-:Compiler*
 	Command which help to set |b:atp_TexCompiler| variable (with

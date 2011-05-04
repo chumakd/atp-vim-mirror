@@ -1334,7 +1334,17 @@ function! <SID>SetErrorFormat(...)
 	return
     endif
 
-    let carg = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+    let carg_raw = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+    if carg_raw =~ '^+'
+	let carg=b:atp_ErrorFormat.substitute(carg_raw, '^\s*+', '', '')
+    elseif carg_raw =~ '^-'
+	let carg=b:atp_ErrorFormat
+	for letter in split(carg_raw, '\zs')
+	    let carg=substitute(carg, letter, '', 'g')
+	endfor
+    else
+	let carg=carg_raw
+    endif
     let b:atp_ErrorFormat = carg
     let g:carg = carg." a:1=".a:1
 

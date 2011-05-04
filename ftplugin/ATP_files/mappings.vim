@@ -59,40 +59,44 @@ if g:atp_MapUpdateToCLine
     map <buffer> <silent> <C-D> <C-D>:call UpdateToCLine()<CR>
 "     nmap <buffer> <silent> <C-Y> <C-Y>:call UpdateToCLine()<CR>
 
-    function! ATP_GJ(i)
-	exe "normal! j"
+    function! ATP_GJ(i, count)
+	exe "normal! ".a:count."j"
+	let g:count=a:count
 	call UpdateToCLine(a:i)
     endfunction
-    nnoremap <buffer> <silent> gj	:call ATP_GJ(0)<CR>
+    nnoremap <buffer> <silent> gj	:<C-U>call ATP_GJ(0, v:count1)<CR>
 
-    function! ATP_GK(i)
-	exe "normal! gk"
+    function! ATP_GK(i, count)
+	exe "normal! ".a:count."gk"
+	let g:count=a:count
 	call UpdateToCLine(a:i)
     endfunction
-    nnoremap <buffer> <silent> gk	:call ATP_GK(0)<CR>
+    nnoremap <buffer> <silent> gk	:<C-U>call ATP_GK(0, v:count1)<CR>
 
-    function! ATP_J(i)
-	exe "normal! j"
+    function! ATP_J(i, count)
+	exe "normal! ".a:count."j"
+	let g:count=a:count
 	call UpdateToCLine(a:i)
     endfunction
-    function! ATP_K(i)
-	exe "normal! k"
+    function! ATP_K(i, count)
+	exe "normal! ".a:count."k"
+	let g:count=a:count
 	call UpdateToCLine(a:i)
     endfunction
 
-    nmap <buffer> <silent> gj	:call ATP_GJ(1)<CR>
-    nmap <buffer> <silent> gk	:call ATP_GK(1)<CR>
+    nmap <buffer> <silent> gj	:<C-U>call ATP_GJ(1, v:count1)<CR>
+    nmap <buffer> <silent> gk	:<C-U>call ATP_GK(1, v:count1)<CR>
 
     if maparg('j', 'n') == ''
-	nnoremap <buffer> <silent> j	:call ATP_J(0)<CR>
+	nnoremap <buffer> <silent> j	:<C-U>call ATP_J(0, v:count1)<CR>
     elseif maparg('j', 'n') == 'gj'
-	nmap <buffer> <silent> j	:call ATP_GJ(0)<CR>
+	nmap <buffer> <silent> j	:<C-U>call ATP_GJ(0, v:count1)<CR>
     endif
 
     if maparg('k', 'n') == ''
-	nnoremap <buffer> <silent> k	:call ATP_K(1)<CR>
+	nnoremap <buffer> <silent> k	:<C-U>call ATP_K(1, v:count1)<CR>
     elseif maparg('j', 'n') == 'gj'
-	nnoremap <buffer> <silent> k	:call ATP_GK(1)<CR>
+	nnoremap <buffer> <silent> k	:<C-U>call ATP_GK(1, v:count1)<CR>
     endif
 
 endif
