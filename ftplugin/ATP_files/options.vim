@@ -1073,7 +1073,7 @@ function! s:ShowOptions(bang,...)
 	endfor
 	if "b:".key =~ pattern
 " 	    if patn != '' && "b:".key !~ patn
-	    echo "b:".key.space.getbufvar(bufnr(""), key)
+		echo "b:".key.space.string(getbufvar(bufnr(""), key))
 " 	    endif
 	endif
     endfor
@@ -1104,7 +1104,9 @@ function! s:ShowOptions(bang,...)
 	    endfor
 	    if var_name =~ pattern && var_name !~ '_command\|_amsfonts\|ams_negations\|tikz_\|keywords'
 " 		if patn != '' && var_name !~ patn
-		echo var_name.space.string({var_name})
+		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:optionsDict", "g:optionsKeys", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
+		    echo var_name.space.string({var_name})
+		endif
 " 		endif
 	    endif
 	endfor

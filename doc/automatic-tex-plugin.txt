@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.24)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.26)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -132,15 +132,23 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.4
 <
+
+ ATP AND GENTOO LINUX~
+ Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
+ automatictexplugin in the portage tree.
+
+ COMPLETION ~
  Small but nice change in closing environments: If you type
  \begin{envname}<Tab> the cursor position will not change. You can use
  |i_CTRL-M| (|i_CTRL-J| is used by |atp-j_motion|) after <Tab> to open new
  line inside {envname}.  Otherwise the cursor position will be right after the
  closing \end{envname}.
 
+ LOCAL COMMANDS ~
  |atp-:LocalCommands|		  -- do not search in comments,
  				-- add single { if command has defined arguments.
 
+ 
  ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj| and
  |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move the
  cursor and update the ToC line if ToC is opened. This makes them comatible
@@ -150,6 +158,7 @@ NEWS							*atp-news*
  Every option and its value should be placed as a seprate element of vim list.
  See |atp-Viewers_Options| for examples.
 
+ NEW IMAPS ~
  New imaps for some commonly used math commands: see |atp-imap-math|.
 
  There is an option to have environment imaps with three letter abreviations:
@@ -170,6 +179,7 @@ NEWS							*atp-news*
  ':let g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
  the corresponding imap will not be defined.
 
+ NEW MOTIONS ~
  							*atp->E* *atp-<E*
  There are two more nice map >E which is something like %>e, i.e. jump over
  the current environment and go to next one. The reverse <E is alos
@@ -179,20 +189,24 @@ NEWS							*atp-news*
      map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
      map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
 
-
- |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
- requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
- 
  |atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|, |atp-:Sec|,
  |atp-:Chap| and |atp-:Part|. They also works relatievly to the current unit
  (section/chapter/part), i.e. 2]s will jump to second section of the current
  chapter.
 
+
+ UPDATETIME ~
+ |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
+ requires to quiting vim and makeing changes in |vimrc|/|atprc| files. 
+ 
+ MAKE LATEX ~
  |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
 
+ PYTHON 3 compatybility ~
  All python scripts are compatible with Python 3. Traceback info is
  forwarded to vim (and log file) in case exceptions are handled.
 
+ DICTIONARIES ~
  I added (and extended) the dictionaries of latex-suite to ATP (the files
  dictionaries/dictionary and dictionary/SIunits). The are added to
  |'complete'| vim option, so you can use them through |ins-completion|.
@@ -201,10 +215,12 @@ NEWS							*atp-news*
  use amsmath package or if the document class is one of the ams classes or of
  |g:atp_amsmath| is set to 1.
  
+ STATUS LINE ~
  Status notifications has the ability to show if |b:atp_BibCompiler|, or
  "makeindex" are running. Unless |g:atp_statusNotif|=0 or |g:atp_callback|=0
  |atp-:MakeLatex| will not echo messages (the info appears in staus line).
 
+ BIBER AND BIBLATEX SUPPORT ~
  Support for biber and biblatex added (in |atp-:MakeLatex|, |atp-:Bibtex|,
  |atp-:Delete|, |atp-:InputFiles| commands), |g:keep| variable will adjust on
  the fly (add run.xml and bcf extensions).  |b:atp_BibCommand| will be set to
@@ -217,16 +233,19 @@ NEWS							*atp-news*
  search for them in a special subrutine which only searches in the preambule.
  This makes it work slightly faster.
 
+ TEX OPTIONS VARIABLE (new format) ~
  	|b:atp_TexOptions| is a comma separeted list of TeX compiler options.
 	If you use |g:atp_Compiler|="bash" this might be just a white space
 	separated list.
 
+ SPACE CMAP ~
  cmap <buffer> <C-Sapce> 	\_s\+
  cmap <buffer> <C-_> 		\_s\+
  	The <C-Space> map doesn't work in Vim, instead <C-@> is used which
 	works as <C-Space>. In Vim, and gVim aswell, you can also use |atp-Q/|,
 	|atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
 
+ ERRORS ~
  nmap <LocalLeader>e
  	To get list of errors with current |b:atp_ErrorFormat|.
 
@@ -237,7 +256,7 @@ NEWS							*atp-news*
 	The variable |b:atp_ErrorFormat| is also set when you use the command
 	|atp-:ShowErrors|.
 
-EasyMotion and ATP ~
+ EasyMotion and ATP ~
 	If you want to use EaseMotion vim plugin (which is quite handy):
 	     http://www.vim.org/scripts/script.php?script_id=3526
 	You can set |g:atp_Compare|="". Alternatively, if you want to use the
@@ -255,9 +274,11 @@ EasyMotion and ATP ~
 
  (Almost all) maps became |:map-silent|.   
 
- :DebugPrint	if yuo want to develop/debug ATP set g:atp_atpdev to 1 run
- |atp-:ReloadATP| and this command will allow to fast printing of debug files
- under |g:atp_TempDir|.
+ DEBUG ATP  ~
+ :DebugPrint	
+	if yuo want to develop/debug ATP set g:atp_atpdev to 1 run
+	|atp-:ReloadATP| and this command will allow to fast printing of
+	debug files under |g:atp_TempDir|.
 
 >
   =======================
@@ -2456,23 +2477,24 @@ COMPLETION MODES		                       	*atp-completion-modes*
 :LocalCommands[!]							
 		If you added a command or an environment the command
 		:LocalCommands! will update the list of local definitions, but
-		also the list of packages used by your latex source file
-		(Without bang "!" it doesn't update the list of packages.)
-		(some completion lists are only used by Tab Completion function if
-		the package was given, thus it is necessary to run this
-		command if the preambule has changed). The output is stored in
-		three variables: >
+		also the list of packages used by your latex source file (With
+		bang "!" it update the list of input files b:ListOfFiles in
+		which the search is done.) The output is stored in three
+		variables: >
 				b:atp_LocalColors
 				b:atp_LocalCommands
 				b:atp_LocalEnvironments
-<
+<		If a command was declared with a arguments (i.e. using #1, or
+		#1#2, etc.) a single '{' is attached. It doesn't match for
+		definitions inside comments.
+
+							*atp-tikzpicture*
+	tikzpicture ~
 		There is an extended support for tikz picture environment both
-		inline \tikz{:} and displayed
-		\begin{tikzpicture}:\end{tikzpicture}. The completion works
-		for commands and keywords. The pull of them is enlarged if you
-		add a tikz library. Yet not all the libraries are
-		supported but this is just the matter of my time. Normal
-		commands are added if you are inside {:}.
+		inline \tikz{:} and displayed: \begin{tikzpicture}
+		\end{tikzpicture}. The completion works for both commands and
+		keywords. The pull of them is enlarged if you add tikz
+		libraries. Normal commands are added if you are inside {:}.
 
 							*atp-completion-ref*
 							*atp-completion-label*
