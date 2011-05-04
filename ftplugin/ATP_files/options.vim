@@ -2331,12 +2331,14 @@ endif
 " Add extra syntax groups
 " {{{1 ATP_SyntaxGroups
 function! s:ATP_SyntaxGroups()
+    " add texMathZoneT syntax group for tikzpicture environment:
     if atplib#SearchPackage('tikz') || atplib#SearchPackage('pgfplots')
 	try
 	    call TexNewMathZone("T", "tikzpicture", 0)
 	catch /E117:/
 	endtry
     endif
+    " add texMathZoneALG syntax group for algorithmic environment:
     if atplib#SearchPackage('algorithmic')
 	try
 	    call TexNewMathZone("ALG", "algorithmic", 0)
@@ -2345,7 +2347,7 @@ function! s:ATP_SyntaxGroups()
     endif
 endfunction
 
-augroup ATP_Syntax_TikzZone
+augroup ATP_AddSyntaxGroups
     au Syntax tex :call <SID>ATP_SyntaxGroups()
 augroup END
 

@@ -3130,6 +3130,9 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 	    let env_name 	= matchstr(strpart(getline(open_env[0]),open_env[1]-1), '\\begin\s*{\s*\zs[^}]*\ze*\s*}')
 	    if open_env[0] && atplib#CompareCoordinates([(exists("open_line") ? open_line : 0),(exists("open_line") ? open_col : 0)], open_env)
 		call atplib#CloseLastEnvironment('i', 'environment', env_name, open_env)
+		if g:atp_debugCLB
+		    redir END
+		endif
 		return 'closeing ' . env_name . ' at ' . string(open_env) 
 	    endif
 	endfor
@@ -3151,6 +3154,9 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 	   let b:atp_debugCLB = "call atplib#CloseLastEnvironment('i', 'math', '', [ ".open_line.", ".open_col." ])"
 	   silent echo "calling atplib#CloseLastEnvironment('i', 'math', '', [ ".open_line.", ".open_col." ])"
        endif
+	if g:atp_debugCLB
+	    redir END
+	endif
        return
    endif
 
@@ -3228,6 +3234,9 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 	let pos[2]+=len(closing_size.get(a:bracket_dict, opening_bracket))
 	keepjumps call setpos(".", pos)
 
+	if g:atp_debugCLB
+	    redir END
+	endif
 	return l:return
    endif
    " }}}3
@@ -3666,8 +3675,10 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
     "{{{3 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0
-		if (!normal_mode && index(g:atp_completion_active_modes, 'algorithmic' ) != -1 ) ||
-		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'algorithmic') != -1 )
+		if atplib#CheckSyntaxGroups(['texMathZoneALG']) && (
+			\ (!normal_mode && index(g:atp_completion_active_modes, 'algorithmic' ) != -1 ) ||
+			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'algorithmic') != -1 )
+			\ )
 		    let b:comp_method='algorithmic'
 		    call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
 		    return '' 

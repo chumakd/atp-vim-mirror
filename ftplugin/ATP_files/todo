@@ -320,3 +320,5 @@ ToDo: -S goes to next section if there is no subsection, this might be OK, but t
 Done: LocalCommands! remove bang (see doc) I think it is not needed anymore.
 	b:atp_PackageList can be removed 
 ToDo: bash compiler: pdflatex running message is not shown.
+
+ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
