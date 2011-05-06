@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.26)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.27)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -12,20 +12,21 @@ mszamot@gmail.com. Voting at Vim site is also welcome ;) .
 =============================================================================
 			    ABSTRACT ~
 
-This is a filetype plugin for Vim to comfortably write TeX (LaTeX, PdfLaTeX)
-documents, which provides functionality not met in other such plugins. It
-makes you [FREE] from compiling procedure, making this process automatic using
-autocommands. It also provides useful mappings and other functions: to analyse
-your .log file, to see the table contents, to search for a label, to search in
-bib files or to find a macro definition matching a pattern, or even to find
-and preview fonts in your tex distribution. The features include an extended
-tab completion for: commands, environment names, packages, input files, bib
-files, bst files, colours, closing brackets and environments (preserves
-nesting),... etc. To have full functionality you need: python (with
-nonstandard psutil library, see |atp-requirements-python| how to get it),
-pdffonts available in the package 'app-text/poppler' (at least in Gentoo).
-Another good tool is texdoc, which is a part of TexLive - these days standard
-TeX distribution for Linux, and MikTeX on Windows.
+This is a filetype plugin for Vim to comfortably write [TeX], [LaTeX],
+ [PdfLaTeX],...  documents, which provides functionality not met in other
+plugins. It makes you [FREE] from compiling procedure, making this process
+automatic using autocommands. It also provides useful mappings and other
+many other commands: to analyse your .log file, to see the table contents, to
+search for a label, to search in bib files or to find a macro definition
+matching a pattern, or even to find and preview fonts in your tex
+distribution. The features include a multi-functional tab completion for:
+commands, environment names, packages, input files, bib files, bst files,
+colours, closing brackets and environments (preserves nesting),... etc. To
+have full functionality you need: python (with nonstandard psutil library, see
+|atp-requirements-python| how to get it), pdffonts available in the package
+'app-text/poppler' (at least in Gentoo).  Another good tool is texdoc, which
+is a part of TexLive - these days standard TeX distribution for Linux, and
+MikTeX on Windows.
 ==============================================================================
 
 FEATURES INCLUDE: ~
@@ -159,18 +160,23 @@ NEWS							*atp-news*
  list.  See |atp-Viewers_Options| for examples.
 
  NEW IMAPS ~
- New imaps for some commonly used math commands: see |atp-imap-math|.
+ New imaps for some commonly used math commands: see |atp-imap-math|. 
+ 
+ All mathematical imaps: for symbols, greek letters, are defined only
+ when inside LaTeX (or TeX) mathematical environment. 
 
- There is an option to have environment imaps with three letter abbreviations:
- for example ]the for theorem. If you want longer, but more intuitive
- abbreviation set |g:atp_ShortEnvIMaps|=0.  Use |atp-:HelpEnvIMaps| to see
- them. There is also one new environment ]let which inputs a letter
- environment. But only when you use long maps, but if you want a short imap
- for it you can set g:atp_imap_letter="w" and ATP will make a map ]w for it.
- Note that "l", and "L" are already taken and using "le" will slow down
- "l", also "e" and "r" are used. You can set |g:atp_letter_opening| and
- |g:atp_letter_closing| to customize default opening and closing
- statements.
+ There is new predefined layout for environment imaps. If you want longer, but
+ more intuitive abbreviation set |g:atp_ShortEnvIMaps|=0.  Use
+ |atp-:HelpEnvIMaps| to see them. There is also one new environment ]let which
+ inputs a letter environment. But only when you use long maps, but if you want
+ a short imap for it you can set g:atp_imap_letter="w" and ATP will make a map
+ ]w for it.  Note that "l", and "L" are already taken and using "le" will slow
+ down "l", also "e" and "r" are used. You can set |g:atp_letter_opening| and
+ |g:atp_letter_closing| to customize default opening and closing statements.
+
+ If you decide to use short imaps (the default) there is one change: ]i is
+ mapped to \item and ]I is mapped to itemize environment (this is the only
+ type of change in the short layout.
 
  The abbreviations are customizable: g:atp_imap_{envname}, also the leader is
  customizable with |g:atp_imap_third_leader| and environment names for example 
@@ -360,6 +366,9 @@ nmap -p
 	Go to subsection/section/chapter/part [count] from begin of the
 	section/chapter/document, i.e. 3]s will jump to section 3 in current
 	chapter. Mark ' is preserved.
+
+	Note: if you are in a section which has no subsections :SSec and -S
+	will go to next section, the same aplies to other section types.
 
 	You can set the leader for maps with *g:atp_goto_section_leader* .
 
@@ -1052,8 +1061,9 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 	|atp-:ShowErrors|.
 
 	As an argument you mey use +{flag} and -{flag} then {flag} will be
-	added/removed from |b:atp_ErrorFormat|.
-
+	added/removed from |b:atp_ErrorFormat|, example: >
+		:ErrorFormat +w
+<	will add 'w' to |b:atp_ErrorFormat|.		
 
 :Compiler {compiler-program}				*atp-:Compiler*
 	Command which help to set |b:atp_TexCompiler| variable (with
@@ -1174,7 +1184,7 @@ map t, map <S-LeftMouse>
 	case insensitive.
 
   								*atp-:AMSRef*
-:AMSRef[!] {bib_data}  
+:AMSRef[!] {bibdata}  
     A command to get bib data from AMSRef:
 		    http://www.ams.org/mathscinet-mref 
     The bib data will be appended to bibliography of the current document. If
@@ -1198,7 +1208,6 @@ map c, map y, map p
 	opened buffer (after the last cursor position). When you choose to
 	paste, it will close the BibSearch window.
 
-						
 :FindBibFiles						*atp-:FindBibFiles*
 	This updates the variables s:bibfiles, s:allbibfiles,
 	s:notreadablebibfiles. Finds all bib files defined in all
@@ -1210,7 +1219,6 @@ map c, map y, map p
 	If a readable bib file was not found under one of path listed in of
 	g:atp_bibinputs variable (see |g:atp_bibinputs|) it is classified
 	as not readable.  
-
 							
 :GotoFile[!]						*atp-:GotoFile*
 :EditInputFile[!]	/ the old name / 		*atp-:EditInputFile*
@@ -1289,6 +1297,7 @@ In the log file there are some special tools to syncronize the tex source file
 and the Viewer (currently only Xpdf is supported) with log file:
 |atp-:SyncTex| and |atp-:SyncXpdfLog|) These tools can sync tex file/Xpdf
 automatically using autocommand group |CursorMoved|.
+
 							*atp-:SyncTex-(log_file)*
 :SyncTex[!]	(inside log file)
 :nmap \g
@@ -1322,7 +1331,6 @@ automatically using autocommand group |CursorMoved|.
 	Xpdf as a viewer it will be synchronised with the log file (with
 	autocommand group |CursorMoved|). You can also use the command
 	:SyncXpdf or :Xpdf in the log buffer which does the same.
-
 
 :Delete[!]						*atp-:Delete*
 map <F6>d
@@ -1361,7 +1369,8 @@ map <F6>d
 	cycle through printers, or type first letters of the printers name and
 	press <Tab> to complete it.
 
-:Lpr [lpr_options]					*atp-:Lpr*
+							*atp-:Lpr*
+:Lpr [lpr_options]					
 	It prints using the lpr command on a local printer. The syntax and
 	completion are the same as for |atp-:SshPrint|.
 
@@ -1371,8 +1380,10 @@ map <F6>d
 	Sends "lpstat -l" remotely (using the |g:atp_ssh| value) or locally and
 	echoes the output.
 
-:ListPrinters						*atp-:ListPrinters*
+							*atp-:ListPrinters*
+:ListPrinters
 	List printers available on the host |g:atp_ssh|.
+
 							*atp-:Babel*
 :Babel
 	If g:atp_babel variable is set on start up to 1 (however, the default
@@ -3846,7 +3857,9 @@ imap ##mbf \mathbf{}<Left>
 
 							
 GREEK LETTERS						*atp-imap-greek-letters*
-Note: you can list this mappings using the command |atp-:HelpMathIMaps|.
+Note: You can list this mappings using the command |atp-:HelpMathIMaps|. You
+      might not see them using |:imap| unless the last cursor position in
+      insert mode was inside mathematics.
 imap #a 	\alpha
 imap #b 	\beta
 imap #c 	\chi
@@ -3891,14 +3904,15 @@ imap #Z 	\mathrm{Z}
 
 ENVIRONMENT IMAPS				*atp-imap-environments*
 						*g:atp_imap_ShortEnvIMaps*
-g:atp_imap_ShortEnvIMaps=1 by default the short environment imaps are defined,
-but if you set this variable to 0 you will get three letter abbreviations.
-The only clashes is for proof (pro) and proposition (Pro) environments and
-itemize (ite) and \item (I). You can also reconfigure them using the
-variables: g:atp_imap_{env_name} (for example g:atp_imap_theorem, if you don't
-want a map for particular environment set the corresponding variable to empty
-string ""), |g:atp_imap_third_leader| is used as a leader (the default is ]).
-Map for letter environment is not defined when you use short imaps.
+g:atp_imap_ShortEnvIMaps=1 
+    By default the short environment imaps are defined, but if you set this
+    variable to 0 you will get three letter abbreviations.  The only clashes
+    is for proof (pro) and proposition (Pro) environments and itemize (ite)
+    and \item (I). You can also reconfigure them using the variables:
+    g:atp_imap_{env_name} (for example g:atp_imap_theorem, if you don't want
+    a map for particular environment set the corresponding variable to empty
+    string ""), |g:atp_imap_third_leader| is used as a leader (the default is
+    ]).  Map for letter environment is not defined when you use short imaps.
 
 Note: you can list this mappings using the command |atp-:HelpEnvIMaps|.
 
@@ -3917,9 +3931,9 @@ imap ]x   ]exa 		\begin{example}<Cr>\end{example}<Esc>O
 imap ]n   ]not 		\begin{note}<Cr>\end{note}<Esc>O
 
 imap ]E   ]enu 		\begin{enumerate}<Cr>\end{enumerate}<Esc>O
-imap ]i   ]ite 		\begin{itemize}<Cr>\end{itemize}<Esc>O
+imap ]I   ]ite 		\begin{itemize}<Cr>\end{itemize}<Esc>O
 
-imap ]I   ]I		\item					*atp-item*
+imap ]i   ]I		\item					*atp-item*
 		This map has more features: if the preceding line is of the
 		form:
 			\item[(1)]
@@ -3948,7 +3962,9 @@ imap      ]let		\begin{letter}{<cursor>}
 		By default g:atp_letter_opening and g:atp_letter_closing are ''.
 
 MATH IMAPS						*atp-imap-math*
-These are very useful mappings for typing mathematics:
+These are very useful mappings for typing mathematics. 
+Note: you might not see them using |:imap| unless the last cursor position in
+      insert mode was inside mathematics.
 
 These two maps are only valid inside math environment (credits belongs to
 AuTeX plugin author Carl Mueller):
@@ -4023,7 +4039,7 @@ imap s>		\supseteq	[    set >]
 If you want to write 'o*' you can wait until |'timeoutlen'| passes or write 'o *' 
 (TeX in math mode doesn't see spaces).
 							*atp-:ToggleIMaps*
-:ToggleImaps
+:ToggleIMaps
 nmap, imap `<Tab> 
     It is a command to toggle the impas off/on by switching the value of
     |g:atp_imaps|. These are the maps above plus _ for  _{} and ^ for ^{}.

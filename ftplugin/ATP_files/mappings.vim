@@ -10,6 +10,8 @@
 " [ "map", "map_args", "mapleader", "lhs", "rhs", "help msg" ]
 " for example
 " [ "inoremap", "<buffer>", "#a", "\\alpha", "\\alpha" ]
+
+" Fucntions used to define maps.
     function! <SID>MakeMaps(maps)
 	for map in a:maps
 	    if map[3] != ""
@@ -19,9 +21,23 @@
     endfunction
     function! <SID>DelMaps(maps)
 	for map in a:maps
-	    cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
-	    exe cmd." ".map[1].map[2]." ".map[3]." ".map[4]
+	    let cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
+	    let arg = ( map[1] =~ '<buffer>' ? '<buffer>' : '' )
+	    exe "silent! ".cmd." ".arg." ".map[2].map[3]
 	endfor
+    endfunction
+
+    " These maps extend ideas from TeX_9 plugin:
+    function! <SID>IsInMath()
+	return atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+			\ !atplib#CheckSyntaxGroups(['texMathText'])
+    endfunction
+    function! <SID>ToggleMathIMaps(var)
+	if <SID>IsInMath()
+	    call <SID>MakeMaps(a:var)
+	else
+	    call <SID>DelMaps(a:var)
+	endif
     endfunction
 
 " Commands to library functions (autoload/atplib.vim)
@@ -346,14 +362,16 @@ nmap <C-k> <Plug>TexJMotionBackward
     if mapcheck('<LocalLeader>v') == ""
 	nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
     endif
+
 "     nmap  <silent> <buffer> <F2> 			<Plug>ToggleSpace
-    nmap  <silent> <buffer> <F2> 			q/:call ATP_CmdwinToggleSpace('on')<CR>i
+    nmap  <silent> <buffer> <F2> 			q/:call ATP_CmdwinToggleSpace(1)<CR>i
     if mapcheck('Q/', 'n') == ""
-	nmap <silent> <buffer> Q/			q/:call ATP_CmdwinToggleSpace('on')<CR>
+	nmap <silent> <buffer> Q/			q/:call ATP_CmdwinToggleSpace(1)<CR>
     endif
     if mapcheck('Q?', 'n') == ""
-	nmap <silent> <buffer> Q?			q?:call ATP_CmdwinToggleSpace('on')<CR>
+	nmap <silent> <buffer> Q?			q?:call ATP_CmdwinToggleSpace(1)<CR>
     endif
+
     if mapcheck('<LocalLeader>s') == ""
 	nmap  <silent> <buffer> <LocalLeader>s		<Plug>ToggleStar
     endif
@@ -476,7 +494,14 @@ nmap <C-k> <Plug>TexJMotionBackward
 		\ ]
     endif
 
-    call <SID>MakeMaps(g:atp_imap_greek_letters)
+"     call <SID>MakeMaps(g:atp_imap_greek_letters)
+    augroup ATP_MathIMaps_GreekLetters
+	au!
+	au CursorMovedI	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_greek_letters)
+	au CursorHoldI 	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_greek_letters)
+	au InsertEnter	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_greek_letters)
+	au InsertLeave	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_greek_letters)
+    augroup END
 
     if !exists("g:atp_imap_math_misc") || g:atp_reload_variables
 	let leader = (g:atp_imap_first_leader == '#' ? '`' : g:atp_imap_first_leader ) 
@@ -500,7 +525,14 @@ nmap <C-k> <Plug>TexJMotionBackward
 		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '^', '\=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>', 	'''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ], 
 		\ ]
     endif
-    call <SID>MakeMaps(g:atp_imap_math_misc)
+"     call <SID>MakeMaps(g:atp_imap_math_misc)
+    augroup ATP_MathIMaps_misc
+	au!
+	au CursorMovedI	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math_misc)
+	au CursorHoldI 	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math_misc)
+	au InsertEnter	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math_misc)
+	au InsertLeave	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math_misc)
+    augroup END
 
 if g:atp_no_env_maps != 1
     " New mapping for the insert mode. 
@@ -549,12 +581,6 @@ endif
 	    endif
     endfunction
 
-    " These maps extend ideas from TeX_9 plugin:
-    function! <SID>IsInMath()
-	return atplib#CheckSyntaxGroups(g:atp_MathZones) && 
-			\ !atplib#CheckSyntaxGroups(['texMathText'])
-    endfunction
-
     if !exists("g:atp_imap_math") || g:atp_reload_variables
     let g:atp_imap_math= [ 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "g:atp_imaps && !<SID>IsLeft('\') && <SID>IsInMath() ? '_{}<Left>' : '_' ", 	'_{}'], 
@@ -582,7 +608,13 @@ endif
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "g:atp_imaps && <SID>IsInMath() ? '\\geq' 	: '>=' ",		'\\geq'],
 	\ ]
     endif
-    call <SID>MakeMaps(g:atp_imap_math)
+    augroup ATP_MathIMaps
+	au!
+	au CursorMovedI	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math)
+	au CursorHoldI 	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math)
+	au InsertEnter	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math)
+	au InsertLeave	*.tex 	:call <SID>ToggleMathIMaps(g:atp_imap_math)
+    augroup END
 
 endif
 

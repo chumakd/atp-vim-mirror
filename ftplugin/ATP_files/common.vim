@@ -764,6 +764,11 @@ endfunction
 let s:errormsg = 0
 function! ATPStatus(bang) "{{{
 
+    if expand("%") == "[Command Line]"
+	" If one uses q/ or q? this status function should not be used.
+	return
+    endif
+
     let g:status_OutDir	= a:bang == "" && g:atp_statusOutDir || a:bang == "!" && !g:atp_statusOutDir ? s:StatusOutDir() : ""
     let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? 'CTOC("return")' : ''
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0

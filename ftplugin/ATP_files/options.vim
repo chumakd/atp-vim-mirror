@@ -449,14 +449,14 @@ if !exists("g:atp_imap_enumerate") || g:atp_reload_variables
 endif
 if !exists("g:atp_imap_itemize") || g:atp_reload_variables
     if g:atp_imap_ShortEnvIMaps
-	let g:atp_imap_itemize="i"
+	let g:atp_imap_itemize="I"
     else
 	let g:atp_imap_itemize="ite"
     endif
 endif
 if !exists("g:atp_imap_item") || g:atp_reload_variables
     if g:atp_imap_ShortEnvIMaps
-	let g:atp_imap_item="I"
+	let g:atp_imap_item="i"
     else
 	let g:atp_imap_item="I"
     endif
@@ -919,7 +919,7 @@ if !exists("g:atp_delete_output") || g:atp_reload_variables
     let g:atp_delete_output	= 0
 endif
 if !exists("g:keep") || g:atp_reload_variables
-    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "pdfsync", "synctex.gz", "blg" ]
+    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm" ]
     " biber stuff is added before compelation, this makes it possible to change 
     " to biber on the fly
     if b:atp_BibCompiler =~ '^\s*biber\>'
@@ -1064,8 +1064,10 @@ function! s:ShowOptions(bang,...)
     let pattern	= a:0 >= 1 ? a:1 : ".*,"
     let mlen	= max(map(copy(keys(s:optionsDict)), "len(v:val)"))
 
-    echo "Local buffer variables:"
     redraw
+    echohl WarningMsg
+    echo "Local buffer variables:"
+    echohl Normal
     for key in keys(s:optionsDict)
 	let space = ""
 	for s in range(mlen-len(key)+1)
@@ -1080,7 +1082,9 @@ function! s:ShowOptions(bang,...)
     if a:bang == "!"
 " 	Show some global options
 	echo "\n"
+	echohl WarningMsg
 	echo "Global variables (defined in ".s:file."):"
+	echohl Normal
 	let saved_loclist	= getloclist(0)
 	    execute "lvimgrep /^\\s*let\\s\\+g:/j " . fnameescape(s:file)
 	let global_vars		= getloclist(0)
@@ -1104,8 +1108,11 @@ function! s:ShowOptions(bang,...)
 	    endfor
 	    if var_name =~ pattern && var_name !~ '_command\|_amsfonts\|ams_negations\|tikz_\|keywords'
 " 		if patn != '' && var_name !~ patn
-		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:optionsDict", "g:optionsKeys", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
+		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:optionsDict", "g:optionsKeys", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_CupsOptions", "g:atp_CompilerMsg_Dict", "g:ViewerMsg_Dict", "g:CompilerMsg_Dict", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
 		    echo var_name.space.string({var_name})
+		    if len(var_name.space.string({var_name})) > &l:columns
+			echo "\n"
+		    endif
 		endif
 " 		endif
 	    endif
@@ -1361,9 +1368,12 @@ function! ATP_ToggleSpace(...)
 endfunction
 function! ATP_CmdwinToggleSpace(on)
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
+    let g:on	= on
     if on
+	echomsg "space ON"
 	imap <space> \_s\+
     else
+	echomsg "space OFF"
 	iunmap <space>
     endif
 endfunction
@@ -2128,8 +2138,8 @@ if !s:did_options
 
     augroup ATP_Cmdwin
 	au!
-	au CmdwinLeave / :call ATP_CmdwinToggleSpace('off')
-	au CmdwinLeave ? :call ATP_CmdwinToggleSpace('off')
+	au CmdwinLeave / :call ATP_CmdwinToggleSpace(0)
+	au CmdwinLeave ? :call ATP_CmdwinToggleSpace(0)
     augroup END
 
     augroup ATP_cmdheight

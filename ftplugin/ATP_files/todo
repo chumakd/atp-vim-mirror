@@ -2,7 +2,7 @@
 # Author: Marcin Szamotulski
 # This is a to do list for ATP vim plugin.
 # I put here notes on planned features, 
-# but mainly I use this file for bugs that I found.
+# but also I use this file for bugs that I found.
 
 pedit for openning without changing the window number! 
 
@@ -15,8 +15,6 @@ ToDo: :2match (and :3match)  in HighlightMatchingPair and Search function - it
 is better to use matchadd().
 
 ToDo: Disable mapping # before \ (make an IMAP function)
-Doc: updatetime setting in insert mode 
-Bug: syntax groups for status don't work in vim 7.3d (in common.vim)
 
     "THIS MIGHT BE USEFULL:
     The first column is 1.	0 is returned for an error.
@@ -32,13 +30,7 @@ TODO: make toc work with parts!
 
 TODO: Check against lilypond 
 
-Todo: make small Help functions with list of most important mappings and
-commands for each window (this can help at the begining) make it possible to
-turn it off.
-
 <Ctrl-W>k<Ctrl-W>_		Fast switching bettween buffers				
-
-To do: MakeLatex add support for loa (list of algorithms). 
 
 <HARD>
 Make a function which reads the log file and sets error list.	
@@ -49,29 +41,16 @@ In 'plaintex' MakeLatex results in an infinte loop.
 
 :S /{pattern}/ is not working in plain tex files.
 
-<NICE FEATURE> \v with counter: runs that many copies of viewer.
-	probably not needed.
-	/needed only for xpdf/
-
-
 To do: add large delimiters to completion (Bracket closings: Table 3.9 in
     lshort pdfpage: 80) but also \lceil:\rceil, \lfloor:\rfloor, \vert:\vert,
     \Vert:\Vert (make this fast, count all $,\vert,\Vert at once)
 To do: completion: make the screen stable.
 
 To do: Make an if statement: write if the history is nonempty!
-?To do: \left\.:\right pair! (let the user write the closing bracket.
+#To do: \left\.:\right pair! (let the user write the closing bracket.
 	also \lvert:\rvert, \lVert:\rVert (only in amsmath)
 
-Bug: How to make NextSection and PreviousSection work with omap.
-
-Done: <NICE FEATURE> GotoLabel {labelname or label number}
-	(this is done with :Labels, but it might be a good idea to have
-	a command for that - with a nice completion) 
-
-To do? +- -> \pm +| -> \dagger ++ -> \ddagger  
 Partialy Solved: imap #8 is mapping to <F8> !
-To do: \cite by number.
 To do: Show History (at least the variables which are short)
  
 To do: Make Todo for project files.
@@ -99,7 +78,7 @@ Overfull message (it happens that these brackets doesn't come in pairs!).
 Todo: SetProjectName should test project scripts, I think LoadProject has this code!
 	There are two function to implement this: FindProjectScripts() and GetProjectScript()
  
-Todo: :S could be faster using ijump.
+Todo: :S could be much faster using ijump.
 Todo: TexSyntaxMotion is not working on last H of: \mbox{$L(A,H)=(A\otimes A)^{co\,H}$}
 Todo: urlop.tex \includegraphics{...} -> error which is not seen by ':ShowErrors e' command.
 	The error was caused because the graphics file was empty.
@@ -142,6 +121,7 @@ To do: add this error message.
 	    l.144 ...and\NAT@force@numbers{}\NAT@force@numbers
 
 To do: a command/map to switch all the ATP maps on/off :) cool
+	DONE FOR IMAPS.
 To do: gw when the paragraph is ended on last line of the file (but not on \end{document} (it hapens in input files).
 
 To do: Open should have an option to show full path.
@@ -172,9 +152,6 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 	This can be taken from list of theorems (lot) and list of definitions (lod) files.
 	This can be used to have more labels in GotoLabel (tex can print the line number where it is).
 	This is implemented in ntheorem.sty.
-
-To do: Closing environment inside environment at a wrong line. It is maybe
-	better to close enumerate where the user asks. 
 
 To do: Suggest to use wdiff to get diff of pdf's with:
 	wdiff -w "\textcolor{red}{" -x "}" -y "\textcolor{blue}{" -z "}" file_rev1.tex file_rev2.tex > file_diff.tex
@@ -220,9 +197,6 @@ To do: for Okular users switch document loaded in okular when changing buffers (
 	for Xpdf it is easy to set: just put b:atp_XpdfServer="tex_files" in atprc.
 To do: There are three completion function for environment names: Env_compl (motion.vim, GotoSection, Nenv, ...) and EnvCompletion and EnvCompletionWithoutStarEnvs (various.vim, :WrapEnvironment, :ChangeEnv), F_compl (:F, :B)
 	Make them more dependent on LocalEnvironments (to appear only what is defined!)
-Done: (debug on WINDOWS) MakeLatex is not WINDOWS COMPATIBLE (because it uses bash syntax, I need python code to execute commands)
-	If MakeLatex would be done in Python -> progress bar could be made.
-	(at least it can call Python compiler)
 To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
 		It might also be %&latex issue -> test 
 		THIS IS BECAUSE: skeleton file opens as a tex file and the variables are not reloaded. 
@@ -239,28 +213,11 @@ Done: GotoLabel gives one label to choose from (it should take this one and go :
 # TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
 # NOTE: if the latex return code is non zero then reference numbers (Lemma
 # X.Y) may be '?'! ( I don't why its like that )
-# Done: Xpdf sleep time between sending remote commands (SyncTex)
-SOLUTION FOR CallBack: get all messages into list [ [ msg_text : highlight group ], ... ] and echo them at the end. 
-	g:atp_DefualtDebugMode == "silent" && !errors -> cclose
-	t:atp_DebugMode == "silent" || a:mode == "silent" -> cclose
-	(t:atp_DebugMode == "debug" || a:mode == "debug") && errors && !t:atp_QuickFixOpen -> clist
-	What for to show in debug mode what was the error code of latex if quickfix window is opened ...
 SyncTex:
 	Should test if the viewer is running (this can be done with the help of python and psutils) 
 	if not it should run the viewer first.
 
-Done: atplib#CallBack() is not working with bash compiler (it is important for IST to have it - there is python but vim is not supporting it. b:atp_TexReturnCode doesn't exists. See also log.vim in IST. (Python_rmdir cannot be called) 
-
 <Nice Feature> make atprc.vim file in the gentoo style
-
-To do: 2<e with count: when standing on \begin it behaves like <e, this is due to search(...,'b') behaviour. There is a workaround for this: map <e to   
-    for i in range(1,v:count1)|..here I should adjust flags (remove 's')...|call <SID>GotoEnvironment(...)|endfor
-
-Done:
-Vim bug (?): When calling 2<e the line changes (the cursor goes two lines below, when the rhs of a map	contains <CR>)
-	No! One has to use :<C-U>call .
-add count for NSec, and friends (see doc file).	
-:B and :F are should invoke NSec,... with count.
 
 To do:
 If toc is opened update the highlighted section when using some commands (:F/:B, :NSec/:PSec/..., j/k/<DownArrow>/<UpArrow> key pressed). 
@@ -271,7 +228,7 @@ WINDOWS: Runtime error!
 	 Program ...\gvim.exe
 	 R6034
 	 - An application has made an attempt to load the C runtime library incorrecly.
-	 - Please contact the application's supprt tema for more information.
+	 - Please contact the application's support for more information.
 
 bibliograph (python) requirements:
 bibliograph-rendering, zope-schema, zope-component
@@ -281,7 +238,6 @@ zathura: how to implement inverse searching using bookmarks:
     this can be done with python script.
 
 ToDo: g:atp_inputfile_pattern : maybe it should be updated by :InputFiles if somebody added/removed biblatex.
-# ToDo: GG stopped working.
 ToDo: test :MakeLatex on different files.
 ToDo: make ToC work with tabs: find file in another tab and go there (?)
 ToDo: The following line is not recognized by TOC: \chapter[Decomposition of values]{Decomposition of Banzhaf and Shapley values}\label{chap:decomposition-of-values}
@@ -309,15 +265,9 @@ To do:
 Bug: atplib#CloseLastEnvironment() if invoked without arguments: the variable l:begin_line_env in line 193 is not defined.
 
 ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
-ToDo: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
-
-Done: LocalCommands! remove bang (see doc) I think it is not needed anymore.
-	b:atp_PackageList can be removed 
-Done: bash compiler: pdflatex running message is not shown.
+Done: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
 
 ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
+Check: MakeLatex add support for loa (list of algorithms). 
 
-ToDo: ErrorFormat -{flag}
-	This will not work with -fi and -f flags.
-
-ToDo: k j missbehave when count is given.
+ToDo: loa support: if algorithm package is loaded we can add loa to g:keep, to make loa it is enough to run latex twice -> MakeLatex, \openout = `<name>.loa'

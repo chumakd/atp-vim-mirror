@@ -1335,18 +1335,37 @@ function! <SID>SetErrorFormat(...)
     endif
 
     let carg_raw = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+    let carg_list= split(carg_raw, '\zs')
+    if carg_list[0] =~ '^[+-]$'
+	let add=remove(carg_list,0)
+    else
+	let add=0
+    endif
+    for i in range(0, len(carg_list)-2)
+	if carg_list[i] == 'f' && get(carg_list,i+1, "") == "i"
+	    call remove(carg_list, i+1)
+	    let carg_list[i]="fi"
+	endif
+    endfor
+    let carg=b:atp_ErrorFormat
     if carg_raw =~ '^+'
-	let carg=b:atp_ErrorFormat.substitute(carg_raw, '^\s*+', '', '')
+	for flag in carg_list
+	    if flag != 'f' && b:atp_ErrorFormat !~ flag || flag == 'f' && b:atp_ErrorFormat !~ 'fi\@!'
+		let carg .= flag
+	    endif
+	endfor
     elseif carg_raw =~ '^-'
-	let carg=b:atp_ErrorFormat
-	for letter in split(carg_raw, '\zs')
-	    let carg=substitute(carg, letter, '', 'g')
+	for flag in carg_list
+	    if flag != 'f'
+		let carg=substitute(carg, flag, '', 'g')
+	    else
+		let carg=substitute(carg, 'fi\@!', '', 'g')
+	    endif
 	endfor
     else
 	let carg=carg_raw
     endif
     let b:atp_ErrorFormat = carg
-    let g:carg = carg." a:1=".a:1
 
     let &l:errorformat=""
     if ( carg =~ 'e' || carg =~# 'all' ) 
@@ -1484,6 +1503,9 @@ function! <SID>SetErrorFormat(...)
 	    cgetfile
 	catch E40:
 	endtry
+    endif
+    if add != "0"
+	echo "[ATP:] current error format: ".b:atp_ErrorFormat 
     endif
 endfunction
 "}}}
