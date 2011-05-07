@@ -99,6 +99,17 @@ function! atplib#PrintTable(list, spaces)
 endfunction
 "}}}
 
+" QFLength "{{{
+function atplib#qflength() 
+    let lines = 1
+    " i.e. open with one more line than needed.
+    for qf in getqflist()
+	let text=substitute(qf['text'], '\_s\+', ' ', 'g')
+	let lines+=(len(text))/&l:columns+1
+    endfor
+    return lines
+endfunction "}}}
+
 " Compilation Call Back Communication: 
 " with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
@@ -2402,8 +2413,8 @@ function! atplib#CloseLastEnvironment(...)
 
     if g:atp_debugCLE
 	exe "redir! > " . g:atp_TempDir."/CloseLastEnvironment.log"
-	let g:args 	= l:com . " " . l:close . " " . l:env_name . " " . string(l:bpos_env)
-	silent echo "args=".g:args
+	let g:CLEargs 	= l:com . " " . l:close . " " . l:env_name . " " . string(l:bpos_env)
+	silent echo "args=".g:CLEargs
 	let g:com	= l:com
 	let g:close 	= l:close
 	let g:env_name	= l:env_name

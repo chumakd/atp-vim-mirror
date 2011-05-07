@@ -178,6 +178,7 @@ function! s:SetOutDir(arg, ...)
 
 	    " if arg != 0 then set errorfile option accordingly to b:atp_OutDir
 	    if bufname("") =~ ".tex$" && a:arg != 0
+" 			\ &&  ( !exists("t:atp_QuickFixOpen") || exists("t:atp_QuickFixOpen") && !t:atp_QuickFixOpen )
 		 call s:SetErrorFile()
 	    endif
 
@@ -764,7 +765,7 @@ endfunction
 let s:errormsg = 0
 function! ATPStatus(bang) "{{{
 
-    if expand("%") == "[Command Line]"
+    if expand("%") == "[Command Line]" || &l:filetype == "qf"
 	" If one uses q/ or q? this status function should not be used.
 	return
     endif

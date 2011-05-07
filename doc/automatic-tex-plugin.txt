@@ -134,158 +134,174 @@ NEWS							*atp-news*
  Changes in version 9.4
 <
 
- ATP AND GENTOO LINUX~
- Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
- automatictexplugin in the portage tree.
+ATP AND GENTOO LINUX~
+    Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
+    automatictexplugin in the portage tree.
 
- COMPLETION ~
- Small but nice change in closing environments: If you type
- \begin{envname}<Tab> the cursor position will not change. You can use
- |i_CTRL-M| (|i_CTRL-J| is used by |atp-j_motion|) after <Tab> to open new
- line inside {envname}.  Otherwise the cursor position will be right after the
- closing \end{envname}.
+COMPLETION ~
+    Small but nice change in closing environments: If you type
+    \begin{envname}<Tab> the cursor position will not change. You can use
+    |i_CTRL-M| (|i_CTRL-J| is used by |atp-j_motion|) after <Tab> to open new
+    line inside {envname}.  Otherwise the cursor position will be right after
+    the closing \end{envname}.
 
- LOCAL COMMANDS ~
- |atp-:LocalCommands|		  -- do not search in comments,
- 				-- add single { if command has defined arguments.
+LOCAL COMMANDS ~
+    |atp-:LocalCommands|	  -- do not search in comments, 
+				-- add single { if command has defined arguments.
 
- 
- ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj| and
- |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move the
- cursor and update the ToC line if ToC is opened. This makes them compatible
- with |i_CTRL-O| and |i_CTRL_\_CTRL-O|.
+    ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj|
+    and |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move
+    the cursor and update the ToC line if ToC is opened. This makes them
+    compatible with |i_CTRL-O| and |i_CTRL_\_CTRL-O|.
 
- Note: the format of viewer options has changed from a string to a vim list.
- Every option and its value should be placed as a separate element of vim
- list.  See |atp-Viewers_Options| for examples.
+    Note: the format of viewer options has changed from a string to a vim
+    list.  Every option and its value should be placed as a separate element
+    of vim list.  See |atp-Viewers_Options| for examples.
 
- NEW IMAPS ~
- New imaps for some commonly used math commands: see |atp-imap-math|. 
- 
- All mathematical imaps: for symbols, greek letters, are defined only
- when inside LaTeX (or TeX) mathematical environment. 
+NEW IMAPS ~
+    New imaps for some commonly used math commands: see |atp-imap-math|. 
 
- There is new predefined layout for environment imaps. If you want longer, but
- more intuitive abbreviation set |g:atp_ShortEnvIMaps|=0.  Use
- |atp-:HelpEnvIMaps| to see them. There is also one new environment ]let which
- inputs a letter environment. But only when you use long maps, but if you want
- a short imap for it you can set g:atp_imap_letter="w" and ATP will make a map
- ]w for it.  Note that "l", and "L" are already taken and using "le" will slow
- down "l", also "e" and "r" are used. You can set |g:atp_letter_opening| and
- |g:atp_letter_closing| to customize default opening and closing statements.
+    All mathematical imaps: for symbols, greek letters, are defined only when
+    inside LaTeX (or TeX) mathematical environment. 
 
- If you decide to use short imaps (the default) there is one change: ]i is
- mapped to \item and ]I is mapped to itemize environment (this is the only
- type of change in the short layout.
+    There is new predefined layout for environment imaps available, but
+    disabled by default. If you like longer and more intuitive environment
+    insert mode maps set |g:atp_ShortEnvIMaps|=0 in your |vimrc| or |atprc|
+    files. Use |atp-:HelpEnvIMaps| to see them. There is also one new
+    environment ]let in this new layout which inputs a letter environment. If
+    you want a short imap for it you can set g:atp_imap_letter="w" and ATP
+    will make a map ]w for it.  Note that "l", and "L" are already taken and
+    using "le" will slow down "l", also "e" and "r" are used, so there is no
+    good choice for it. You can set |g:atp_letter_opening| and
+    |g:atp_letter_closing| to customize default opening and closing
+    statements.
 
- The abbreviations are customizable: g:atp_imap_{envname}, also the leader is
- customizable with |g:atp_imap_third_leader| and environment names for example 
- if you set |g:atp_EnvNameTheorem|="thm" then ]the imap will insert
- \begin{thm}:\end{thm} pair. You can list supported environments with
- ':let g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
- the corresponding imap will not be defined.
+    If you decide to use short imaps (the default) there is one change: ]i is
+    mapped to \item and ]I is mapped to itemize environment (this is the only
+    type of change in the short layout. In long layout ]I is mapped ot \item
+    and ]ite is mapped to itemize environment.
 
- NEW MOTIONS ~
+    There is also a small change with <Tab> completion: after typing
+    \begin{envname}<Tab> the cursor will not move, so you can use |i_CTRL-M|
+    to open new line.
+
+    The abbreviations are customizable: g:atp_imap_{envname}, also the leader
+    is customizable with |g:atp_imap_third_leader| and environment names for
+    example if you set |g:atp_EnvNameTheorem|="thm" then ]the imap will insert
+    \begin{thm}:\end{thm} pair. You can list supported environments with ':let
+    g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
+    the corresponding imap will not be defined.
+
+NEW MOTIONS ~
  							*atp->E* *atp-<E*
- There are two more nice map >E which is something like %>e, i.e. jump over
- the current environment and go to next one. The reverse <E is also
- implemented, thought it is not simply <e%. They do not support count (yet),
- and actually count breaks them. If you want to add |zz|, (|zt| or |zb|) after
- >E you can put this in your |atprc| file:
-     map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
-     map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
+    There are two more nice map >E which is something like %>e, i.e. jump over
+    the current environment and go to next one. The reverse <E is also
+    implemented, thought it is not simply <e%. They do not support count
+    (yet), and actually count breaks them. If you want to add |zz|, (|zt| or
+    |zb|) after >E you can put this in your |atprc| file:
+	map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
+	map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
 
- |atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|, |atp-:Sec|,
- |atp-:Chap| and |atp-:Part|. They also works relatively to the current unit
- (section/chapter/part), i.e. 2]s will jump to second section of the current
- chapter.
+    |atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|,
+    |atp-:Sec|, |atp-:Chap| and |atp-:Part|. They also works relatively to the
+    current unit (section/chapter/part), i.e. 2]s will jump to second section
+    of the current chapter.
 
 
- UPDATETIME ~
- |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
- requires to quitting vim and making changes in |vimrc|/|atprc| files. 
+UPDATETIME ~
+    |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
+    requires to quitting vim and making changes in |vimrc|/|atprc| files. 
  
- MAKE LATEX ~
- |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
+MAKE LATEX ~
+    |atp-:MakeLatex| is rewritten in python. The "!" is not yet implemented.
 
- PYTHON 3 compatibility ~
- All python scripts are compatible with Python 3. Traceback info is
- forwarded to vim (and log file) in case exceptions are handled.
+PYTHON 3 compatibility ~
+    All python scripts are compatible with Python 3. Traceback info is
+    forwarded to vim (and log files) in case exceptions are handled.
 
- DICTIONARIES ~
- I added (and extended) the dictionaries of latex-suite to ATP (the files
- dictionaries/dictionary and dictionary/SIunits). The are added to
- |'complete'| vim option, so you can use them through |ins-completion|.
- I made one more dictionary (dictionaries/ams_dictionary) with ams commands
- and environment names. It will be added to the vim |'complete'| option if you
- use amsmath package or if the document class is one of the ams classes or of
- |g:atp_amsmath| is set to 1.
+DICTIONARIES ~
+    I added extended versions of dictionaries of latex-suite to ATP (the files
+    dictionaries/dictionary and dictionary/SIunits). They are added to
+    |'complete'| vim option, so you can use them through |ins-completion|.
+    I made one more dictionary (dictionaries/ams_dictionary) with ams commands
+    and environment names. It will be added to the vim |'complete'| option if
+    you use amsmath package or if the document class is one of the standard
+    ams classes or of |g:atp_amsmath| is set to 1.
  
- STATUS LINE ~
- Status notifications has the ability to show if |b:atp_BibCompiler|, or
- "makeindex" are running. Unless |g:atp_statusNotif|=0 or |g:atp_callback|=0
- |atp-:MakeLatex| will not echo messages (the info appears in status line).
+STATUS LINE ~
+    Status notifications has the ability to show if |b:atp_BibCompiler|, or
+    "makeindex" are running. Unless |g:atp_statusNotif|=0 or
+    |g:atp_callback|=0 |atp-:MakeLatex| will echo a single message when it
+    returns.
 
- BIBER AND BIBLATEX SUPPORT ~
- Support for biber and biblatex added (in |atp-:MakeLatex|, |atp-:Bibtex|,
- |atp-:Delete|, |atp-:InputFiles| commands), |g:keep| variable will adjust on
- the fly (add run.xml and bcf extensions).  |b:atp_BibCommand| will be set to
- biber if the preamble contains \usepackage[backend=biber]{biblatex}
+BIBER AND BIBLATEX SUPPORT ~
+    Support for biber and biblatex is added (in |atp-:MakeLatex|,
+    |atp-:Bibtex|, |atp-:Delete|, |atp-:InputFiles| commands), |g:keep|
+    variable will adjust on the fly (add run.xml and bcf extensions).
+    |b:atp_BibCommand| will be set to biber if the preamble contains
+    \usepackage[backend=biber]{biblatex}
 
- If you use biblatex, it allows for putting \bibliography{} type commands only
- in the preamble. Thus ATP will search for them only there. The
- |g:atp_inputfile_pattern| might not contain any pattern for bibliographies
- (\addbibresource, \bibliography, etc.). The |atp-:InputFiles| command will
- search for them in a special subroutine which only searches in the preamble.
- This makes it work slightly faster.
+    If you use biblatex, it allows for putting \bibliography{} type commands
+    only in the preamble. Thus ATP will search for them only there. The
+    |g:atp_inputfile_pattern| might not contain any pattern for bibliographies
+    (\addbibresource, \bibliography, etc.). The |atp-:InputFiles| command will
+    search for them in a special subroutine which only searches in the
+    preamble.  This makes it work slightly faster.
 
- TEX OPTIONS VARIABLE (new format) ~
- 	|b:atp_TexOptions| is a comma separated list of TeX compiler options.
-	If you use |g:atp_Compiler|="bash" this might be just a white space
-	separated list.
+TEX OPTIONS VARIABLE (new format) ~
+    |b:atp_TexOptions| is a comma separated list of TeX compiler options.
+    If you use |g:atp_Compiler|="bash" this might be just a white space
+    separated list.
 
- SPACE CMAP ~
+SPACE CMAP ~
  cmap <buffer> <C-Sapce> 	\_s\+
  cmap <buffer> <C-_> 		\_s\+
- 	The <C-Space> map doesn't work in Vim, instead <C-@> is used which
-	works as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
-	|atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
+    The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
+    as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
+    |atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
 
- ERRORS ~
+ERRORS ~
  nmap <LocalLeader>e
- 	To get list of errors with current |b:atp_ErrorFormat|.
+    To get list of errors with current |b:atp_ErrorFormat|.
 
 :ErrorFormat {efm}					 |atp-:ErrorFormat|
-	This is new interface to :SetErrorFormat. If {efm} is not given it
-	will show the current value |b:atp_ErrorFormat|. It sets the variable
-	|b:atp_ErrorFormat| and rereads the log file with |cgetfile|.
-	The variable |b:atp_ErrorFormat| is also set when you use the command
-	|atp-:ShowErrors|. In addition you can use +{flag} and -{flag} as an
-	argument, then {flag} will be added/removed from |b:atp_ErrorFormat|.
+    This is new interface to :SetErrorFormat. If {efm} is not given it will
+    show the current value |b:atp_ErrorFormat|. It sets the variable
+    |b:atp_ErrorFormat| and rereads the log file with |cgetfile|. The variable
+    |b:atp_ErrorFormat| is also set when you use the command
+    |atp-:ShowErrors|. In addition you can use +{flag} and -{flag} as an
+    argument, then {flag} will be added/removed from |b:atp_ErrorFormat|.
 
- EasyMotion and ATP ~
-	If you want to use EaseMotion vim plugin (which is quite handy):
-	     http://www.vim.org/scripts/script.php?script_id=3526
-	You can set |g:atp_Compare|="". Alternatively, if you want to use the
-	fastest comparing method of ATP, you can add to last line of
-	s:EasyMotion() function in plugin/EasyMotion.vim add >
+EasyMotion and ATP ~
+    If you want to use EaseMotion vim plugin (which is quite handy):
+	http://www.vim.org/scripts/script.php?script_id=3526
+    You can set |g:atp_Compare|="". Alternatively, if you want to use the
+    fastest comparing method of ATP, you can add to last line of
+    s:EasyMotion() function in plugin/EasyMotion.vim add >
 	    let g:atp_changedtick = b:changedtick
-<	You might want to change g:EasyMotion_leader_key (see
-	|easymotion-leader-key| if you have EasyMotion), because some maps of
-	ATP are interfering with EasyMotion. For example "-" might be a good
-	choice. You can also try to change |maplocalleader| which is heavily
-	used by ATP.
+<   You might want to change g:EasyMotion_leader_key (see |easymotion-leader-key|
+    if you have EasyMotion), because some maps of ATP are interfering with
+    EasyMotion. For example "-" might be a good choice.  You can also try to
+    change |maplocalleader| which is heavily used by ATP.
 
-	Select Comments nmap and vmap is now |_c| (previously \sc was
-	interfering with an ATP font map).
+    Select Comments nmap and vmap is now |_c| (previously \sc was
+    interfering with an ATP font map).
 
- (Almost all) maps became |:map-silent|.   
+    (Almost all) maps became |:map-silent|.   
 
- DEBUG ATP  ~
- :DebugPrint	
-	if you want to develop/debug ATP set g:atp_atpdev to 1 run
-	|atp-:ReloadATP| and this command will allow to fast printing of
-	debug files under |g:atp_TempDir|.
+ATPRC ~
+    The |atprc| file is now sourced twice at startup: at the beginning to set
+    the variables, and once again at the end to set the maps defined in it.
+
+DEBUG ATP  ~
+:DebugPrint	
+    if you want to develop/debug ATP set g:atp_atpdev to 1 run
+    |atp-:ReloadATP| and this command will allow to print (cat) debug
+    files under |g:atp_TempDir|.
+
+
+I hope I didn't missed anything important. If you want to see detailed changes
+you can always read the svn logs at |atp-sourceforge|.
 
 >
   =======================

@@ -1128,7 +1128,9 @@ command! -buffer -bang -nargs=* ShowOptions		:call <SID>ShowOptions(<q-bang>, <q
 let t:atp_DebugMode	= g:atp_DefaultDebugMode 
 " there are three possible values of t:atp_DebugMode
 " 	silent/normal/debug
-let t:atp_QuickFixOpen	= 0
+if !exists("t:atp_QuickFixOpen")
+    let t:atp_QuickFixOpen	= 0
+endif
 
 if !s:did_options
     augroup ATP_DebugMode
@@ -1549,16 +1551,8 @@ function! ATP_ToggleDebugMode(mode,...)
 	    let efm=b:atp_ErrorFormat
 	    exe "ErrorFormat ".efm
 	    silent! cg
-	    " Compute lines:
-	    let lines = 1
-	    " i.e. open with one more line than needed.
-	    for qf in getqflist()
-		let text=substitute(qf['text'], '\_s\+', ' ', 'g')
-		let lines+=(len(text))/&l:columns+1
-	    endfor
-" 	    let g:lines = lines
 	    if len(getqflist()) > 0
-		exe "silent copen ".min([lines, g:atp_DebugModeQuickFixHeight])
+		exe "silent copen ".min([atplb#qflength(), g:atp_DebugModeQuickFixHeight])
 		exe winnr . " wincmd w"
 	    else
 		echo "[ATP:] no errors for b:atp_ErrorFormat=".efm
@@ -2168,10 +2162,27 @@ else
 endif
 endfunction
 
+    function! ErrorMsg(type)
+	let errors		= len(filter(getqflist(),"v:val['type']==a:type"))
+	let type		= (a:type == 'E' ? 'errors' : 'warnnings')
+	let msg			= ""
+	if errors
+	    let msg.=" ".errors." ".type
+	endif
+	return msg
+    endfunction
+
     augroup ATP_QuickFix_2
 	au!
 	au FileType qf command! -bang -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
-	au FileType qf set statusline="There are %{len(getqflist())} messages"
+	au FileType qf let w:atp_qf_errorfile=&l:errorfile
+	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarnningMsg#%{ErrorMsg('W')}\ %#ErrorMsg#%{ErrorMsg('E')}
+	"There are %{len(getqflist())} messages"
+	au FileType qf "resize ".min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])
+" 	THIS IS NOT WORKING this might be considered as a vim bug.
+" 	when there are two files it loads the errors from the window which we leave
+" 	rather than we get into.
+" 	au WinEnter *.tex cgetfile
     augroup END
 
     augroup ATP_VimLeave
@@ -2530,13 +2541,15 @@ function! <SID>SetDebugMode(bang,...)
 		echohl Normal
 	    endtry
 	    if a:bang == "!"
-		exe "cwindow " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+		exe "cwindow " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight])]))
 		exe winnr . "wincmd w"
 	    endif
 	endif
     elseif a:1 =~# 'd\%[ebug]'
 	let winnr=winnr()
-	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+	exe "copen " . (!exists("w:quickfix_title") 
+		    \ ? (max([1, min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])]))
+		    \ : "" )
 	exe winnr . "wincmd w"
 	try
 	    cgetfile
@@ -2548,7 +2561,9 @@ function! <SID>SetDebugMode(bang,...)
 	" DebugMode is not changing when log file is missing!
     elseif a:1 =~# 'D\%[ebug]'
 	let winnr=winnr()
-	exe "copen " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight-1])])+1)
+	exe "copen " . (!exists("w:quickfix_title") 
+		    \ ? (max([1, min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])]))
+		    \ : "" )
 	exe winnr . "wincmd w"
 	try
 	    cgetfile
