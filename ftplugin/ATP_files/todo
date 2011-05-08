@@ -327,3 +327,4 @@ catch E127
 endtry
 
 NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I needed them somewhere).
+Delete! could also delete all files under b:atp_TempDir and g:atp_TempDir (but not the directories, which are removed when vim exists).
