@@ -325,3 +325,5 @@ function! atplib#ToggleMathIMaps(var, augroup)
 endfunction
 catch E127
 endtry
+
+NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I needed them somewhere).
