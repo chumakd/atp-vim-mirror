@@ -100,7 +100,7 @@ endfunction
 "}}}
 
 " QFLength "{{{
-function atplib#qflength() 
+function! atplib#qflength() 
     let lines = 1
     " i.e. open with one more line than needed.
     for qf in getqflist()
@@ -109,6 +109,59 @@ function atplib#qflength()
     endfor
     return lines
 endfunction "}}}
+
+" IMap Functions:
+" {{{
+" These maps extend ideas from TeX_9 plugin:
+function! atplib#IsInMath()
+    return atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+		    \ !atplib#CheckSyntaxGroups(['texMathText'])
+endfunction
+function! atplib#MakeMaps(maps, ...)
+    let aucmd = ( a:0 >= 1 ? a:1 : '' )
+"     let echo = 0
+    for map in a:maps
+	if map[3] != "" && ( !exists(map[5]) || {map[5]} > 0 || 
+		    \ exists(map[5]) && {map[5]} == 0 && aucmd == 'InsertEnter'  )
+	    if exists(map[5]) && {map[5]} == 0 && aucmd == 'InsertEnter'
+		exe "let ".map[5]." =1"
+	    endif
+" 	    if !echo
+" 		echomsg "MAKEMAPS ".aucmd
+" 		let echo = 1
+" 	    endif
+	    exe map[0]." ".map[1]." ".map[2].map[3]." ".map[4]
+	endif
+    endfor
+endfunction
+function! atplib#DelMaps(maps)
+    for map in a:maps
+	let cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
+	let arg = ( map[1] =~ '<buffer>' ? '<buffer>' : '' )
+	exe "silent! ".cmd." ".arg." ".map[2].map[3]
+" 	echo "silent! ".cmd." ".arg." ".map[2].map[3]."\n"
+    endfor
+endfunction
+function! atplib#IsLeft(lchar,...)
+    let nr = ( a:0 >= 1 ? a:1 : 0 )
+    " From TeX_nine plugin:
+	let left = getline('.')[col('.')-2-nr]
+	if left ==# a:lchar
+	    return 1
+	else
+	    return 0
+	endif
+endfunction
+try
+function! atplib#ToggleMathIMaps(var, augroup)
+    if atplib#IsInMath() 
+	call atplib#MakeMaps(a:var, a:augroup)
+    else
+	call atplib#DelMaps(a:var)
+    endif
+endfunction
+catch E127
+endtry "}}}
 
 " Compilation Call Back Communication: 
 " with some help of D. Munger

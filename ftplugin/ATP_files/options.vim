@@ -40,6 +40,10 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugUpdateInsertItem")
+    " debug UpdateATP (various.vim)
+    let g:atp_debugUpdateInsertItem = 0
+endif
 if !exists("g:atp_debugUpdateATP")
     " debug UpdateATP (various.vim)
     let g:atp_debugUpdateATP 	= 0
@@ -325,20 +329,35 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_atpdev")
+if !exists("g:atp_cgetfile") || g:atp_reload_variables
+    let g:atp_cgetfile = 1
+endif
+if !exists("g:atp_atpdev") || g:atp_reload_variables
     let g:atp_atpdev = 0
 endif
 if !exists("g:atp_imap_ShortEnvIMaps") || g:atp_reload_variables
     let g:atp_imap_ShortEnvIMaps = 1
 endif
+if !exists("g:atp_imap_over_leader") || g:atp_reload_variables
+    let g:atp_imap_over_leader="`"
+endif
 if !exists("g:atp_imap_subscript") || g:atp_reload_variables
     let g:atp_imap_subscript="__"
 endif
 if !exists("g:atp_imap_supscript") || g:atp_reload_variables
-    let g:atp_imap_supscript="^^"
+    let g:atp_imap_supscript="^"
 endif
-if !exists("g:atp_imaps") || g:atp_reload_variables
-    let g:atp_imaps=1
+if !exists("g:atp_imap_define_math") || g:atp_reload_variables
+    let g:atp_imap_define_math=1
+endif
+if !exists("g:atp_imap_define_environments") || g:atp_reload_variables
+    let g:atp_imap_define_environments = 1
+endif
+if !exists("g:atp_imap_define_math_misc") || g:atp_reload_variables
+    let g:atp_imap_define_math_misc = 1
+endif
+if !exists("g:atp_imap_define_greek_letters") || g:atp_reload_variables
+    let g:atp_imap_define_greek_letters = 1
 endif
 if !exists("g:atp_imap_wide") || g:atp_reload_variables
     let g:atp_imap_wide=0
@@ -1584,26 +1603,47 @@ function! ATP_ToggleTab(...)
     endif
 endfunction
 " }}}
-
 " {{{ ATP_ToggleIMaps
 " switches on/off the <Tab> map for TabCompletion
-function! ATP_ToggleIMaps(...)
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_imaps )
-    if !on 
-	let g:atp_imaps=0
-	echo '[ATP:] imaps OFF'
+function! ATP_ToggleMathIMaps(insert_enter, bang,...)
+"     let g:arg	= ( a:0 >=1 ? a:1 : 0 )
+"     let g:bang = a:bang
+    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : g:atp_imap_define_math <= 0 || g:atp_imap_define_math_misc <= 0 )
+"     let g:debug=g:atp_imap_define_math." ".g:atp_imap_define_math_misc
+"     let g:on	= on
+"     echomsg "****"
+"     echomsg g:arg
+"     echomsg g:debug
+"     echomsg g:on
+    if on == 0
+" 	echomsg "DELETE IMAPS"
+	let g:atp_imap_define_math = ( a:bang == "!" ? -1 : 0 ) 
+	call atplib#DelMaps(g:atp_imap_math)
+	let g:atp_imap_define_math_misc = ( a:bang == "!" ? -1 : 0 )
+	call atplib#DelMaps(g:atp_imap_math_misc)
+	echo '[ATP:] imaps OFF '.(a:bang == "" ? '(insert)' : '')
     else
-	let g:atp_imaps=1
+" 	echomsg "MAKE IMAPS"
+	let g:atp_imap_define_math =1
+	call atplib#MakeMaps(g:atp_imap_math)
+	let g:atp_imap_define_math_misc = 1
+	call atplib#MakeMaps(g:atp_imap_math_misc)
 	echo '[ATP:] imaps ON'
+    endif
+    if a:insert_enter
+	let g:atp_eventignore=&l:eventignore
+	let g:atp_eventignoreInsertEnter=1
+	set eventignore+=InsertEnter
+" 	" This doesn't work because startinsert runs after function ends.
     endif
 endfunction
 " }}}
 endif
  
 "  Commands And Maps:
-command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleIMaps	 	:call ATP_ToggleIMaps(<f-args>)
-nnoremap <silent> <buffer> 	<Plug>ToggleIMaps		:call ATP_ToggleIMaps()<CR>
-inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<Esc>:call ATP_ToggleIMaps()<CR>
+command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleMathIMaps	 	:call ATP_ToggleMathIMaps(0, "!", <f-args>)
+nnoremap <silent> <buffer> 	<Plug>ToggleMathIMaps		:call ATP_ToggleMathIMaps(0, "!")<CR>
+inoremap <silent> <buffer> 	<Plug>ToggleMathIMaps		<Esc>:call ATP_ToggleMathIMaps(1, "")<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleAuTeX 		:call ATP_ToggleAuTeX()<CR>
@@ -2130,6 +2170,19 @@ let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
 
 if !s:did_options
 
+    let g:atp_eventignore		= &l:eventignore
+    let g:atp_eventignoreInsertEnter 	= 0
+    function! <SID>InsertLeave_InsertEnter()
+	if g:atp_eventignoreInsertEnter
+	    setl eventignore-=g:atp_eventignore
+	endif
+    endfunction
+    augroup ATP_InsertLeave_eventignore
+	" ToggleMathIMaps
+	au!
+	au InsertLeave *.tex 	:call <SID>InsertLeave_InsertEnter()
+    augroup END
+
     augroup ATP_Cmdwin
 	au!
 	au CmdwinLeave / :call ATP_CmdwinToggleSpace(0)
@@ -2183,6 +2236,18 @@ endfunction
 " 	when there are two files it loads the errors from the window which we leave
 " 	rather than we get into.
 " 	au WinEnter *.tex cgetfile
+    augroup END
+
+    function! <SID>BufEnterCgetfile()
+	if g:atp_cgetfile 
+	    cgetfile
+	    " cgetfile needs:
+	    exe "ErrorFormat ".b:atp_ErrorFormat
+	endif
+    endfunction
+    augroup ATP_QuickFix_cgetfile
+	au!
+	au BufEnter *.tex :call <SID>BufEnterCgetfile()
     augroup END
 
     augroup ATP_VimLeave

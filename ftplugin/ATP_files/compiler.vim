@@ -1647,7 +1647,18 @@ augroup ATP_QuickFix_1
 augroup END
 
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A 	ErrorFormat 	:call <SID>SetErrorFormat(<q-args>,1)
-call <SID>SetErrorFormat(g:atp_DefaultErrorFormat, (exists("t:atp_QuickFixOpen") ? !t:atp_QuickFixOpen : 1))
+let load_ef=(exists("t:atp_QuickFixOpen") ? !t:atp_QuickFixOpen : 1)
+" Note: the following code works nicly with :split (do not reloads the log file) but
+" this is not working with :edit
+" but one can use: au BufEnter *.tex :cgetfile
+if exists("t:atp_QuickFixOpen") && t:atp_QuickFixOpen
+    " If QuickFix is opened:
+    let load_ef = 0
+else
+    let load_ef = 1
+endif
+" let g:load_ef=load_ef
+call <SID>SetErrorFormat(g:atp_DefaultErrorFormat, load_ef)
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags 	ShowErrors 	:call ShowErrors(<f-args>)
 " }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

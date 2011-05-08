@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 08 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.3.27)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -192,6 +192,8 @@ NEW IMAPS ~
     g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
     the corresponding imap will not be defined.
 
+    See also |atp-:ToggleMathIMaps|.
+
 NEW MOTIONS ~
  							*atp->E* *atp-<E*
     There are two more nice map >E which is something like %>e, i.e. jump over
@@ -233,6 +235,9 @@ STATUS LINE ~
     "makeindex" are running. Unless |g:atp_statusNotif|=0 or
     |g:atp_callback|=0 |atp-:MakeLatex| will echo a single message when it
     returns.
+
+    There is also new status line for QuickFix window with number of errors
+    and warnings printed (this depends on |b:atp_ErrorFormat|).
 
 BIBER AND BIBLATEX SUPPORT ~
     Support for biber and biblatex is added (in |atp-:MakeLatex|,
@@ -292,6 +297,14 @@ EasyMotion and ATP ~
 ATPRC ~
     The |atprc| file is now sourced twice at startup: at the beginning to set
     the variables, and once again at the end to set the maps defined in it.
+
+QUICKFIX WINDOW ~
+    Despite the status line for quick fix window, :cgetfile will be run when
+    you open new files, this nicely works with :edit command but not :split if
+    you want to keep the old log file in QuickFix window. If this is the case
+    set >
+     let g:atpcgetfile = 0
+<   You can also put this in your |atprc| or |vimrc| file.
 
 DEBUG ATP  ~
 :DebugPrint	
@@ -3876,6 +3889,9 @@ GREEK LETTERS						*atp-imap-greek-letters*
 Note: You can list this mappings using the command |atp-:HelpMathIMaps|. You
       might not see them using |:imap| unless the last cursor position in
       insert mode was inside mathematics.
+							*g:atp_imap_define_greek_letters*
+Note: If you do not want imaps for greek letters you can set
+      |g:atp_ima_define_greek_letters| = 0
 imap #a 	\alpha
 imap #b 	\beta
 imap #c 	\chi
@@ -3979,11 +3995,21 @@ imap      ]let		\begin{letter}{<cursor>}
 
 MATH IMAPS						*atp-imap-math*
 These are very useful mappings for typing mathematics. 
+Some of the ideas were taken from TeX_9 by Elias Toivanen and also AuTeX by
+Carl Mueller.
 Note: you might not see them using |:imap| unless the last cursor position in
       insert mode was inside mathematics.
 
-These two maps are only valid inside math environment (credits belongs to
-AuTeX plugin author Carl Mueller):
+Note: You can turn on/off math imaps on the fly using '<tab> imap and nmap.
+      See |atp-:ToggleMathIMaps| below.
+							*g:atp_imap_define_math*
+							*g:atp_imap_define_math_misc*
+Note: If you do not want to set math imaps you can set
+      |g:atp_imap_define_math| and |g:atp_imap_define_math_misc| to 0. The
+      first will disable maps defined in g:atp_imap_math the second variable
+      will disable imaps defined in g:atp_imap_math_misc.
+			
+AuTeX maps:
 imap __ 	_{}<Left>
 imap ^^		^{}<Left>
 You can set the leader for these two maps using g:atp_imap_subscript,
@@ -3992,10 +4018,15 @@ _ or ^ then you can set them to _ and ^, if this is the case thes maps will
 not be fired if you type \_ or \^ (which means literal _ or ^ in LaTeX). 
 							*g:atp_imaps*
 Both above maps can be turned on/off on the fly with |g:atp_imaps| (1 - on,
-0 - off). Use |atp-:ToggleIMaps| (mapped to '<Tab>) to switch it on/off.
+0 - off). Use |atp-:ToggleMathIMaps| (mapped to '<Tab>) to switch it on/off.
+
 
 imap ]m 	\[\]<Left><Left>
 imap ]M 	\[\]<Left><Left>
+
+The following imaps can be turned on/off on the fly with
+|g:atp_imap_define_math|
+variable (0 - off, 1 - on). You can use |atp-:ToggleMathIMaps| (mapped to '<Tab>).
 
 imap #\		\setminus
 imap #/		\frac{}{}
@@ -4014,18 +4045,24 @@ imap #+		\bigcup
 imap #\		\backslash
 imap #>		\geq
 imap #<		\leq
-imap #~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
-imap #^		\hat{}		[as above]
-imap #_		\bat{}
 imap #.		\dot		[#.s will put \dots]
 
-These maps are only valid inside a math environment. They work around
-|'timeout'| vim setting (behave like |'notimeout'| was set):
+MATH ACCENTS ~
+imap ``		\grave{}
+imap `'		\acute{}
+imap `>		\vec{}
+imap `.		\dot{}
+imap `v		\check{}
+imap `_		\bar{}
+imap `~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
+imap `^		\hat{}		[as above]
 
-Some of the ideas were taken from TeX_9 by Elias Toivanen.
+There are for convienience, there are also:
+imap ~~		\tilde{}	
+imap ~^		\hat{}		[^^ is used for ^{}]		
 
-The following imaps can be turned on/off on the fly with |g:atp_imaps|
-variable (0 - off, 1 - on). You can use |atp-:ToggleIMaps| (mapped to '<Tab>).
+The last two maps and the following maps work around |'timeout'| vim setting
+(behave like |'notimeout'| was set):
 
 imap ==		&=
 imap =~		\cong
@@ -4054,12 +4091,20 @@ imap s>		\supseteq	[    set >]
 
 If you want to write 'o*' you can wait until |'timeoutlen'| passes or write 'o *' 
 (TeX in math mode doesn't see spaces).
-							*atp-:ToggleIMaps*
-:ToggleIMaps
-nmap, imap `<Tab> 
-    It is a command to toggle the impas off/on by switching the value of
-    |g:atp_imaps|. These are the maps above plus _ for  _{} and ^ for ^{}.
+							*atp-:ToggleMathIMaps*
+:ToggleMathIMaps
+nmap, imap '<Tab> 
+    It is a command to toggle the impas off/on by imaps defined in the vim
+    lists g:atp_imap_math and g:atp_imap_math_misc. These are the maps above
+    plus _ for  _{} and ^ for ^{}. 
 
+    Note: the imap '<Tab> works slightly different than nmap and the command:
+    it disables the imaps only for the current |Insert-mode| session, i.e.
+    when you exit from |Insert-mode| and you enter |Insert-mode| again
+    the maps will be defined. When you use any imap which contains <Esc> and
+    returns to insert mode the imaps will be defined. |i_CTRL-O| is not
+    bringing the imaps back. 
+    
 ============
 LOG FILE MAPS						*atp-maps-log*
     This are available maps in the log file, when it was opened with
