@@ -1639,6 +1639,8 @@ endif "}}}
 
 " Commands And Autocommands: 
 " {{{
+command! -buffer		HighlightErrors		:call atplib#HighlightErrors()
+command! -buffer		ClearHighlightErrors	:call atplib#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call <SID>Kill(<q-bang>)
 command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
 command! -buffer 		SyncTex			:call <SID>SyncTex(0)

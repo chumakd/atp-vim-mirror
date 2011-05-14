@@ -129,17 +129,12 @@ function! atplib#IsInMath()
 endfunction
 function! atplib#MakeMaps(maps, ...)
     let aucmd = ( a:0 >= 1 ? a:1 : '' )
-"     let echo = 0
     for map in a:maps
 	if map[3] != "" && ( !exists(map[5]) || {map[5]} > 0 || 
 		    \ exists(map[5]) && {map[5]} == 0 && aucmd == 'InsertEnter'  )
 	    if exists(map[5]) && {map[5]} == 0 && aucmd == 'InsertEnter'
 		exe "let ".map[5]." =1"
 	    endif
-" 	    if !echo
-" 		echomsg "MAKEMAPS ".aucmd
-" 		let echo = 1
-" 	    endif
 	    exe map[0]." ".map[1]." ".map[2].map[3]." ".map[4]
 	endif
     endfor
@@ -149,12 +144,11 @@ function! atplib#DelMaps(maps)
 	let cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
 	let arg = ( map[1] =~ '<buffer>' ? '<buffer>' : '' )
 	exe "silent! ".cmd." ".arg." ".map[2].map[3]
-" 	echo "silent! ".cmd." ".arg." ".map[2].map[3]."\n"
     endfor
 endfunction
+" From TeX_nine plugin:
 function! atplib#IsLeft(lchar,...)
     let nr = ( a:0 >= 1 ? a:1 : 0 )
-    " From TeX_nine plugin:
 	let left = getline('.')[col('.')-2-nr]
 	if left ==# a:lchar
 	    return 1
@@ -203,7 +197,7 @@ function! atplib#CallBack(mode,...)
     let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
     let BIBTEX = ( BIBTEX == "True" || BIBTEX == 1 ? 1 : 0 )
     if g:atp_debugCallBack
-	call atplib#Log("CallBack.log","","init")
+	exe "redir! > ".g:atp_TempDir."/CallBack.log"
     endif
 
     for cmd in keys(g:CompilerMsg_Dict) 
@@ -218,6 +212,13 @@ function! atplib#CallBack(mode,...)
 
     " Read the log file
     cgetfile
+    if g:atp_debugCallBack
+	silent echo "file=".expand("%:p")
+	silent echo "g:atp_HighlightErrors=".g:atp_HighlightErrors
+    endif
+    if g:atp_HighlightErrors
+	call atplib#HighlightErrors()
+    endif
     " /this cgetfile is not working (?)/
     let error	= len(getqflist()) + (BIBTEX ? b:atp_BibtexReturnCode : 0)
 
@@ -246,7 +247,7 @@ function! atplib#CallBack(mode,...)
 	let g:debugCB 		= 0
 	let g:debugCB_mode 	= a:mode
 	let g:debugCB_error 	= error
-	call atplib#Log("CallBack.log","mode=".a:mode."\nerror=".error")
+	silent echo "mode=".a:mode."\nerror=".error
     endif
 
     let msg_list = []
@@ -325,6 +326,9 @@ function! atplib#CallBack(mode,...)
     endif
 
     if msg_list == []
+	if g:atp_debugCallBack
+	    redir END
+	endif
 	return
     endif
 
@@ -340,6 +344,8 @@ function! atplib#CallBack(mode,...)
     if g:atp_debugCallBack
 	let g:msg_list 	= msg_list
 	let g:clist 	= l:clist
+	silent echo "msg_list=\n**************\n".join(msg_list, "\n")."\n**************"
+	silent echo "l:clist=".l:clist
     endif
 
     let cmdheight = &l:cmdheight
@@ -469,7 +475,38 @@ endfunction "}}}
 "     call feedkeys("\<left>", "n")
 "     call cursor(cursor_pos)
 " endfunction "}}}
-
+" {{{ HighlightErrors
+function! atplib#HighlightErrors()
+    call atplib#ClearHighlightErrors()
+    let qf_list = getqflist()
+    for error in qf_list
+	if error.type ==? 'e'
+	    let hlgroup = g:atp_Highlight_ErrorGroup
+	else
+	    let hlgroup = g:atp_Highlight_WarningGroup
+	endif
+	if hlgroup == ""
+	    continue
+	endif
+	let m_id = matchadd(hlgroup, '\%'.error.lnum.'l.*', 20)
+	call add(s:matchid, m_id)
+	let error_msg=split(error.text, "\n")
+    endfor
+endfunction "}}}
+" {{{ ClearHighlightErrors
+function! atplib#ClearHighlightErrors()
+    if !exists("s:matchid")
+	let s:matchid=[]
+	return
+    endif
+    for m_id in s:matchid
+	try
+	    silent call matchdelete(m_id)
+	catch /E803:/
+	endtry
+    endfor
+    let s:matchid=[]
+endfunction "}}}
 "{{{ echo
 function! atplib#Echo(msg,cmd,hlgroup)
     exe "echohl ".a:hlgroup
@@ -806,7 +843,7 @@ endfunction
 " 	(1) read lables from aux files using GrepAuxFile()
 " 	(2) search all input files (TreeOfFiles()) for labels to get the line
 " 		number 
-" 	   [ this is done using :vimgrep which is fast, when the buffer are not loaded ]
+" 	   [ this is done using :vimgrep which is fast, when the buffer is not loaded ]
 function! atplib#generatelabels(filename, ...)
     let s:labels	= {}
     let bufname		= fnamemodify(a:filename,":t")
@@ -902,9 +939,8 @@ function! atplib#showlabels(labels)
 
     let l:bname="__Labels__"
 
-    let l:labelswinnr=bufwinnr("^" . l:bname . "$")
     let t:atp_labelswinnr=winnr()
-    let t:atp_labelsbufnr=bufnr("^" . l:bname . "$") 
+    let t:atp_labelsbufnr=bufnr("^".l:bname."$")
     let l:labelswinnr=bufwinnr(t:atp_labelsbufnr)
 
     let tabstop	= 0
@@ -918,6 +954,7 @@ function! atplib#showlabels(labels)
 
     if l:labelswinnr != -1
 	" Jump to the existing window.
+	redraw
 	exe l:labelswinnr . " wincmd w"
 	if l:labelswinnr != t:atp_labelswinnr
 	    silent exe "%delete"
@@ -936,6 +973,7 @@ function! atplib#showlabels(labels)
 	endif
 
 	" tabstop option is set to be the longest counter number + 1
+	redraw
 	let l:openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
 	silent exe l:openbuffer
 	silent call atplib#setwindow()
@@ -944,11 +982,16 @@ function! atplib#showlabels(labels)
     unlockvar b:atp_Labels
     let b:atp_Labels	= {}
 
+    let g:labels=copy(a:labels)
+
     let line_nr	= 2
     for file in a:labels[1]
-    call setline("$", fnamemodify(file, ":t") . " (" . fnamemodify(file, ":h")  . ")")
-    call extend(b:atp_Labels, { 1 : [ file, 0 ]})
-    for label in get(a:labels[0], file, [])
+	if !(len(get(a:labels[0], file, []))>0)
+	    continue
+	endif
+	call setline("$", fnamemodify(file, ":t") . " (" . fnamemodify(file, ":h")  . ")")
+	call extend(b:atp_Labels, { 1 : [ file, 0 ]})
+	for label in get(a:labels[0], file, [])
 	    " Set line in the format:
 	    " /<label_numberr> \t[<counter>] <label_name> (<label_line_nr>)/
 	    " if the <counter> was given in aux file (see the 'counter' variable in atplib#GrepAuxFile())
@@ -2148,7 +2191,7 @@ function! atplib#SearchPackage(name,...)
 	if stop_line != 0
 
 	    keepjumps call setpos(".",[0,1,1,0])
-	    keepjumps let ret = search('^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
+	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
 	    keepjump call setpos(".",saved_pos)
 
 	    exe "lcd " . fnameescape(cwd)
@@ -2157,7 +2200,7 @@ function! atplib#SearchPackage(name,...)
 	else
 
 	    keepjumps call setpos(".",[0,1,1,0])
-	    keepjumps let ret = search('^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
+	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
 	    keepjump call setpos(".", saved_pos)
 
 	    exe "lcd " . fnameescape(cwd)
@@ -2176,7 +2219,7 @@ function! atplib#SearchPackage(name,...)
 	endif
 	let lnum = 1
 	for line in s:Preambule
-	    if line =~ '^[^%]*\\'.com."\s*{[^}]*".a:name
+	    if line =~ '^[^%]*\\'.com."\s*{[^}]*\C".a:name
 
 " 		echo reltimestr(reltime(time))
 		exe "lcd " . fnameescape(cwd)
@@ -4074,7 +4117,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		call extend(completion_list, g:atp_hyperref_commands)
 	    endif
 	endif
-	" {{{4 -------------------- MATH commands 
+	" {{{4 -------------------- MATH commands: amsmath, amssymb, mathtools, nicefrac, SIunits, math non expert mode.
 	" if we are in math mode or if we do not check for it.
 	if g:atp_no_math_command_completion != 1 &&  ( !g:atp_MathOpened || math_is_opened )
 	    call extend(completion_list,g:atp_math_commands)
@@ -4107,12 +4150,16 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call extend(completion_list, g:atp_math_commands_PRE, 0)
 	
 	    " nicefrac {{{5
-	    if atplib#SearchPackage('nicefrac',stop_line)
+	    if atplib#SearchPackage('nicefrac', stop_line)
 		call add(completion_list,"\\nicefrac")
+	    endif
+	    " SIunits {{{5
+	    if atplib#SearchPackage('SIunits', stop_line) && ( index(g:atp_completion_active_modes, 'SIunits') != -1 || index(g:atp_completion_active_modes, 'siunits') != -1 )
+		call extend(completion_list, g:atp_siuinits)
 	    endif
 	    " math non expert mode {{{5
 	    if a:expert_mode == 0
-		call extend(completion_list,g:atp_math_commands_non_expert_mode)
+		call extend(completion_list, g:atp_math_commands_non_expert_mode)
 	    endif
 	endif
 	" {{{4 -------------------- BEAMER commands

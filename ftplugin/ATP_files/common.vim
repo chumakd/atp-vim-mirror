@@ -235,14 +235,14 @@ command! -buffer SetErrorFile		:call s:SetErrorFile()
 " {{{ TreeOfFiles
 " this is needed to make backward searching.
 " It returns:
-" 	[ {tree}, {list} , {type_dict}, {level_dict} ]
+" 	[ {tree}, {list}, {type_dict}, {level_dict} ]
 " 	where {tree}:
 " 		is a tree of files of the form
 " 			{ file : [ subtree, linenr ] }
 "		where the linenr is the linenr of \input{file} iline the one level up
 "		file.
 "	{list}:
-"		is just list of all found input files.
+"		is just list of all found input files (except the main file!).
 "	{type_dict}: 
 "		is a dictionary of types for files in {list}
 "		type is one of: preambule, input, bib. 

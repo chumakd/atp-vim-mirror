@@ -1195,10 +1195,10 @@ if g:atp_mapNn
     " Note: the final step if the mapps n and N are made is in s:LoadHistory 
 endif
 
-command! -buffer -bang 		LocalCommands		:call LocalCommands("",<q-bang>)
-command! -buffer -bang -nargs=* DefiSearch		:call DefiSearch(<q-bang>, <q-args>)
+command! -buffer -bang 		LocalCommands					:call LocalCommands("",<q-bang>)
+command! -buffer -bang -nargs=* DefiSearch					:call DefiSearch(<q-bang>, <q-args>)
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleNn	:call ATP_ToggleNn(<f-args>)
-command! -buffer -bang -nargs=* BibSearch		:call BibSearch(<q-bang>, <q-args>)
+command! -buffer -bang -nargs=* BibSearch					:call BibSearch(<q-bang>, <q-args>)
 
 " Hilighlting:
 hi link BibResultsFileNames 	Title	

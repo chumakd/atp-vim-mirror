@@ -278,6 +278,7 @@ ToDo: set the QuickFix hight using 'au FileType qf'
 Done: ErrorFormat +f in qf not working.
 ToDo: Find how to make it possible to run :copen 5 (w:quickfix_title will not work)
 	Test this feature if it changes size of qf window (callback, etc...)
+	At least this is doc.
 ToDo: when working with two tex files and opened QuickFix window, :copen changes the errorfile, it ATP should change b:atp_ErrorFormat to the ErrorFormat of corresponding buffer.
 this is not working:
 "     au FileType qf :call <SID>SetErrorFormat(getbufvar(bufnr(fnamemodify(&l:errorfile, ":r").".tex"),"atp_ErrorFormat"),1)
@@ -291,46 +292,12 @@ New Feature: add dictionary of J.Trzeciak: http://www.impan.pl/cgi-bin/dictsearc
 	    http://www.impan.pl/Dictionary/m.html
 
 Bug: progress bar starts at [5] :MakeLatex /probably because UnicodeDecodeError/
-
-Notes:
-function! atplib#MakeMaps(maps)
-    for map in a:maps
-	if map[3] != "" && ( !exists(map[5]) || {map[5]} )
-	    exe map[0]." ".map[1]." ".map[2].map[3]." ".map[4]
-	endif
-    endfor
-endfunction
-function! atplib#DelMaps(maps)
-    for map in a:maps
-	let cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
-	let arg = ( map[1] =~ '<buffer>' ? '<buffer>' : '' )
-	exe "silent! ".cmd." ".arg." ".map[2].map[3]
-    endfor
-endfunction
-function! atplib#IsLeft(lchar,...)
-    let nr = ( a:0 >= 1 ? a:1 : 0 )
-    " From TeX_nine plugin:
-	let left = getline('.')[col('.')-2-nr]
-	if left ==# a:lchar
-	    return 1
-	else
-	    return 0
-	endif
-endfunction
-try
-function! atplib#ToggleMathIMaps(var, augroup)
-    if atplib#IsInMath() 
-	call atplib#MakeMaps(a:var)
-    else
-	call atplib#DelMaps(a:var)
-    endif
-endfunction
-catch E127
-endtry
+add note to doc.
 
 NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I needed them somewhere).
 
 Delete! could also delete all files under b:atp_TempDir and g:atp_TempDir (but not the directories, which are removed when vim exists).
+
 ToDo: UpdateToCLine() doesn't update it if the file has changed.
 Done: This is not reconised by :TOC
 \chapter[Banzhaf, Shapley and Johnston indices]{Egalitarian Property for Banzhaf, Shapley and Johnston indices}\label{chap:egalitarian-property-for-indices}
@@ -339,3 +306,42 @@ Question: does -s work with the above?
 
 Done: >c can jump and come back to TOC window (then the highlighted line will appear if it is out of window - happens for a long TOC)
 Bug: The problem with TOC window is that it is the same buffer for different tabs, if one changes it in one tab it changes in the other one. This should be FIXED. I can use tabpagenr()
+
+Done: make maps compatible with cpoptions-=B see g:atp_vmap_bracket_leader how to set leaders.
+why g:atp_math_imap doesnt need changes for cpoptions-=B?
+test maplocalleader setting in options.vim.
+
+Done: <F4> should work in insert mode as well. 
+	With <C-O> instead of <Esc> !!!
+	(keep this to not forget the solution)
+Done: [% on the last line of a multiline comment lands at the same line, should go to the end of previous comment group.
+
+Example from doc how to define maps in filetype plugins:
+I should follow the hasmapto step for every map!
+
+	" Add mappings, unless the user didn't want this.
+	if !exists("no_plugin_maps") && !exists("no_mail_maps")
+	  " Quote text by inserting "> "
+	  if !hasmapto('<Plug>MailQuote')
+	    vmap <buffer> <LocalLeader>q <Plug>MailQuote
+	    nmap <buffer> <LocalLeader>q <Plug>MailQuote
+	  endif
+	  vnoremap <buffer> <Plug>MailQuote :s/^/> /<CR>
+	  nnoremap <buffer> <Plug>MailQuote :.,$s/^/> /<CR>
+	endif
+
+Viewer command (map) might say: [ATP:] openning ... some times it takes a second or two, this will make the time past faster ;)
+
+map t -> :SyncTex not working
+
+ToDo: do what hier plugin does (but not for tex files) highlight what is in quick fix window in the buffer (correct).
+ToDo: vip is matching \label and \hypertarget
+ToDo: I make vip to stop on \begin:\end but this is 
+
+ToDo: vip stops before \begin and before \[ but not before \begin{equation}, is this the right way?
+	vip stops one left to much before a \\
+Todo: << in visual mode is working not as should.
+Todo: sort completion for Labels according to line number (and files).
+Bug: updatetime in insert mode: AuTeX is not running.
+Done: two toc windows when :TOC :TOC is used!
+Bug: :Labels with :TOC

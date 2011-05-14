@@ -64,9 +64,9 @@ if !exists("g:atp_debugGAF")
     " debug aptlib#GrepAuxFile
     let g:atp_debugGAF		= 0
 endif
-if !exists("g:atp_debugSCP")
+if !exists("g:atp_debugSelectCurrentParagraph")
     " debug s:SelectCurrentParapgrahp (LatexBox_motion.vim)
-    let g:atp_debugSCP		= 0
+    let g:atp_debugSelectCurrentParagraph	= 0
 endif
 if !exists("g:atp_debugSIT")
     " debug <SID>SearchInTree (search.vim)
@@ -333,16 +333,34 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_HighlightErrors")
+    let g:atp_HighlightErrors = 0
+endif
+if !exists("g:atp_Highlight_ErrorGroup")
+    let g:atp_Highlight_ErrorGroup = "Error"
+endif
+if !exists("g:atp_Highlight_WarningGroup")
+"     let g:atp_Highlight_WarningGroup = "WarningMsg"
+    let g:atp_Highlight_WarningGroup = ""
+endif
+if !exists("maplocalleader")
+    if &l:cpoptions =~# "B"
+	let maplocalleader="\\"
+    else
+	let maplocalleader="\\\\"
+    endif
+endif
 if !exists("g:atp_sections")
     " Used by :TOC command (s:maketoc in motion.vim)
     let g:atp_sections={
-	\	'chapter' 	: [           '\m^\s*\(\\chapter\*\?\>\)',	'\m\\chapter\*'],	
-	\	'section' 	: [           '\m^\s*\(\\section\*\?\>\)',	'\m\\section\*'],
-	\ 	'subsection' 	: [	   '\m^\s*\(\\subsection\*\?\>\)',	'\m\\subsection\*'],
-	\	'subsubsection' : [ 	'\m^\s*\(\\subsubsection\*\?\>\)',	'\m\\subsubsection\*'],
-	\	'bibliography' 	: ['\m^\s*\(\\begin\s*{\s*thebibliography\s*}\|\\bibliography\s*{\)' , 'nopattern'],
-	\	'abstract' 	: ['\m^\s*\(\\begin\s*{abstract}\|\\abstract\s*{\)',	'nopattern'],
-	\   'part'		: [ 		 '\m^\s*\(\\part\*\?\>\)',	'\m\\part\*']}
+	\	'chapter' 	: [ '\m^\s*\(\\chapter\*\?\>\)',			'\m\\chapter\*'		],	
+	\	'section' 	: [ '\m^\s*\(\\section\*\?\>\)',			'\m\\section\*'		],
+	\ 	'subsection' 	: [ '\m^\s*\(\\subsection\*\?\>\)',			'\m\\subsection\*'	],
+	\	'subsubsection' : [ '\m^\s*\(\\subsubsection\*\?\>\)',			'\m\\subsubsection\*'	],
+	\	'bibliography' 	: [ '\m^\s*\(\\begin\s*{\s*thebibliography\s*}\|\\bibliography\s*{\)' , 'nopattern'],
+	\	'abstract' 	: [ '\m^\s*\(\\begin\s*{abstract}\|\\abstract\s*{\)',	'nopattern'		],
+	\   	'part'		: [ '\m^\s*\(\\part\*\?\>\)',				'\m\\part\*'		]
+	\ }
 endif
 if !exists("g:atp_cgetfile") || g:atp_reload_variables
     let g:atp_cgetfile = 1
@@ -603,8 +621,8 @@ endif
 if !exists("g:atp_XpdfSleepTime") || g:atp_reload_variables
     let g:atp_XpdfSleepTime = "0.2"
 endif
-if !exists("g:atp_MapCC") || g:atp_reload_variables
-    let g:atp_MapCC = 0
+if !exists("g:atp_IMapCC") || g:atp_reload_variables
+    let g:atp_IMapCC = 0
 endif
 if !exists("g:atp_DefaultErrorFormat") || g:atp_reload_variables
     let g:atp_DefaultErrorFormat = "erc"
@@ -1406,11 +1424,11 @@ function! ATP_ToggleSpace(...)
     endif
 endfunction
 function! ATP_CmdwinToggleSpace(on)
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
-    let g:on	= on
+    let on		= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
     if on
 	echomsg "space ON"
-	imap <space> \_s\+
+	let backslash 	= ( &l:cpoptions =~# "B" ? "\\" : "\\\\" ) 
+	exe "imap <space> ".backslash."_s".backslash."+"
     else
 	echomsg "space OFF"
 	iunmap <space>
@@ -1707,7 +1725,8 @@ let g:atp_completion_modes=[
 	    \ 'font shape',		'algorithmic',
 	    \ 'beamerthemes', 		'beamerinnerthemes',
 	    \ 'beamerouterthemes', 	'beamercolorthemes',
-	    \ 'beamerfontthemes',	'todonotes' ]
+	    \ 'beamerfontthemes',	'todonotes',
+	    \ 'siunits' ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
 endtry
@@ -2181,8 +2200,55 @@ let g:atp_fancyhdr_pagestyles = [ 'fancy' ]
 
 " Completion variable for \pagenumbering{} LaTeX command.
 let g:atp_pagenumbering = [ 'arabic', 'roman', 'Roman', 'alph', 'Alph' ]
-" }}}
-"
+
+" SIunits
+let g:atp_siuinits= [
+ \ '\addprefix', '\addunit', '\ampere', '\amperemetresecond', '\amperepermetre', '\amperepermetrenp',
+ \ '\amperepersquaremetre', '\amperepersquaremetrenp', '\angstrom', '\arad', '\arcminute', '\arcsecond',
+ \ '\are', '\atomicmass', '\atto', '\attod', '\barn', '\bbar',
+ \ '\becquerel', '\becquerelbase', '\bel', '\candela', '\candelapersquaremetre', '\candelapersquaremetrenp',
+ \ '\celsius', '\Celsius', '\celsiusbase', '\centi', '\centid', '\coulomb',
+ \ '\coulombbase', '\coulombpercubicmetre', '\coulombpercubicmetrenp', '\coulombperkilogram', '\coulombperkilogramnp', '\coulombpermol',
+ \ '\coulombpermolnp', '\coulombpersquaremetre', '\coulombpersquaremetrenp', '\cubed', '\cubic', '\cubicmetre',
+ \ '\cubicmetreperkilogram', '\cubicmetrepersecond', '\curie', '\dday', '\deca', '\decad',
+ \ '\deci', '\decid', '\degree', '\degreecelsius', '\deka', '\dekad',
+ \ '\derbecquerel', '\dercelsius', '\dercoulomb', '\derfarad', '\dergray', '\derhenry',
+ \ '\derhertz', '\derjoule', '\derkatal', '\derlumen', '\derlux', '\dernewton',
+ \ '\derohm', '\derpascal', '\derradian', '\dersiemens', '\dersievert', '\dersteradian',
+ \ '\dertesla', '\dervolt', '\derwatt', '\derweber', '\electronvolt', '\exa',
+ \ '\exad', '\farad', '\faradbase', '\faradpermetre', '\faradpermetrenp', '\femto',
+ \ '\femtod', '\fourth', '\gal', '\giga', '\gigad', '\gram',
+ \ '\graybase', '\graypersecond', '\graypersecondnp', '\hectare', '\hecto', '\hectod',
+ \ '\henry', '\henrybase', '\henrypermetre', '\henrypermetrenp', '\hertz', '\hertzbase',
+ \ '\hour', '\joule', '\joulebase', '\joulepercubicmetre', '\joulepercubicmetrenp', '\jouleperkelvin',
+ \ '\jouleperkelvinnp', '\jouleperkilogram', '\jouleperkilogramkelvin', '\jouleperkilogramkelvinnp', '\jouleperkilogramnp', '\joulepermole',
+ \ '\joulepermolekelvin', '\joulepermolekelvinnp', '\joulepermolenp', '\joulepersquaremetre', '\joulepersquaremetrenp', '\joulepertesla',
+ \ '\jouleperteslanp', '\katal', '\katalbase', '\katalpercubicmetre', '\katalpercubicmetrenp', '\kelvin',
+ \ '\kilo', '\kilod', '\kilogram', '\kilogrammetrepersecond', '\kilogrammetrepersecondnp', '\kilogrammetrepersquaresecond', '\kilogrammetrepersquaresecondnp', '\kilogrampercubicmetre', '\kilogrampercubicmetrecoulomb', '\kilogrampercubicmetrecoulombnp', '\kilogrampercubicmetrenp',
+ \ '\kilogramperkilomole', '\kilogramperkilomolenp', '\kilogrampermetre', '\kilogrampermetrenp', '\kilogrampersecond', '\kilogrampersecondcubicmetre',
+ \ '\kilogrampersecondcubicmetrenp', '\kilogrampersecondnp', '\kilogrampersquaremetre', '\kilogrampersquaremetrenp', '\kilogrampersquaremetresecond', '\kilogrampersquaremetresecondnp',
+ \ '\kilogramsquaremetre', '\kilogramsquaremetrenp', '\kilogramsquaremetrepersecond', '\kilogramsquaremetrepersecondnp', '\kilowatthour', '\liter',
+ \ '\litre', '\lumen', '\lumenbase', '\lux', '\luxbase', '\mega',
+ \ '\megad', '\meter', '\metre', '\metrepersecond', '\metrepersecondnp', '\metrepersquaresecond',
+ \ '\metrepersquaresecondnp', '\micro', '\microd', '\milli', '\millid', '\minute',
+ \ '\mole', '\molepercubicmetre', '\molepercubicmetrenp', '\nano', '\nanod', '\neper',
+ \ '\newton', '\newtonbase', '\newtonmetre', '\newtonpercubicmetre', '\newtonpercubicmetrenp', '\newtonperkilogram', '\newtonperkilogramnp', '\newtonpermetre', '\newtonpermetrenp', '\newtonpersquaremetre', '\newtonpersquaremetrenp', '\NoAMS', '\no@qsk', '\ohm', '\ohmbase', '\ohmmetre',
+ \ '\one', '\paminute', '\pascal', '\pascalbase', '\pascalsecond', '\pasecond',
+ \ '\per', '\period@active', '\persquaremetresecond', '\persquaremetresecondnp', '\peta', '\petad',
+ \ '\pico', '\picod', '\power', '\@qsk', '\quantityskip', '\rad',
+ \  '\radian', '\radianbase', '\radianpersecond', '\radianpersecondnp', '\radianpersquaresecond', '\radianpersquaresecondnp', '\reciprocal', '\rem', '\roentgen', '\rp', '\rpcubed',
+ \ '\rpcubic', '\rpcubicmetreperkilogram', '\rpcubicmetrepersecond', '\rperminute', '\rpersecond', '\rpfourth',
+ \ '\rpsquare', '\rpsquared', '\rpsquaremetreperkilogram', '\second', '\siemens', '\siemensbase',
+ \ '\sievert', '\sievertbase', '\square', '\squared', '\squaremetre', '\squaremetrepercubicmetre',
+ \ '\squaremetrepercubicmetrenp', '\squaremetrepercubicsecond', '\squaremetrepercubicsecondnp', '\squaremetreperkilogram', '\squaremetrepernewtonsecond', '\squaremetrepernewtonsecondnp',
+ \ '\squaremetrepersecond', '\squaremetrepersecondnp', '\squaremetrepersquaresecond', '\squaremetrepersquaresecondnp', '\steradian', '\steradianbase',
+ \ '\tera', '\terad', '\tesla', '\teslabase', '\ton', '\tonne',
+ \ '\unit', '\unitskip', '\usk', '\volt', '\voltbase', '\voltpermetre',
+ \ '\voltpermetrenp', '\watt', '\wattbase', '\wattpercubicmetre', '\wattpercubicmetrenp', '\wattperkilogram',
+ \ '\wattperkilogramnp', '\wattpermetrekelvin', '\wattpermetrekelvinnp', '\wattpersquaremetre', '\wattpersquaremetrenp', '\wattpersquaremetresteradian',
+ \ '\wattpersquaremetresteradiannp', '\weber', '\weberbase', '\yocto', '\yoctod', '\yotta',
+ \ '\yottad', '\zepto', '\zeptod', '\zetta', '\zettad' ]
+ " }}}
 
 " AUTOCOMMANDS:
 " Some of the autocommands (Status Line, LocalCommands, Log File):
