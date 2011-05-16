@@ -209,7 +209,6 @@ To do: debug why sometimes generating g:atp_latexpackages takes so much time.
 Bad idea (gq is for sth else!): 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
 # Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
-Done: GotoLabel gives one label to choose from (it should take this one and go :).
 # TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
 # NOTE: if the latex return code is non zero then reference numbers (Lemma
 # X.Y) may be '?'! ( I don't why its like that )
@@ -274,7 +273,6 @@ ToDo: loa support: if algorithm package is loaded we can add loa to g:atp_keep, 
 ToDo: ~~ for \tilde or \wide.
 Bug: gw -> segmentation fault.
 
-ToDo: set the QuickFix hight using 'au FileType qf'
 Done: ErrorFormat +f in qf not working.
 ToDo: Find how to make it possible to run :copen 5 (w:quickfix_title will not work)
 	Test this feature if it changes size of qf window (callback, etc...)
@@ -284,8 +282,6 @@ this is not working:
 "     au FileType qf :call <SID>SetErrorFormat(getbufvar(bufnr(fnamemodify(&l:errorfile, ":r").".tex"),"atp_ErrorFormat"),1)
 two files and one QFList, set efm, change it and ...
 Bug: t:toc_window_width not set after entering new tab
-
-Bug: b:atp_autex - Is there sth wrong?
 
 New Feature: add dictionary of J.Trzeciak: http://www.impan.pl/cgi-bin/dictsearch?q=<SEARCH_KEYWORD>
 	I even can add completion as there are web pages with words starting with each letter, for example for m:
@@ -298,7 +294,6 @@ NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I need
 
 Delete! could also delete all files under b:atp_TempDir and g:atp_TempDir (but not the directories, which are removed when vim exists).
 
-ToDo: UpdateToCLine() doesn't update it if the file has changed.
 Done: This is not reconised by :TOC
 \chapter[Banzhaf, Shapley and Johnston indices]{Egalitarian Property for Banzhaf, Shapley and Johnston indices}\label{chap:egalitarian-property-for-indices}
 It seems that TOC is not recognizing \chapter[short_title]{long_title}
@@ -354,3 +349,6 @@ http://www.vim.org/scripts/script.php?script_id=3583
 ToDo: Recover plugin which I use breaks auTeX.
 
 ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. Maybe for long files they should have different setting.
+
+Bug: Error while opening plain tex files (%&tex)
+Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.

@@ -237,6 +237,22 @@ setlocal suffixes+=pdf
 let b:atp_running	= 0
 
 " these are all buffer related variables:
+function! <SID>TexCompiler()
+    if buflisted(atplib#FullPath(b:atp_MainFile))
+	let line = getbufline(atplib#FullPath(b:atp_MainFile), 1)[0]
+	if line =~ '^%&\w*tex\>'
+	    return matchstr(line, '^%&\zs\w\+')
+	endif
+    else
+	let line = readfile(atplib#FullPath(b:atp_MainFile))[0] 
+	if line =~ '^%&\w*tex\>'
+	    return matchstr(line, '^%&\zs\w\+')
+	endif
+    endif
+    return (&filetype == "plaintex" ? "pdftex" : "pdflatex")
+endfunction
+let s:TexCompiler = <SID>TexCompiler()
+    
 let s:optionsDict= { 	
 		\ "atp_TexOptions" 		: "-synctex=1", 
 	        \ "atp_ReloadOnError" 		: "1", 
@@ -250,7 +266,7 @@ let s:optionsDict= {
 		\ "atp_okularOptions"		: ["--unique"],
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
-		\ "atp_TexCompiler" 		: &filetype == "plaintex" ? "pdftex" : "pdflatex",	
+		\ "atp_TexCompiler" 		: s:TexCompiler,
 		\ "atp_BibCompiler"		: ( getline(atplib#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
@@ -290,7 +306,8 @@ function! s:SetOptions()
     "for each key in s:optionsKeys set the corresponding variable to its default
     "value unless it was already set in .vimrc file.
     for key in s:optionsKeys
-	if string(get(s:optionsinuseDict,key, "optionnotset")) == string("optionnotset") && key != "atp_OutDir" && key != "atp_autex" || key == "atp_TexCompiler"
+" 	echomsg key
+	if string(get(s:optionsinuseDict,key, "optionnotset")) == string("optionnotset") && key != "atp_OutDir" && key != "atp_autex"
 	    call setbufvar(bufname("%"), key, s:optionsDict[key])
 	elseif key == "atp_OutDir"
 
@@ -1283,6 +1300,27 @@ endif
 " {{{ SetXdvi
 function! <SID>SetXdvi()
 
+    if buflisted(atplib#FullPath(b:atp_MainFile))
+	let line = getbufline(atplib#FullPath(b:atp_MainFile), 1)[0]
+	if line =~ '^%&\w*tex\>'
+	    let compiler = matchstr(line, '^%&\zs\w\+')
+	else
+	    let compiler = ""
+	endif
+    else
+	let line = readfile(atplib#FullPath(b:atp_MainFile))[0] 
+	if line =~ '^%&\w*tex\>'
+	    let compiler = matchstr(line, '^%&\zs\w\+')
+	else
+	    let compiler = ""
+	endif
+    endif
+    if compiler != "" && compiler !~ '\(la\)\=tex'
+	echohl Error
+	echomsg "[SetXdvi:] You need to change the first line of your project!"
+	echohl Normal
+    endif
+
     " Remove menu entries
     let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\S*'), 'Compiler')
     let Viewer			= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\S*'), 'View\ Output')
@@ -1340,6 +1378,27 @@ function! <SID>SetPdf(viewer)
 	execute "aunmenu LaTeX.View\\ with\\ ".Viewer
     catch /E329:/
     endtry
+
+    if buflisted(atplib#FullPath(b:atp_MainFile))
+	let line = getbufline(atplib#FullPath(b:atp_MainFile), 1)[0]
+	if line =~ '^%&\w*tex>'
+	    let compiler = matchstr(line, '^%&\zs\w\+')
+	else
+	    let compiler = ""
+	endif
+    else
+	let line = readfile(atplib#FullPath(b:atp_MainFile))[0] 
+	if line =~ '^%&\w*tex\>'
+	    let compiler = matchstr(line, '^%&\zs\w\+')
+	else
+	    let compiler = ""
+	endif
+    endif
+    if compiler != "" && compiler !~ 'pdf\(la\)\=tex'
+	echohl Error
+	echomsg "[SetPdf:] You need to change the first line of your project!"
+	echohl Normal
+    endif
 
     let b:atp_TexCompiler	= "pdflatex"
     " We have to clear tex options (for example -src-specials set by :SetXdvi)

@@ -1031,6 +1031,29 @@ endfunction
 " }}}2
 " }}}1
 
+" Table Of Contents Tools:
+function! atplib#getlinenr(...) "{{{
+    let line 	=  a:0 >= 1 ? a:1 : line('.')
+    let labels 	=  a:0 >= 2 ? a:2 : expand("%") == "__Labels__" ? 1 : 0
+
+    if labels == 0
+	return get(b:atp_Toc, line, ["", ""])[1]
+    else
+	return get(b:atp_Labels, line, ["", ""])[1]
+    endif
+endfunction "}}}
+function! atplib#CursorLine() "{{{
+    if exists("t:cursorline_idmatch")
+	try
+	    call matchdelete(t:cursorline_idmatch)
+	catch /E803:/
+	endtry
+    endif
+    if atplib#getlinenr(line(".")) 
+	let t:cursorline_idmatch =  matchadd('CursorLine', '^\%'.line(".").'l.*$')
+    endif
+endfunction "}}}
+
 " Various Comparing Functions:
 "{{{1 atplib#CompareNumbers
 function! atplib#CompareNumbers(i1, i2)

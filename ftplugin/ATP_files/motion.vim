@@ -538,6 +538,7 @@ function! UpdateToCLine(...)
 	    let num+=1
 	endif
 	keepjumps call setpos('.',[bufnr(""),num,1,0])
+	call atplib#CursorLine()
     endfor
 
     let eventignore=&eventignore
@@ -1085,15 +1086,6 @@ function! <SID>GotoSection(bang, count, flag, secname, ...)
     call UpdateToCLine()
     call histadd("search", pattern)
     let @/	= pattern
-
-    " If ToC is shown jump to and come back
-    let toc_winnr=bufwinnr(bufnr("__ToC__"))
-    if toc_winnr != -1
-	let cwin=winnr()
-	exe toc_winnr." wincmd w"
-	redraw
-	exe cwin." wincmd w" 
-    endif
 endfunction
 function! Env_compl(A,P,L) 
     let envlist=sort(['algorithm', 'algorithmic', 'abstract', 'definition', 'equation', 'proposition', 
