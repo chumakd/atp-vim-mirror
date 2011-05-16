@@ -4576,11 +4576,10 @@ function! atplib#TabCompletion(expert_mode,...)
 		
 		let aux_data	= atplib#GrepAuxFile()
 		let completions = []
-		let pattern 	= matchstr(l, '\%(.\|\\ref\)*\\ref\s*{\zs\S*$')  
+		let pattern 	= matchstr(l, '\%(.\|\\\%(eq\)\=ref\)*\\\%(eq\)\=ref\s*{\zs\S*$')  
 		for data in aux_data
 		    " match label by string or number
-		    if ( data[0] =~ '^' . pattern || data[1] =~ '^'. pattern . '$' ) && a:expert_mode || 
-				\ ( data[0] =~ pattern || data[1] =~ '^'. pattern ) && !a:expert_mode
+		    if ( data[0] =~ '^' . pattern || data[1] =~ '^'. pattern . '$' ) && a:expert_mode || ( data[0] =~ pattern || data[1] =~ '^'. pattern ) && !a:expert_mode
 			let close = nchar == '}' ? '' : '}'
 			call add(completions, data[0] . close)
 		    endif
@@ -4637,7 +4636,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	call complete(nr+2,completions)
     "{{{3 labels
     elseif completion_method == 'labels'
-	call complete(match(l, '\%(.\|\\ref\)*\\ref\s*{\zs\S*$')+1,completions)
+	call complete(match(l, '\%(.\|\\\%(eq\)\=ref\)*\\\(eq\)\=ref\s*{\zs\S*$')+1,completions)
     "{{{3 colors
     elseif completion_method == 'colors'
 	call complete(color_nr+2,completions)

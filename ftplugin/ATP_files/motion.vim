@@ -507,7 +507,7 @@ function! s:showtoc(toc)
     endif
     lockvar 3 b:atp_Toc
 endfunction
-" {{{3 ToCOpen()
+" {{{3 ToCbufnr()
 " This function returns toc buffer number if toc window is not open returns -1.
 function! <SID>ToCbufnr() 
     return index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__')
@@ -539,7 +539,11 @@ function! UpdateToCLine(...)
 	endif
 	keepjumps call setpos('.',[bufnr(""),num,1,0])
     endfor
+
+    let eventignore=&eventignore
+    set eventignore+=BufEnter
     exe cwinnr."wincmd w"
+    let &eventignore=eventignore
 endfunction
 " This is User Front End Function 
 "{{{3 TOC

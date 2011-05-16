@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Fri May 13 03:00  2011 W
+" Last Change: Sun May 15 12:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1023,7 +1023,7 @@ function! s:OpenLog()
 	function! <SID>SyncTex(bang,...)
 
 	    let cwd = getcwd()
-	    exe "lcd " . fnameescape(b:atp_ProjectDir )
+	    exe "lcd " . fnameescape(b:atp_ProjectDir)
 
 	    let g:debugST	= 0
 
@@ -2299,14 +2299,14 @@ if has("unix") && g:atp_atpdev
 	else
 	    echomsg "No such file."
 	endif
-	exe "lcd ".dir
+	exe "lcd ".escape(dir, ' ')
     endfunction
     function! <SID>DebugPrintComp(A,C,L)
 	let list = split(globpath(g:atp_TempDir, "*"), "\n")
 	let dir = getcwd()
 	exe "lcd ".g:atp_TempDir
 	call map(list, "fnamemodify(v:val, ':.')")
-	exe "lcd ".dir
+	exe "lcd ".escape(dir, ' ')
 	return join(list, "\n")
     endfunction
     command! -nargs=? -complete=custom,<SID>DebugPrintComp DebugPrint	:call <SID>DebugPrint(<q-args>)

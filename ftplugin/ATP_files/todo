@@ -270,7 +270,7 @@ Done: -S goes to next section if there is no subsection, this might be OK, but t
 ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
 Check: MakeLatex add support for loa (list of algorithms). 
 
-ToDo: loa support: if algorithm package is loaded we can add loa to g:keep, to make loa it is enough to run latex twice -> MakeLatex, \openout = `<name>.loa'
+ToDo: loa support: if algorithm package is loaded we can add loa to g:atp_keep, to make loa it is enough to run latex twice -> MakeLatex, \openout = `<name>.loa'
 ToDo: ~~ for \tilde or \wide.
 Bug: gw -> segmentation fault.
 
@@ -342,6 +342,15 @@ ToDo: vip stops before \begin and before \[ but not before \begin{equation}, is 
 	vip stops one left to much before a \\
 Todo: << in visual mode is working not as should.
 Todo: sort completion for Labels according to line number (and files).
-Bug: updatetime in insert mode: AuTeX is not running.
+
 Done: two toc windows when :TOC :TOC is used!
 Bug: :Labels with :TOC
+
+ToDo: not copying aux file when there are errors is some times not nice. Maybe we can copy it to aux1 and use it or store it in memory.
+
+IDEA: from vim_use: conceal comments:
+http://www.vim.org/scripts/script.php?script_id=3583
+
+ToDo: Recover plugin which I use breaks auTeX.
+
+ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. Maybe for long files they should have different setting.

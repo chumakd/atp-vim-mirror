@@ -40,13 +40,17 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugaaTeX")
+    " debug <SID>auTeX() function (compiler.vim)
+    let g:atp_debugauTeX	= 0
+endif
 if !exists("g:atp_debugSyncTex")
     " debug SyncTex (compiler.vim)
-    let g:atp_debugSyncTex = 0
+    let g:atp_debugSyncTex 	= 0
 endif
 if !exists("g:atp_debugInsertItem")
     " debug SyncTex (various.vim)
-    let g:atp_debugInsertItem = 0
+    let g:atp_debugInsertItem 	= 0
 endif
 if !exists("g:atp_debugUpdateATP")
     " debug UpdateATP (various.vim)
@@ -141,11 +145,6 @@ if !exists("g:atp_debugToF")
     " TreeOfFiles() ATP_files/common.vim
     let g:atp_debugToF 		= 0
 endif
-if !exists("g:atp_debgTOF")
-    " TreeOfFiles() redirect only the output to
-    " /tmp/ATP_log
-    let g:atp_debugTOF 		= 0
-endif
 if !exists("g:atp_debugBabel")
     " echo msg if  babel language is not supported.
     let g:atp_debugBabel 	= 0
@@ -214,7 +213,6 @@ setlocal suffixes+=pdf
 	    \ . '\|if\|length\|savebox\|theorem\(style\)\=\)\s*\*\=\s*{\='
 	    \ . '\|DeclareMathOperator\s*{\=\s*'
 	    \ . '\|DeclareFixedFont\s*{\s*'
-    let g:filetype = &l:filetype
     if &l:filetype != "plaintex"
 	setlocal include=^[^%]*\\%(\\\\input\\(\\s*{\\)\\=\\\\|\\\\include\\s*{\\)
     else
@@ -277,7 +275,6 @@ let s:optionsDict= {
 " 			\.($TEXINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$TEXINPUTS)
 " 			\.";BIBINPUTS="
 " 			\.($BIBINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$BIBINPUTS),
-let g:optionsDict=deepcopy(s:optionsDict)
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
 
@@ -288,7 +285,6 @@ let s:ask = { "ask" : "0" }
 function! s:SetOptions()
 
     let s:optionsKeys		= keys(s:optionsDict)
-    let g:optionsKeys		= copy(s:optionsKeys)
     let s:optionsinuseDict	= getbufvar(bufname("%"),"")
 
     "for each key in s:optionsKeys set the corresponding variable to its default
@@ -376,16 +372,16 @@ if !exists("g:atp_imap_ShortEnvIMaps") || g:atp_reload_variables
     let g:atp_imap_ShortEnvIMaps = 1
 endif
 if !exists("g:atp_imap_over_leader") || g:atp_reload_variables
-    let g:atp_imap_over_leader="`"
+    let g:atp_imap_over_leader	= "`"
 endif
 if !exists("g:atp_imap_subscript") || g:atp_reload_variables
-    let g:atp_imap_subscript="__"
+    let g:atp_imap_subscript 	= "__"
 endif
 if !exists("g:atp_imap_supscript") || g:atp_reload_variables
-    let g:atp_imap_supscript="^"
+    let g:atp_imap_supscript	= "^"
 endif
 if !exists("g:atp_imap_define_math") || g:atp_reload_variables
-    let g:atp_imap_define_math=1
+    let g:atp_imap_define_math	= 1
 endif
 if !exists("g:atp_imap_define_environments") || g:atp_reload_variables
     let g:atp_imap_define_environments = 1
@@ -397,13 +393,13 @@ if !exists("g:atp_imap_define_greek_letters") || g:atp_reload_variables
     let g:atp_imap_define_greek_letters = 1
 endif
 if !exists("g:atp_imap_wide") || g:atp_reload_variables
-    let g:atp_imap_wide=0
+    let g:atp_imap_wide		= 0
 endif
 if !exists("g:atp_letter_opening") || g:atp_reload_variables
-    let g:atp_letter_opening=""
+    let g:atp_letter_opening	= ""
 endif
 if !exists("g:atp_letter_closing") || g:atp_reload_variables
-    let g:atp_letter_closing=""
+    let g:atp_letter_closing	= ""
 endif
 if !exists("g:atp_imap_bibiliography") || g:atp_reload_variables
     if g:atp_imap_ShortEnvIMaps
@@ -974,12 +970,14 @@ endfor
 if !exists("g:atp_delete_output") || g:atp_reload_variables
     let g:atp_delete_output	= 0
 endif
-if !exists("g:keep") || g:atp_reload_variables
-    let g:keep=[ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm" ]
+if !exists("g:atp_keep") || g:atp_reload_variables
+    " Files with this extensions will be compied back and forth to/from temporary
+    " directory in which compelation happens.
+    let g:atp_keep=[ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
     " biber stuff is added before compelation, this makes it possible to change 
     " to biber on the fly
     if b:atp_BibCompiler =~ '^\s*biber\>'
-	let g:keep += [ "run.xml", "bcf" ]
+	let g:atp_keep += [ "run.xml", "bcf" ]
     endif
 endif
 if !exists("g:atp_ssh") || g:atp_reload_variables
@@ -1163,7 +1161,7 @@ function! s:ShowOptions(bang,...)
 	    endfor
 	    if var_name =~ pattern && var_name !~ '_command\|_amsfonts\|ams_negations\|tikz_\|keywords'
 " 		if patn != '' && var_name !~ patn
-		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:optionsDict", "g:optionsKeys", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_CupsOptions", "g:atp_CompilerMsg_Dict", "g:ViewerMsg_Dict", "g:CompilerMsg_Dict", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
+		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_CupsOptions", "g:atp_CompilerMsg_Dict", "g:ViewerMsg_Dict", "g:CompilerMsg_Dict", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
 		    echo var_name.space.string({var_name})
 		    if len(var_name.space.string({var_name})) > &l:columns
 			echo "\n"

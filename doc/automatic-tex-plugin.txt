@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 14 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -241,7 +241,7 @@ STATUS LINE ~
 
 BIBER AND BIBLATEX SUPPORT ~
     Support for biber and biblatex is added (in |atp-:MakeLatex|,
-    |atp-:Bibtex|, |atp-:Delete|, |atp-:InputFiles| commands), |g:keep|
+    |atp-:Bibtex|, |atp-:Delete|, |atp-:InputFiles| commands), |g:atp_keep|
     variable will adjust on the fly (add run.xml and bcf extensions).
     |b:atp_BibCommand| will be set to biber if the preamble contains
     \usepackage[backend=biber]{biblatex}
@@ -746,11 +746,11 @@ buffer with the on-disk version:
 	value a compare function will be used (which compares the buffer and
 	the written file on the disk) - this method is much slower but has
 	additional features: by default differences in comments are skipped
-	(if you set g:atp_compare_embedded_comments = 1 (the default is 0)
+	(if you set |g:atp_compare_embedded_comments|=0 (the default is 1)
 	then also the comments which do not start right at the beginning of
 	line will be skipped). The second feature is to not see differences in
 	amount of blank lines: two or more blank lines is the same as one
-	blank line, for this set g:atp_compare_double_empty_lines to 1, which
+	blank line, for this set |g:atp_compare_double_empty_lines|=0, which
 	is the default.
 
 As you can see it will run if a key is not pressed during time defined by
@@ -800,12 +800,14 @@ Tex compiler is run with one options:
 	-output-directory 
 which points to a unique temporary file in a temporary directory |b:atp_TempDir| 
 
+						*atp-:ToggleAuTeX*
+						*b:atp_autex*
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
-the local to buffer variable b:autex=1 (on) b:autex=0 (off). It is useful in
-some situations turn automatic compiling off. The key <S-F5> calls the function
-ToggleAuTex() which sets the variable b:autex and issue a message. You can also
-set this variable to 0 for some files that are not supposed to be processed,
-for example:
+the local to buffer variable |b:atp_autex|=1 (on) |b:atp_autex|=0 (off). It is
+useful in some situations turn automatic compiling off. The key <S-F5> calls
+the command |atp-:ToggleAuTeX| which sets the variable |b:atp_autex| and issue
+a message. You can also set this variable to 0 for some files that are not
+supposed to be processed, for example:
 >
 	au BufRead texmf/*.tex let b:atp_autex=0
 <
@@ -821,9 +823,10 @@ Next variable to set is |b:atp_OutDir|. It configures where TeX
 will put the output and where viewer and log analysing tools can find
 appropriate files. 
 
-The last top most important variable is |g:keep| which is a list of extensions,
+The last top most important variable is |g:atp_keep| which is a list of extensions,
 by default it is
-	let g:keep = ["log", "aux", "toc", "bbl"]
+	let g:atp_keep = [ "log", "aux", "toc", "bbl", "ind", "synctex.gz", 
+		\ "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
 Files with this extension will be copied from |b:atp_OutDir| to the temporary
 directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
@@ -3177,7 +3180,7 @@ let b:atp_BibCompiler	= "bibtex"			*b:atp_BibCompiler*
 	
 	The default value will be "biber" if the preamule contains
 	\usepackge[backend=biber]{biblatex}. If it is set to "biber" ATP will
-	adjust |g:keep| variable (add run.xml, bcf extensions) when you use
+	adjust |g:atp_keep| variable (add run.xml, bcf extensions) when you use
 	|atp-:TEX|, |atp-:Bibtex|, or |atp-:MakeLatex| commands.
 
 
@@ -3630,9 +3633,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 <
 	 This list is used by the |atp-:Delete| command which deletes all the
 	 files with the specified extension in the directory |b:atp_OutDir|.
-							*g:keep*			
+							*g:atp_keep*			
 >
- let g:keep	= ["log", "aux", "toc", "bbl", "blg", "ind", "pdfsync", "synctex.gz" ]	
+ let g:atp_keep	= [ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
 <	Files with an extension belonging to this list will be copied from
 	'b:atp_OutDir' to the temporary directory with appropriate name. Then it
 	will be used by (La)TeX. (log file will be copied after it is created,
@@ -3646,7 +3649,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	If you use "biber" ATP will add "run.xml" and "bcf".
 
 	You can change this variable by the command:
-		:let g:keep+=["thm","spl"]
+		:let g:atp_keep+=["spl"]
 							*g:printeroptions*		
 >
  let g:printeroptions	= ""				
