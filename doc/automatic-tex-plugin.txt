@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 18 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.6)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.7)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -129,6 +129,9 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 ================================================================================
 NEWS							*atp-news*
 
+    The keys |j|, |k|, |gj| and |gk| are no longer mapped by ATP. There is a better 
+    solution for updating the Table of Contents hightlighted line. It is done
+    using autocommand CursorHold.
 >
  ======================
  Changes in version 9.4
@@ -148,11 +151,6 @@ COMPLETION ~
 LOCAL COMMANDS ~
     |atp-:LocalCommands|	  -- do not search in comments, 
 				-- add single { if command has defined arguments.
-
-    ATP remaps |j| and |k| to ATP_J() and ATP_K(), if you remap them to |gj|
-    and |gk| ATP remaps them to ATP_GJ() and ATP_GK(). These functions move
-    the cursor and update the ToC line if ToC is opened. This makes them
-    compatible with |i_CTRL-O| and |i_CTRL_\_CTRL-O|.
 
     Note: the format of viewer options has changed from a string to a vim
     list.  Every option and its value should be placed as a separate element
@@ -2878,17 +2876,31 @@ put it here).
 <				It is used as a separator in:
 				    \label{<short_name><separator>
 				when completing the \label command.
+							*g:atp_no_separator*
+							*g:atp_env_short_names*
+							*g:atp_no_serparator_list*
 >
     	g:atp_no_separator 		= 0
-    	g:atp_env_short_names 		= 1
     	g:atp_no_separator_list		= ['', 'titlepage']
+<   	The following variabe if set to one then completion for \label command
+	will put short name of the environment where it stand. It uses the
+	dictionary g:atp_shortname_dict to get the short name. >
+    	g:atp_env_short_names 		= 1
+<
+							*g:atp_commands*
+							*g:atp_math_commands*
+							*g:atp_ams_negations*
+							*g:atp_math_commands_non_expert_mode*
+							*g:atp_ams_negations_non_exprt_mode*
+	These variables are lists which stores LaTeX commands used in
+	completion. >
     	g:atp_commands
     	g:atp_math_commands
     	g:atp_ams_negations
     	g:atp_math_commands_non_expert_mode
     	g:atp_ams_negations_non_expert_mode
-<				The two last list of commands will be add only in
-				the non expert mode (|atp-completion-non-expert-mode|).
+<			The two last are lists of commands will be add only in 
+			the non expert mode (|atp-completion-non-expert-mode|).
 >
     	g:atp_amsmath_commands
     	g:atp_fancyhdr_commands
@@ -3979,6 +3991,7 @@ g:atp_imap_ShortEnvIMaps=1
     ]).  Map for letter environment is not defined when you use short imaps.
 
 Note: you can list this mappings using the command |atp-:HelpEnvIMaps|.
+Note: This can be effectivly set only in |atprc| or |vimrc| files.
 
 imap ]b   ]beg 		\begin{}<Left>
 imap ]e   ]end		\end{}<Left>

@@ -856,7 +856,14 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 
     return map(labels, "v:val.'\\>'")
 endfunction
-
+" {{{2 TAGS
+function! <SID>LatexTags()
+    let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
+    let files=join([atplib#FullPath(b:atp_MainFile)]+b:ListOfFiles, ";")
+    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux")
+    let g:cmd=cmd
+    call system(cmd)
+endfunction
 "{{{2 GotoDestination
 function! <SID>GotoNamedDestination(destination)
     if b:atp_Viewer !~ '^\s*xpdf\>' 
@@ -1705,6 +1712,7 @@ augroup ATP_BufList
     au BufEnter *.tex call s:buflist()
 augroup END
 " {{{1
+command! -buffer LatexTags						:call <SID>LatexTags()
 command! -nargs=? -complete=custom,RemoveFromToCComp RemoveFromToC	:call RemoveFromToC(<q-args>)
 map	<buffer> <silent> <Plug>JumptoPreviousEnvironment		:call <SID>JumptoEnvironment(1)<CR>
 map	<buffer> <silent> <Plug>JumptoNextEnvironment			:call <SID>JumptoEnvironment(0)<CR>

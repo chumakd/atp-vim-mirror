@@ -190,7 +190,13 @@ exe "setlocal complete+=".
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits")
 " The ams_dictionary is added after g:atp_amsmath variable is defined.
 
-setlocal suffixes+=pdf
+" setlocal iskeyword+=\
+let suffixes = split(&suffixes, ",")
+if index(suffixes, ".pdf") == -1
+    setlocal suffixes+=.pdf
+elseif index(suffixes, ".dvi") == -1
+    setlocal suffixes+=.dvi
+endif
 " As a base we use the standard value defined in 
 " The suffixes option is also set after g:atp_tex_extensions is set.
 
@@ -980,7 +986,7 @@ if !exists("g:atp_tex_extensions") || g:atp_reload_variables
 endif
 for ext in g:atp_tex_extensions
     let suffixes = split(&suffixes, ",")
-    if index(suffixes, ".".ext) == -1
+    if index(suffixes, ".".ext) == -1 && ext !~ 'mtc'
 	exe "setlocal suffixes+=.".ext
     endif
 endfor

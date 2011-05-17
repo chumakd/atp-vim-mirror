@@ -352,3 +352,5 @@ ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. M
 
 Bug: Error while opening plain tex files (%&tex)
 Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.
+
+<NewFeature>: Add support for tags, ctags, taglist()
