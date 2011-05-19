@@ -859,6 +859,14 @@ endfunction
 " {{{2 TAGS
 function! <SID>LatexTags()
     let hyperref_cmd = ( atplib#SearchPackage("hyperref") ? " --hyperref " : "" )
+    if has("clientserver")
+	let servername 	= " --servername ".v:servername." "
+	let progname	= " --progname ".v:progname." " 
+    else
+	let servername 	= ""
+	let progname	= ""
+    endif
+    let g:servername=servername
     " Write file (disable project file):
     let project=b:atp_ProjectScript
     let b:atp_ProjectScript=0
@@ -867,7 +875,7 @@ function! <SID>LatexTags()
 
     let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
     let files=join([b:atp_MainFile]+b:ListOfFiles, ";")
-    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") . hyperref_cmd
+    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") . hyperref_cmd . servername . progname
     let g:cmd=cmd
     call system(cmd)
 endfunction

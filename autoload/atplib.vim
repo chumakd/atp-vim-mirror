@@ -508,7 +508,10 @@ function! atplib#ClearHighlightErrors()
     let s:matchid=[]
 endfunction "}}}
 "{{{ echo
-function! atplib#Echo(msg,cmd,hlgroup)
+function! atplib#Echo(msg, cmd, hlgroup, ...)
+    if a:0 >= 1 && a:1
+	redraw
+    endif
     exe "echohl ".a:hlgroup
     exe a:cmd." '".a:msg."'"
     echohl Normal
