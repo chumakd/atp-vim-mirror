@@ -607,7 +607,7 @@ function! <SID>ctoc()
 " 	    endif
 " 	endif
 	" Set the status line once more, to remove the CTOC() function.
-	call ATPStatus("")
+	call ATPStatus()
 	return []
     endif
     " resolve the full path:
@@ -858,9 +858,16 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 endfunction
 " {{{2 TAGS
 function! <SID>LatexTags()
+    let hyperref_cmd = ( atplib#SearchPackage("hyperref") ? " --hyperref " : "" )
+    " Write file (disable project file):
+    let project=b:atp_ProjectScript
+    let b:atp_ProjectScript=0
+    silent! write
+    let b:atp_ProjectScript=project
+
     let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
-    let files=join([atplib#FullPath(b:atp_MainFile)]+b:ListOfFiles, ";")
-    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux")
+    let files=join([b:atp_MainFile]+b:ListOfFiles, ";")
+    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") . hyperref_cmd
     let g:cmd=cmd
     call system(cmd)
 endfunction
@@ -871,7 +878,6 @@ function! <SID>GotoNamedDestination(destination)
 	return 0
     endif
     let cmd='xpdf -remote '.b:atp_XpdfServer.' -exec gotoDest\("'.a:destination.'"\)'
-"     let g:cmd=cmd
     call system(cmd)
 endfunction
 function! <SID>FindDestinations()
@@ -1713,6 +1719,10 @@ augroup ATP_BufList
 augroup END
 " {{{1
 command! -buffer LatexTags						:call <SID>LatexTags()
+try
+command  -buffer Tags							:call <SID>LatexTags()
+catch /E174:/
+endtry
 command! -nargs=? -complete=custom,RemoveFromToCComp RemoveFromToC	:call RemoveFromToC(<q-args>)
 map	<buffer> <silent> <Plug>JumptoPreviousEnvironment		:call <SID>JumptoEnvironment(1)<CR>
 map	<buffer> <silent> <Plug>JumptoNextEnvironment			:call <SID>JumptoEnvironment(0)<CR>

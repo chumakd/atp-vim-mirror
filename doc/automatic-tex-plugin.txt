@@ -49,7 +49,7 @@ FEATURES INCLUDE: ~
 * a command to list ToDo lines:
 	See |atp-:ToDo|,
 * a command to search for a macro definition (multi-line support):
- 	See |atp-:DefiSearch|,
+ 	See |atp-:Dsearch|,
 * a command to search and PREVIEW fonts in your latex distribution:
  	See |atp-:FontSearch|, and |atp-:FontPreview|,
 * indentation
@@ -128,10 +128,27 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 9.5
+<
 
     The keys |j|, |k|, |gj| and |gk| are no longer mapped by ATP. There is a better 
     solution for updating the Table of Contents hightlighted line. It is done
     using autocommand CursorHold.
+
+    							*atp-:LatexTags*
+							*atp-:Tags*
+:LatexTags
+:Tags
+    Make a tag file with a python script included in ATP. It also scans aux
+    file for associated numbers to labels which then are used as tags. If you
+    declare hyperref package in the preambule also \hyperref{}{} commands are
+    matched for tags. 
+    |atp-:Tag| command will be defined only if you do not define it yourself. 
+
+|atp-:Dsearch| command, which used to be :DefiSearch. This is found more in vim style.
+ 
 >
  ======================
  Changes in version 9.4
@@ -688,8 +705,8 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
   - |atp-:AMSRef| command is using python code to get the data from AMS web
     interface (this makes it portable). GNU wget is no longer used.
 9.2:
-  - see |g:atp_DefiSearchMaxWindowHeight|. Now the results of
-    |atp-:DefiSearch| are listed in a buffer at the bottom of the window. 
+  - see |g:atp_DsearchMaxWindowHeight|. Now the results of
+    |atp-:Dsearch| are listed in a buffer at the bottom of the window. 
 9.2:
 							*atp-:UpdateATP*
 :UpdateATP[!]
@@ -1874,6 +1891,10 @@ map <F4>		environment name
 	If there was a command with name 'Status', atp is not overwriting it,
 	it uses ATPStatus name.
 
+							*g:atp_statusOutDir*
+	Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
+	output directory will be not seen in the statusline.
+
 :FontSearch[!] [pattern]				*atp-:FontSearch*
 	
 	For example:
@@ -2370,7 +2391,7 @@ map c, map y, map p
 	    :BibSearch 'author.*Joyal\&.*Tirney'
 <
 
-:DefiSearch[!] [pattern] 					*atp-:DefiSearch*
+:Dsearch[!] [/]pattern[/] 					*atp-:Dsearch*
 	The [pattern] argument is optional. Finds all definitions which
 	matches the pattern. It looks in the main file (only in the preamble,
 	unless the optional bang '!' is used) and all the input files (except
@@ -2382,9 +2403,9 @@ map c, map y, map p
 
 	It works likes ]d but handles multi line definitions.
 
-*g:atp_DefiSearchMaxWindowHeight* = 15
+*g:atp_DsearchMaxWindowHeight* = 15
 	You can set the maximal hieght of the window wich shows the results of
-	|atp-:DefiSearch| (default is 15).
+	|atp-:Dsearch| (default is 15).
 
 								
 =============================================================================

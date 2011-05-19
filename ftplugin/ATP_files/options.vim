@@ -175,6 +175,9 @@ endif
 " }}}
 
 setl nrformats=alpha
+" How it will work when I add to is keyword _ and - which appears in \ref:\label
+" commands.
+setl iskeyword+=:
 setl keywordprg=texdoc\ -m
 if maparg("K", "n") != ""
     try
@@ -202,11 +205,11 @@ endif
 
 " Borrowed from tex.vim written by Benji Fisher:
     " Set 'comments' to format dashed lists in comments
-    setlocal com=sO:%\ -,mO:%\ \ ,eO:%%,:%
+    setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
 
     " Set 'commentstring' to recognize the % comment character:
     " (Thanks to Ajit Thakkar.)
-    setlocal cms=%%s
+    setlocal commentstring=%%s
 
     " Allow "[d" to be used to find a macro definition:
     " Recognize plain TeX \def as well as LaTeX \newcommand and \renewcommand .
@@ -647,8 +650,8 @@ if !exists("g:atp_DefaultErrorFormat") || g:atp_reload_variables
     let g:atp_DefaultErrorFormat = "erc"
 endif
 let b:atp_ErrorFormat = g:atp_DefaultErrorFormat
-if !exists("g:atp_DefiSearchMaxWindowHeight") || g:atp_reload_variables
-    let g:atp_DefiSearchMaxWindowHeight=15
+if !exists("g:atp_DsearchMaxWindowHeight") || g:atp_reload_variables
+    let g:atp_DsearchMaxWindowHeight=15
 endif
 if !exists("g:atp_ProgressBar") || g:atp_reload_variables
     let g:atp_ProgressBar = 1
@@ -2443,7 +2446,7 @@ endfunction
     if (exists("g:atp_statusline") && g:atp_statusline == '1') || !exists("g:atp_statusline")
 	augroup ATP_Status
 	    au!
-	    au BufWinEnter *.tex 	call ATPStatus("")
+	    au BufWinEnter 	*.tex 	call ATPStatus()
 	augroup END
     endif
 

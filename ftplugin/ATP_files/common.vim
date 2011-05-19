@@ -763,14 +763,28 @@ endfunction
 
 " The main status function, it is called via autocommand defined in 'options.vim'.
 let s:errormsg = 0
-function! ATPStatus(bang) "{{{
+function! ATPStatus(...) "{{{
 
     if expand("%") == "[Command Line]" || &l:filetype == "qf"
 	" If one uses q/ or q? this status function should not be used.
 	return
     endif
 
-    let g:status_OutDir	= a:bang == "" && g:atp_statusOutDir || a:bang == "!" && !g:atp_statusOutDir ? s:StatusOutDir() : ""
+    if a:0 >= 1 
+	if a:1 == ""
+	    let g:status_OutDir = s:StatusOutDir()
+	    let g:atp_statusOutDir = 1
+	else
+	    let g:status_OutDir = ""
+	    let g:atp_statusOutDir = 0
+	endif
+    else
+	if g:atp_statusOutDir
+	    let g:status_OutDir = s:StatusOutDir()
+	else
+	    let g:status_OutDir = ""
+	endif
+    endif
     let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? 'CTOC("return")' : ''
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0
 	let g:atp_statusNotifHi = 9

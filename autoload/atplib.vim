@@ -739,7 +739,7 @@ silent! function! atplib#GrepAuxFile(...)
 		let l:count = 1
 		let i	= 0
 		while l:count != 0 
-		    let l:count = rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count 
+		    let l:count = ( rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count )
 		    let i+= 1
 		endwhile
 		let number	= substitute(strpart(rest,0,i-1), '{\|}', '', 'g')  
@@ -810,6 +810,7 @@ silent! function! atplib#GrepAuxFile(...)
 		let debug	= 7
 		let label	= "nolabel: " . line
 	    endif
+
 	    if label !~ '^nolabel:\>'
 		call add(labels, [ label, number, counter, debug])
 	    endif

@@ -353,4 +353,11 @@ ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. M
 Bug: Error while opening plain tex files (%&tex)
 Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.
 
-<NewFeature>: Add support for tags, ctags, taglist()
+Done!: Add support for tags, ctags, taglist()
+Bug: comments vim option is not working well with [d. Check [i, :dsearch, :isearch are not finding anything. 
+
+ToDo: latextags.py could respect tagrelative (this might be important for project in version control systems..
+
+:) : see :help :ownsyntax
+
+ToDo: latextags.py finds \label inside \def statements! (but this way it is faster)

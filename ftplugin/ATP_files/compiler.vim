@@ -686,12 +686,16 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
     endif
 
     " Disable WriteProjectScript
+    let project=b:atp_ProjectScript
+    let b:atp_ProjectScript=0
+
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
 
-    silent! w
-"     echomsg "POST 1 b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick
+    silent! write
+
+    let b:atp_ProjectScript=project
     if a:command == "AU"  
 	let &l:backup		= backup 
 	let &l:writebackup 	= writebackup 
@@ -1014,19 +1018,20 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	    if &backup || &writebackup | setlocal nobackup | setlocal nowritebackup | endif
 	endif
 " This takes lots of time! 0.049s (more than 1/3)	
-    if g:atp_debugCompiler
-	silent echomsg "BEFORE WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-    endif
+	if g:atp_debugCompiler
+	    silent echomsg "BEFORE WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
+	endif
 
 	" disable WriteProjectScript
-	let eventignore = &l:eventignore
-	setl eventignore+=BufWrite
+	let project=b:atp_ProjectScript
+	let b:atp_ProjectScript=0
+
 	silent! w
-	let &l:eventignore = eventignore
-" 	let b:atp_changedtick += 1
-    if g:atp_debugCompiler
-	silent echomsg "AFTER WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-    endif
+
+	let b:atp_ProjectScript=project
+	if g:atp_debugCompiler
+	    silent echomsg "AFTER WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
+	endif
 
 	if a:command == "AU"  
 	    let &l:backup=backup 
