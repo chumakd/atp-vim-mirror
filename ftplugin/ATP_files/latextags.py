@@ -3,8 +3,10 @@
 import re, optparse, subprocess
 from optparse import OptionParser
 
-# TIP:
+# ToDoList:
 # I can use synstack function remotely to get tag_type.
+# I can scan bib files to get bibkeys (but this might be slow)!
+#       this could be written to seprate file (does vim support using multiple tag file)
 
 # OPTIONS:
 usage   = "usage: %prog [options]"
@@ -34,27 +36,28 @@ def get_tag_type(line, match, label):
         pat='(?:\\\\hypertarget{.*})?\s*\\\\label'
     else:
         pat='(?:\\\\label{.*})?\s*\\\\hypertarget'
-    if re.match('\\\\part{.*}\s*'+pat+'{'+match+'}', line):
+    if re.search('\\\\part{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="part"
-    elif re.match('.*\\\\chapter(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\chapter(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="chapter"
-    elif re.match('.*\\\\section(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\section(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="section"
-    elif re.match('.*\\\\subsection(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\subsection(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="subsection"
-    elif re.match('.*\\\\subsubsection(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\subsubsection(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="subsubsection"
-    elif re.match('.*\\\\paragraph(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\paragraph(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="paragraph"
-    elif re.match('.*\\\\subparagraph(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
+    elif re.search('\\\\subparagraph(?:\[.*\])?{.*}\s*'+pat+'{'+match+'}', line):
         tag_type="subparagraph"
-    elif re.match('.*\\\\begin{[^}]*}', line):
+    elif re.search('\\\\begin{[^}]*}', line):
         # \label command must be in the same line, 
         # To do: I should add searching in next line too.
         #        Find that it is inside \begin{equation}:\end{equation}.
-        type_match=re.match('.\\\\begin\s*{\s*([^}]*)\s*}(?:\s*{.*})?\s*(?:\[.*\])?\s*'+pat+'{'+match+'}', line)
+        type_match=re.search('\\\\begin\s*{\s*([^}]*)\s*}(?:\s*{.*})?\s*(?:\[.*\])?\s*'+pat+'{'+match+'}', line)
         try:
-            tag_type=type_match.group(1)
+            # Use the last found match (though it should be just one).
+            tag_type=type_match.group(len(type_match.groups()))
         except AttributeError:
             tag_type=""
     return tag_type

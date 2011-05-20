@@ -177,7 +177,7 @@ endif
 setl nrformats=alpha
 " How it will work when I add to is keyword _ and - which appears in \ref:\label
 " commands.
-setl iskeyword+=:
+setl iskeyword+=:,_
 setl keywordprg=texdoc\ -m
 if maparg("K", "n") != ""
     try
