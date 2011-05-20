@@ -874,8 +874,13 @@ function! <SID>LatexTags()
     let b:atp_ProjectScript=project
 
     let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
-    let files=join([b:atp_MainFile]+b:ListOfFiles, ";")
-    let cmd=g:atp_Python." ".shellescape(latextags)." --files ".shellescape(files)." --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") . hyperref_cmd . servername . progname
+    let files=join([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), ";")
+    let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")
+    let cmd=g:atp_Python." ".shellescape(latextags).
+		\ " --files ".shellescape(files).
+		\ " --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") .
+		\ " --bibfiles ".shellescape(bibfiles) .
+		\ hyperref_cmd . servername . progname 
     let g:cmd=cmd
     call system(cmd)
 endfunction

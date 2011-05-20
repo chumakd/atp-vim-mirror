@@ -16,8 +16,10 @@ parser.add_option("--auxfile",  dest="auxfile"  )
 parser.add_option("--hyperref", dest="hyperref", action="store_true", default=False)
 parser.add_option("--servername", dest="servername", default="" )
 parser.add_option("--progname", dest="progname", default="gvim" )
+parser.add_option("--bibfiles", dest="bibfiles", default="")
 (options, args) = parser.parse_args()
 file_list=options.files.split(";")
+bib_list=options.bibfiles.split(";")
 
 def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
@@ -62,6 +64,12 @@ def get_tag_type(line, match, label):
             tag_type=""
     return tag_type
 
+# Read bib files:
+if len(bib_list) > 1:
+    bib_dict={}
+    for bibfile in bib_list:
+        bib_dict[bibfile]=open(bibfile, "r").read()
+
 # GENERATE TAGS:
 # From \label{} and \hypertarget{}{} commands:
 tags=[]
@@ -91,6 +99,24 @@ for file_name in file_list:
                     tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'hyper']
                     tag_type=get_tag_type(line, match, 'hypertarget')
                     tags.extend([str(match)+"\t"+file_name+"\t"+str(linenr)+";\"\tinfo:"+tag_type+"\tkind:hyper"])
+        matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:\[.*\])?{([^}]*)}', line)
+        for match in matches:
+            if not tag_dict.has_key(str(match)):
+                if len(bib_list) == 1:
+                    tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/\t;\"kind:cite"
+                    tag_dict[str(match)]=['', bib_list[0], '', 'cite']
+                    tags.extend([tag])
+                elif len(bib_list) > 1:
+                    bib_file=""
+                    for bibfile in bib_list:
+                        bibmatch=re.search(str(match), bib_dict[bibfile])
+                        if bibmatch:
+                            bib_file=bibfile
+                            break
+                    if bib_file != "":
+                        tag=str(match)+"\t"+bib_file+"\t/"+match+"/;\"\tkind:cite"
+                        tag_dict[str(match)]=['', bib_file, '', 'cite']
+                        tags.extend([tag])
 # From aux file:
 ioerror=False
 try:
