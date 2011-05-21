@@ -857,7 +857,7 @@ function! GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
     return map(labels, "v:val.'\\>'")
 endfunction
 " {{{2 TAGS
-function! <SID>LatexTags()
+function! <SID>LatexTags(bang)
     let hyperref_cmd = ( atplib#SearchPackage("hyperref") ? " --hyperref " : "" )
     if has("clientserver")
 	let servername 	= " --servername ".v:servername." "
@@ -866,6 +866,7 @@ function! <SID>LatexTags()
 	let servername 	= ""
 	let progname	= ""
     endif
+    let bibtags = ( a:bang == "" ? " --bibtags " : "" )
     let g:servername=servername
     " Write file (disable project file):
     let project=b:atp_ProjectScript
@@ -875,12 +876,19 @@ function! <SID>LatexTags()
 
     let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
     let files=join([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), ";")
-    let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")
+    if len(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'")) >= 1
+	let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")
+	let bib= " --bibfiles ".shellescape(bibfiles) 
+    else
+	let bib= " --bibtags_env "
+    endif
+
+
     let cmd=g:atp_Python." ".shellescape(latextags).
 		\ " --files ".shellescape(files).
 		\ " --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") .
-		\ " --bibfiles ".shellescape(bibfiles) .
-		\ hyperref_cmd . servername . progname 
+		\ bib .
+		\ hyperref_cmd . servername . progname . bibtags . " &"
     let g:cmd=cmd
     call system(cmd)
 endfunction
@@ -1731,9 +1739,9 @@ augroup ATP_BufList
     au BufEnter *.tex call s:buflist()
 augroup END
 " {{{1
-command! -buffer LatexTags						:call <SID>LatexTags()
+command! -buffer -bang LatexTags					:call <SID>LatexTags(<q-bang>)
 try
-command  -buffer Tags							:call <SID>LatexTags()
+command  -buffer -bang Tags						:call <SID>LatexTags(<q-bang>)
 catch /E174:/
 endtry
 command! -nargs=? -complete=custom,RemoveFromToCComp RemoveFromToC	:call RemoveFromToC(<q-args>)

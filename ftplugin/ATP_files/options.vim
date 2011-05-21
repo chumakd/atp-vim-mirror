@@ -214,10 +214,10 @@ endif
     " Allow "[d" to be used to find a macro definition:
     " Recognize plain TeX \def as well as LaTeX \newcommand and \renewcommand .
     " I may as well add the AMS-LaTeX DeclareMathOperator as well.
-    let &l:define='\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip\|toks\)\='
-	    \ .	'def\|\\font\|\\\(future\)\=let'
-	    \ . '\|\\new\(count\|dimen\|skip\|muskip\|box\|toks\|read\|write'
-	    \ .	'\|fam\|insert\)'
+    let &l:define='\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip\|toks\)\=def'
+	    \ .	'\|\\font\|\\\(future\)\=let'
+	    \ . '\|\\new\(count\|dimen\|skip\|muskip\|box\|toks\|read\|write\|fam\|insert\)'
+	    \ .	'\|\\definecolor{'
 	    \ . '\|\\\(re\)\=new\(boolean\|command\|counter\|environment\|font'
 	    \ . '\|if\|length\|savebox\|theorem\(style\)\=\)\s*\*\=\s*{\='
 	    \ . '\|DeclareMathOperator\s*{\=\s*'

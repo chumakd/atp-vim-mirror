@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.4.11
+VERSION = 9.4.12
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim

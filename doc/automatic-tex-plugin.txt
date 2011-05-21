@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.10)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.12)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -134,21 +134,37 @@ NEWS							*atp-news*
 <
 
     The keys |j|, |k|, |gj| and |gk| are no longer mapped by ATP. There is a better 
-    solution for updating the Table of Contents hightlighted line. It is done
+    solution for updating the Table of Contents highlighted line. It is done
     using autocommand CursorHold.
 
     							*atp-:LatexTags*
 							*atp-:Tags*
-:LatexTags
-:Tags
+:LatexTags[!]
+:Tags[!]
     Make a tag file with a python script included in ATP. It also scans aux
     file for associated numbers to labels which then are used as tags. If you
     declare hyperref package in the preambule also \hyperref{}{} commands are
-    matched for tags. 
-    |atp-:Tag| command will be defined only if you do not define it yourself. 
+    matched for tags as well. 
+    |atp-:Tags| command will be defined only if you do not define it yourself. 
+
+    With bang the bibtags for \cite commands are not made. If you use more
+    than one bibliography file searching to which of them it belongs might
+    take some time. If this is the case and you do not want this kind of tags
+    you can make the tag file faster.
+
+    Note: the python script is sourced in the background. When the script
+    finishes it will echo a message. The tag file is not accessible until the
+    script finishes.
+
+    Check out |tag-and-searches| vim help how to use tags.
 
 |atp-:Dsearch| command, which used to be :DefiSearch. This is found more in vim style.
- 
+
+TIP ~
+    Checkout cmdalias plugin (vimscript#745). It let define aliases to
+    commands which are lower case. You can put in your |atprc| file:
+	Alias tex TEX
+	Alias toc TOC
 >
  ======================
  Changes in version 9.4

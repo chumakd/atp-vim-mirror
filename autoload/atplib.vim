@@ -3698,7 +3698,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    return ''
 	endif
     "{{{3 --------- bibfiles
-    elseif pline =~ '\\bibliography\%(style\)\@!' && !normal_mode
+    elseif pline =~ '\\\%(bibliography\%(style\)\@!\|addbibresource\|addglobalbib\)' && !normal_mode
 	if index(g:atp_completion_active_modes, 'bibfiles') != -1
 	    let completion_method='bibfiles'
 	    " DEBUG:

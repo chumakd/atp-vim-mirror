@@ -17,6 +17,8 @@ parser.add_option("--hyperref", dest="hyperref", action="store_true", default=Fa
 parser.add_option("--servername", dest="servername", default="" )
 parser.add_option("--progname", dest="progname", default="gvim" )
 parser.add_option("--bibfiles", dest="bibfiles", default="")
+parser.add_option("--bibtags",  dest="bibtags",  action="store_true", default=False)
+parser.add_option("--bibtags_env",  dest="bibtags_env",  action="store_true", default=False)
 (options, args) = parser.parse_args()
 file_list=options.files.split(";")
 bib_list=options.bibfiles.split(";")
@@ -64,23 +66,53 @@ def get_tag_type(line, match, label):
             tag_type=""
     return tag_type
 
+def find_in_filelist(match, file_dict, get_type=False, type_pattern=None):
+# find match in list of files, 
+
+# file_dict is a dictionary with { 'file_name' : file }.
+    r_file = ""
+    for file in file_dict.keys():
+        flinenr=1
+        for line in file_dict[file]:
+            pat_match=re.search(match, line)
+            if pat_match:
+                r_file=file
+                if get_type:
+                    r_type=re.match(type_pattern, line).group(1)
+                break
+            flinenr+=1
+    if get_type:
+        return [ r_file, flinenr, r_type ]
+    else:
+        return [ r_file, flinenr ]
+
+# Read tex files:
+file_dict={}
+# { 'file_name' : list_of_lines }
+for file in file_list:
+    file_object=open(file, "r")
+    file_dict[file]=file_object.read().split("\n")
+    file_object.close()
+
 # Read bib files:
 if len(bib_list) > 1:
     bib_dict={}
+    # { 'bib_name' : list_of_lines } 
     for bibfile in bib_list:
-        bib_dict[bibfile]=open(bibfile, "r").read()
+        bibobject=open(bibfile, "r")
+        bib_dict[bibfile]=bibobject.read().split("\n")
+        bibobject.close()
 
 # GENERATE TAGS:
 # From \label{} and \hypertarget{}{} commands:
 tags=[]
 tag_dict={}
 for file_name in file_list:
-    file=open(file_name, "r")
-    file_list=file.read().split("\n")
+    file_ll=file_dict[file_name]
     linenr=0
-    for line in file_list:
+    for line in file_ll:
         linenr+=1
-        # Find labels in the current line:
+        # Find LABELS in the current line:
         matches=re.findall('^(?:[^%]|\\\\%)*\\\\label{([^}]*)}', line)
         for match in matches:
             tag=str(match)+"\t"+file_name+"\t"+str(linenr)
@@ -90,7 +122,7 @@ for file_name in file_list:
             # Add tag:
             tags.extend([tag])
             tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'label']
-        # Find hypertargets in the current line:        /this could be switched on/off depending on useage of hyperref/
+        # Find HYPERTARGETS in the current line:        /this could be switched on/off depending on useage of hyperref/
         if options.hyperref:
             matches=re.findall('^(?:[^%]|\\\\%)*\\\\hypertarget{([^}]*)}', line)
             for match in matches:
@@ -99,24 +131,33 @@ for file_name in file_list:
                     tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'hyper']
                     tag_type=get_tag_type(line, match, 'hypertarget')
                     tags.extend([str(match)+"\t"+file_name+"\t"+str(linenr)+";\"\tinfo:"+tag_type+"\tkind:hyper"])
-        matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:\[.*\])?{([^}]*)}', line)
-        for match in matches:
-            if not tag_dict.has_key(str(match)):
-                if len(bib_list) == 1:
-                    tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/\t;\"kind:cite"
-                    tag_dict[str(match)]=['', bib_list[0], '', 'cite']
-                    tags.extend([tag])
-                elif len(bib_list) > 1:
-                    bib_file=""
-                    for bibfile in bib_list:
-                        bibmatch=re.search(str(match), bib_dict[bibfile])
-                        if bibmatch:
-                            bib_file=bibfile
-                            break
-                    if bib_file != "":
-                        tag=str(match)+"\t"+bib_file+"\t/"+match+"/;\"\tkind:cite"
-                        tag_dict[str(match)]=['', bib_file, '', 'cite']
+        # Find CITATIONS in the current line:
+        if options.bibtags and not options.bibtags_env:
+            matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:t|p)?(?:\[.*\])?{([^}]*)}', line)
+            for match in matches:
+                if not tag_dict.has_key(str(match)):
+                    if len(bib_list) == 1:
+                        tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/;\"\tkind:cite"
+                        tag_dict[str(match)]=['', bib_list[0], '', 'cite']
                         tags.extend([tag])
+                    elif len(bib_list) > 1:
+                        bib_file=""
+                        [ bib_file, bib_linenr, bib_type ] = find_in_filelist(re.compile(str(match)), bib_dict, True, re.compile('\s*@(.*){'))
+                        if bib_file != "":
+#                             tag=str(match)+"\t"+bib_file+"\t/"+match+"/;\"\tkind:cite\tinfo:"+bib_type
+                            tag=str(match)+"\t"+bib_file+"\t"+str(bib_linenr)+";\"\tkind:cite\tinfo:"+bib_type
+                            tag_dict[str(match)]=['', bib_file, bib_type, 'cite']
+                            tags.extend([tag])
+        if options.bibtags and options.bibtags_env:
+            matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:t|p)?(?:\[.*\])?{([^}]*)}', line)
+            for match in matches:
+                if not tag_dict.has_key(str(match)):
+                    [ r_file, r_linenr ] = find_in_filelist(re.compile("\\\\bibitem(?:\s*\[.*\])?\s*{"+str(match)+"}"), file_dict)
+                    print(r_file)
+                    tag=str(match)+"\t"+r_file+"\t"+str(r_linenr)+";\"\tkind:cite"
+                    tag_dict[str(match)]=[str(r_linenr), r_file, '', 'cite']
+                    tags.extend([tag])
+
 # From aux file:
 ioerror=False
 try:
