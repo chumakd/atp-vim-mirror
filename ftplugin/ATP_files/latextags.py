@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import re, optparse, subprocess
+import re, optparse, subprocess, os
 from optparse import OptionParser
 
 # ToDoList:
@@ -13,15 +13,28 @@ usage   = "usage: %prog [options]"
 parser  = OptionParser(usage=usage)
 parser.add_option("--files",    dest="files"    )
 parser.add_option("--auxfile",  dest="auxfile"  )
-parser.add_option("--hyperref", dest="hyperref", action="store_true", default=False)
-parser.add_option("--servername", dest="servername", default="" )
-parser.add_option("--progname", dest="progname", default="gvim" )
-parser.add_option("--bibfiles", dest="bibfiles", default="")
-parser.add_option("--bibtags",  dest="bibtags",  action="store_true", default=False)
-parser.add_option("--bibtags_env",  dest="bibtags_env",  action="store_true", default=False)
+parser.add_option("--hyperref", dest="hyperref",        default=False,  action="store_true")
+parser.add_option("--servername", dest="servername",    default=""      )
+parser.add_option("--progname", dest="progname",        default="gvim"  )
+parser.add_option("--bibfiles", dest="bibfiles",        default=""      )
+parser.add_option("--bibtags",  dest="bibtags",         default=False,  action="store_true")
+parser.add_option("--bibtags_env",  dest="bibtags_env", default=False,  action="store_true")
+parser.add_option("--dir",      dest="directory")
+parser.add_option("--cite",     dest="cite",            default="default" )
 (options, args) = parser.parse_args()
 file_list=options.files.split(";")
 bib_list=options.bibfiles.split(";")
+
+# Cite Pattern:
+if options.cite == "natbib":
+    cite_pattern=re.compile('^(?:[^%]|\\\\%)*\\\\(?:c|C)ite(?:(?:al)?[tp]\*?|year(?:par)?|(?:full)?author\*?|num)?(?:\[.*\])?{([^}]*)}')
+elif options.cite == "biblatex":
+# there is no pattern for \[aA]utocites, \[tT]extcites, \[sS]martcites,
+# \[pP]arencites, \[cC]ites, \footcites, \footcitetexts commands
+    cite_pattern=re.compile('^(?:[^%]|\\\\%)*\\\\(?:[cC]ite\*?|[pP]arencite\*?|footcite(?:text)?|[tT]extcite|[sS]martcite|supercite|[aA]utocite\*?|[cC]iteauthor|citetitle\*?|cite(?:year|date|url)|nocite|(?:foot)?fullcite|(?:[vV]ol|fvol|ftvol|[sStTpP]vol)cite(?:\[.*\])?{(?:[^}]*)}|[nN]otecite|[pP]nocite|citename|citefield)(?:\[.*\])?{([^}]*)}')
+# (?:[aA]utoc|[tT]extc|[sS]martc|[pP]arenc|[cC]|footc)ites(?:(?:\[.*\]{([^}]*)]))*
+else:
+    cite_pattern=re.compile('^(?:[^%]|\\\\%)*\\\\(?:no)?cite(?:\[.*\])?{([^}]*)}')
 
 def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
@@ -71,6 +84,7 @@ def find_in_filelist(match, file_dict, get_type=False, type_pattern=None):
 
 # file_dict is a dictionary with { 'file_name' : file }.
     r_file = ""
+    r_type = ""
     for file in file_dict.keys():
         flinenr=1
         for line in file_dict[file]:
@@ -85,6 +99,12 @@ def find_in_filelist(match, file_dict, get_type=False, type_pattern=None):
         return [ r_file, flinenr, r_type ]
     else:
         return [ r_file, flinenr ]
+
+def comma_split(arg_list):
+    ret_list = []
+    for element in arg_list:
+        ret_list.extend(element.split(","))
+    return ret_list
 
 # Read tex files:
 file_dict={}
@@ -133,7 +153,10 @@ for file_name in file_list:
                     tags.extend([str(match)+"\t"+file_name+"\t"+str(linenr)+";\"\tinfo:"+tag_type+"\tkind:hyper"])
         # Find CITATIONS in the current line:
         if options.bibtags and not options.bibtags_env:
-            matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:t|p)?(?:\[.*\])?{([^}]*)}', line)
+            # There is no support for \citealias comman in natbib.
+            # complex matches are slower so I should pass an option if one uses natbib.
+            matches=re.findall(cite_pattern, line)
+            matches=comma_split(matches)
             for match in matches:
                 if not tag_dict.has_key(str(match)):
                     if len(bib_list) == 1:
@@ -149,11 +172,11 @@ for file_name in file_list:
                             tag_dict[str(match)]=['', bib_file, bib_type, 'cite']
                             tags.extend([tag])
         if options.bibtags and options.bibtags_env:
-            matches=re.findall('^(?:[^%]|\\\\%)*\\\\cite(?:t|p)?(?:\[.*\])?{([^}]*)}', line)
+            matches=re.findall(cite_pattern, line)
+            matches=comma_split(matches)
             for match in matches:
                 if not tag_dict.has_key(str(match)):
                     [ r_file, r_linenr ] = find_in_filelist(re.compile("\\\\bibitem(?:\s*\[.*\])?\s*{"+str(match)+"}"), file_dict)
-                    print(r_file)
                     tag=str(match)+"\t"+r_file+"\t"+str(r_linenr)+";\"\tkind:cite"
                     tag_dict[str(match)]=[str(r_linenr), r_file, '', 'cite']
                     tags.extend([tag])
@@ -180,8 +203,10 @@ except IOError:
 
 # SORT (vim works faster when tag file is sorted) AND WRITE TAGS
 tags_sorted=sorted(tags)
+os.chdir(options.directory)
 tag_file = open("tags", 'w')
 tag_file.write("\n".join(tags_sorted))
+tag_file.close()
 
 # Communicate to Vim:
 if options.servername != "":

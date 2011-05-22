@@ -867,7 +867,6 @@ function! <SID>LatexTags(bang)
 	let progname	= ""
     endif
     let bibtags = ( a:bang == "" ? " --bibtags " : "" )
-    let g:servername=servername
     " Write file (disable project file):
     let project=b:atp_ProjectScript
     let b:atp_ProjectScript=0
@@ -875,21 +874,35 @@ function! <SID>LatexTags(bang)
     let b:atp_ProjectScript=project
 
     let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
-    let files=join([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), ";")
+    let files=join(
+		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"),
+		    \ 'atplib#FullPath(v:val)')
+		\ , ";")
+    
     if len(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'")) >= 1
 	let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")
 	let bib= " --bibfiles ".shellescape(bibfiles) 
     else
 	let bib= " --bibtags_env "
     endif
-
+    let dir 	= expand("%:p:h")
+    if atplib#SearchPackage("biblatex")
+	let cite = " --cite biblatex "
+    elseif atplib#SearchPackage("natbib")
+	let cite = " --cite natbib "
+    else
+	let cite = " "
+    endif
 
     let cmd=g:atp_Python." ".shellescape(latextags).
 		\ " --files ".shellescape(files).
-		\ " --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux") .
-		\ bib .
+		\ " --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux").
+		\ " --dir ".shellescape(dir).
+		\ bib . cite .
 		\ hyperref_cmd . servername . progname . bibtags . " &"
-    let g:cmd=cmd
+    if g:atp_debugLatexTags
+	let g:cmd=cmd
+    endif
     call system(cmd)
 endfunction
 "{{{2 GotoDestination

@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun May 15 12:00  2011 W
+" Last Change: Sat May 21 01:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 

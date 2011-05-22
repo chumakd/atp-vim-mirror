@@ -40,6 +40,10 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugLatexTags")
+    " debug <SID>LatexTags() function (motion.vim)
+    let g:atp_debugLatexTags	= 0
+endif
 if !exists("g:atp_debugaaTeX")
     " debug <SID>auTeX() function (compiler.vim)
     let g:atp_debugauTeX	= 0

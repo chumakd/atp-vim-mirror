@@ -361,4 +361,6 @@ ToDo: latextags.py could respect tagrelative (this might be important for projec
 :) : see :help :ownsyntax
 
 ToDo: latextags.py finds \label inside \def statements! (but this way it is faster)
-ToDo: \addbibresource should be completed like \bibliography (completion for bib files)
+Done: \addbibresource should be completed like \bibliography (completion for bib files)
+ToDo: add options to making tags: append tags (note that tags should be sorted)
+	( in this way one can have one tag file for many files, this might be nice if one edits two ore more files )

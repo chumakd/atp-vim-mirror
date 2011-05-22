@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 May 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.12)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.13)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -1333,15 +1333,19 @@ nmap gf
 	package ATP will add \\subfile pattern.
 
 							*atp-:Open*
+							*g:atp_LibraryPath*
 :Open[!] [pattern] 
 	If you configure g:atp_LibraryPath, this function will find files
 	matching [pattern] under g:atp_LibraryPath and let them open with
 	a program defined in >
 		g:atp_OpenTypeDict
 <	The g:atp_LibraryPath is a comma-separeted list of directory names.
-	You can use wildcards '**' and '*' as in |globpath()|.
-	The default value of g:atp_OpenTypeDict is: >
-    let g:atp_OpenTypeDict = { 
+	You should use wildcards '**' and '*' as in |globpath()|, if you want
+	to include subdirectories, etc. For example >
+	    let g:atp_LibraryPath=$HOME."/**"
+<	will search for files under your $HOME directory. The default value of
+	g:atp_OpenTypeDict is: >
+	    let g:atp_OpenTypeDict = { 
 		\ "pdf" 	: "xpdf",		"ps" 	: "evince",
 		\ "djvu" 	: "djview",		"txt" 	: "split" ,
 		\ "tex"		: "edit",		"dvi"	: "xdvi -s 5" }

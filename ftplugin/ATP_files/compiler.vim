@@ -61,9 +61,9 @@ function! <SID>ViewOutput(...)
     let sync_args 	= ( fwd_search ?  <SID>SyncTex(0,1) : "" )
     if g:atp_debugV
 	let g:global_options = global_options
-	let g:local_options = local_options
-	let g:sync_args	= sync_args
-	let g:viewer	= viewer
+	let g:local_options  = local_options
+	let g:sync_args      = sync_args
+	let g:viewer         = viewer
     endif
     if b:atp_Viewer =~ '\<okular\>' && fwd_search
 	let view_cmd	= "(".viewer." ".global_options." ".local_options." ".sync_args.")&"
@@ -74,6 +74,7 @@ function! <SID>ViewOutput(...)
 " 	let SyncTex	= s:SidWrap('SyncTex')
 " 	let sync_cmd 	= (fwd_search ? "vim "." --servername ".v:servername." --remote-expr "."'".SyncTex."()';" : "" ) 
 " 	let g:sync_cmd=sync_cmd
+
 	let view_cmd	= viewer." ".global_options." ".local_options." ".shellescape(outfile)."&"
     endif
 
@@ -198,7 +199,10 @@ function! <SID>SyncTex(mouse, ...) "{{{
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
     let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
     if !filereadable(output_file) && output_check
-       ViewOutput sync
+	" Here should be a test if viewer is running, this can be made with python.
+	" this is way viewer starts not well when using :SyncTex command while Viewer
+	" is not running.
+       call <SID>ViewOutput("sync")
        if g:atp_debugSyncTex
 	   silent echo "ViewOutput sync"
 	   redir END
