@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 May 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.4.13)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -147,22 +147,44 @@ NEWS							*atp-news*
     matched for tags as well. 
     |atp-:Tags| command will be defined only if you do not define it yourself. 
 
+    Natbib as well as biblatex commands are supported (with exception of
+    \cites, ... biblatex commands).
+
     With bang the bibtags for \cite commands are not made. If you use more
     than one bibliography file searching to which of them it belongs might
     take some time. If this is the case and you do not want this kind of tags
     you can make the tag file faster.
 
+    Note: you might need to adjust 'iskeyword' Vim option. ATP is adding
+    |g:atp_separator| to 'iskeyword' if |g:atp_no_separator| is 0.
+
+    Note!:In Vim 'iskeyword' by default contains '_'. It is disabled by the
+    stadard tex syntax file (you do not want to include _ from _{} LaTeX
+    construct into 'w' motion). So it is better to avoid it in label names, so
+    that |CTRL-]| works well. If you need to add it use:
+	au FileType set iskeyword+=_
+    (this will not work with setlocal).
+
     Note: the python script is sourced in the background. When the script
-    finishes it will echo a message. The tag file is not accessible until the
+    finishes it will let you know. The tag file is not accessible until the
     script finishes.
 
-    Check out |tag-and-searches| vim help how to use tags.
+    Check out |tag-and-searches| how to use tags.
 
-|atp-:Dsearch| command, which used to be :DefiSearch. This is found more in vim style.
+							|atp-:Dsearch|
+:Dsearch
+    This used to be :DefiSearch. This I found more in vim style.
+    Also |g:atp_DsearchMaxWindowHeight| is used instead of
+    g:atp_DefiSearchMaxWindowHeight.
+
+|g:atp_statusOutDir| fixed.
+|g:atp_IMapCC| instead of g:atp_MapCC.
+
+And bunch of other fixes :).
 
 TIP ~
-    Checkout cmdalias plugin (vimscript#745). It let define aliases to
-    commands which are lower case. You can put in your |atprc| file:
+    Checkout cmdalias plugin (vimscript#745). It lets define lower case
+    aliases to commands. You can put in your |atprc| file:
 	Alias tex TEX
 	Alias toc TOC
 >
@@ -1849,9 +1871,9 @@ ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 	listing ToDo lines with Notes and vice versa. 
 
 							*atp-:ToggleStar*
-:ToggleStar 	 		adds/removes a star from the current 
-map |<LocalLeader>|s		environment (if it is not one belonging 
-				to the list: >
+:ToggleStar 	 	adds/removes a star from the current 
+map |<LocalLeader>|s	  environment (if it is not one belonging 
+			to the list: >
 					g:atp_no_star_environments
 <				
 							*atp-:ToggleEnv*
@@ -1871,7 +1893,7 @@ map <F4>		environment name
 			prefixes of labels.
 
 							*g:atp_toggle_labels*
-	The commands |atp-:ToggleEnvironment| and |atp-:ChangeEnv| changes the
+	The commands |atp-:ToggleEnv| and |atp-:ChangeEnv| changes the
 	prefixes of labels (if there is one, which belongs to
 	g:atp_shortnames_dict) and all ref's (\ref, \eqref and \pageref).  You
 	have to turn on this feature by putting g:atp_toggle_labels=1 (by
@@ -2912,6 +2934,7 @@ put it here).
 <				It is used to define <short_name> in 
 				    \label{<short_name><separator>
 				when completing the \label command.
+							*g:atp_separator*
 >
     	g:atp_separator			= ':'
 <				It is used as a separator in:

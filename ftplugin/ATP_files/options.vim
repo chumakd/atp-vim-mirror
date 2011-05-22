@@ -40,6 +40,10 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugMapFile")
+    " debug mappings.vim file (show which maps will not be defined).
+    let g:atp_debugMapFile	= 0
+endif
 if !exists("g:atp_debugLatexTags")
     " debug <SID>LatexTags() function (motion.vim)
     let g:atp_debugLatexTags	= 0
@@ -179,9 +183,8 @@ endif
 " }}}
 
 setl nrformats=alpha
-" How it will work when I add to is keyword _ and - which appears in \ref:\label
-" commands.
-setl iskeyword+=:,_
+" The vim option 'iskeyword' is adjust just after g:atp_separator and
+" g:atp_no_separator variables are defined.
 setl keywordprg=texdoc\ -m
 if maparg("K", "n") != ""
     try
@@ -1880,6 +1883,9 @@ endif
 	endif
 	if !exists("g:atp_no_separator") || g:atp_reload_variables
 	    let g:atp_no_separator = 0
+	endif
+	if !g:atp_no_separator
+	    exe "setl iskeyword+=".g:atp_separator
 	endif
 	if !exists("g:atp_no_short_names") || g:atp_reload_variables
 	    let g:atp_env_short_names = 1
