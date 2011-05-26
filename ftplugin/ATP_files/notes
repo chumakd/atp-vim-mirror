@@ -67,3 +67,7 @@ To Do: JMotion
 \begin{equation}
 \aaa{<FROM HERE>}
 \end{<GOES HERE>equation}
+
+REPORT: Dsearch is 3 times faster from 1.2 second to 0.4 second
+	TreeOfFiles is 1/4 faster from ~0.4s to ~0.3 s
+	USING PYTHON :))

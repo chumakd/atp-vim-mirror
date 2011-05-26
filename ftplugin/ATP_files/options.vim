@@ -338,13 +338,16 @@ function! s:SetOptions()
         " Do not run tex on tex files which are in texmf tree
     " Exception: if it is opened using the command ':EditInputFile'
     " 		 which sets this itself.
+    let time=reltime()
     if string(get(s:optionsinuseDict,"atp_autex", 'optionnotset')) == string('optionnotset')
 	let atp_texinputs=split(substitute(substitute(system("kpsewhich -show-path tex"),'\/\/\+','\/','g'),'!\|\n','','g'),':')
 	call remove(atp_texinputs, index(atp_texinputs, '.'))
 	call filter(atp_texinputs, 'b:atp_OutDir =~# v:val')
 	let b:atp_autex = ( len(atp_texinputs) ? 0 : s:optionsDict['atp_autex'])  
     endif
+    let g:source_time_INPUTS=reltimestr(reltime(time))
 
+    let time=reltime()
     if !exists("b:TreeOfFiles") || !exists("b:ListOfFiles") || !exists("b:TypeDict") || !exists("b:LevelDict")
 	if exists("b:atp_MainFile") 
 	    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
@@ -353,33 +356,42 @@ function! s:SetOptions()
 	    echomsg "[ATP:] b:atp_MainFile: ".b:atp_MainFile." doesn't exists."
 	endif
     endif
+    let g:source_time_TREE=reltimestr(reltime(time))
 endfunction
 "}}}
+let time=reltime()
 call s:SetOptions()
+let g:source_time_OPTIONS=reltimestr(reltime(time))
 lockvar b:atp_autex_wait
 
 "}}}
 
 " Global Variables: (almost all)
 " {{{ global variables 
-if !exists("g:atp_HighlightErrors")
-    let g:atp_HighlightErrors = 0
+if !exists("g:atp_map_Comment") || g:atp_reload_variables
+    let g:atp_map_Comment 	= "-c"
 endif
-if !exists("g:atp_Highlight_ErrorGroup")
+if !exists("g:atp_map_UnComment") || g:atp_reload_variables
+    let g:atp_map_UnComment 	= "-u"
+endif
+if !exists("g:atp_HighlightErrors") || g:atp_reload_variables
+    let g:atp_HighlightErrors 	= 0
+endif
+if !exists("g:atp_Highlight_ErrorGroup") || g:atp_reload_variables
     let g:atp_Highlight_ErrorGroup = "Error"
 endif
-if !exists("g:atp_Highlight_WarningGroup")
+if !exists("g:atp_Highlight_WarningGroup") || g:atp_reload_variables
 "     let g:atp_Highlight_WarningGroup = "WarningMsg"
     let g:atp_Highlight_WarningGroup = ""
 endif
-if !exists("maplocalleader")
+if !exists("maplocalleader") || g:atp_reload_variables
     if &l:cpoptions =~# "B"
 	let maplocalleader="\\"
     else
 	let maplocalleader="\\\\"
     endif
 endif
-if !exists("g:atp_sections")
+if !exists("g:atp_sections") || g:atp_reload_variables
     " Used by :TOC command (s:maketoc in motion.vim)
     let g:atp_sections={
 	\	'chapter' 	: [ '\m^\s*\(\\chapter\*\?\>\)',			'\m\\chapter\*'		],	
@@ -1099,7 +1111,6 @@ endif
 "     let g:atp_complete_math_env_first=0
 " endif
 " }}}
-"
 
 " Project Settings:
 " {{{1
@@ -1113,6 +1124,9 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload_variables
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
 		\ "b:LevelDict", 	"b:atp_BibCompiler"
 		\ ] 
+    if !has("python")
+	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])
+    endif
 endif
 " the variable a:1 is the name of the variable which stores the list of variables to
 " save.
@@ -2039,7 +2053,9 @@ endif
 	" real main file. Maybe it is better to use s:mainfile variable.
 
 	if !exists("g:atp_local_completion") || g:atp_reload_variables
-	    let g:atp_local_completion = 1
+	    " if has("python") then fire LocalCommands on startup (BufEnter) if not
+	    " when needed.
+	    let g:atp_local_completion = ( has("python") ? 2 : 1 )
 	endif
 
 
@@ -2330,7 +2346,6 @@ let g:atp_siuinits= [
 " Some of the autocommands (Status Line, LocalCommands, Log File):
 " {{{ Autocommands:
 
-
 if !s:did_options
 
     augroup ATP_UpdateToCLine
@@ -2460,10 +2475,10 @@ endfunction
 	augroup END
     endif
 
-    if g:atp_local_completion == 2 
+    if g:atp_local_completion == 2
 	augroup ATP_LocaCommands
 	    au!
-	    au BufEnter *.tex 	call LocalCommands()
+	    au BufEnter *.tex 	call LocalCommands(0)
 	augroup END
     endif
 
@@ -2596,6 +2611,10 @@ endif
 " Add extra syntax groups
 " {{{1 ATP_SyntaxGroups
 function! s:ATP_SyntaxGroups()
+    if &filetype == ""
+	" this is for :Dsearch window
+	return
+    endif
     " add texMathZoneT syntax group for tikzpicture environment:
     if atplib#SearchPackage('tikz') || atplib#SearchPackage('pgfplots')
 	try

@@ -364,3 +364,16 @@ ToDo: latextags.py finds \label inside \def statements! (but this way it is fast
 Done: \addbibresource should be completed like \bibliography (completion for bib files)
 ToDo: add options to making tags: append tags (note that tags should be sorted)
 	( in this way one can have one tag file for many files, this might be nice if one edits two ore more files )
+ToDo: see atp-:NiceDiff  -- I said that I will try to do sth :)
+ToDo: make an option to run :LocalCommands on startup.
+
+ToDo: rewrite :S in python 		-> this will be as fast as :ijump.
+ToDo: rewrite TreeOfFiles in python 	-> this will be much faster.
+ToDo: :Dsearch! -- there is a mess with bang.
+ToDo: look into LocalCommands for patterns which might be used in make_defi_dict
+ToDo: look at DefiSearch() function why it doesn't find \newtheorem names.
+ToDo: LocalCommands_py -- writes file:
+       this can be changed: current buffer can be passed
+       as an argument -- this will be even faster and will
+       not need to write to disk.
+ToDo: rewrite atplib#searchbib in python.

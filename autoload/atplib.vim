@@ -120,6 +120,10 @@ function! atplib#qflength()
     return lines
 endfunction "}}}
 
+function! atplib#Let(varname, varvalue)
+    exe "let ".substitute(string(a:varname), "'", "", "g")."=".substitute(string(a:varvalue), "''\\@!", "", "g")
+endfunction
+
 " IMap Functions:
 " {{{
 " These maps extend ideas from TeX_9 plugin:
@@ -3996,8 +4000,12 @@ function! atplib#TabCompletion(expert_mode,...)
 	    if g:atp_local_completion
 		" Make a list of local envs and commands
 		if !exists("s:atp_LocalEnvironments") 
-		    let s:atp_LocalEnvironments=LocalCommands()[1]
-		    endif
+		    LocalCommands
+		    let s:atp_LocalEnvironments=copy(b:atp_LocalEnvironments)
+		elseif has("python")
+		    LocalCommands
+		    let s:atp_LocalEnvironments=copy(b:atp_LocalEnvironments)
+		endif
 		let completion_list=atplib#Extend(completion_list,s:atp_LocalEnvironments)
 	    endif
 	    let completion_list=atplib#Add(completion_list,'}')
@@ -4010,8 +4018,12 @@ function! atplib#TabCompletion(expert_mode,...)
 	    if g:atp_local_completion
 		" Make a list of local envs and commands
 		if !exists("s:atp_LocalEnvironments") 
-		    let s:atp_LocalEnvironments=LocalCommands()[1]
-		    endif
+		    LocalCommands
+		    let s:atp_LocalEnvironments=copy(b:atp_LocalEnvironments)
+		elseif has("python")
+		    LocalCommands
+		    let s:atp_LocalEnvironments=copy(b:atp_LocalEnvironments)
+		endif
 		call atplib#Extend(completion_list,s:atp_LocalEnvironments)
 	    endif
 	endif
@@ -4060,7 +4072,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	" To Do: make a predefined lists of colors depending on package
 	" options! 
 	if !exists("b:atp_LocalColors") 
-	    call LocalCommands()
+	    LocalCommands
+	elseif has("python")
+	    LocalCommands
 	endif
 	let completion_list=copy(b:atp_LocalColors)
     "{{{3 ------------ PAGESTYLE
@@ -4196,10 +4210,15 @@ function! atplib#TabCompletion(expert_mode,...)
 	" -------------------- LOCAL commands {{{4
 	if g:atp_local_completion
 	    " make a list of local envs and commands:
+	    let g:debug=0
 	    if !exists("b:atp_LocalCommands") 
-		call LocalCommands()
+		let g:debug=1
+		LocalCommands
+	    elseif has("python")
+		let g:debug=2
+		LocalCommands
 	    endif
-	    call extend(completion_list,b:atp_LocalCommands)
+	    call extend(completion_list, b:atp_LocalCommands)
 	endif
 	" {{{4 -------------------- TIKZ commands
 	" if tikz is declared and we are in tikz environment.

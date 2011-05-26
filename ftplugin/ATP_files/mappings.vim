@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun May 22 08:00  2011 W
+" Last Change: Wed May 25 11:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -70,16 +70,16 @@ endif
 
 if g:atp_MapCommentLines    
     if !hasmapto("<Plug>CommentLines$", "n")
-	nmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
+	exe "nmap <buffer> <silent> ".g:atp_map_Comment."	<Plug>CommentLines"
     endif
     if !hasmapto("<Plug>CommentLines$", "v")
-	vmap <buffer> <silent> <LocalLeader>c	<Plug>CommentLines
+	exe "vmap <buffer> <silent> ".g:atp_map_Comment."	<Plug>CommentLines"
     endif
     if !hasmapto("<Plug>UnCommentLines$", "n")
-	nmap <buffer> <silent> <LocalLeader>u	<Plug>UnCommentLines
+	exe "nmap <buffer> <silent> ".g:atp_map_UnComment."	<Plug>UnCommentLines"
     endif
     if !hasmapto("<Plug>UnCommentLines$", "v")
-	vmap <buffer> <silent> <LocalLeader>u	<Plug>UnCommentLines
+	exe "vmap <buffer> <silent> ".g:atp_map_UnComment."	<Plug>UnCommentLines"
     endif
 endif
 
@@ -536,7 +536,7 @@ endif
 
 if mapcheck('<LocalLeader>s$') == "" && !hasmapto("<Plug>ToggleStar$", "n")
     nmap  <silent> <buffer> <LocalLeader>s		<Plug>ToggleStar
-elseif !hasmapto("<Plug>ToggleStar$", "n") && g:atp_debugMapFile
+elseif !hasmapto("<Plug>ToggleStar$", "n") && g:atp_debugMapFile && !g:atp_reload_functions
     echoerr "[ATP:] there will be no nmap to <Plug>ToggleStar"
 endif
 
