@@ -147,18 +147,21 @@ function! atplib#DelMaps(maps)
     for map in a:maps
 	let cmd = matchstr(map[0], '[^m]\ze\%(nore\)\=map') . "unmap"
 	let arg = ( map[1] =~ '<buffer>' ? '<buffer>' : '' )
-	exe "silent! ".cmd." ".arg." ".map[2].map[3]
+	try
+	    exe cmd." ".arg." ".map[2].map[3]
+	catch /E31:/
+	endtry
     endfor
 endfunction
 " From TeX_nine plugin:
 function! atplib#IsLeft(lchar,...)
     let nr = ( a:0 >= 1 ? a:1 : 0 )
-	let left = getline('.')[col('.')-2-nr]
-	if left ==# a:lchar
-	    return 1
-	else
-	    return 0
-	endif
+    let left = getline('.')[col('.')-2-nr]
+    if left ==# a:lchar
+	return 1
+    else
+	return 0
+    endif
 endfunction
 " try
 function! atplib#ToggleMathIMaps(var, augroup)
@@ -1183,9 +1186,9 @@ function! atplib#searchbib(pattern, ...)
 	    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
 	    if get(TypeDict, f) == 'bib' 
 		call add(s:bibfiles, f)
-	    elseif
-		echoerr "ATP Error: list of files mismatch (1)."
-		return
+" 	    else
+" 		echoerr "ATP Error: list of files mismatch (1)."
+" 		return
 	    endif
 	else
 	    echoerr "ATP Error: list of files mismatch (2)."
@@ -1497,6 +1500,184 @@ function! atplib#searchbib(pattern, ...)
     endif
 
     return l:bibresults
+endfunction
+"}}}
+" {{{ atplib#searchbib_py
+function! atplib#searchbib_py(pattern, ...)
+    call atplib#outdir()
+    " for tex files this should be a flat search.
+    let flat 	= &filetype == "plaintex" ? 1 : 0
+    let bang	= a:0 >=1 ? a:1 : ""
+    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+
+    " Caching bibfiles saves 0.27sec.
+    let g:debug=0
+    if !exists("b:ListOfFiles") || !exists("b:TypeDict") || bang == "!"
+	let g:debug=1
+	let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
+	let updated	= 1
+    else
+	let g:debug=2
+	let [ ListOfFiles, TypeDict ] = deepcopy([ b:ListOfFiles, b:TypeDict ])
+	let updated	= 0
+    endif
+    let s:bibfiles = []
+    for f in ListOfFiles
+" 	let f	= atplib#FullPath(f)
+	if get(TypeDict, f) == 'bib' 
+	    call add(s:bibfiles, f)
+	    let g:debug.=3
+" 	elseif !updated
+" 	    let g:debug.=4
+" 	    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
+" 	    if get(TypeDict, f) == 'bib' 
+" 		call add(s:bibfiles, f)
+" " 	    else
+" " 		echoerr "ATP Error: list of files mismatch (1)."
+" " 		return
+" 	    endif
+" 	else
+" 	    echoerr "ATP Error: list of files mismatch (2)."
+" 	    return
+	endif
+    endfor
+    let b:atp_BibFiles	= deepcopy(s:bibfiles)
+python << END
+import vim, re
+
+files=vim.eval("b:atp_BibFiles")
+
+def remove_ligatures(string):
+    line_without_ligatures = re.sub( "\\\\'\s*", '', re.sub('{|}|\\\\(?:"|`|\^|=|\.|c|~|v|u|d|b|H|t)\s*', '', string))
+    line_without_ligatures = re.sub('\\\\oe', 'oe', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\OE', 'OE', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\ae', 'ae', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\AE', 'AE', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\o', 'o', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\O', 'O', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\i', 'i', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\j', 'j', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\l', 'l', line_without_ligatures)
+    line_without_ligatures = re.sub('\\\\L', 'L', line_without_ligatures)
+    return line_without_ligatures
+
+def remove_quotes(string):
+    line=re.sub('"|''', '', string)
+    line=re.sub('\\\\', '', line)
+    return line
+type_pattern=re.compile('\s*@(article|book|mvbook|inbook|bookinbook|suppbook|booklet|collection|mvcollection|incollection|suppcollection|manual|misc|online|patent|periodical|supppertiodical|proceedings|mvproceedings|inproceedings|reference|mvreference|inreference|report|set|thesis|unpublished|custom[a-f]|conference|electronic|masterthesis|phdthesis|techreport|www)', re.I)
+
+
+# types=['abstract', 'addendum', 'afterword', 'annotation', 'author', 'authortype', 'bookauthor', 'bookpaginator', 'booksupbtitle', 'booktitle', 'booktitleaddon', 'chapter', 'commentator', 'date', 'doi', 'edition', 'editor', 'editora', 'editorb', 'editorc', 'editortype', 'editoratype', 'editorbtype', 'editorctype', 'eid', 'eprint', 'eprintclass', 'eprinttype', 'eventdate', 'eventtile', 'file', 'forword', 'holder', 'howpublished', 'indxtitle', 'institution', 'introduction', 'isan', 'isbn', 'ismn', 'isrn', 'issn', 'issue', 'issuesubtitle', 'issuetitle', 'iswc', 'journalsubtitle', 'journaltitle', 'label', 'language', 'library', 'location', 'mainsubtitle', 'maintitle', 'maintitleaddon', 'month', 'nameaddon', 'note', 'number', 'organization', 'origdate', 'origlanguage', 'origpublisher', 'origname', 'pages', 'pagetotal', 'pagination', 'part', 'publisher', 'pubstate', 'reprinttitle', 'series', 'shortauthor', 'shorteditor', 'shorthand', 'shorthandintro', 'shortjournal', 'shortseries', 'subtitle', 'title', 'titleaddon', 'translator', 'type', 'url', 'urldate', 'venue', 'version', 'volume', 'volumes', 'year', 'crossref', 'entryset', 'entrysubtype', 'execute', 'mrreviewer']
+
+# types=['author', 'bookauthor', 'booktitle', 'chapter', 'date', 'doi', 'edition', 'editor', 'editora', 'editorb', 'editorc', 'eprint', 'eprintclass', 'eprinttype', 'howpublished', 'institution', 'issn', 'journalsubtitle', 'journaltitle', 'maintitle', 'month', 'note', 'number', 'pages', 'part', 'publisher', 'reprinttitle', 'series', 'subtitle', 'title', 'type', 'url', 'venue', 'volume', 'volumes', 'year']
+
+types=['author', 'bookauthor', 'booktitle', 'date', 'editor', 'eprint', 'eprintclass', 'eprinttype', 'howpublished', 'institution', 'month', 'note', 'number', 'pages', 'publisher', 'series', 'subtitle', 'title', 'url', 'year', 'mrreviewer']
+
+def parse_bibentry(bib_entry):
+    bib={}
+    bib['bibfield_key']=bib_entry[0]
+    nr=1
+    while nr < len(bib_entry)-1:
+        line=bib_entry[nr]
+        if not re.search('=', line):
+            while not re.search('=', line) and nr < len(bib_entry)-1:
+                bib[p_e_type]=re.sub('\s*$', '', bib[p_e_type])+" "+remove_quotes(re.sub('^\s*', '', re.sub('\t', ' ', line)))
+                nr+=1
+                line=bib_entry[nr]
+        else:
+            v_break=False
+            for e_type in types:
+                if re.match('\s*'+e_type+'\s*=', line, re.I):
+                    # this is not working when title is two lines!
+                    bib[e_type]=remove_quotes(re.sub('\t', ' ', line))
+                    p_e_type=e_type
+                    nr+=1
+                    v_break=True
+                    break
+            if not v_break:
+                nr+=1
+#    for key in bib.keys():
+#        print(key+"="+bib[key])
+#    print("\n")
+    return bib
+
+pattern=vim.eval("a:pattern")
+
+if pattern == "":
+    pat=""
+else:
+    pat=pattern
+pattern=re.compile(pat, re.I)
+pattern_b=re.compile('\s*@\w+\s*{.+', re.I)
+
+bibresults={}
+for file in files:
+    file_ob=open(file, 'r')
+    file_l=file_ob.read().split("\n")
+    file_ob.close()
+    file_len=len(file_l)
+    lnr=0
+    bibresults[file]={}
+#     if pattern != ""
+    while lnr < file_len:
+        lnr+=1
+        line=file_l[lnr-1]
+        line_without_ligatures=remove_ligatures(line)
+        if re.search(pattern, line_without_ligatures):
+            """find first line"""
+            b_lnr=lnr
+#             print("lnr="+str(lnr))
+            b_line=line
+            while not re.match(pattern_b, b_line) and b_lnr >= 1:
+                b_lnr-=1
+                b_line=file_l[b_lnr-1]
+            """find last line"""
+#             print("b_lnr="+str(b_lnr))
+            e_lnr=lnr
+            e_line=line
+            if re.match(pattern_b, e_line):
+                lnr+=1
+                e_lnr=lnr
+                line=file_l[lnr-1]
+                e_line=file_l[lnr-1]
+#                 print("X "+line)
+            while not re.match(pattern_b, e_line) and e_lnr <= file_len:
+                e_lnr+=1
+                e_line=file_l[min(e_lnr-1, file_len-1)]
+            e_lnr-=1
+            e_line=file_l[min(e_lnr-1, file_len-1)]
+            while re.match('\s*$', e_line):
+                e_lnr-=1
+                e_line=file_l[e_lnr-1]
+#             e_lnr=min(e_lnr, file_len-1)
+            bib_entry=file_l[b_lnr-1:e_lnr]
+#             print("lnr="+str(lnr))
+#             print("b_lnr="+str(b_lnr))
+#             print("e_lnr="+str(e_lnr))
+            if bib_entry != []:
+                entry_dict=parse_bibentry(bib_entry)
+                bibresults[file][b_lnr]=entry_dict
+#             else:
+#                 print("lnr="+str(lnr))
+#                 print("b_lnr="+str(b_lnr))
+#                 print("e_lnr="+str(e_lnr))
+#             print(entry_dict)
+#             print("\n".join(bib_entry))
+            if lnr < e_lnr:
+                lnr=e_lnr
+            else:
+                lnr+=1
+#print(bibresults)
+# for key in bibresults.keys():
+#     for line in bibresults[key].keys():
+#         for bib in bibresults[key][line].keys():
+#                 print(bib+"="+bibresults[key][line][bib])
+#         print("\n")
+vim.command("let bibresults="+str(bibresults))
+END
+let g:bibresults=bibresults
+return bibresults
 endfunction
 "}}}
 "
@@ -4210,12 +4391,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	" -------------------- LOCAL commands {{{4
 	if g:atp_local_completion
 	    " make a list of local envs and commands:
-	    let g:debug=0
 	    if !exists("b:atp_LocalCommands") 
-		let g:debug=1
 		LocalCommands
 	    elseif has("python")
-		let g:debug=2
 		LocalCommands
 	    endif
 	    call extend(completion_list, b:atp_LocalCommands)
@@ -4452,85 +4630,98 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
     " {{{3 ------------ BIBITEMS
     elseif completion_method == 'bibitems'
+	let time_bibitems=reltime()
 	let col = col('.') - 1
 	while col > 0 && line[col - 1] !~ '{\|,'
 		let col -= 1
 	endwhile
 	let pat=strpart(l,col)
-	let g:pat=pat
-	let bibitems_list=values(atplib#searchbib(pat))
-	if g:atp_debugTabCompletion
-	    let g:pat = pat
-	endif
-	let pre_completion_list=[]
-	let completion_dict=[]
-	let completion_list=[]
-	for dict in bibitems_list
-	    for key in keys(dict)
-		" ToDo: change dict[key][...] to get() to not get errors
-		" if it is not present or to handle situations when it is not
-		" present!
-		call add(pre_completion_list, dict[key]['bibfield_key']) 
-		let bibkey=dict[key]['bibfield_key']
-		let bibkey=substitute(strpart(bibkey,max([stridx(bibkey,'{'),stridx(bibkey,'(')])+1),',\s*','','')
-		if nchar != ',' && nchar != '}'
-		    let bibkey.="}"
-		endif
-		let title=get(dict[key],'title','notitle')
-		let title=substitute(matchstr(title,'^\s*title\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)'),'{\|}','','g')
-		let year=get(dict[key],'year',"")
-		let year=matchstr(year,'^\s*year\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)')
-		let abbr=get(dict[key],'author',"noauthor")
-		let author = matchstr(abbr,'^\s*author\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
-		if abbr=="noauthor" || abbr == ""
-		    let abbr=get(dict[key],'editor',"")
-		    let author = matchstr(abbr,'^\s*editor\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
-		endif
-		if len(author) >= 40
-		    if match(author,'\sand\s')
-			let author=strpart(author,0,match(author,'\sand\s')) . ' et al.'
-		    else
-			let author=strpart(author,0,40)
+	let searchbib_time=reltime()
+	if len(filter(values(copy(b:TypeDict)), "v:val == 'bib'"))
+	    if has("python") && pat != ""
+		let bibitems_list=values(atplib#searchbib_py(pat))
+	    else
+		let bibitems_list=values(atplib#searchbib(pat))
+	    endif
+	    let g:time_searchbib_py=reltimestr(reltime(searchbib_time))
+	    if g:atp_debugTabCompletion
+		let g:pat = pat
+	    endif
+	    let pre_completion_list=[]
+	    let completion_dict=[]
+	    let completion_list=[]
+	    let time_bibitems_for=reltime()
+	    for dict in bibitems_list
+		for key in keys(dict)
+		    " ToDo: change dict[key][...] to get() to not get errors
+		    " if it is not present or to handle situations when it is not
+		    " present!
+		    call add(pre_completion_list, dict[key]['bibfield_key']) 
+		    let bibkey=dict[key]['bibfield_key']
+		    let bibkey=substitute(strpart(bibkey,max([stridx(bibkey,'{'),stridx(bibkey,'(')])+1),',\s*','','')
+		    if nchar != ',' && nchar != '}'
+			let bibkey.="}"
 		    endif
-		endif
-		let author=substitute(author,'{\|}','','g')
-		if dict[key]['bibfield_key'] =~ 'article'
-		    let type="[a]"
-		elseif dict[key]['bibfield_key'] =~ 'book\>'
-		    let type="[B]"
-		elseif dict[key]['bibfield_key'] =~ 'booklet'
-		    let type="[b]"
-		elseif  dict[key]['bibfield_key'] =~ 'proceedings\|conference'
-		    let type="[p]"
-		elseif dict[key]['bibfield_key'] =~ 'unpublished'
-		    let type="[u]"
-		elseif dict[key]['bibfield_key'] =~ 'incollection'
-		    let type="[c]"
-		elseif dict[key]['bibfield_key'] =~ 'phdthesis'
-		    let type="[PhD]"
-		elseif dict[key]['bibfield_key'] =~ 'masterthesis'
-		    let type="[M]"
-		elseif dict[key]['bibfield_key'] =~ 'misc'
-		    let type="[-]"
-		elseif dict[key]['bibfield_key'] =~ 'techreport'
-		    let type="[t]"
-		elseif dict[key]['bibfield_key'] =~ 'manual'
-		    let type="[m]"
-		else
-		    let type="   "
-		endif
+		    let title=get(dict[key],'title','notitle')
+		    let title=substitute(matchstr(title,'^\s*title\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)'),'{\|}','','g')
+		    let year=get(dict[key],'year',"")
+		    let year=matchstr(year,'^\s*year\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)')
+		    let abbr=get(dict[key],'author',"noauthor")
+		    let author = matchstr(abbr,'^\s*author\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
+		    if abbr=="noauthor" || abbr == ""
+			let abbr=get(dict[key],'editor',"")
+			let author = matchstr(abbr,'^\s*editor\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
+		    endif
+		    if len(author) >= 40
+			if match(author,'\sand\s')
+			    let author=strpart(author,0,match(author,'\sand\s')) . ' et al.'
+			else
+			    let author=strpart(author,0,40)
+			endif
+		    endif
+		    let author=substitute(author,'{\|}','','g')
+		    if dict[key]['bibfield_key'] =~ 'article'
+			let type="[a]"
+		    elseif dict[key]['bibfield_key'] =~ 'book\>'
+			let type="[B]"
+		    elseif dict[key]['bibfield_key'] =~ 'booklet'
+			let type="[b]"
+		    elseif  dict[key]['bibfield_key'] =~ 'proceedings\|conference'
+			let type="[p]"
+		    elseif dict[key]['bibfield_key'] =~ 'unpublished'
+			let type="[u]"
+		    elseif dict[key]['bibfield_key'] =~ 'incollection'
+			let type="[c]"
+		    elseif dict[key]['bibfield_key'] =~ 'phdthesis'
+			let type="[PhD]"
+		    elseif dict[key]['bibfield_key'] =~ 'masterthesis'
+			let type="[M]"
+		    elseif dict[key]['bibfield_key'] =~ 'misc'
+			let type="[-]"
+		    elseif dict[key]['bibfield_key'] =~ 'techreport'
+			let type="[t]"
+		    elseif dict[key]['bibfield_key'] =~ 'manual'
+			let type="[m]"
+		    else
+			let type="   "
+		    endif
 
-		let abbr=type." ".author." (".year.") "
+		    let abbr=type." ".author." (".year.") "
 
-		call add(completion_dict, { "word" : bibkey, "menu" : title, "abbr" : abbr }) 
+		    call add(completion_dict, { "word" : bibkey, "menu" : title, "abbr" : abbr }) 
+		endfor
 	    endfor
-	endfor
-	for key in pre_completion_list
-	    call add(completion_list,substitute(strpart(key,max([stridx(key,'{'),stridx(key,'(')])+1),',\s*','',''))
-	endfor
-
+            let g:completion_dict=completion_dict
+	    for key in pre_completion_list
+		call add(completion_list,substitute(strpart(key,max([stridx(key,'{'),stridx(key,'(')])+1),',\s*','',''))
+	    endfor
+	else
 	" add the \bibitems found in include files
-	call extend(completion_list,keys(atplib#SearchBibItems(atp_MainFile)))
+	    let time_bibitems_SearchBibItems=reltime()
+	    call extend(completion_list,keys(atplib#SearchBibItems(atp_MainFile)))
+	    let g:time_bibitems_SearchBibItems=reltimestr(reltime(time_bibitems_SearchBibItems))
+	endif
+	let g:time_bibitems=reltimestr(reltime(time_bibitems))
     " {{{3 ------------ TodoNotes todo & missing figure options
     elseif completion_method == 'todo options'
 	let completion_list = g:atp_TodoNotes_todo_options

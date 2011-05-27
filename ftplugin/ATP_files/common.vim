@@ -492,6 +492,7 @@ function! TreeOfFiles_vim(main_file,...)
 endfunction "}}}
 " TreeOfFiles_py "{{{
 function! TreeOfFiles_py(main_file)
+let time=reltime()
 python << END_PYTHON
 
 import vim, re, subprocess, os, glob
@@ -656,7 +657,7 @@ else:
     pattern=re.compile(pat_str)
 #     print(pat_str)
 
-bibpattern=re.compile('\\\\bibliography\s*{([^}]*)}')
+bibpattern=re.compile('^[^%]*\\\\(?:bibliography|addbibresource|addsectionbib(?:\s*\[.*\])?|addglobalbib(?:\s*\[.*\])?)\s*{([^}]*)}')
 
 bib_path=kpsewhich_path('bib')
 tex_path=kpsewhich_path('tex')
@@ -669,8 +670,10 @@ vim.command("let b:ListOfFiles="+str(list_of_files))
 vim.command("let b:TypeDict="+str(type_dict))
 vim.command("let b:LevelDict="+str(level_dict))
 END_PYTHON
+let g:time_TreeOfFiles=reltimestr(reltime(time))
 endfunction
 "}}}
+"
 " TreeOfFiles
 function! TreeOfFiles(main_file,...)
     let pattern		= a:0 >= 1 	? a:1 : g:atp_inputfile_pattern
