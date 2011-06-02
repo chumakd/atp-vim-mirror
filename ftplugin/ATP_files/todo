@@ -377,3 +377,5 @@ ToDo: LocalCommands_py -- writes file:
        as an argument -- this will be even faster and will
        not need to write to disk.
 ToDo: rewrite atplib#searchbib in python.
+ToDo: InputFiles when called from different directory.
+ToDo: :WordCount computes words in the written file (not the buffer)

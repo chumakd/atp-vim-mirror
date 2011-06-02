@@ -140,7 +140,7 @@ if !exists("g:atp_debugClostLastBracket")
 endif
 if !exists("g:atp_debugTabCompletion")
     " atplib#TabCompletion()
-    let g:atp_debugTC 		= 0
+    let g:atp_debugTabCompletion 		= 0
 endif
 if !exists("g:atp_debugBS")
     " atplib#searchbib()
@@ -1514,7 +1514,7 @@ function! ATP_CmdwinToggleSpace(on)
     let on		= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
     if on
 	echomsg "space ON"
-	let backslash 	= ( &l:cpoptions =~# "B" ? "\\" : "\\\\" ) 
+	let backslash 	= ( &l:cpoptions =~# "B" ? "\\" : "\\\\\\" ) 
 	exe "imap <space> ".backslash."_s".backslash."+"
     else
 	echomsg "space OFF"

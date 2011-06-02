@@ -327,13 +327,27 @@ function! <SID>LocalCommands_py(write, ...)
      endif
      let [ Tree, List, Type_Dict, Level_Dict ] = deepcopy([ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ])
 
-     let files = join(b:ListOfFiles, ";")
+     " Note: THIS CODE IS ONLY NEEDED WHEN PWD is different than the TreeOfFiles was
+     " called! There is an option to store full path in ATP, then this is not needed.
+     let files = []
+     for file in b:ListOfFiles
+	 if b:TypeDict[file] == "input" || b:TypeDict[file] == "preambule" 
+	     if filereadable(file)
+		 call add(files, file)
+	     else
+		 let file=atplib#KpsewhichFindFile("tex", file)
+		 if file != ""
+		     call add(files, file)
+		 endif
+	     endif
+	 endif
+     endfor
 python << END
 import re, vim
 
 pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>(?:re)?newcommand)|\\\\(?P<env>(?:re)?newenvironment)|\\\\(?P<nt>(?:re)?newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
 
-files=[vim.eval("atp_MainFile")]+vim.eval("b:ListOfFiles")
+files=[vim.eval("atp_MainFile")]+vim.eval("files")
 localcommands   =[]
 localcolors     =[]
 localenvs       =[]
@@ -345,19 +359,11 @@ for file in files:
     for line in file_l:
         m=re.match(pattern, line)
         if m:
-#             print(m.groups())
-#             print(m.group('def'))
-#             print(m.group('def_c'))
-#             print(m.group('nt'))
-#             print(m.group('env'))
-#             print(m.group('col'))
-#             print(m.group('dec'))
-#             print(m.group('arg'))
             if m.group('def'):
                 localcommands.append(m.group('def_c'))
             elif m.group('nc') or m.group('dec') or m.group('sma'):
                 localcommands.append(m.group('arg'))
-            elif m.group('nt') or m.group('env'): 
+            elif m.group('nt') or m.group('env'):
                 localenvs.append(m.group('arg'))
             elif m.group('col'):
                 localcolors.append(m.group('arg'))

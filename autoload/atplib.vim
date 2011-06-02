@@ -1685,6 +1685,7 @@ endfunction
 " the argument should be b:atp_MainFile but in any case it is made in this way.
 " it specifies in which file to search for include files.
 function! atplib#SearchBibItems(name)
+    let time=reltime()
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     " we are going to make a dictionary { citekey : label } (see :h \bibitem) 
@@ -1721,6 +1722,7 @@ function! atplib#SearchBibItems(name)
 	    endfor
     endfor
 	
+    let g:time_SearchBibItems=reltimestr(reltime(time))
     return l:citekey_label_dict
 endfunction
 " }}}
@@ -2603,7 +2605,7 @@ endfunction
 " the arguments are similar to atplib#KpsewhichGlob except that the a:000 list
 " is shifted:
 " a:1		= path	
-" 			if set to "" then kpsewhich finds the path.
+" 			if set to "" then kpsewhich will find the path.
 " a:2		= count (as for findfile())
 " a:3		= modifiers 
 " a:4		= positive filter for path (see KpsewhichGLob a:1)
@@ -4716,7 +4718,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		call add(completion_list,substitute(strpart(key,max([stridx(key,'{'),stridx(key,'(')])+1),',\s*','',''))
 	    endfor
 	else
-	" add the \bibitems found in include files
+	    " add the \bibitems found in include files
 	    let time_bibitems_SearchBibItems=reltime()
 	    call extend(completion_list,keys(atplib#SearchBibItems(atp_MainFile)))
 	    let g:time_bibitems_SearchBibItems=reltimestr(reltime(time_bibitems_SearchBibItems))
