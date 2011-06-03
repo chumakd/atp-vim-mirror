@@ -1161,7 +1161,7 @@ let atplib#bibflagsdict={ 't' : ['title', 'title        '] , 'a' : ['author', 'a
 
 " To make it work after kpsewhich is searching for bib path.
 " let s:bibfiles=FindBibFiles(bufname('%'))
-function! atplib#searchbib(pattern, ...) 
+function! atplib#searchbib(pattern, bibdict, ...) 
 
     call atplib#outdir()
     " for tex files this should be a flat search.
@@ -1169,35 +1169,6 @@ function! atplib#searchbib(pattern, ...)
     let bang	= a:0 >=1 ? a:1 : ""
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    " Caching bibfiles saves 0.27sec.
-    if !exists("b:ListOfFiles") || !exists("b:TypeDict") || bang == "!"
-	let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
-	let updated	= 1
-    else
-	let [ ListOfFiles, TypeDict ] = deepcopy([ b:ListOfFiles, b:TypeDict ])
-	let updated	= 0
-    endif
-    let s:bibfiles = []
-    for f in ListOfFiles
-" 	let f	= atplib#FullPath(f)
-	if get(TypeDict, f) == 'bib' 
-	    call add(s:bibfiles, f)
-	elseif !updated
-	    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
-	    if get(TypeDict, f) == 'bib' 
-		call add(s:bibfiles, f)
-" 	    else
-" 		echoerr "ATP Error: list of files mismatch (1)."
-" 		return
-	    endif
-	else
-	    echoerr "ATP Error: list of files mismatch (2)."
-	    return
-	endif
-    endfor
-    let b:atp_BibFiles	= deepcopy(s:bibfiles)
-
-    
     " Make a pattern which will match for the elements of the list g:bibentries
     let pattern = '^\s*@\%(\<'.g:bibentries[0].'\>'
     for bibentry in g:bibentries['1':len(g:bibentries)]
@@ -1228,7 +1199,7 @@ function! atplib#searchbib(pattern, ...)
     " READ EACH BIBFILE IN TO DICTIONARY s:bibdict, WITH KEY NAME BEING THE bibfilename
     let s:bibdict={}
     let l:bibdict={}
-    for l:f in s:bibfiles
+    for l:f in keys(a:bibdict)
 	let s:bibdict[l:f]=[]
 
 	" read the bibfile if it is in b:atp_OutDir or in g:atp_raw_bibinputs directory
@@ -1240,8 +1211,7 @@ function! atplib#searchbib(pattern, ...)
 " 	    " survive)
 " 	    let s:bibdict[l:f]=readfile(fnameescape(findfile(atplib#append(l:f,'.bib'), atplib#append(l:path,"/") . "**")))
 " 	endfor
-	let s:bibdict[l:f]=readfile(l:f)
-	let l:bibdict[l:f]=copy(s:bibdict[l:f])
+	let l:bibdict[l:f]=copy(a:bibdict[l:f])
 	" clear the s:bibdict values from lines which begin with %    
 	call filter(l:bibdict[l:f], ' v:val !~ "^\\s*\\%(%\\|@\\cstring\\)"')
     endfor
@@ -1251,7 +1221,7 @@ function! atplib#searchbib(pattern, ...)
     endif
 
     if a:pattern != ""
-	for l:f in s:bibfiles
+	for l:f in keys(a:bibdict)
 	    let l:list=[]
 	    let l:nr=1
 	    for l:line in l:bibdict[l:f]
@@ -1469,7 +1439,7 @@ function! atplib#searchbib(pattern, ...)
 				    let s:lbibd[l:lkey]=substitute(s:lbibd[l:lkey],'\s*$','','') . " ". substitute(get(l:bibdict[l:bibfile],l:tlnr+l:y),'^\s*','','')
 				    let l:y+=1
 				    if l:y > 30
-					echoerr "ATP-Error /see :h atp-errors-bibsearch/, missing '}', ')' or '\"' in bibentry at line " . l:linenr . " (check line " . l:tlnr . ") in " . l:f
+					echoerr "ATP-Error /see :h atp-errors-bibsearch/, missing '}', ')' or '\"' in bibentry at line " . l:linenr . " (check line " . l:tlnr . ") in " . l:f)
 					break
 				    endif
 				endwhile
@@ -1503,45 +1473,14 @@ function! atplib#searchbib(pattern, ...)
 endfunction
 "}}}
 " {{{ atplib#searchbib_py
-function! atplib#searchbib_py(pattern, ...)
+function! atplib#searchbib_py(pattern, bibfiles, ...)
     call atplib#outdir()
     " for tex files this should be a flat search.
     let flat 	= &filetype == "plaintex" ? 1 : 0
     let bang	= a:0 >=1 ? a:1 : ""
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    " Caching bibfiles saves 0.27sec.
-    let g:debug=0
-    if !exists("b:ListOfFiles") || !exists("b:TypeDict") || bang == "!"
-	let g:debug=1
-	let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
-	let updated	= 1
-    else
-	let g:debug=2
-	let [ ListOfFiles, TypeDict ] = deepcopy([ b:ListOfFiles, b:TypeDict ])
-	let updated	= 0
-    endif
-    let s:bibfiles = []
-    for f in ListOfFiles
-" 	let f	= atplib#FullPath(f)
-	if get(TypeDict, f) == 'bib' 
-	    call add(s:bibfiles, f)
-	    let g:debug.=3
-" 	elseif !updated
-" 	    let g:debug.=4
-" 	    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(atp_MainFile, '^[^%]*\\bibliography\s*{', flat)
-" 	    if get(TypeDict, f) == 'bib' 
-" 		call add(s:bibfiles, f)
-" " 	    else
-" " 		echoerr "ATP Error: list of files mismatch (1)."
-" " 		return
-" 	    endif
-" 	else
-" 	    echoerr "ATP Error: list of files mismatch (2)."
-" 	    return
-	endif
-    endfor
-    let b:atp_BibFiles	= deepcopy(s:bibfiles)
+    let b:atp_BibFiles=a:bibfiles
 python << END
 import vim, re
 
@@ -1562,27 +1501,26 @@ def remove_ligatures(string):
     return line_without_ligatures
 
 def remove_quotes(string):
-    line=re.sub('"|''', '', string)
+    line=re.sub("'", "", string)
     line=re.sub('\\\\', '', line)
     return line
 type_pattern=re.compile('\s*@(article|book|mvbook|inbook|bookinbook|suppbook|booklet|collection|mvcollection|incollection|suppcollection|manual|misc|online|patent|periodical|supppertiodical|proceedings|mvproceedings|inproceedings|reference|mvreference|inreference|report|set|thesis|unpublished|custom[a-f]|conference|electronic|masterthesis|phdthesis|techreport|www)', re.I)
 
-
 # types=['abstract', 'addendum', 'afterword', 'annotation', 'author', 'authortype', 'bookauthor', 'bookpaginator', 'booksupbtitle', 'booktitle', 'booktitleaddon', 'chapter', 'commentator', 'date', 'doi', 'edition', 'editor', 'editora', 'editorb', 'editorc', 'editortype', 'editoratype', 'editorbtype', 'editorctype', 'eid', 'eprint', 'eprintclass', 'eprinttype', 'eventdate', 'eventtile', 'file', 'forword', 'holder', 'howpublished', 'indxtitle', 'institution', 'introduction', 'isan', 'isbn', 'ismn', 'isrn', 'issn', 'issue', 'issuesubtitle', 'issuetitle', 'iswc', 'journalsubtitle', 'journaltitle', 'label', 'language', 'library', 'location', 'mainsubtitle', 'maintitle', 'maintitleaddon', 'month', 'nameaddon', 'note', 'number', 'organization', 'origdate', 'origlanguage', 'origpublisher', 'origname', 'pages', 'pagetotal', 'pagination', 'part', 'publisher', 'pubstate', 'reprinttitle', 'series', 'shortauthor', 'shorteditor', 'shorthand', 'shorthandintro', 'shortjournal', 'shortseries', 'subtitle', 'title', 'titleaddon', 'translator', 'type', 'url', 'urldate', 'venue', 'version', 'volume', 'volumes', 'year', 'crossref', 'entryset', 'entrysubtype', 'execute', 'mrreviewer']
 
-# types=['author', 'bookauthor', 'booktitle', 'chapter', 'date', 'doi', 'edition', 'editor', 'editora', 'editorb', 'editorc', 'eprint', 'eprintclass', 'eprinttype', 'howpublished', 'institution', 'issn', 'journalsubtitle', 'journaltitle', 'maintitle', 'month', 'note', 'number', 'pages', 'part', 'publisher', 'reprinttitle', 'series', 'subtitle', 'title', 'type', 'url', 'venue', 'volume', 'volumes', 'year']
-
-types=['author', 'bookauthor', 'booktitle', 'date', 'editor', 'eprint', 'eprintclass', 'eprinttype', 'howpublished', 'institution', 'month', 'note', 'number', 'pages', 'publisher', 'series', 'subtitle', 'title', 'url', 'year', 'mrreviewer']
+types=['author', 'bookauthor', 'booktitle', 'date', 'editor', 'eprint', 'eprintclass', 'eprinttype', 'howpublished', 'institution', 'journal', 'month', 'note', 'number', 'organization', 'pages', 'publisher', 'school', 'series', 'subtitle', 'title', 'url', 'year', 'mrreviewer', 'volume', 'pages']
 
 def parse_bibentry(bib_entry):
     bib={}
-    bib['bibfield_key']=bib_entry[0]
+    bib['bibfield_key']=re.sub('\\r$', '', bib_entry[0])
     nr=1
     while nr < len(bib_entry)-1:
         line=bib_entry[nr]
         if not re.search('=', line):
             while not re.search('=', line) and nr < len(bib_entry)-1:
-                bib[p_e_type]=re.sub('\s*$', '', bib[p_e_type])+" "+remove_quotes(re.sub('^\s*', '', re.sub('\t', ' ', line)))
+# 		val=re.sub('\s*$', '', bib[p_e_type])+" "+remove_quotes(re.sub('^\s*', '', re.sub('\t', ' ', line)))
+		val=re.sub('\s*$', '', bib[p_e_type])+" "+re.sub('^\s*', '', re.sub('\t', ' ', line))
+                bib[p_e_type]=remove_quotes(re.sub('\\r$', '', val))
                 nr+=1
                 line=bib_entry[nr]
         else:
@@ -1590,7 +1528,8 @@ def parse_bibentry(bib_entry):
             for e_type in types:
                 if re.match('\s*'+e_type+'\s*=', line, re.I):
                     # this is not working when title is two lines!
-                    bib[e_type]=remove_quotes(re.sub('\t', ' ', line))
+#                     bib[e_type]=remove_quotes(re.sub('\t', ' ', line))
+                    bib[e_type]=remove_quotes(re.sub('\\r$', '', re.sub('\t', ' ', line)))
                     p_e_type=e_type
                     nr+=1
                     v_break=True
@@ -1623,6 +1562,8 @@ for file in files:
     while lnr < file_len:
         lnr+=1
         line=file_l[lnr-1]
+	if re.search('@string', line):
+            continue
         line_without_ligatures=remove_ligatures(line)
         if re.search(pattern, line_without_ligatures):
             """find first line"""
@@ -1655,7 +1596,7 @@ for file in files:
 #             print("lnr="+str(lnr))
 #             print("b_lnr="+str(b_lnr))
 #             print("e_lnr="+str(e_lnr))
-            if bib_entry != []:
+            if bib_entry != [] and not re.search('@string', bib_entry[0]):
                 entry_dict=parse_bibentry(bib_entry)
                 bibresults[file][b_lnr]=entry_dict
 #             else:
@@ -1750,7 +1691,7 @@ endfunction
 " i - institution
 " R - mrreviewer
 
-function! atplib#showresults(bibresults, flags, pattern)
+function! atplib#showresults(bibresults, flags, pattern, bibdict)
  
     "if nothing was found inform the user and return:
     if len(a:bibresults) == count(a:bibresults, {})
@@ -1768,7 +1709,6 @@ function! atplib#showresults(bibresults, flags, pattern)
 	    silent! echo "atplib#showresults return B - found something. "
 	    redir END
     endif
-
 
     function! s:showvalue(value)
 	return substitute(strpart(a:value,stridx(a:value,"=")+1),'^\s*','','')
@@ -1918,7 +1858,7 @@ function! atplib#showresults(bibresults, flags, pattern)
 		let l:check=1
 	    endif
 	    if l:check == 1 || len(l:kwflagslist) == 0
-		let l:linenumber=index(s:bibdict[l:bibfile],l:values["bibfield_key"])+1
+		let l:linenumber=index(a:bibdict[l:bibfile],l:values["bibfield_key"])+1
  		call setline(l:ln,s:z . ". line " . l:linenumber . "  " . l:values["bibfield_key"])
 		let l:ln+=1
  		let l:c0=atplib#count(l:values["bibfield_key"],'{')-atplib#count(l:values["bibfield_key"],'(')
@@ -1975,8 +1915,10 @@ function! atplib#showresults(bibresults, flags, pattern)
     if g:atp_debugBS
 	let g:pattern_tomatch = pattern_tomatch
     endif
-    silent! call matchadd("Search", '\c' . pattern_tomatch)
-    let @/=pattern_tomatch
+    if pattern_tomatch != "" && pattern_tomatch != ".*"
+	silent! call matchadd("Search", '\c' . pattern_tomatch)
+	let @/=pattern_tomatch
+    endif
     " return l:listofkeys which will be available in the bib search buffer
     " as b:ListOfKeys (see the BibSearch function below)
     let b:ListOfBibKeys = l:listofkeys
@@ -4637,14 +4579,31 @@ function! atplib#TabCompletion(expert_mode,...)
 	while col > 0 && line[col - 1] !~ '{\|,'
 		let col -= 1
 	endwhile
-	let pat=strpart(l,col)
+" 	let pat = ( strpart(l,col) == "" ? '.*' : strpart(l,col) )
+	let pat = strpart(l,col)
 	let searchbib_time=reltime()
 	if len(filter(values(copy(b:TypeDict)), "v:val == 'bib'"))
-	    if has("python") && pat != ""
-		let bibitems_list=values(atplib#searchbib_py(pat))
-	    else
-		let bibitems_list=values(atplib#searchbib(pat))
+	    if !exists("b:ListOfFiles") && !exists("b:TypeDict")
+		call TreeOfFiles(b:atp_MainFile)
 	    endif
+	    if has("python") && g:atp_bibsearch == "python" && pat != ""
+		let bibfiles=[]
+		for f in b:ListOfFiles
+		    if b:TypeDict[f] == 'bib'
+			call add(bibfiles, f)
+		    endif
+		endfor
+		let bibitems_list=values(atplib#searchbib_py(pat, bibfiles))
+	    else
+		let bibdict={}
+		for f in b:ListOfFiles
+		    if b:TypeDict[f] == 'bib'
+			let bibdict[f]=readfile(f)
+		    endif
+		endfor
+		let bibitems_list=values(atplib#searchbib(pat, bibdict))
+	    endif
+	    let g:bibitems_list=bibitems_list
 	    let g:time_searchbib_py=reltimestr(reltime(searchbib_time))
 	    if g:atp_debugTabCompletion
 		let g:pat = pat

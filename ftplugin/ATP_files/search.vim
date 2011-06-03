@@ -1385,6 +1385,7 @@ function! BibSearch(bang,...)
 "     let pattern = a:0 >= 1 ? a:1 : ""
 "     let flag	= a:0 >= 2 ? a:2 : ""
 	
+    let time=reltime()
 	
     let Arg = ( a:0 >= 1 ? a:1 : "" )
     if Arg != ""
@@ -1410,7 +1411,26 @@ function! BibSearch(bang,...)
 	redir END
     endif
 
-    call atplib#showresults( atplib#searchbib(pattern, a:bang), flag, pattern)
+    if !exists("s:bibdict") || a:bang == "!"
+	let s:bibdict={}
+	if !exists("b:ListOfFiles") || !exists("b:TypeDict") || a:bang == "!"
+	    call TreeOfFiles(b:atp_MainFile)
+	endif
+	for file in b:ListOfFiles
+	    if b:TypeDict[file] == "bib"
+		let s:bibdict[file]=readfile(file)
+	    endif
+	endfor
+    endif
+    let b:atp_BibFiles=keys(s:bibdict)
+"     let g:bibdict=s:bibdict
+
+    if has("python") && g:atp_bibsearch == "python"
+	call atplib#showresults( atplib#searchbib_py(pattern, keys(s:bibdict), a:bang), flag, pattern, s:bibdict)
+    else
+	call atplib#showresults( atplib#searchbib(pattern, s:bibdict, a:bang), flag, pattern, s:bibdict)
+    endif
+    let g:time_BibSearch=reltimestr(reltime(time))
 endfunction
 nnoremap <silent> <Plug>BibSearchLast		:call BibSearch("", b:atp_LastBibPattern, b:atp_LastBibFlags)<CR>
 " }}}

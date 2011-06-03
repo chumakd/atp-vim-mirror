@@ -368,6 +368,10 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_bibsearch") || g:atp_reload_variables
+    " Use python search engine (and python regexp) for bibsearch
+    let g:atp_bibsearch 	= "python"
+endif
 if !exists("g:atp_map_Comment") || g:atp_reload_variables
     let g:atp_map_Comment 	= "-c"
 endif

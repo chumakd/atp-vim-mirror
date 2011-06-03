@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 02 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -175,6 +175,11 @@ NEWS							*atp-news*
   LocalCommands was written also in python which is more than 10 times faster. 
 
   |atp-:ViewOutput| -- removed the [sync] argument.
+
+  |atp-:BibSearch| is written in python. It is much faster. Thus the argument
+  should be a python regular expression. If you want to use vim script (and
+  vim regular expression) set |g:atp_bibsearch|="vim". Then both Tab
+  Completion and |atp-:BibSearch| will use vim code.
 >
  ======================
  Changes in version 9.5
@@ -2187,6 +2192,11 @@ BibSearch({bang}, [pattern], [flags])				*atp-BibSearch*
 	files and opens a new window with results. For the command, please read
 	|atp-:BibSearch|.
 
+	Note: by default python written search engine is used so [pattern]
+	should be python regexp, unless you set |g:atp_bibsearch|="vim", when
+	you can use vim regexp. Python regexp are similar to vim with
+	'nomagic' set.
+
 	{bang} has two possible values "!" or "", with "!" it looks first for
 	input files, while if {bang}="" only if ATP has not done it yet. 
 
@@ -2203,12 +2213,15 @@ BibSearch({bang}, [pattern], [flags])				*atp-BibSearch*
 
 
 								*atp-bibpatterns*
+	Note: Upper pattern is vim pattern lower one is python regexp. 
+
 	Before the match all the ligature symbols and {:} are removed. For
 	example \`a, \' e, \oa,\ea are substituted with a, e, oa, ea
 	(respectively).  Note that the space in \' e is also removed. Each
 	line (without ligatures) of every bib file found in your tex document
 	will be matched against the pattern, for example if the pattern is:
 >
+ 		'author.*Grothendieck'
  		'author.*Grothendieck'
 <
 	the BibSearch function will find all the bibliographic fields
@@ -2217,17 +2230,20 @@ BibSearch({bang}, [pattern], [flags])				*atp-BibSearch*
 	example:
 >
 		'^\(\s*author.*Joayl\)\|Galois Theory'
+		'^(\s*author.*Joayl)|Galois Theory'
 <
 	will result in all bib fields which author is Joyal or 
 	which includes the words 'Galois Theory' (which by the way appear in
 	many article/book titles), yet another example:	
 >
-		'author.*Joayl\|title\p*Galois Theory'
+		'author.*Joayl\|title.*Galois Theory'
+		'author.*Joayl|title.*Galois Theory'
 <
 	This will match against all bib entries written by Joyal or which title
 	includes the word 'Galois Theory'.
 >
- 		:call BibSearch('author.*Joyal\&.*Tirney')	
+ 		'author.*Joyal\&.*Tirney'
+		 ! python has no '\&' !
 <	
 	will find all the bib entries which were written by Joyal and Tirney
 	(and maybe somebody else). 
@@ -2421,14 +2437,23 @@ map c, map y, map p
 	'\ '), for more see |f-args|. If you do not provide any argument then
 	all entries of all bib files will be shown. 
 	
+								*g:atp_bibsearch*
+	Note: {pattern} should be python regular expression not vim regular
+	exression. Unless you set |g:atp_bibsearch|="vim" (the default is
+	"python"). Python regular expressions are quite similar to vim with
+	'nomagic' set ( grouping with '(' and ')', with separating
+	alternatives with '|'). But there is no vim '\&' in python regexp.
+
 	The pattern to highlight matching string is passed to |@/| hence you can
-	use |n| and |N| in the BibSearch buffer.
+	use |n| and |N| in the BibSearch buffer. This will only work for
+	{pattern} which is both vim and python regular expression.
 
 	Some examples:						*atp-bibflags:examples*
 >
 	    :BibSearch 
 <				Above command shows all bib fields with
-				the default flags
+				the default flags (might be slow, why not to
+				open bib file with :GotoFile)
 >
 	    :BibSearch @ yt	
 <				and this is a tip how to show all bib fields with
@@ -2436,18 +2461,18 @@ map c, map y, map p
 				will match at every bib field!). It is
 				equivalent to:
 >
-	    :call BibSearch('','yt')
+	    :BibSearch // yt
 
-	    :BibSearch title[\s.]*Galois Theory  aetb
+	    :BibSearch /title[\s.]*Galois Theory/  aetb
 <
 	The next one shows all bib fields which were written by Joyal and
 	Tirney (and may by somebody else).
 >
-	    :BibSearch 'author.*Joyal\&.*Tirney'
-<
+	    :BibSearch author.*Joyal\&.*Tirney
+< 	This is not possible with |g:atp_bibsearch|="python" (the default).
 
-:Dsearch[!] [/]pattern[/] 					*atp-:Dsearch*
-	The [pattern] argument is optional. Finds all definitions which
+:Dsearch[!] [/]{pattern}[/] 					*atp-:Dsearch*
+	The {pattern} argument is optional. Finds all definitions which
 	matches the pattern. It looks in the main file (only in the preamble,
 	unless the optional bang '!' is used) and all the input files (except
 	bib files). This command respects the options: 'ignorecase' and
