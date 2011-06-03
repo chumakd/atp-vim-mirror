@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -155,7 +155,7 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.6
 <
-  Some functions where rewritten in python making ATP much faster:
+  Some functions where rewritten in python making ATP much faster.
 
   ATP loads 1/3 faster (after first run when you save project file, which is
   done when you save your file!).
@@ -172,7 +172,8 @@ NEWS							*atp-news*
   |b:atp_LocalColors| to |g:atp_ProjectLocalVariables| if vim doesn't have
   |+python| feature otherwise |g:atp_local_completion| is set to 2, hence
   |atp-:LocalCommands| is run with |BufEnter|. It is so because the function
-  LocalCommands was written also in python which is more than 10 times faster. 
+  LocalCommands was written also in python which is more than 10 times faster
+  than the old vim implementation. 
 
   |atp-:ViewOutput| -- removed the [sync] argument.
 
@@ -180,6 +181,8 @@ NEWS							*atp-news*
   should be a python regular expression. If you want to use vim script (and
   vim regular expression) set |g:atp_bibsearch|="vim". Then both Tab
   Completion and |atp-:BibSearch| will use vim code.
+
+  Some other small fixes.
 >
  ======================
  Changes in version 9.5
@@ -668,25 +671,6 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
   - :ErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
     they set error format and reloads the error file.
 9.2:
-  - There is new flag for |atp-:ShowErrors| and |atp-:ErrorFormat|: "all"
-    and "All" - "all" is used to filter using all the flags, "All" to not
-    filter at All ;).
-							|g:atp_DefaltErrorFormat|
-9.2:    
-  - g:atp_DefaultErrorFormat = "erc". The value is the  same as argument to
-    |atp-:ShowErrors| and |atp-:ErrorFormat|. This is the default argument
-    for these commands when they are used without any argument. Corresponding
-    'errorformat' is set at startup.
-							*g:atp_DefaultCmdHeight*
-9.2:
-  - g:atp_DefaultCmdHeight - the default cmd height (see |cmdheight|) for the
-    debug mode. ATP will switch to it back and forth if needed. By default it
-    is set to |cmdheigh| value (thus unless you set it to sth else you will
-    not see the difference). 
-
-    Note: if you change |cmdheight| you should also change g:atp_DefaultCmdHeight, 
-    unfortunately vim has not autocommand group event to do that automatically.
-9.2:
     See |g:atp_IMapCC| and |g:atp_updatetime_insert|.
 9.1:  
   							*g:atp_VimCompatible*
@@ -919,8 +903,9 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	See also |atp-:copen|.
 
 						    	*g:atp_DebugModeQuickFixHeight*
-g:atp_DebugModeQuickFixHeight = 8
-	This is the maximal height of |quickfix| window when opened by ATP.
+>
+ g:atp_DebugModeQuickFixHeight = 8
+<	This is the maximal height of |quickfix| window when opened by ATP.
 
 	 						*atp-debug-mode-maps*
 	 You can invoke compiler in the 'debug' mode with '|<LocalLeader>|d',
@@ -937,6 +922,24 @@ g:atp_DebugModeQuickFixHeight = 8
 	When compilations ends without errors (i.e. when quick fix list is
 	empty for the current error format) |t:atp_DebugMode| falls back to
 	|g:atp_DefaultDebugMode|.
+
+							*g:atp_DebugCmdHeight*
+							*g:atp_cmdheight*
+>
+ g:atp_DebugModeCmdHeight = &cmdheight
+<       the default cmd height (see |cmdheight|) for the debug mode. 
+	ATP will switch to it back and forth if needed. By default it is set
+	to |cmdheigh| value (thus unless you set it to sth else you will not
+	see the difference). 
+
+	When going out of debug/Debug modes cmdheight is set to
+	|g:atp_cmdheight| value (with default value set from 'cmdheight'
+	option on startup). 
+
+	Note: if you change |cmdheight| you should also change
+	|g:atp_DefaultCmdHeight|, unfortunately vim has not autocommand group
+	event to do that automatically.
+
 
 :DebugMode [debug-mode]					*atp-:DebugMode*
 	Command which help to set |t:atp_DebugMode| variable (has completion).

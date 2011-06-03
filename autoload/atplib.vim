@@ -1516,26 +1516,27 @@ def parse_bibentry(bib_entry):
     nr=1
     while nr < len(bib_entry)-1:
         line=bib_entry[nr]
-        if not re.search('=', line):
-            while not re.search('=', line) and nr < len(bib_entry)-1:
-# 		val=re.sub('\s*$', '', bib[p_e_type])+" "+remove_quotes(re.sub('^\s*', '', re.sub('\t', ' ', line)))
-		val=re.sub('\s*$', '', bib[p_e_type])+" "+re.sub('^\s*', '', re.sub('\t', ' ', line))
-                bib[p_e_type]=remove_quotes(re.sub('\\r$', '', val))
-                nr+=1
-                line=bib_entry[nr]
-        else:
-            v_break=False
-            for e_type in types:
-                if re.match('\s*'+e_type+'\s*=', line, re.I):
-                    # this is not working when title is two lines!
-#                     bib[e_type]=remove_quotes(re.sub('\t', ' ', line))
-                    bib[e_type]=remove_quotes(re.sub('\\r$', '', re.sub('\t', ' ', line)))
-                    p_e_type=e_type
+        if not re.match('\s*%', line):
+            if not re.search('=', line):
+                while not re.search('=', line) and nr < len(bib_entry)-1:
+                    val=re.sub('\s*$', '', bib[p_e_type])+" "+re.sub('^\s*', '', re.sub('\t', ' ', line))
+                    val=re.sub('%.*', '', val)
+                    bib[p_e_type]=remove_quotes(re.sub('\\r$', '', val))
                     nr+=1
-                    v_break=True
-                    break
-            if not v_break:
-                nr+=1
+                    line=bib_entry[nr]
+            else:
+                v_break=False
+                for e_type in types:
+                    if re.match('\s*'+e_type+'\s*=', line, re.I):
+                        # this is not working when title is two lines!
+                        line=re.sub('%.*', '', line)
+                        bib[e_type]=remove_quotes(re.sub('\\r$', '', re.sub('\t', ' ', line)))
+                        p_e_type=e_type
+                        nr+=1
+                        v_break=True
+                        break
+                if not v_break:
+                    nr+=1
 #    for key in bib.keys():
 #        print(key+"="+bib[key])
 #    print("\n")
@@ -1904,7 +1905,15 @@ function! atplib#showresults(bibresults, flags, pattern, bibdict)
     if g:atp_debugBS
 	let g:pattern	= a:pattern
     endif
-    let pattern_tomatch = substitute(a:pattern, '\Co', 'oe\\=', 'g')
+    if has("python") || g:atp_bibsearch == "python"
+        let pattern_tomatch = substitute(a:pattern, '(', '\\(', 'g')
+        let pattern_tomatch = substitute(pattern_tomatch, ')', '\\)', 'g')
+        let pattern_tomatch = substitute(pattern_tomatch, '|', '\\|', 'g')
+    else
+        let pattern_tomatch = a:pattern
+    endif
+    let g:debug=pattern_tomatch
+    let pattern_tomatch = substitute(pattern_tomatch, '\Co', 'oe\\=', 'g')
     let pattern_tomatch = substitute(pattern_tomatch, '\CO', 'OE\\=', 'g')
     let pattern_tomatch = substitute(pattern_tomatch, '\Ca', 'ae\\=', 'g')
     let pattern_tomatch = substitute(pattern_tomatch, '\CA', 'AE\\=', 'g')
