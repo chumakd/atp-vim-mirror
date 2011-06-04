@@ -535,82 +535,6 @@ nmap \u, vmap \u
  	http://www.vim.org/scripts/script.php?script_id=489
     remaps the K, ATP will delete any such map - ATP first tries to delete
     the local |map-<buffer>|, then the global map).
->
-  =================================
-  Changes in versions 9 & 9.1 & 9.2
-<
-
-NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
-9.2:
-  - This is a very handy change: unified way to go to next section/environment
-    with the commands |atp-:F| (forward) and |atp-:B| (backward).
-9.2:							
-							*atp-compile.py*
-  - There are two function compile which can compile your tex file: a newly
-    written in python (for portability reasons) and old one in bash. They work
-    almost the same with one small difference. First of all you need to make
-    the python script executable (it is 'ftplugin/ATP_files/compile.py' under
-    vim |'runtimepath'|).
-
-    The python code has a debug file compile.py.log under |g:atp_TempDir| will
-    contain all the errors issued by python, and '/tmp/atp_compile.py.debug'
-    - debugging info printed by the |compile.py| script.
-
-    							*g:atp_Compiler*
-    If for some reason you'd like to use the old 'bash' style script there is
-    a variable:
->
-	g:atp_Compiler = "python"
-<   just switch its value to "bash" (you don't need to restart vim).
-    OK, so what is the difference: the python script uses psutil python
-    library (probably you need to install it, at least I had to.) It is for
-    two purposes: to determine if xpdf is running and secondly, more
-    importantly to check if latex is running. 
-    							*b:atp_LatexPIDs*
-    The python script |compile.py| sends PID numbers of latex processes to vim
-    variable |b:atp_LatexPIDs|. Then the function which makes the status line
-    for ATP has a python code to check if the latex PIDs are still valid
-    processes. This is more accurate than the method used with bash compiler
-    (before running latex increase variable b:atp_running and decrease after
-    getting signal that latex has ended). In many situations this was failing.
-    The new method works better, however it shows that latex is running
-    after slightly longer period of time (not that first python must run the
-    script and then run latex). 
-							*b:atp_TexReturnCode*	
-    The variable |b:atp_TexReturnCode| stores the return code of compilation.
-
-    See |atp-requirements-python| for nonstandard python libraries that are
-    used by ATP.
-    							*b:atp_VerboseLatexInteractionMode*
-    There is also a small enhancement in verbose debug mode. You can decide what
-    it the value of latex '-interaction=' switch. The default now is
-    "errorstopmode". Thus this gives the classical compilation, when latex
-    stops on errors. The other possible values are: "batchmode", "nonstopmode"
-    and "scrollmode".
-9.2:
-  - Debug modes has changed: |atp-debug-mode-debug|, |atp-debug-mode-Debug|
-    and are more usable now. See also |g:atp_DefaultDebugMode|,
-    |atp-:DebugMode| and |g:atp_DebugModeQuickFixHeight|.
-9.2
-  - if you use python compiler (the default new compiler |g:atp_Compiler|)
-    the command |atp-:Bibtex|! (with bang) will show you bibtex output while
-    you're in debug mode. You can echo the return code of bibtex using
-    :Bibtex output (it is stored in the variable b:atp_BibtexReturnCode), and
-    bibtex output via |b:atp_BibtexOutput|. 
-
-    Note: However the fasted way to see the bibtex output is to use |atp-:Bibtex|
-    (without a bang "!"), i.e. run BibTeX.
-	
-9.1:  
-  							*g:atp_VimCompatible*
-  - g:atp_VimCompatible variable, with default value 0 ("no"). Its values are
-    0/1 or yes/no. It changes the behaviour of '%'. In nocomatible mode it gen
-    go to matching pair in a different line in compatible mode it find the
-    matching pair only if the ending bracket is in the same line.
-    
-  - Tab completion for todonotes package. (I'm planing to integrate :ToDo
-    command with latex \todo{} command provided in todonotes and todo
-    packages).
 
     						Chears, Marcin
 
@@ -755,6 +679,42 @@ directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
 forth between you |b:atp_OutDir| and the temporary directory)
 
+							*atp-compile.py*
+There are two function compile which can compile your tex file: one written in
+python (for portability reasons) and old one in bash. They work almost the
+same with one small difference. The python code has some vim enhancments (for
+example the progres bar).
+
+The python code has a debug file compile.log under |g:atp_TempDir| will
+contain all the errors issued by python, and 'compile.py.debug'
+- debugging info printed by the |compile.py| script.
+
+    							*g:atp_Compiler*
+If for some reason you'd like to use the old 'bash' style script there is
+a variable: >
+	g:atp_Compiler = "python"
+< just switch its value to "bash" (you don't need to restart vim).  OK, so
+what is the difference: the python script uses psutil python library (probably
+you need to install it, at least I had to.) It is for two purposes: to
+determine if xpdf is running and secondly, more importantly to check if latex
+is running. 
+    							*b:atp_LatexPIDs*
+The python script |compile.py| sends PID numbers of latex processes to vim
+variable |b:atp_LatexPIDs|. Then the function which makes the status line for
+ATP has a python code to check if the latex PIDs are still valid processes.
+This is more accurate than the method used with bash compiler (before running
+latex increase variable |b:atp_running| and decrease after getting signal that
+latex has ended). In many situations this was failing.  The new method works
+better, however it shows that latex is running after slightly longer period of
+time (not that first python must run the script and then run latex). 
+
+							*b:atp_TexReturnCode*	
+The variable |b:atp_TexReturnCode| stores the return code of compilation.
+
+See |atp-requirements-python| for nonstandard python libraries that are used
+by ATP.
+
+-------------------------------------------------------------------------------
 CALL BACK AND DEBUG MODE				*atp-callback*
 							*atp-debug-mode*
 	By default the call back mechanism is turned on (g:atp_callback=1)
@@ -813,6 +773,7 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 
 							*atp-debug-mode-verbose*
 							*'verbose'*
+							*b:atp_VerboseLatexInteractionMode*
 	* if |t:atp_DebugMode| 	= 'verbose'
 	       Every compilation which is invoked by the user will be run in
 	       verbose mode (this mode is mapped to <F5> key).  In this mode
@@ -2475,29 +2436,32 @@ map c, map y, map p
 =============================================================================
 SOME VARIABLES						*atp-bibsearch-variables*
 							*atp-variables-bib*
-	All the values of important variables can be shown by ShowOption
-	command.
+	All the values of important variables with their values can be shown
+	(grepped) by |atp-:ShowOptions| command.
 
-								*b:bibfiles*
+  							*g:atp_VimCompatible*
 >
- b:bibfiles							
-<	This variable is a list and you can put here additional bib files.
-	They will be parsed by the BibSearch/BibChoose functions.
+ g:atp_VimCompatible variable
+<   	with default value 0 ("no"). Its values are 0/1 or yes/no. It changes 
+	the behaviour of '%'. In nocomatible mode it gen go to matching pair
+	in a different line in compatible mode it find the matching pair only
+	if the ending bracket is in the same line.
 
-INTERNALS: ~
-	The following variables you can see using the ShowOptions command (see
-	|atp-ShowOptions|). >
- s:bibfiles
-<	This variable is a list which stores bib files found in your tex
-	files and which are readable. It is set up when you first run of the commands:
-	BibSearch/BibChoose/ShowOptions. Its value is shown by the
-	functions FindBibFiles({bufname}). >
- s:allbibfiles 
-<	this is a sum of found bib files the locally defined b:bibfiles, which
-	not necessarily are readable. >
- s:notreadablebibfiles
-<	guess what :)
-
+	    						*b:TreeOfFiles*
+							*b:ListOfFiles*
+							*b:TypeDict*
+							*b:LevelDict*
+	These four variables are important for project files. They are made
+	(or updated) by using |atp-:InputFiles| (by the TreeOfFiles()
+	function). First one is a dictionary, which keys are input files found
+	in |b:atp_MainFile| and values are list in which first argument is the
+	same type variable, second value is the line number where the input
+	file was declared. (So in fact this is a tree!). |b:ListOfFiles| is
+	a list of input files. |b:TypeDict| is dictionary with keys from
+	|b:ListOfFiles| and values: "bib" for bib files, "preambule" for
+	preambule input files and "input" for other input files. |b:LevelDict|
+	is a dicitonary with keys from |b:ListOfFiles| and values: how far in
+	the tree |b:TreeOfFiles| the input file resides.
 
 -----------------------------------------------------------------------------------
 								*atp-bibsearch-comments*
@@ -2675,11 +2639,11 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		also in bib files defined in the main file.
 
 		In the popup menu the first column show the label name, second
-		column contains the first letter of the counter name used: e
-		for equation, t for theorem, s for section, c for chapter,
-		etc. - these are the most common things you will see, the
-		third column contains the value of the counter. It is put in
-		brackets () if it comes from equation counter.
+		column contains the first letter of the counter name used:
+		e for equation, t for theorem, s for section, c for chapter,
+		I for Item, etc. - these are the most common things you will
+		see. The third column contains the value of the counter. It is
+		put in brackets () if it comes from equation counter.
 
 		There is also omnicompletion (CTRL-X CTRL-O, see
 		|i_CTRL-X_CTRL-O|) for \cite command. Check it out, as it is
@@ -3658,6 +3622,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	compiler (consecutively). It is useful if you are working with PDF
 	files and you want to have bookmarks (you can get them using hyperref
 	package with the option: bookmarks. Then set b:atp_auruns to '2'.
+
 							*b:atp_running*
 >
  b:atp_running						
@@ -3954,6 +3919,8 @@ map <F5>,imap <F5>, :VTEX
 :ViewOutput
 map \v,map <F3>, imap \v, imap <F3>  
 
+							*b:atp_BibtexOutput*
+							*b:atp_BibtexReturnCode*
 :Bibtex[!]	run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX
 map \b		if you use |g:atp_Compiler|='python' and BibTeX returned with 
 		errors the compilation will stop. In the debug mode you will 

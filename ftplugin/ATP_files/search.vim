@@ -295,28 +295,7 @@ function! <SID>LocalCommands_py(write, ...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     if a:write
-	" Take care about backup and writebackup options.
-	let backup=&backup
-	let writebackup=&writebackup
-	if &backup || &writebackup | setlocal nobackup | setlocal nowritebackup | endif
-    " This takes lots of time! 0.049s (more than 1/3)	
-	if g:atp_debugCompiler
-	    silent echomsg "BEFORE WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-	endif
-
-	" disable WriteProjectScript
-	let project=b:atp_ProjectScript
-	let b:atp_ProjectScript=0
-
-	silent! w
-
-	let b:atp_ProjectScript=project
-	if g:atp_debugCompiler
-	    silent echomsg "AFTER WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-	endif
-
-	let &l:backup=backup 
-	let &l:writebackup=writebackup 
+	call atplib#write()
     endif
 
 

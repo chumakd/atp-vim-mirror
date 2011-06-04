@@ -518,14 +518,7 @@ function! <SID>MakeLatex(bang, verbose, start)
     lockvar g:atp_TexCommand
 
     " Write file
-    let backup		= &backup
-    let writebackup	= &writebackup
-
-    " Disable WriteProjectScript
-    let eventignore 		= &l:eventignore
-    setl eventignore+=BufWrite
-    silent! w
-    let &l:eventignore 		= eventignore
+    call atplib#write()
 
     if a:verbose == "verbose"
 	exe ":!".cmd
@@ -733,28 +726,12 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 		\ . autex_wait
 
     " Write file
-    let backup=&backup
-    let writebackup=&writebackup
-    if a:command == "AU"  
-	if &backup | setlocal nobackup | endif
-	if &writebackup | setlocal nowritebackup | endif
-    endif
-
-    " Disable WriteProjectScript
-    let project=b:atp_ProjectScript
-    let b:atp_ProjectScript=0
-
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
 
-    silent! write
+    call atplib#write()
 
-    let b:atp_ProjectScript=project
-    if a:command == "AU"  
-	let &l:backup		= backup 
-	let &l:writebackup 	= writebackup 
-    endif
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "POST WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
@@ -1067,30 +1044,14 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	endif
 
 	" Take care about backup and writebackup options.
-	let backup=&backup
-	let writebackup=&writebackup
-	if a:command == "AU"  
-	    if &backup || &writebackup | setlocal nobackup | setlocal nowritebackup | endif
-	endif
-" This takes lots of time! 0.049s (more than 1/3)	
 	if g:atp_debugCompiler
 	    silent echomsg "BEFORE WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
 	endif
 
-	" disable WriteProjectScript
-	let project=b:atp_ProjectScript
-	let b:atp_ProjectScript=0
+	call atplib#write()
 
-	silent! w
-
-	let b:atp_ProjectScript=project
 	if g:atp_debugCompiler
 	    silent echomsg "AFTER WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-	endif
-
-	if a:command == "AU"  
-	    let &l:backup=backup 
-	    let &l:writebackup=writebackup 
 	endif
 
 	if a:verbose != 'verbose'

@@ -5,6 +5,23 @@
 " URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 
+" Write:
+function! atplib#write() "{{{
+    let backup		= &backup
+    let writebackup	= &writebackup
+    let project		= b:atp_ProjectScript
+
+    " Disable WriteProjectScript
+    let b:atp_ProjectScript = 0
+    set nobackup
+    set nowritebackup
+
+    silent! update
+
+    let b:atp_ProjectScript = project
+    let &backup		= backup
+    let &writebackup	= writebackup
+endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1
     if a:0 >= 1
