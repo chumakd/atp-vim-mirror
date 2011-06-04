@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat May 21 01:00  2011 W
+" Last Change: Sat Jun 04 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -245,7 +245,7 @@ function! <SID>WrapEnvironment(env_name,...)
 	else
 	    let env_name=env
 	endif
-	'<,'>WrapSelection '\begin{'.env_name.'}','\end{'.env_name.'}','0', '1'
+	call <SID>WrapSelection('\begin{'.env_name.'}','\end{'.env_name.'}','0', '1')
     endif
 endfunction "}}}
 vmap <buffer> <silent> <Plug>WrapEnvironment		:<C-U>call <SID>WrapEnvironment('', 1)<CR>

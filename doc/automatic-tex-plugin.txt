@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.5)
 			by Marcin Szamotulski
@@ -588,30 +588,6 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
   - Debug modes has changed: |atp-debug-mode-debug|, |atp-debug-mode-Debug|
     and are more usable now. See also |g:atp_DefaultDebugMode|,
     |atp-:DebugMode| and |g:atp_DebugModeQuickFixHeight|.
-
-9.2!!:							*g:atp_ProgressBar*
->
- g:atp_ProgressBar = 1  
-<   By default, when using the python compiler you will get progress message
-    in your status line. The number indicates the last page number compiled by
-    LaTeX. If by some reason, you want to switch this off, set
-    g:atp_ProgressBar to 0 (use |let|).
-
-    You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this feature
-    to work (see also |laststatus| on how to activate status line in Vim).
-
-    If there are many background processes the number which is shown belongs
-    to the oldest process. (b:atp_ProgressBar is a dictionary 
-    { 'pid' : 'pagenr' } - status line shows max of pagenr's).
-
-    Note: the time between you start to compile and [1] appears in the status line
-    is mostly the time when LaTeX is reading all the packages that you loaded
-    in the preamble.
->
- b:atp_ProgressBar
-<   This is a read only variable. It is equal to empty string '' if
-    compilation is not going on, and while compilation it stores the page
-    number which LaTeX is processing.
 9.2
   - if you use python compiler (the default new compiler |g:atp_Compiler|)
     the command |atp-:Bibtex|! (with bang) will show you bibtex output while
@@ -622,56 +598,6 @@ NEW CODE TO COMPILE DOCUMENTS	 			*atp-news-NEW_COMPILER*
     Note: However the fasted way to see the bibtex output is to use |atp-:Bibtex|
     (without a bang "!"), i.e. run BibTeX.
 	
-							*atp-:GotoNamedDest*
-9.2:
-  :GotoNamedDest <destination_name>
-  - Using '\hypertarget{<destination_name>}{<text>}' from hyperref package you
-    can insert into PDF named destinations. This command will set the position
-    of PDF file in Xpdf to this destination. There is a completion for
-    destination names. This command solely works with Xpdf. Using: >
-	:%s/\\label{\([^}]*\)}/\hypertarget{\1}{}/gc
-<   you can turned labels into named destinations.
-
-9.2:
-  - g:atp_StarEnvDefault and g:atp_StarEnvMathDefault are now local variables
-    |b:atp_StarEnvDefault|, |b:atp_StarEnvMathDefault|. They are remembered by
-    the local project file, see |g:atp_cached_local_variables|. 
-9.1:    
-  - :SyncTex, forward searching for Okular, Xdvi (they also support reverse
-    searching viewer->Vim), and Xpdf (only forward search). Read
-    |atp-:SyncTex| and the sections on viewers: |atp-viewers-Okular|,
-    |atp-viewers-Xdvi|. For pdf viewers it uses -synctex=1 for dvi
-    -src-specials is used. 
-9.2:
-  - Forward searching for Xpdf works better (finds the horisontal and vertical
-    position on the page). The developer of Xpdf said that Xpdf v3.03 will
-    have switches for page number, and mouse event position what will alow
-    for forward searching in Xpdf.
-9.1:							
-  - Reverse searching in okular. Read |atp-viewers-Okular| how to install it
-    (it is easy but needs you to do that).
-9.2:    
-  - Reverse searching python script atp_RevSearch.py is slightly better now!
-
-9.1!!: IMPORTANT: The default is: >
-	let b:atp_TempDir='.tmp'
-<   ATP will make this directory under |b:atp_OutDir|. Every latex process
-    will be run in a private directory under it. Every private directory is
-    removed when compiler ends (after copying files), the tmp directory is
-    removed when Vim exists with system command 'rmdir' so if sth is in side
-    the directory will not be removed. 
-							*atp-:WrapEnvironment*
-9.2:
-  - :WrapEnvironment {environment} 
-    vmap <F4>		mark part of the text and wrap it into anvironment
-			given as the argument, the map will let you choose the
-			environment name.
-
-9.2:
-  - :ErrorFormat and :ShowErrors work in QuickFixWindow. They do the same:
-    they set error format and reloads the error file.
-9.2:
-    See |g:atp_IMapCC| and |g:atp_updatetime_insert|.
 9.1:  
   							*g:atp_VimCompatible*
   - g:atp_VimCompatible variable, with default value 0 ("no"). Its values are
@@ -902,6 +828,31 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 
 	See also |atp-:copen|.
 
+      							*g:atp_ProgressBar*
+>
+ g:atp_ProgressBar = 1  
+<       By default, when using the python compiler you will get progress 
+	message in your status line. The number indicates the last page number
+	compiled by LaTeX. If by some reason, you want to switch this off, set
+	g:atp_ProgressBar to 0 (use |let|).
+
+	You need |g:atp_statusNotif|=1 and |g:atp_statusline|=1 for this
+	feature to work (see also |laststatus| on how to activate status line
+	in Vim).
+
+	If there are many background processes the number which is shown
+	belongs to the oldest process. (b:atp_ProgressBar is a dictionary
+	{ 'pid' : 'pagenr' } - status line shows max of pagenr's).
+
+	Note: the time between you start to compile and [1] appears in the
+	status line is mostly the time when LaTeX is reading all the packages
+	that you loaded in the preamble.
+>
+ b:atp_ProgressBar
+<       This is a read only variable. It is equal to empty string '' if
+	compilation is not going on, and while compilation it stores the page
+	number which LaTeX is processing.
+
 						    	*g:atp_DebugModeQuickFixHeight*
 >
  g:atp_DebugModeQuickFixHeight = 8
@@ -948,18 +899,21 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	If no argument is given it shows the current debug mode.
 
 	:DebugMode[!] silent
-	(:DebugMode[!] s)
+	(:DebugMode[!] s) 
+	nmap <LocalLeader><LocalLeader>s
 		It will load error file (|cgetfile|) with bang "!" it will
 		open |quickfix| window if there are errors (|cwindow|). If
 		|quickfix| window was opened it will be closed.
 		Sets |t:atp_DebugMode|='silent'.
 	:DebugMode debug	
-	(:DebugMode[!] d)
+	(:DebugMode[!] d) 
+	nmap <LocalLeader><LocalLeader>d
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |:copen|.
 		Sets |t:atp_DebugMode|='debug'
 	:DebugMode Debug	
-	(:DebugMode[!] D)
+	(:DebugMode[!] D) 
+	nmap <LocalLeader><LocalLeader>D
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |:copen|.
 		Sets |t:atp_DebugMode|='Debug'
@@ -1076,6 +1030,10 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 		:ShowErrors rc
 <	will show all reference and citation warnings.
 
+	Note: this command works in quickfix window. It will change
+	errorformat but will not reload quickfix list. Better use
+	|atp-:ErrorFormat| instead.
+
 							*g:atp_DefaultErrorFormat*
 g:atp_DefaultErrorFormat = 'erc' 
     The value is the  same as argument to |atp-:ShowErrors| and
@@ -1118,6 +1076,7 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 	added/removed from |b:atp_ErrorFormat|, example: >
 		:ErrorFormat +w
 <	will add 'w' to |b:atp_ErrorFormat|.		
+	Note: this command works in quickfix window.
 
 :Compiler {compiler-program}				*atp-:Compiler*
 	Command which help to set |b:atp_TexCompiler| variable (with
@@ -1670,6 +1629,18 @@ map \L
 	Note: You can also use a tag file and vim |tags| commands, see
 	|atp-:Tags|.
 
+							*atp-:GotoNamedDest*
+							{only in Xpdf}
+:GotoNamedDest <destination_name>
+	Using '\hypertarget{<destination_name>}{<text>}' from hyperref package
+	you can insert into PDF named destinations. This command will set the
+	position of PDF file in Xpdf to this destination. There is
+	a completion for destination names. This command solely works with
+	Xpdf. Using: >
+	    :%s/\\label{\([^}]*\)}/\hypertarget{\1}{}/gc
+<       you can turned labels into named destinations.
+
+
 							*atp-:F*
 :[count]F {arg}							
 	Go (forward) to {arg}, {arg} might be: part, section, subsection,
@@ -1871,7 +1842,7 @@ map <S-F4>
 
 							*atp-:ChangeEnv*
 :ChangeEnv		
-map <F4>		
+nmap <F4>
 	This does the same as the above command but asks for environment name
 
 	Read |g:atp_toggle_labels| below how it handles the prefixes of
@@ -1890,6 +1861,13 @@ map <F4>
 	In project files this is done in all files belonging to the project.
 	Changes are not saved by default (ATP uses |'hidden'| option, so when
 	you use q! or qa! all changes will be lost).
+
+							*atp-:WrapEnvironment*
+:WrapEnvironment {environment} 
+vmap <F4>		
+	Mark part of the text and wrap it into anvironment given as the
+	argument, the map will let you choose the environment name.
+
 							*atp-:SetOutDir*
 :SetOutDir					
 	This is a command which sets the |b:atp_OutDir| variable and the

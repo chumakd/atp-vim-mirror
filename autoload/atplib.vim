@@ -1138,18 +1138,19 @@ endfunction
 " These are all bibsearch realted variables and functions.
 "{{{ BIBSEARCH
 "{{{ atplib#variables
-let atplib#bibflagsdict={ 't' : ['title', 'title        '] , 'a' : ['author', 'author       '], 
-		\ 'b' : ['booktitle', 'booktitle    '], 'c' : ['mrclass', 'mrclass      '], 
-		\ 'e' : ['editor', 'editor       '], 	'j' : ['journal', 'journal      '], 
-		\ 'f' : ['fjournal', 'fjournal     '], 	'y' : ['year', 'year         '], 
-		\ 'n' : ['number', 'number       '], 	'v' : ['volume', 'volume       '], 
-		\ 's' : ['series', 'series       '], 	'p' : ['pages', 'pages        '], 
-		\ 'P' : ['publisher', 'publisher    '], 'N' : ['note', 'note         '], 
-		\ 'S' : ['school', 'school       '], 	'h' : ['howpublished', 'howpublished '], 
-		\ 'o' : ['organization', 'organization '], 'I' : ['institution' , 'institution '],
-		\ 'u' : ['url', 'url          '],
-		\ 'H' : ['homepage', 'homepage     '], 	'i' : ['issn', 'issn         '],
-		\ 'k' : ['key', 'key          '], 	'R' : ['mrreviewer', 'mrreviewer   ']}
+let atplib#bibflagsdict={ 
+                \ 't' : ['title',       'title        '],               'a' : ['author',        'author       '], 
+		\ 'b' : ['booktitle',   'booktitle    '],               'c' : ['mrclass',       'mrclass      '], 
+		\ 'e' : ['editor',      'editor       '], 	        'j' : ['journal',       'journal      '], 
+		\ 'f' : ['fjournal',    'fjournal     '], 	        'y' : ['year',          'year         '], 
+		\ 'n' : ['number',      'number       '], 	        'v' : ['volume',        'volume       '], 
+		\ 's' : ['series',      'series       '], 	        'p' : ['pages',         'pages        '], 
+		\ 'P' : ['publisher',   'publisher    '],               'N' : ['note',          'note         '], 
+		\ 'S' : ['school',      'school       '], 	        'h' : ['howpublished',  'howpublished '], 
+		\ 'o' : ['organization', 'organization '],              'I' : ['institution' ,  'institution '],
+		\ 'u' : ['url',         'url          '],
+		\ 'H' : ['homepage',    'homepage     '], 	        'i' : ['issn',          'issn         '],
+		\ 'k' : ['key',         'key          '], 	        'R' : ['mrreviewer',    'mrreviewer   ']}
 " they do not work in the library script :(
 " using g:bibflags... .
 " let atplib#bibflagslist=keys(atplib#bibflagsdict)
@@ -1626,7 +1627,7 @@ endfunction
 " {{{ atplib#SearchBibItems
 " the argument should be b:atp_MainFile but in any case it is made in this way.
 " it specifies in which file to search for include files.
-function! atplib#SearchBibItems(name)
+function! atplib#SearchBibItems()
     let time=reltime()
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
@@ -1634,35 +1635,55 @@ function! atplib#SearchBibItems(name)
     let l:citekey_label_dict={}
 
     " make a list of include files.
-    let l:inputfile_dict=FindInputFiles(a:name,0)
     let l:includefile_list=[]
-    for l:key in keys(l:inputfile_dict)
-	if l:inputfile_dict[l:key][0] =~# '^\%(include\|input\|includeonly\)$'
-	    call add(l:includefile_list,atplib#append(l:key,'.tex'))
+    if !exists("b:ListOfFiles") || !exists("b:TypeDict")
+	call TreeOfFiles(b:atp_MainFile)
+    endif
+    for f in b:ListOfFiles
+	if b:TypeDict[f] == "input"
+	    call add(l:includefile_list, f)
 	endif
     endfor
     call add(l:includefile_list, atp_MainFile) 
-"     let b:ifl=l:includefile_list
 
-    " search for bibitems in all include files.
-    for l:ifile in l:includefile_list
+    if has("python")
+python << PEND
+import vim, re
+files=vim.eval("l:includefile_list")
+citekey_label_dict={}
+for f in files:
+    f_o=open(f, 'r')
+    f_l=f_o.read().split("\n")
+    f_o.close()
+    for line in f_l:
+        if re.match('[^%]*\\\\bibitem', line):
+            match=re.search('\\\\bibitem\s*\[([^\]]*)\]\s*{([^}]*)}\s*(.*)', line)
+            label=match.group(1)
+            key=match.group(2)
+            rest=match.group(3)
+            if key != "":
+                citekey_label_dict[key]={ 'label' : label, 'rest' : rest }
+vim.command("let l:citekey_label_dict="+str(citekey_label_dict))
+PEND
+    else
+        " search for bibitems in all include files.
+        for l:ifile in l:includefile_list
 
-	let l:input_file = atplib#ReadInputFile(l:ifile,0)
+            let l:input_file = atplib#ReadInputFile(l:ifile,0)
 
-	    " search for bibitems and make a dictionary of labels and citekeys
-	    for l:line in l:input_file
-		if l:line =~# '\\bibitem'
-		    let l:label=matchstr(l:line,'\\bibitem\s*\[\zs[^]]*\ze\]')
-		    let l:key=matchstr(l:line,'\\bibitem\s*\%(\[[^]]*\]\)\?\s*{\zs[^}]*\ze}') 
-" 		    if l:label =~ 'bibitem'
-" 			let l:label=''
-" 		    endif
-		    if l:key != ""
-			call extend(l:citekey_label_dict, { l:key : l:label }, 'error') 
-		    endif
-		endif
-	    endfor
-    endfor
+                " search for bibitems and make a dictionary of labels and citekeys
+                for l:line in l:input_file
+                    if l:line =~# '^[^%]*\\bibitem'
+                        let l:label=matchstr(l:line,'\\bibitem\s*\[\zs[^]]*\ze\]')
+                        let l:key=matchstr(l:line,'\\bibitem\s*\%(\[[^]]*\]\)\?\s*{\zs[^}]*\ze}') 
+                        let l:rest=matchstr(l:line,'\\bibitem\s*\%(\[[^]]*\]\)\?\s*{[^}]*}\s*\zs')
+                        if l:key != ""
+                            call extend(l:citekey_label_dict, { l:key : { 'label' : l:label, 'rest' : l:rest } }, 'error') 
+                        endif
+                    endif
+                endfor
+        endfor
+    endif
 	
     let g:time_SearchBibItems=reltimestr(reltime(time))
     return l:citekey_label_dict
@@ -1912,7 +1933,6 @@ function! atplib#showresults(bibresults, flags, pattern, bibdict)
     else
         let pattern_tomatch = a:pattern
     endif
-    let g:debug=pattern_tomatch
     let pattern_tomatch = substitute(pattern_tomatch, '\Co', 'oe\\=', 'g')
     let pattern_tomatch = substitute(pattern_tomatch, '\CO', 'OE\\=', 'g')
     let pattern_tomatch = substitute(pattern_tomatch, '\Ca', 'ae\\=', 'g')
@@ -4688,7 +4708,11 @@ function! atplib#TabCompletion(expert_mode,...)
 	else
 	    " add the \bibitems found in include files
 	    let time_bibitems_SearchBibItems=reltime()
-	    call extend(completion_list,keys(atplib#SearchBibItems(atp_MainFile)))
+            let completion_dict=[]
+            let dict=atplib#SearchBibItems()
+            for key in keys(dict)
+                call add(completion_dict, { "word" : key, "menu" : dict[key]['rest'], "abbrev" : dict[key]['label'] })
+            endfor
 	    let g:time_bibitems_SearchBibItems=reltimestr(reltime(time_bibitems_SearchBibItems))
 	endif
 	let g:time_bibitems=reltimestr(reltime(time_bibitems))
@@ -4849,7 +4873,13 @@ function! atplib#TabCompletion(expert_mode,...)
 	call complete(color_nr+2,completions)
     " {{{3 bibitems
     elseif !normal_mode && completion_method == 'bibitems'
-	call complete(col+1,completion_dict)
+        if exists("completion_dict")
+            " for bibtex, biblatex
+            call complete(col+1,completion_dict)
+        else
+            " for thebibliography environment
+            call complete(col+1,completion_list)
+        endif
     " {{{3 command, tikzcpicture commands
     elseif !normal_mode && (completion_method == 'command' || completion_method == 'tikzpicture commands')
 	call complete(o+1,completions)
