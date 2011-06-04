@@ -1502,7 +1502,7 @@ def remove_ligatures(string):
     return line_without_ligatures
 
 def remove_quotes(string):
-    line=re.sub("'", "", string)
+    line=re.sub("'", "\"", string)
     line=re.sub('\\\\', '', line)
     return line
 type_pattern=re.compile('\s*@(article|book|mvbook|inbook|bookinbook|suppbook|booklet|collection|mvcollection|incollection|suppcollection|manual|misc|online|patent|periodical|supppertiodical|proceedings|mvproceedings|inproceedings|reference|mvreference|inreference|report|set|thesis|unpublished|custom[a-f]|conference|electronic|masterthesis|phdthesis|techreport|www)', re.I)
@@ -4806,15 +4806,15 @@ function! atplib#TabCompletion(expert_mode,...)
 		" Complete label by string or number:
 		
 		let aux_data	= atplib#GrepAuxFile()
-		let completions = []
-		let pattern 	= matchstr(l, '\%(.\|\\\%(eq\)\=ref\)*\\\%(eq\)\=ref\s*{\zs\S*$')  
+		let completion_dict = []
+		let pattern 	= matchstr(l, '\%(.\|\\\%(eq\)\=ref\)*\\\%(eq\)\=ref\s*{\zs\S*$')
 		for data in aux_data
 		    " match label by string or number
 		    if ( data[0] =~ '^' . pattern || data[1] =~ '^'. pattern . '$' ) && a:expert_mode || ( data[0] =~ pattern || data[1] =~ '^'. pattern ) && !a:expert_mode
-			let close = nchar == '}' ? '' : '}'
-			call add(completions, data[0] . close)
+			let close = ( nchar == '}' ? '' : '}' )
+			call add(completion_dict, { "word" : data[0].close, "abbr" : data[0], "menu" : ( data[2] == 'equation' && data[1] != "" ? "(".data[1].")" : data[1] ) , "kind" : data[2][0] })
 		    endif
-		endfor
+		endfor 
 	    endif
     "{{{3 --------- else: try to close environment
     else
@@ -4826,8 +4826,8 @@ function! atplib#TabCompletion(expert_mode,...)
     " ToDo: we will not truncate if completion method is specific, this should be
     " made by a variable! Maybe better is to provide a positive list !!!
     if g:atp_completion_truncate && a:expert_mode && 
-		\ index(['bibfiles', 'bibitems', 'bibstyles', 'labels', 
-		\ 'font family', 'font series', 'font shape', 'font encoding' ],completion_method) == -1
+		\ index(['bibfiles', 'bibitems', 'bibstyles', 'font family',
+		\ 'font series', 'font shape', 'font encoding' ],completion_method) == -1
 	call filter(completions,'len(substitute(v:val,"^\\","","")) >= g:atp_completion_truncate')
     endif
 "     THINK: about this ...
@@ -4845,7 +4845,7 @@ function! atplib#TabCompletion(expert_mode,...)
     " DEBUG
     let b:completions=completions 
     " {{{2 COMPLETE 
-    " {{{3 labels, package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding and input files 
+    " {{{3 package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding and input files 
     if
 		\ completion_method == 'package' 	|| 
 		\ completion_method == 'tikz libraries'    || 
@@ -4867,7 +4867,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	call complete(nr+2,completions)
     "{{{3 labels
     elseif completion_method == 'labels'
-	call complete(match(l, '\%(.\|\\\%(eq\)\=ref\)*\\\(eq\)\=ref\s*{\zs\S*$')+1,completions)
+	let col=match(l, '\%(.\|\\\%(eq\)\=ref\)*\\\(eq\)\=ref\s*{\zs\S*$')+1
+	call complete(col, completion_dict)
     "{{{3 colors
     elseif completion_method == 'colors'
 	call complete(color_nr+2,completions)
