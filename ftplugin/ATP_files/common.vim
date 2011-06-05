@@ -645,30 +645,36 @@ def tree(file, level, pattern, bibpattern):
         t_tree[file]    = [ n_tree, found[file][1] ]
     return [ t_tree, t_list, t_type, t_level ]
 
-mainfile_ob = open(filename, 'r')
-mainfile    = mainfile_ob.read().split("\n")
-mainfile_ob.close()
-if scan_preambule(mainfile, re.compile('\\\\usepackage\s*\[.*\]\s*{\s*subfiles\s*}')):
-    pat_str='(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?|subfiles)\s*{([^}]*)})'
-    pattern=re.compile(pat_str)
+try:
+    mainfile_ob = open(filename, 'r')
+    mainfile    = mainfile_ob.read().split("\n")
+    mainfile_ob.close()
+    if scan_preambule(mainfile, re.compile('\\\\usepackage\s*\[.*\]\s*{\s*subfiles\s*}')):
+	pat_str='(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?|subfiles)\s*{([^}]*)})'
+	pattern=re.compile(pat_str)
 #     print(pat_str)
-else:
-    pat_str='(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?)\s*{([^}]*)})'
-    pattern=re.compile(pat_str)
+    else:
+	pat_str='(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?)\s*{([^}]*)})'
+	pattern=re.compile(pat_str)
 #     print(pat_str)
 
-bibpattern=re.compile('^[^%]*\\\\(?:bibliography|addbibresource|addsectionbib(?:\s*\[.*\])?|addglobalbib(?:\s*\[.*\])?)\s*{([^}]*)}')
+    bibpattern=re.compile('^[^%]*\\\\(?:bibliography|addbibresource|addsectionbib(?:\s*\[.*\])?|addglobalbib(?:\s*\[.*\])?)\s*{([^}]*)}')
 
-bib_path=kpsewhich_path('bib')
-tex_path=kpsewhich_path('tex')
-preambule_end=preambule_end(mainfile)
+    bib_path=kpsewhich_path('bib')
+    tex_path=kpsewhich_path('tex')
+    preambule_end=preambule_end(mainfile)
 
 # Make TreeOfFiles:
-[ tree_of_files, list_of_files, type_dict, level_dict]= tree(filename, 1, pattern, bibpattern)
-vim.command("let b:TreeOfFiles="+str(tree_of_files))
-vim.command("let b:ListOfFiles="+str(list_of_files))
-vim.command("let b:TypeDict="+str(type_dict))
-vim.command("let b:LevelDict="+str(level_dict))
+    [ tree_of_files, list_of_files, type_dict, level_dict]= tree(filename, 1, pattern, bibpattern)
+    vim.command("let b:TreeOfFiles="+str(tree_of_files))
+    vim.command("let b:ListOfFiles="+str(list_of_files))
+    vim.command("let b:TypeDict="+str(type_dict))
+    vim.command("let b:LevelDict="+str(level_dict))
+except IOError:
+    vim.command("let b:TreeOfFiles={}")
+    vim.command("let b:ListOfFiles=[]")
+    vim.command("let b:TypeDict={}")
+    vim.command("let b:LevelDict={}")
 END_PYTHON
 let g:time_TreeOfFiles=reltimestr(reltime(time))
 endfunction
