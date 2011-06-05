@@ -202,7 +202,8 @@ except IOError:
     pass
 
 # SORT (vim works faster when tag file is sorted) AND WRITE TAGS
-tags_sorted=sorted(tags)
+tags_sorted=sorted(tags, key=str.lower)
+tags_sorted=['!_TAG_FILE_SORTED\t2\t']+tags_sorted
 os.chdir(options.directory)
 tag_file = open("tags", 'w')
 tag_file.write("\n".join(tags_sorted))
