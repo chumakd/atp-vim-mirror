@@ -3,7 +3,7 @@
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sat Jun 04 07:00  2011 W
+" Last Change: Sun Jun 05 11:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2136,7 +2136,6 @@ function! <SID>UpdateATP(bang)
 	    elseif compare == 0
 		redraw
 		echomsg "You have the latest STABLE version of ATP."
-		call delete(s:atp_tempname)
 		if g:atp_debugUpdateATP
 		    redir END
 		endif
