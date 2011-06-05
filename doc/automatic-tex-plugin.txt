@@ -2393,21 +2393,6 @@ SOME VARIABLES						*atp-bibsearch-variables*
 	in a different line in compatible mode it find the matching pair only
 	if the ending bracket is in the same line.
 
-	    						*b:TreeOfFiles*
-							*b:ListOfFiles*
-							*b:TypeDict*
-							*b:LevelDict*
-	These four variables are important for project files. They are made
-	(or updated) by using |atp-:InputFiles| (by the TreeOfFiles()
-	function). First one is a dictionary, which keys are input files found
-	in |b:atp_MainFile| and values are list in which first argument is the
-	same type variable, second value is the line number where the input
-	file was declared. (So in fact this is a tree!). |b:ListOfFiles| is
-	a list of input files. |b:TypeDict| is dictionary with keys from
-	|b:ListOfFiles| and values: "bib" for bib files, "preambule" for
-	preambule input files and "input" for other input files. |b:LevelDict|
-	is a dicitonary with keys from |b:ListOfFiles| and values: how far in
-	the tree |b:TreeOfFiles| the input file resides.
 
 -----------------------------------------------------------------------------------
 								*atp-bibsearch-comments*
@@ -3276,7 +3261,7 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	There are other tools to make editing project files more easy. There
 	is search function: |atp-:S| which works better than the Vim |:ijump|
 	command, which cannot go above the current file in the tree of input
-	files /but is much faster/. 
+	files /but |:ijump| is much faster/. 
 
 *b:atp_ProjectDir*
 	Stores the project directory, by default where |b:atp_MainFile| is
