@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Jun 02 11:00  2011 W
+" Last Change: Sun Jun 05 09:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -31,20 +31,35 @@ endif
 
 if has("gui")
     if &l:cpoptions =~# "B"
+	if g:atp_cmap_space
+	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\/?]' ? '\_s\+' : ' ' )
+	endif
 	cmap <expr> <buffer> <C-Space> getcmdtype() =~ '[?/]' ? '\_s\+' : ' ' 
 	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
     else
+	if g:atp_cmap_space
+	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\\/?]' ? '\\_s\\+' : ' ' )
+	endif
 	cmap <expr> <buffer> <C-Space> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
 	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
     endif
 else
     if &l:cpoptions =~# "B"
+	if g:atp_cmap_space
+	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\/?]' ? '\_s\+' : ' ' )
+	endif
 	cmap <expr> <buffer> <C-@> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
 	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
     else
+	if g:atp_cmap_space
+	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\\/?]' ? '\\_s\\+' : ' ' )
+	endif
 	cmap <expr> <buffer> <C-@> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
 	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
     endif
+endif
+if maparg("<F2>", "n") == ""
+    nmap <buffer> <F2>	:echo ATP_ToggleSpace()<CR>
 endif
 
 command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
@@ -518,13 +533,13 @@ if !hasmapto("v<Plug>vSelectComment", "n")
 endif
 
 " Normal Mode Maps: (most of them)
-if mapcheck('<LocalLeader>v$') == "" && !hasmapto("<Plug>ATP_ViewOutput", "n")
+if mapcheck('<LocalLeader>v') == "" && !hasmapto("<Plug>ATP_ViewOutput", "n")
     nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
 endif
 
 exe "nmap  <silent> <buffer> <Plug>QForwardSearch 	q".s:backslash.":call ATP_CmdwinToggleSpace(1)<CR>i"
 if !hasmapto("<Plug>QForwardSearch", "n")
-    nmap  <silent> <buffer> <F2> 			<Plug>QForwardSearch
+"     nmap  <silent> <buffer> <F2> 			<Plug>QForwardSearch
     if mapcheck('Q/$', 'n') == ""
 	nmap <silent> <buffer> Q/			<Plug>QForwardSearch
     endif
@@ -540,6 +555,9 @@ elseif !hasmapto("<Plug>ToggleStar", "n") && g:atp_debugMapFile && !g:atp_reload
     echoerr "[ATP:] there will be no nmap to <Plug>ToggleStar"
 endif
 
+if !hasmapto("<Plug>TogglesilentMode", "n")
+    nmap  <silent> <buffer> <LocalLeader><Localleader>s	<Plug>TogglesilentMode
+endif
 if !hasmapto("<Plug>ToggledebugMode", "n")
     nmap  <silent> <buffer> <LocalLeader><Localleader>d	<Plug>ToggledebugMode
 endif

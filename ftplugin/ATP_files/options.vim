@@ -368,6 +368,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_cmap_space") || g:atp_reload_variables
+    let g:atp_cmap_space 	= 1
+endif
 if !exists("g:atp_bibsearch") || g:atp_reload_variables
     " Use python search engine (and python regexp) for bibsearch
     let g:atp_bibsearch 	= "python"
@@ -1491,10 +1494,16 @@ endfunction
 " Special Space for Searching 
 let s:special_space="[off]"
 function! ATP_ToggleSpace(...)
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>','c') == "" )
+    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_cmap_space )
     if on
-	echomsg "[ATP:] special space is on"
-	cmap <Space> \_s\+
+	if mapcheck("<space>", 'c') == ""
+	    if &cpoptions =~# 'B'
+		cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\/?]' ? '\_s\+' : ' ' )
+	    else
+		cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\\/?]' ? '\\_s\\+' : ' ' )
+	    endif
+	endif
+	let g:atp_cmap_space=1
 	let s:special_space="[on]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [off]
 	silent! aunmenu LaTeX.Toggle\ Space\ [on]
@@ -1502,9 +1511,10 @@ function! ATP_ToggleSpace(...)
 	cmenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
+	redraw
+	let msg = "[ATP:] special space is on"
     else
-	echomsg "[ATP:] special space is off"
-	cunmap <Space>
+	let g:atp_cmap_space=0
 	let s:special_space="[off]"
 	silent! aunmenu LaTeX.Toggle\ Space\ [on]
 	silent! aunmenu LaTeX.Toggle\ Space\ [off]
@@ -1512,8 +1522,13 @@ function! ATP_ToggleSpace(...)
 	cmenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
 	imenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
 	tmenu &LaTeX.&Toggle\ Space\ [off] cmap <space> \_s\+ is curently off
+	redraw
+	let msg = "[ATP:] special space is off"
     endif
+    return msg
 endfunction
+" nnoremap <buffer> <silent> <Plug>ToggleSpace	:call ATP_ToggleSpace() 
+" cnoremap <buffer> <Plug>ToggleSpace	:call ATP_ToggleSpace() 
 function! ATP_CmdwinToggleSpace(on)
     let on		= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : maparg('<space>', 'i') == "" )
     if on
@@ -1767,9 +1782,11 @@ function! ATP_ToggleMathIMaps(insert_enter, bang,...)
 "     endif
 endfunction
 " }}}
+" }}}
 endif
  
 "  Commands And Maps:
+command! -buffer ToggleSpace	:call <SID>ToggleSpace()
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleMathIMaps	 	:call ATP_ToggleMathIMaps(0, "!", <f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleMathIMaps		:call ATP_ToggleMathIMaps(0, "!")<CR>
 inoremap <silent> <buffer> 	<Plug>ToggleMathIMaps		<Esc>:call ATP_ToggleMathIMaps(0, "!")<CR>
@@ -1778,10 +1795,10 @@ inoremap <silent> <buffer> 	<Plug>ToggleMathIMaps		<Esc>:call ATP_ToggleMathIMap
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleAuTeX 		:call ATP_ToggleAuTeX()<CR>
 
-command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleSpace 	:call ATP_ToggleSpace(<f-args>)
-nnoremap <silent> <buffer> 	<Plug>ToggleSpace 		:call ATP_ToggleSpace()<CR>
-nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOn 		:call ATP_ToggleSpace('on')<CR>
-nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOff 		:call ATP_ToggleSpace('off')<CR>
+command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleSpace 	:echo ATP_ToggleSpace(<f-args>)
+nnoremap <silent> <buffer> 	<Plug>ToggleSpace 		:echo ATP_ToggleSpace()<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOn 		:echo ATP_ToggleSpace('on')<CR>
+nnoremap <silent> <buffer> 	<Plug>ToggleSpaceOff 		:echo ATP_ToggleSpace('off')<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleCheckMathOpened 	:call ATP_ToggleCheckMathOpened(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleCheckMathOpened	:call ATP_ToggleCheckMathOpened()<CR>
@@ -1790,6 +1807,7 @@ command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleCallBack 	
 nnoremap <silent> <buffer> 	<Plug>ToggleCallBack		:call ATP_ToggleCallBack()<CR>
 
 command! -buffer -nargs=? -complete=custom,ToggleDebugModeCompl	ToggleDebugMode 	:call ATP_ToggleDebugMode("",<f-args>)
+nnoremap <silent> <buffer> 	<Plug>TogglesilentMode		:call ATP_ToggleDebugMode("silent")<CR>
 nnoremap <silent> <buffer> 	<Plug>ToggledebugMode		:call ATP_ToggleDebugMode("debug")<CR>
 nnoremap <silent> <buffer> 	<Plug>ToggleDebugMode		:call ATP_ToggleDebugMode("Debug")<CR>
 

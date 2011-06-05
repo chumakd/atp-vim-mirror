@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 05 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.5.5)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -185,7 +185,16 @@ NEWS							*atp-news*
   Tab completion for labels (\ref and \eqref commands) gives more information
   inside the popup menu.
  
+  The <F2> map is back -- it turns on/off <space> cmap to \_s\+. But this time
+  this map by default is turned on. It is made to it doesn't interact with
+  other command modes than / and ?. If you want to turn in off/on use <F2>. If
+  you want to turn it off in your |vimrc| or |atprc| files use: >
+    let g:atp_cmap_space = 0
+< Pressing <F2> will define this map.
+
+
   Some other small fixes.
+
 >
  ======================
  Changes in version 9.5
@@ -369,12 +378,15 @@ TEX OPTIONS VARIABLE (new format) ~
     If you use |g:atp_Compiler|="bash" this might be just a white space
     separated list.
 
-SPACE CMAP ~
- cmap <buffer> <C-Sapce> 	\_s\+
+SPACE CMAP ~						|atp-<space>|
+ cmap <buffer> <C-Space> 	\_s\+
  cmap <buffer> <C-_> 		\_s\+
     The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
     as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
-    |atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
+    |atp-Q?| where <Space> is mapped to \_s\+.
+
+    Note: from version 9.6 <Space> is mapped to \_s\+ in cmdline modes / and ?.
+    <F2> turns it on/off. The above maps are always on.
 
 ERRORS ~
  nmap <LocalLeader>e
@@ -427,114 +439,6 @@ DEBUG ATP  ~
 I hope I didn't missed anything important. If you want to see detailed changes
 you can always read the svn logs at |atp-sourceforge|.
 
->
-  =======================
-  Changes in versions 9.3
-<
-	The commands |atp-:F|, |atp-:B|, and the maps |atp->e| and |atp-<e|
-	have count. With count they will be invoked several times, i.e. 3>e go
-	to third environment. The mark ' is set to the starting position (so
-	this is the difference between 3>e and 3 times >e).
-
-	Motion commands, and mappings (like |CTRL-F|, |S-ScrollWheelUp|,
-	|CTRL-D|, etc) will update the highlighted chapter. If you do not want
-	the keys to be remapped set g:atp_MapUpdateToCLine (this was changed
-	in ver 9.4.2, the keys are not remapped, instead an autocommand is
-	used) to 0.  The keys |j|, |k|, |gj| and |gk| are also
-	remapped, if you have a defined map from |j| to |gj| (or |k| to |gk|)
-	it will be respected.
-
-	For XeTeX (and XeLaTeX) users the maps ]e, [e (to go to next/previous
-	error message) in a log file (see |atp-maps-log|) will work better.
-
-	|atp-:GotoLabel| - important fix.
-
-	\\D, \\d - maps to debug modes: |atp-debug-mode-Debug| and
-	|atp-debug-mode-debug|.
-	The message '[ATP:] pdflatex returned with exit code ' will be
-	highlighted with |hl-ErrorMsg| only if the exit code is non zero.
-
-	|g:atp_map_forward_motion_leader|	= '>'
-	|g:atp_map_backward_motion_leader| 	= '<'
-		see |atp-:NSec| and |atp-:PSec| and friends. 
-	(actually nothing changes, there just was a bug in help file)
-
-
-	The command |atp-:WrapSelection| uses |<f-args>| instead of |<args>|.
-
-
-								|atp-Q/|
-								|atp-Q?|
-								|atp-<F2>|
-	Q/ and Q? to enter command-line window in which <space> is mapped to
-	'\_s\+'. If you want to insert a white space type CTRL-V followed by
-	<Space>.
-
-	<F2> acts as 'Q/i' (i.e. enters insert mode).
-	If you want Q/ and Q? enter insert mode as well you can set: >
-	    nmap Q/		q/:call ATP_CmdwinToggleSpace('on')<CR>i
-	    nmap Q?		q?:call ATP_CmdwinToggleSpace('on')<CR>i
-<	in your |atprc| or |vimrc| file.
-
-							*atplib-:Kill*
-:Kill
-	Kill python scripts running (b:atp_PythonPIDs) and all pids in
-	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
-
-							*g:atp_DeleteWithBang*
-	g:atp_DeleteWithBang = ['synctex.gz', 'tex.project.vim']
-	This is list of extensions which will not be removed when
-	|atp-:Delete| is run without bang.
-
-	|atp-gw| back (was gq for very short time (since ver. 9.2), which
-	I found to be not a good idea).
-
-	Some variables has changed the name |g:atp_LatexPackages| (from
-	g:atp_latexpackages), |g:atp_LatexClasses| (from g:atp_latexclasses),
-	|g:atp_ProjectLocalVariables| (from g:atp_cached_local_variables),
-	|g:atp_ProjectGlobalVariables| (from g:atp_cached_global_variables).
-
-							*atp-:SSec* *atp--S*
-							*atp-:Sec*  *atp--s*
-							*atp-:Chap* *atp--c*
-							*atp-:Part* *atp--p*
-:[count]SSec
-nmap -S
-:[count]Sec
-nmap -s
-:[count]Chap
-nmap -c
-:[count]Part
-nmap -p
-	Go to subsection/section/chapter/part [count] from begin of the
-	section/chapter/document, i.e. 3]s will jump to section 3 in current
-	chapter. Mark ' is preserved.
-
-	Note: if you are in a section which has no subsections :SSec and -S
-	will go to next section, the same aplies to other section types.
-
-	You can set the leader for maps with *g:atp_goto_section_leader* .
-
-nmap \c, vmap \c
-nmap \u, vmap \u
-	Comment/Uncomment lines (both in |Normal| and |Visual| modes). 
-
-	Comment leader can be set with the variable g:atp_CommentLeader (by
-	default it is '% '). If you do not want this maps or you want to
-	remap them to something else you can set g:atp_MapCommentLines=0 in
-	your |vimrc| or |atprc| file and use <Plug>CommentLines,
-	<Plug>UnCommentLines (these are normal maps), for example:
-		nmap <LocalLeader>C 	<Plug>UnCommentLines
-		vmap <LocalLeader>C 	<Plug>UnCommentLines
-	A usefull map for uncommenting |atp-sc|.
-
-    |atp-sc|: {s}elect {c}omment in normal mode with <LocalLeader>sc.
-    (there used to be only map in visual mode).
-
-    nunmap K if there is a map to K (the manpageviewPlugin
- 	http://www.vim.org/scripts/script.php?script_id=489
-    remaps the K, ATP will delete any such map - ATP first tries to delete
-    the local |map-<buffer>|, then the global map).
 
     						Chears, Marcin
 
@@ -744,11 +648,15 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 							*atp-debug-mode-silent*
 							*'silent'*
 	* if |t:atp_DebugMode| 	= 'silent'
+	  :DebugMode silent
+	  nmap <LocalLeader><LocalLeader>s
 	       You will not get any message from compilation. 
 
 							*atp-debug-mode-debug*
 							*'debug'*
 	* if |t:atp_DebugMode| 	= 'debug'
+	  :DebugMode debug
+	  nmap <LocalLeader><LocalLeader>d
 	       After the end of compilation (invoked by the user or
 	       autocommand) you will get a message with the return status of
 	       the compilation. If the exit code is non zero it will be
@@ -768,6 +676,8 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 							*atp-debug-mode-Debug*
 							*'Debug'*
 	* if |t:atp_DebugMode| 	= 'Debug'
+	  :DebugMode Debug
+	  nmap <LocalLeader><LocalLeader>D
 	       This mode is the same as 'debug' + after compilation ATP jumps
 	       to first error.	
 
@@ -1119,6 +1029,10 @@ map t, map <S-LeftMouse>
 
 	Read |atp-:SyncTex_with_Okular| if you use Okular.
 
+:Kill							*atplib-:Kill*
+	Kill python scripts running (b:atp_PythonPIDs) and all pids in
+	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
+
 :Viewer {viewer-program}				*atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
 
@@ -1321,6 +1235,12 @@ map <F6>d
 	If you set |g:atp_delete_output|=1 the function will delete also the
 	current output file (but not any other!) and 'synctex.gz' file.
 
+							*g:atp_DeleteWithBang*
+>
+ g:atp_DeleteWithBang = ['synctex.gz', 'tex.project.vim']
+<	This is list of extensions which will not be removed when
+	|atp-:Delete| is run without bang. You do not need to add "pdf" or
+	"dvi", extensions.
   							
 :WordCount[!] 						*atp-:WordCount*
 	The command to compute the number of words. With bang [!] it will show
@@ -1759,6 +1679,32 @@ vmap <p, vmap <c, vmap <s, vmap <S
 
 	Note: If you set |g:atp_forward_motion_leader|="{" then ATP remaps |}|
 	operator to {{
+
+
+Previous commands where using relative position - goto next/previous
+section/chapter. The following commands/maps will go to section/chapter as
+counted from first one.
+							*atp-:SSec* *atp--S*
+							*atp-:Sec*  *atp--s*
+							*atp-:Chap* *atp--c*
+							*atp-:Part* *atp--p*
+:[count]SSec
+nmap -S
+:[count]Sec
+nmap -s
+:[count]Chap
+nmap -c
+:[count]Part
+nmap -p
+	Go to subsection/section/chapter/part [count] from begin of the
+	section/chapter/document, i.e. 3]s will jump to section 3 in current
+	chapter. Mark ' is preserved.
+
+	Note: if you are in a section which has no subsections :SSec and -S
+	will go to next section, the same aplies to other section types.
+
+	You can set the leader for maps with *g:atp_goto_section_leader* .
+
 
     							*atp-:SkipCommentForward*
 							*atp-]star* *atp-gc*
@@ -4002,6 +3948,42 @@ nmap [gf
 pdffonts is mapped to <F6>g	
 There is also a command ':PdfFonts' which does the same. 
 
+							*atp-comment-lines*
+							*atp-uncomment-lines*
+							*g:atp_MapCommentLines*
+nmap \c, vmap \c		-- comment
+nmap \u, vmap \u		-- uncomment
+	Comment/Uncomment lines (both in |Normal| and |Visual| modes). 
+
+	Comment leader can be set with the variable g:atp_CommentLeader (by
+	default it is '% '). If you do not want this maps or you want to
+	remap them to something else you can set |g:atp_MapCommentLines|=0 in
+	your |vimrc| or |atprc| file and use <Plug>CommentLines,
+	<Plug>UnCommentLines (these are normal maps), for example:
+		nmap <LocalLeader>C 	<Plug>UnCommentLines
+		vmap <LocalLeader>C 	<Plug>UnCommentLines
+	A usefull map for uncommenting |atp-_c| (i.e. |atp-select-comments|).
+
+								*atp-<space>*
+cmap <buffer> <C-Space> 	\_s\+
+cmap <buffer> <C-_> 		\_s\+
+    The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
+    as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
+    |atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
+								*atp-Q/*
+								*atp-Q?*
+								*atp-<F2>*
+nmap Q/, nmap Q?, nmap <F2>
+	Q/ and Q? to enter command-line window in which <space> is mapped to
+	'\_s\+'. If you want to insert a white space type CTRL-V followed by
+	<Space>.
+
+	<F2> acts as 'Q/i' (i.e. enters insert mode).
+	If you want Q/ and Q? enter insert mode as well you can set: >
+	    nmap Q/		q/:call ATP_CmdwinToggleSpace('on')<CR>i
+	    nmap Q?		q?:call ATP_CmdwinToggleSpace('on')<CR>i
+<	in your |atprc| or |vimrc| file.
+
 FONT COMMANDS						*atp-imap-fonts*
 imap ##rm \textrm{}<Left>
 imap ##it \textit{}<Left>
@@ -4332,6 +4314,7 @@ EDITING TOOLS							*atp-editing*
 		stack (the resulting are will be wide). Some syntax groups are
 		filtered out (like 'texDocZone') which not always are
 		synchronised.
+								*atp-select-comments*
 								*atp-_c*
 	_c	
 		select comment lines which begin with '^\s*%'. If not in
