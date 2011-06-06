@@ -380,3 +380,4 @@ ToDo: rewrite atplib#searchbib in python.
 ToDo: InputFiles when called from different directory.
 ToDo: :WordCount computes words in the written file (not the buffer)
 ToDo: :BibSearch -- when there is (STRING) the last ) is lost and syntax fails. Track this.
+ToDo: There is quite big mess when callig gf (how files are listed)

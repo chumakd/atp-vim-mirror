@@ -1254,11 +1254,6 @@ function! GotoFile(bang,file,...)
 	let cur_col		= col(".")
     endif
 
-"     DEBUG
-"     let g:line	= line
-"     let g:file	= a:file 
-"     let g:check_line	= check_line
-
     " This part will be omitted if check_line is 0 (see note above).
     " \usepackege{...,<package_name>,...}
     if line =~ '\\usepackage' && g:atp_developer
@@ -1268,7 +1263,6 @@ function! GotoFile(bang,file,...)
 	    let fname   = atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
 	    let file 	= atplib#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1)
 	    let file_l	= [ file ]
-" 	    let file	= get(file_l, 0, "file_missing") 
 
 	    let message = "Pacakge: "
 	    let options = ""
@@ -1324,12 +1318,7 @@ function! GotoFile(bang,file,...)
 
 	call extend(file_l, [ atp_MainFile ], 0)
 	call extend(level_d, { atp_MainFile : 0 })
-" 	call filter(file_l, "v:val !~ expand('%') . '$'")
     endif
-
-"     DEBUG
-"     let g:method 	= method
-"     let g:file_l 	= file_l
 
     if len(file_l) > 1 && a:file =~ '^\s*$'
 	if method == "all"
@@ -1892,8 +1881,8 @@ else
     command! -buffer -bang -count=1 -nargs=? -complete=customlist,Env_compl PPart		:call <SID>GotoSection(<q-bang>, <q-count>, 'sb', '\\\\part\\*\\=\\>', ( g:atp_mapNn ? 'atp' : 'vim' ), 'n', <q-args>)
 endif
 
-command! -buffer NInput				:<C-U>call <SID>Input("w") 	| let v:searchforward = 1
-command! -buffer PInput 			:<C-U>call <SID>Input("bw")	| let v:searchforward = 0
+command! -buffer NInput				:call <SID>Input("w") 	| let v:searchforward = 1
+command! -buffer PInput 			:call <SID>Input("bw")	| let v:searchforward = 0
 command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete GotoFile	:call GotoFile(<q-bang>,<q-args>, 0)
 command! -buffer -nargs=? -bang -complete=customlist,<SID>GotoFileComplete EditInputFile :call GotoFile(<q-bang>,<q-args>, 0)
 " vimeif data[0]['text'] =~ 'No Unique Match Found'	    echohl WarningMsg
