@@ -100,7 +100,7 @@ To do: 	$i:\Sub_{\Alg^H}(A)\subseteq\Sub_\Alg(A)^\mathit{op<TAB HERE>$ preserves
 
 To do: with j motion it can put \mathit{} not just \mathit{.	
 To do: TOC when modifiable is set.
-#
+
 To do: NEnv (hit bottom, cont at top) 
 To do: Check AMSRef, with xy-ks:galois-theory-of-skew-fields there was no comma after key.  
 To do: TabCompletion for \pagestyle command
@@ -155,17 +155,10 @@ To do: fix the colors of pdfLaTeX in status (in mygvim it is not working - this 
 
 To do: Suggest to use wdiff to get diff of pdf's with:
 	wdiff -w "\textcolor{red}{" -x "}" -y "\textcolor{blue}{" -z "}" file_rev1.tex file_rev2.tex > file_diff.tex
-	Or make a function which: removes comment lines, makes diff of \begin{document}:\end{document}, lets choose which preambule to use if they differ.
+	Or make a function which: removes comment lines, makes diff of
+	\begin{document}:\end{document}, lets choose which preambule to use if
+	they differ.
 	The problematic is making diff of math zones.
-
-Two things:
-(1) SyncTeX: Can't rename HopfGaloisTheory-field.synctex.gz(busy) to /tmp/v27Wp1j/34/HopfGaloisTheory-field.synctex.gz
-bytes).
-	Possible solution copy tex file to the tmp directory, operate there on the copy 
-	(but this is not a good solution for project files).
-	This error is only within vim, not from the command line. 
-(2) /bin/cp  how to make that it is not asking if to copy files. Is there a bash variable for that?
-	Set cp command on startup (with variable). 
 
 Todo: \a has a strange behaviour with respect to tabs. 
 
@@ -178,7 +171,6 @@ Note: do not set b:atp_okularOptions="--unique" by default.
 To do:
 When opening skeleton file -> the g:atp_MathZone is like it was for file type plaintex, but the file type has changed.
 The only solution is to set the variable g:tex_flavor="tex"
-Done: node{\(...\)<tab>
 to do: gm (end math) gM (begin math)
 To do: find a better way of dealing with g:atp_latexpackages (update them)
 To do: statusNotifHi -> change in to a highliht group name.
@@ -186,10 +178,7 @@ To do: xpdfpid() function should be writtine in Python.
 To do: rewrite MakeLatex in python (this will help with the screen isue)
 To do: SyncTex for (log file --> viewer) can be rewritten to use synctex (usually there is line number of error around -> we can get the position of the pdf file) - but since this is not very useful, this is not urgent.
 To do: write python script to parse log file and return list of dictionaries { file : '', line : '', page : '', errormsg : '', errortype : '' )
-Fixed: Open every time sth changes I have to use Open! it is strange!
-	I think WriteProjectScript global is not saving the variable.
-(?)To do: map t :SyncTex is not working 
-To do: only in beamer: GotoFrame <frame: number, title matched by pattern>
+To do: only in beamer: GotoFrame <frame>: number, title matched by pattern>
 To do:(simple and nice) in GotoEnvironemt: (THIS IS NOT POSSIBLE it is a feature of n/N in vim)
 	    There is no way to make this searches silent wiht :S and /
 	    its better to silently call the functions Search() and search()
@@ -197,31 +186,25 @@ To do: for Okular users switch document loaded in okular when changing buffers (
 	for Xpdf it is easy to set: just put b:atp_XpdfServer="tex_files" in atprc.
 To do: There are three completion function for environment names: Env_compl (motion.vim, GotoSection, Nenv, ...) and EnvCompletion and EnvCompletionWithoutStarEnvs (various.vim, :WrapEnvironment, :ChangeEnv), F_compl (:F, :B)
 	Make them more dependent on LocalEnvironments (to appear only what is defined!)
-To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
+
+# To do: check \cite{ completion on startup (from bib file). b:ListOfFiles doesn't contain Mat.bib.
 		It might also be %&latex issue -> test 
 		THIS IS BECAUSE: skeleton file opens as a tex file and the variables are not reloaded. 
+
 # To do: inner paragraph should be (?) ended with \pause (beamer)
 # To do: \{:} are matched as brackets.
 # Bug: Labels if label is in comment its line counts (there might be two \label command with the same label but one commented out, it happens that the label in comment counts!, while it should not.
-# To do: :WrapSelection make better interface.
-To do: debug why sometimes generating g:atp_latexpackages takes so much time.
 # TEST: progress bar for project files (project variables).
 Bad idea (gq is for sth else!): 'formatexpr' (gw -> gq this shoulr be done using format exrpression)
-# Done: Bibtex when bibtex returns errors should not stop but in silent mode: just say what was the return code of bibtex in debug mode print bibtex output.
 # WOW: the first line: %&latex or %&pdflatex -> tex decides what tool to use! -> ATP should respect this!
 # TO DO: using http://python-xlib.sourceforge.net/?page=documentation it should be possible to raise the viewer window after compilation :)
 # NOTE: if the latex return code is non zero then reference numbers (Lemma
-# X.Y) may be '?'! ( I don't why its like that )
+# X.Y) may be '?'! ( I don't know why its like that )
 SyncTex:
 	Should test if the viewer is running (this can be done with the help of python and psutils) 
 	if not it should run the viewer first.
 
 <Nice Feature> make atprc.vim file in the gentoo style
-
-To do:
-If toc is opened update the highlighted section when using some commands (:F/:B, :NSec/:PSec/..., j/k/<DownArrow>/<UpArrow> key pressed). 
-check if updating with cursor move takes time? (if it takes, one can check if line number changes.)
-Warn when going around file (hit top/bottom) (if count greater than one do not wrap around file (?) - if wrap/nowrap (or some other vim options) is set).
 
 WINDOWS: Runtime error!
 	 Program ...\gvim.exe
@@ -267,13 +250,7 @@ ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\
 Done: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
 
 ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
-Check: MakeLatex add support for loa (list of algorithms). 
 
-ToDo: loa support: if algorithm package is loaded we can add loa to g:atp_keep, to make loa it is enough to run latex twice -> MakeLatex, \openout = `<name>.loa'
-ToDo: ~~ for \tilde or \wide.
-Bug: gw -> segmentation fault.
-
-Done: ErrorFormat +f in qf not working.
 ToDo: Find how to make it possible to run :copen 5 (w:quickfix_title will not work)
 	Test this feature if it changes size of qf window (callback, etc...)
 	At least this is doc.
@@ -301,10 +278,6 @@ Question: does -s work with the above?
 
 Done: >c can jump and come back to TOC window (then the highlighted line will appear if it is out of window - happens for a long TOC)
 Bug: The problem with TOC window is that it is the same buffer for different tabs, if one changes it in one tab it changes in the other one. This should be FIXED. I can use tabpagenr()
-
-Done: make maps compatible with cpoptions-=B see g:atp_vmap_bracket_leader how to set leaders.
-why g:atp_math_imap doesnt need changes for cpoptions-=B?
-test maplocalleader setting in options.vim.
 
 Done: <F4> should work in insert mode as well. 
 	With <C-O> instead of <Esc> !!!
@@ -353,7 +326,6 @@ ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. M
 Bug: Error while opening plain tex files (%&tex)
 Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.
 
-Done!: Add support for tags, ctags, taglist()
 Bug: comments vim option is not working well with [d. Check [i, :dsearch, :isearch are not finding anything. 
 
 ToDo: latextags.py could respect tagrelative (this might be important for project in version control systems..
@@ -361,23 +333,14 @@ ToDo: latextags.py could respect tagrelative (this might be important for projec
 :) : see :help :ownsyntax
 
 ToDo: latextags.py finds \label inside \def statements! (but this way it is faster)
-Done: \addbibresource should be completed like \bibliography (completion for bib files)
 ToDo: add options to making tags: append tags (note that tags should be sorted)
 	( in this way one can have one tag file for many files, this might be nice if one edits two ore more files )
 ToDo: see atp-:NiceDiff  -- I said that I will try to do sth :)
-ToDo: make an option to run :LocalCommands on startup.
 
 ToDo: rewrite :S in python 		-> this will be as fast as :ijump.
-ToDo: rewrite TreeOfFiles in python 	-> this will be much faster.
-ToDo: :Dsearch! -- there is a mess with bang.
 ToDo: look into LocalCommands for patterns which might be used in make_defi_dict
-ToDo: look at DefiSearch() function why it doesn't find \newtheorem names.
-ToDo: LocalCommands_py -- writes file:
-       this can be changed: current buffer can be passed
-       as an argument -- this will be even faster and will
-       not need to write to disk.
-ToDo: rewrite atplib#searchbib in python.
 ToDo: InputFiles when called from different directory.
-ToDo: :WordCount computes words in the written file (not the buffer)
 ToDo: :BibSearch -- when there is (STRING) the last ) is lost and syntax fails. Track this.
 ToDo: There is quite big mess when callig gf (how files are listed)
+
+ToDo: opening skeletal file: b:ListOfFiles is empty => b:atp_LocalCommands is empty.

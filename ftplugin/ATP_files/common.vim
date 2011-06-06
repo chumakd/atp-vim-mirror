@@ -1,7 +1,6 @@
 " Author: 	Marcin Szamotulski
 " Description: 	This script has functions which have to be called before ATP_files/options.vim 
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
-" URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 
 " This file contains set of functions which are needed to set to set the atp

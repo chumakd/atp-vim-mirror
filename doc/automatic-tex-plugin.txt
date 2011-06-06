@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 05 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.1)
 			by Marcin Szamotulski
@@ -1007,7 +1007,7 @@ map \v,map <F3>, imap <F3>
 	TeX and open the file. Read more about particular viewers
 	(inverse/reverse searching) in |atp-viewers|. 
 
-:SyncTex						*atp-:SyncTex*
+:SyncTex[!]						*atp-:SyncTex*
 map t, map <S-LeftMouse>
 	Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
 	Xpdf and Xdvi with this feature (Evince is not yet supported).
@@ -1026,6 +1026,8 @@ map t, map <S-LeftMouse>
 	When the output file or the synctex file (.synctex.gz) doesn't exists
 	then first it will be generated. It can also open the document if it
 	is not yet opened.
+
+	Note: with bang |atp-:SyncTex| will not check if viewer is running.
 
 	Read |atp-:SyncTex_with_Okular| if you use Okular.
 
@@ -1246,7 +1248,8 @@ map <F6>d
 	The command to compute the number of words. With bang [!] it will show
 	the word count of each input file. It uses 'detex' program (which is
 	present in 'texlive') to remove the latex markups prior to word
-	counting (done by the external 'wc' program).
+	counting (done by the external 'wc' program). 
+	Note: This command will first save the file. 
 
 :SshPrint [lpr_options]					*atp-:SshPrint*
 	It will run 'lpr' command and append to it the options defined in the
@@ -2363,14 +2366,12 @@ map c, map y, map p
 < 	This is not possible with |g:atp_bibsearch|="python" (the default).
 
 :Dsearch[!] [/]{pattern}[/] 					*atp-:Dsearch*
-	The {pattern} argument is optional. Finds all definitions which
-	matches the pattern. It looks in the main file (only in the preamble,
-	unless the optional bang '!' is used) and all the input files (except
-	bib files). This command respects the options: 'ignorecase' and
-	'smartcase'. You can override them with '\C' (match case what follows)
-	and '\c' (ignore case in what follows).
-
-	The pattern is any Vim pattern.
+	The {pattern} argument is optional. It is any vim pattern. Finds all
+	definitions which matches the pattern. It looks in the main file (only
+	in the preamble, unless the optional bang '!' is used) and all the
+	input files (except bib files). This command respects the options:
+	'ignorecase' and 'smartcase'. You can override them with '\C' (match
+	case what follows) and '\c' (ignore case in what follows).
 
 	It works likes ]d but handles multi line definitions.
 
@@ -2445,9 +2446,11 @@ the variable 'g:atp_tab_completion_modes'.
 							*g:atp_local_completion*
 If |g:atp_local_completion| is set to non zero value, then input files will be
 scanned for \def, \newcommand, \newnevironment and \newtheorem commands and
-they will be used for completion. (if its value is 1 then this will be done
-during first completion, if it is set to 2 then this will be done at start up.
-The default value is 2 when vim has |+python| feature otherwise it is 1.
+they will be used for completion (with |atp-:LocalCommands|). If its value is
+1 then this will be done during first completion, if it is set to 2 then this
+will be done at start up. The default value is 2 when vim has |+python|
+feature otherwise it is 1. With |+python| this is done at every time you
+use the Tab completion.
 
 NOTE: if you press <Tab> but then you changed your mind, the completion pop-up
 menu allows to cancel completion: press ctrl+p (i.e.  go up - some times more
@@ -3321,12 +3324,12 @@ g:atp_mapNn = 0
 	behave in a different way in plaintex files. For example TreeOfFiles
 	function (it makes the variables |b:TreeOfFiles|, |b:ListOfFiles|,
 	|b:TypeDict|, |b:LevelDict|). It is recursive in LaTeX files but not in
-	plain TeX files). On this function is based the command :LocalCommands
-	which makes list of commands, environments and colours for Tab
-	Completion and also |atp-:S| command. It is done so, because in plain
-	tex there is no way to distinguish input files from input packages
-	which we do not want to scan (especially recursively, which might be time
-	consuming). 
+	plain TeX files). On this function is based the command
+	|atp-:LocalCommands| which makes list of commands, environments and
+	colours for Tab Completion and also |atp-:S| command. It is done so,
+	because in plain tex there is no way to distinguish input files from
+	input packages which we do not want to scan (especially recursively,
+	which might be time consuming). 
 
 PROJECT SCRIPT						*atp-ProjectScript*
 <	The file: |b:atp_MainFile| . ".project.vim", in the same directory as
@@ -3380,8 +3383,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		\ "b:LevelDict", 	"b:atp_BibCompiler", 	
 		\ ] 
 <	If your vim doesn't have python support |+python| three more variables
-	are stored: "b:atp_LocalEnvironments" "b:atp_LocalCommands", and
-	"b:atp_LocalColors". With |+python| this is not needed since
+	are stored: |b:atp_LocalEnvironments| |b:atp_LocalCommands|, and
+	|b:atp_LocalColors|. With |+python| this is not needed since
 	|atp-:LocalCommands| is then very fast and is run on |BufEnter|.
 
 	The each file has separate project scrips which stores the values of

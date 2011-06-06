@@ -1,7 +1,6 @@
 " Author:	Marcin Szamotulski
 " Description:	This file contains motion and highlight functions of ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
-" URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 " Last Change:
 
@@ -76,7 +75,7 @@ function! s:maketoc(filename)
     endtry
     let texfile_copy	= deepcopy(texfile)
 
-    let true	= 1
+    let true		= 1
     let bline		= 0 	" We are not removing the preambule any more.
     let i		= 1
     " set variables for chapter/section numbers
@@ -85,11 +84,14 @@ function! s:maketoc(filename)
     endfor
     " make a filter
     let j = 0
-    for section in keys(g:atp_sections)
+    let biblatex	= ( atplib#SearchPackage("biblatex") )
+    " When \usepackge{biblatex} do not search for \bibliography{} commands -- they are placed in ther preambule.
+    let key_list 	= ( biblatex ? filter(keys(g:atp_sections), "v:val != 'bibliography'") : keys(g:atp_sections) ) 
+    for section in key_list
 	let filter = ( j == 0 ? g:atp_sections[section][0] . '' : filter . '\|' . g:atp_sections[section][0] )
 	let j+=1
     endfor
-    " ToDo: HOW TO MAKE THIS FAST?
+
     let s:filtered	= filter(deepcopy(texfile), 'v:val =~ filter')
     for line in s:filtered
 	for section in keys(g:atp_sections)
@@ -187,7 +189,7 @@ function! s:maketoc(filename)
 
 		    "ToDo: if section is bibliography (using bib) then find the first
 		    " empty line:
-		    if section == "bibliography" && line !~ '\\begin\s*{\s*thebibliography\s*}'
+		    if section == "bibliography" && line !~ '\\begin\s*{\s*thebibliography\s*}' && !biblatex
 			let idx	= tline-1
 			while texfile_copy[idx] !~ '^\s*$'
 			    let idx-= 1
@@ -199,7 +201,9 @@ function! s:maketoc(filename)
 		    endif
 
 		    " Add results to the dictionary:
-		    call extend(toc, { tline : [ section, ind{section}, title, star, shorttitle] }) 
+		    if biblatex && section != "bibliography" || !biblatex
+			call extend(toc, { tline : [ section, ind{section}, title, star, shorttitle] }) 
+		    endif
 
 		endif
 	    endif

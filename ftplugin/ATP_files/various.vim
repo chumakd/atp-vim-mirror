@@ -1,9 +1,8 @@
 " Author:      Marcin Szamotulski	
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
-" URL:	       https://launchpad.net/automatictexplugin
 " Language:    tex
-" Last Change: Sun Jun 05 11:00  2011 W
+" Last Change: Mon Jun 06 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1795,6 +1794,8 @@ endfunction
 " Count Words
 " {{{ WordCount() ShowWordCount()
 function! <SID>WordCount(bang)
+
+    call atplib#write()
 
     let g:atp_WordCount = {}
     for file in keys(filter(copy(b:TypeDict), 'v:val == ''input''')) + [ b:atp_MainFile ]
