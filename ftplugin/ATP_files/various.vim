@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Jun 06 10:00  2011 W
+" Last Change: Tue Jun 07 05:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -359,7 +359,6 @@ function! Insert(text, math, ...)
     " select the correct wrapper
     if atplib#CheckSyntaxGroups(MathZones, line("."), col("."))
 	let insert	= a:math
-	let move	-= 1
     else
 	let insert	= a:text
     endif

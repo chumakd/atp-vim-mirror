@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 07 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.1)
 			by Marcin Szamotulski

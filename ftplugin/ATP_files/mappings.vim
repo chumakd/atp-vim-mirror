@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Jun 05 09:00  2011 W
+" Last Change: Tue Jun 07 05:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -703,27 +703,27 @@ endif
 if !exists("g:atp_imap_fonts") || g:atp_reload_variables
 let g:atp_imap_fonts = [
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'rm', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textrm{}", "'.s:bbackslash.'mathrm{}", 1)<CR>i', "g:atp_imap_define_fonts", 'rm font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'textrm{}", "'.s:bbackslash.'mathrm{}", 1)<CR>a', "g:atp_imap_define_fonts", 'rm font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'up', 
 	\ s:backslash.'textup{}<Left>', "g:atp_imap_define_fonts", 'up font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'md', 
 	\ s:backslash.'textmd{}<Left>', "g:atp_imap_define_fonts", 'md font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'it', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textit{}", "'.s:bbackslash.'mathit{}", 1)<CR>i', "g:atp_imap_define_fonts", 'it font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'textit{}", "'.s:bbackslash.'mathit{}", 1)<CR>a', "g:atp_imap_define_fonts", 'it font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sl', 
 	\ s:backslash.'textsl{}<Left>', "g:atp_imap_define_fonts", 'sl font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sc', 
 	\ s:backslash.'textsc{}<Left>', "g:atp_imap_define_fonts", 'sc font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'sf', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textsf{}", "'.s:bbackslash.'mathsf{}", 1)<CR>i', "g:atp_imap_define_fonts", 'sf font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'textsf{}", "'.s:bbackslash.'mathsf{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'bf', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textbf{}", "'.s:bbackslash.'mathbf{}", 1)<CR>i', "g:atp_imap_define_fonts", 'bf font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'textbf{}", "'.s:bbackslash.'mathbf{}", 1)<CR>a', "g:atp_imap_define_fonts", 'bf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'tt', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'texttt{}", "'.s:bbackslash.'mathtt{}", 1)<CR>i', "g:atp_imap_define_fonts", 'tt font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'texttt{}", "'.s:bbackslash.'mathtt{}", 1)<CR>a', "g:atp_imap_define_fonts", 'tt font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'em', 
 	\ s:backslash.'emph{}<Left>', "g:atp_imap_define_fonts", 'emphasize font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'no', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textnormal{}", "'.s:bbackslash.'mathnormal{}", 1)<Cr>i', "g:atp_imap_define_fonts", 'normal font'],
+	\ '<Esc>:call Insert("'.s:bbackslash.'textnormal{}", "'.s:bbackslash.'mathnormal{}", 1)<Cr>a', "g:atp_imap_define_fonts", 'normal font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'bb', 
 	\ s:backslash.'mathbb{}<Left>', "g:atp_imap_define_fonts", 'mathbb font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'cal', 

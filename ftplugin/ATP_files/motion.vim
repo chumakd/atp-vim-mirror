@@ -1439,6 +1439,7 @@ function! GotoFile(bang,file,...)
 	let atp_MakeindexPIDs	= ( exists("b:atp_MakeindexPIDs") 	? b:atp_MakeindexPIDs 	: [] )
 	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") 	? b:atp_ProgressBar 	: {} )
 	execute "edit " . fnameescape(file)
+	call RestoreProjectVariables(projectVarDict)
 	if &l:filetype =~ 'tex$' && file =~ '\.tex$' && &l:filetype != filetype  
 	    let &l:filetype	= filetype
 	" If the filetype is 'bib' we should source some portion of ATP, so
@@ -1451,7 +1452,6 @@ function! GotoFile(bang,file,...)
 
 	" Set the main file variable and pass the TreeOfFiles variables to the new
 	" buffer.
-	call RestoreProjectVariables(projectVarDict)
 	if exists("b:atp_ErrorFormat")
 	    unlockvar b:atp_ErrorFormat
 	endif

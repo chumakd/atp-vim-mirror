@@ -1,0 +1,92 @@
+<body bgcolor="#ffffff">
+    <head>
+	<title >Automatic LaTeX Plugin for Vim</title>
+	<link rel="stylesheet" href="style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
+    </head>
+<h1 style="background-color: #150459"><center><font  color="#ffffff" >Automatic LaTeX Plugin for Vim</font></center></h1>
+
+<table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
+	<tr> 
+		<td class=leftpanel valign=top> 
+		    <a
+			href="http://www.vim.org/scripts/script.php?script_id=2945"><img
+			border=0 align=left src="vim-logo-128.png" width=90></a>
+		    <br><br><br><br><br><br>
+		    <a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
+		    <a href="features.html">Feature list</a><br>
+		    <a href="requirements.html">Requirements</a><br><br>
+		    <a href="help.html">Docs</a><br><br>
+		    <a
+			href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
+			list</a><br>
+		    <a href="https://sourceforge.net/news/?group_id=513143">News</a><br><br>
+		    <a
+			href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF Statistics</a><br>
+		    <a
+			href="http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/">svn</a>
+
+		</td>
+		<td class=mainpanel>
+		    <h2> Intro</h2>
+		    <b>Automatic LaTeX Plugin</b> (<b>ATP</b>) provides functions, commands, maps to edit <a href="http://www.latex-project.org/">LaTeX</a> files in one of the greatest editors: <a href="http://www.vim.org">Vim</a>.<br>
+		    It is made for vim 7.3.  You can see the <a href="features.html"><em>long feature list</em></a>.<br>
+		    <em>The main purpose of this plugin is to make you free from compiling cicle.</em> When ATP finds that the file has changed it fires compiler of your choice and makes your document in the background. All you have to do is write (and read).<br>
+		    <b>ATP</b> tries to stay out of your way, but this is a comprehensive plugin and some choices had to be made. <br>
+		    Maps are <em>highly configurable</em> (some of them you can turn on/off temporarily).<br>
+		    <b>ATP</b> has a powerful <b>Tab completion</b> for commands, environments, closing environments, ... . <i>It also completes labels by numbers (as seen in your output file)</i>.<br>
+		    Instead of <i>folding</i> ATP provides <b>Table of Contents</b>, which also can be used to copy (yank), move, paste sections.<br><br>
+		    ATP contains <a
+			href="http://www.vim.org/scripts/script.php?script_id=3109">LaTeX
+			Box</a> plugin. It is developed <a
+			href="https://launchpad.net/vim-latex-box">here</a>. It
+		    provides vim interface to <a
+			href="http://www.phys.psu.edu/~collins/software/latexmk-jcc/">latexmk</a>,
+		    which is included in <a
+			href="http://www.tug.org/texlive/">TeX Live</a> TeX
+		    distribution.
+		    <h2> Support </h2>
+		    If you would like to support development you can donate
+		    (using <b>PayPal</b> or credit card).
+		    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="SGLYSC29TG5JS">
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		    </form>
+		    You can also vote on the ATP Vim <a
+			href="http://www.vim.org/scripts/script.php?script_id=2945">web
+			page</a>.
+
+		    <h2> Download/Installation</h2>
+		    You can <em>download</em> one of the <i>stable
+			versions</i> or a <i>snapshot</i>.<br>
+		    Snapshots have recent bug fixes, are published more often,
+		    and they contain unstable new features. If you want to have
+		    the latest version you can use them. Also if you want to
+		    hep with testing. You can download <b>vba</b> file or <b>tar.gz</b> file.
+		    To install <b>vba</b> file all you have to do is open it with vim
+		    and run the following vim command <code>':source %'</code>. The <b>tar.gz</b>
+		    file has to be unbundled in your <i>~/.vim</i> directory. (<em>Note:
+			it is not contained in any directory!!!, test it with
+			<code>tar -tzf</code> first</em>) Don't
+		    forget to run <code>':helptags ~/.vim/doc'</code>, if you
+		    install from <b>tar.gz</b> bundle.<br>
+		    Here is a list of <a
+			href="requirements.html"><b><i>requirements</i></b></a>.
+		    <h2> Updates</h2>
+		    If you have ATP you can use <code>:UpdateATP[!]</code> to
+		    <em>update ATP</em> to the <i>latest release</i> (without bang "!") or to the
+		    <i>latest snapshot</i> (with bang "!") from inside Vim. If
+		    you have installed snapshot and you want to downgrade to
+		    latest stable release use <code>:UpdateATP</code>.
+		    <h2> Mailing List</h2>
+		    <b>ATP</b> has a <a
+			href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b><i>mailing
+				list</i></b></a>. You can use it for
+		    <em>questions</em>, <em>help</em>, <em>feature
+			requests</em>, <em>bug reports</em>, etc ...
+		    <h2>svn</h2>
+		    If you'd like to get the source code you can grab it from SVN repository:<br>
+		    <code>svn co https://atp-vim.svn.sourceforge.net/svnroot/atp-vim atp-vim</code>
+		</td>
