@@ -2653,7 +2653,7 @@ function! <SID>ATP_SyntaxGroups()
 endfunction
 
 augroup ATP_AddSyntaxGroups
-    au Syntax tex :call <SID>ATP_SyntaxGroups()
+    au FileType tex :call <SID>ATP_SyntaxGroups()
 augroup END
 
 augroup ATP_Devel
