@@ -1,0 +1,130 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<a name="atp-omnicompletion"></a>
+<h2>OMNI COMPLETION</h2>
+<p>by David Munger (LatexBox plugin)</p>
+<div>
+    <p class="alignleft"><a href="atp-completion.html">Previous:</a> Completion</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-configure.html">Next:</a> Configure ATP</p>
+</div>
+<div style="clear: both;"></div>
+
+<p>Completion is achieved through omni completion |compl-omni|, with default
+bindings &ltCTRL-X&gt&ltCTRL-O&gt. There are four types of completion:</p>
+
+
+
+<a name="atp-omnicompletion-commands"></a>
+<h3>Commands</h3>
+
+<p>Command completion is triggered by the '\' character.  For example,</p>
+<div class=example>\beg&ltCTRL-X&gt&ltCTRL-O&gt</div>
+completes to
+<div class=example>\begin{</div></p>
+
+<p>Associated settings:<br>
+<a href="#atp-g:LatexBox_completion_commands">atp-g:LatexBox_completion_commands</a><br>
+<a href="#atp-g:LatexBox_completion_close_braces">atp-g:LatexBox_completion_close_braces</a>
+
+
+<a name="atp-omnicompletion-environments"></a>
+<h3>Environments</h3>
+
+<p>Environment completion is triggered by '\begin{'.  For example, >
+<div class=example>\begin{it&ltCTRL-X&gt&ltCTRL-O&lt</div>
+completes to
+<div class=example>\begin{itemize}</div></p>
+
+<p>Completion of '\end{' automatically closes the last open environment.</p>
+
+<p>Associated settings:<br>
+<a href="#atp-g:LatexBox_completion_environments">atp-g:LatexBox_completion_environments</a><br>
+<a href="#atp-g:LatexBox_completion_close_braces">atp-g:LatexBox_completion_close_braces</a></p>
+
+
+<a name="atp-omnicompletion-labels"></a>
+<h3>Labels</h3>
+
+<p>Label completion is triggered by '\ref{' or '\eqref{'.  For example, >
+	<div class=example>\ref{sec:&ltCTRL-X&gt&ltCTRL-O&gt</div>
+offers a list of all matching labels, with their associated value and page number.
+Labels are read from the aux file, so label completion works only after
+compilation.</p>
+
+<p>It matches:<br>
+	1. Labels:
+		<div class=example>\ref{sec:&ltCTRL-X&gt&ltCTRL-O&gt</div>
+	2. Numbers: 
+		<div class=example>\eqref{2&ltCTRL-X&gt&ltCTRL-O&gt</div>
+	3. Labels and numbers together (separated by whitespace): >
+		<div class=example>\eqref{eq 2&ltCTRL-X&gt&ltCTRL-O&gt</div>
+	
+
+<p>Associated settings:<br>
+<a href="#atp-g:LatexBox_ref_pattern">atp-g:LatexBox_ref_pattern</a><br>
+<a href="#atp-g:LatexBox_completion_close_braces">atp-g:LatexBox_completion_close_braces</a>
+
+
+
+<a name="atp-omnicompletion-bibtex"></a>
+<h3>BibTeX Entries</h3>
+
+<p>BibTeX completion is triggered by '\cite{', '\citep{' or '\citet{'.
+For example, assume you have in your .bib files an entry looking like:
+<pre>
+	@book {	knuth1981,
+		author = "Donald E. Knuth",
+		title = "Seminumerical Algorithms",
+		publisher = "Addison-Wesley",
+		year = "1981" }
+</pre>
+Then, try:
+<div class=example>\cite{Knuth 1981&ltCTRL-X&gt&ltCTRL-O&gt</div>
+<div class=example>\cite{algo&ltCTRL-X&gt&ltCTRL-O&gt</div></p>
+
+<p>You can also use regular expressions (or Vim patterns) after '\cite{'.</p>
+
+<p>Associated settings:</p>
+<a name="atp-g:LatexBox_cite_pattern"></a>		
+<div class=variable>let g:LatexBox_cite_pattern = '\\cite\(p\|t\)\?\*\?\_\s*{'</div>
+<a name="atp-g:LatexBox_ref_pattern"></a>		
+<div class=variable>let g:LatexBox_ref_pattern = '\\v\?\(eq\|page\)\?ref\*\?\_\s*{'</div>
+
+	<p>Patterns to match \cite and \ref commands for BibTeX and label completion.
+	Must include the trailing '{'.
+	To match all commands that contain 'cite' (case insensitive), use:
+		<div class=variable>let g:LatexBox_cite_pattern = '\c\\\a*cite\a*\*\?\_\s*{'</div>
+	To match all commands that end with 'ref' (case insensitive):
+		<div class=variable>let g:LatexBox_ref_pattern = '\c\\\a*ref\*\?\_\s*{'</div>
+	Both examples match commands with a trailing star too.</p>
+
+<a name="atp-g:LatexBox_bibtex_wild_spaces"></a>
+<div class=variable>let g:LatexBox_bibtex_wild_spaces = 1</div>
+
+	<p>If nonzero, spaces act as wildcards ('.*') in completion.
+	For example, if nonzero, >
+		<div class=example>\cite{Knuth 1981</div>
+	is equivalent to >
+		<div class=example>\cite{Knuth.*1981</div></p>
+
+<a name="atp-g:LatexBox_completion_close_braces"></a>
+<div class=variable>let g:LatexBox_completion_close_braces = 1</div>
+
+	<p>If nonzero, omni completion will add closing brackets where relevant.
+	For example, if nonzero,
+		<div class=example>\begin{itemize</div>
+	completes to 
+	<div class=example>\begin{itemize}</div>
+<br>
+<a name="atp-g:LatexBox_completion_environments"></a>
+<a name="atp-g:LatexBox_completion_commands"></a>
+<div class=variable>g:LatexBox_completion_environments</div>
+<div class=variable>g:LatexBox_completion_commands</div>
+
+<p>Static completion lists for environments <a
+    href="#atp-omnicompletion-environments">atp-omnicompletion-environments </a>and commands <a
+href="#atp-omnicompletion-commands">atp-omnicompletion-commands.</a></p>
+

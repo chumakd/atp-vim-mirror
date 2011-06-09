@@ -344,3 +344,4 @@ ToDo: :BibSearch -- when there is (STRING) the last ) is lost and syntax fails. 
 ToDo: There is quite big mess when callig gf (how files are listed)
 
 ToDo: opening skeletal file: b:ListOfFiles is empty => b:atp_LocalCommands is empty.
+ToDo: links in split doc are not working: how to refere to some place in other html file (href+name)?

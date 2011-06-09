@@ -1,0 +1,45 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+    <link rel="prev" href="atp-news.html">
+    <link rel="next" href="atp-commands.html">
+</head>
+<a name="atp-installation"></a>
+<h2>INSTALLATION</h2>
+<div>
+    <p class="alignleft"><a href="atp-news.html">Previous:</a> News</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-commands.html">Next:</a> Commands</p>
+</div>
+<div style="clear: both;"></div>
+
+Neccessary vim settings:<br>
+<div class=indented>:filetype-plugin-on</div>
+<div class=indented>:filetype-indent-on	        (if you want to have automatic indentation for TeX files)</div>
+<div class=indented>:syntax-enable		(several features will not work properly without this option)</div>
+
+<p>If you do not like colours you can still set syntax on but clear the highlight
+colours (you should make a simple function which clears all the highlight
+groups, because ':hi clear' will not give you what you want).</p>
+
+<p>See <a href="#atp-requirements">atp-requirements</a> for other  ATP requirements.</p> 
+
+<h3>Get ATP Updates</h3>
+<p>To get updates it is enought to use this command:</p>
+<a name="atp-:UpdateATP"></a>
+<div class=command>:UpdateATP[!]</div>
+	<p>With bang update ATP to latest {UNSTABLE} snapshot, without to latest
+	stable release. It makes a check if your version is the latest one. 
+	If you have installed {UNSTABLE} snapshot and then you run :UpdateATP
+	without a bang "!", then ATP will ask you if you want to DOWNGRADE to
+	the last stable release.</p>
+
+	<p><b>unstable</b> snapshots contain small fixes, and rarely, major changes
+	of important parts of ATP (what can produce new bugs).</p>
+
+	<p>Requires python.</p>
+
+<a name="atp-:ATPversion"></a>
+<div class=command>:ATPversion</div>
+	<p>This command prints version information of ATP and the time stamp when
+	this version was build. The time stamp is in format 'dd-mm-yy_HH-MM'.</p>

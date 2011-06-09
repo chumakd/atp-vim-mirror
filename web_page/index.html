@@ -2,9 +2,9 @@
     <head>
 	<title >Automatic LaTeX Plugin for Vim</title>
 	<link rel="stylesheet" href="style.css"> 
-	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
     </head>
-<h1 style="background-color: #150459"><center><font  color="#ffffff" >Automatic LaTeX Plugin for Vim</font></center></h1>
+<h1><center>Automatic LaTeX Plugin for Vim</center></h1>
 
 <table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
@@ -33,9 +33,14 @@
 		    It is made for vim 7.3.  You can see the <a href="features.html"><em>long feature list</em></a>.<br>
 		    <em>The main purpose of this plugin is to make you free from compiling cicle.</em> When ATP finds that the file has changed it fires compiler of your choice and makes your document in the background. All you have to do is write (and read).<br>
 		    <b>ATP</b> tries to stay out of your way, but this is a comprehensive plugin and some choices had to be made. <br>
-		    Maps are <em>highly configurable</em> (some of them you can turn on/off temporarily).<br>
-		    <b>ATP</b> has a powerful <b>Tab completion</b> for commands, environments, closing environments, ... . <i>It also completes labels by numbers (as seen in your output file)</i>.<br>
-		    Instead of <i>folding</i> ATP provides <b>Table of Contents</b>, which also can be used to copy (yank), move, paste sections.<br><br>
+		    Maps are <em>highly configurable</em> (some of them you
+		    can be turn on/off temporarily).<br> <b>ATP</b> has
+		    a powerful <b>Tab completion</b> for commands,
+		    environments, closing environments, ... . <i>It also
+			completes labels by numbers (as seen in your output
+			file)</i>.<br> Instead of <i>folding</i> ATP provides
+		    <b>Table of Contents</b>, which also can be used to copy
+		    (yank), move, paste sections.<br><br>
 		    ATP contains <a
 			href="http://www.vim.org/scripts/script.php?script_id=3109">LaTeX
 			Box</a> plugin. It is developed <a
@@ -64,21 +69,27 @@
 			page</a>.
 
 		    <h2> Download/Installation</h2>
-		    You can <em>download</em> one of the <i>stable
-			versions</i> or a <i>snapshot</i>.<br>
+		    You can <em>download</em> one of the <a
+			href="https://sourceforge.net/projects/atp-vim/files/releases"><i>stable
+			    versions</i></a> or a <a
+			href="https://sourceforge.net/projects/atp-vim/files/snapshots"><i>snapshot</i></a>.<br>
 		    Snapshots have recent bug fixes, are published more often,
-		    and they contain unstable new features. If you want to have
-		    the latest version you can use them. Also if you want to
-		    hep with testing. You can download <b>vba</b> file or <b>tar.gz</b> file.
-		    To install <b>vba</b> file all you have to do is open it with vim
-		    and run the following vim command <code>':source %'</code>. The <b>tar.gz</b>
-		    file has to be unbundled in your <i>~/.vim</i> directory. (<em>Note:
-			it is not contained in any directory!!!, test it with
-			<code>tar -tzf</code> first</em>) Don't
-		    forget to run <code>':helptags ~/.vim/doc'</code>, if you
-		    install from <b>tar.gz</b> bundle.<br>
-		    Here is a list of <a
+		    and they contain unstable new features. If you want to
+		    have the latest version you can use them. Also if you want
+		    to hep with testing. You can download <b>vba</b> file or
+		    <b>tar.gz</b> file.  To install <b>vba</b> file all you
+		    have to do is open it with vim and run the following vim
+		    command <code>':source %'</code>. The <b>tar.gz</b> file
+		    has to be unbundled in your <i>~/.vim</i> directory.
+		    (<em>Note: it is not contained in any directory!!!, test
+			it with <code>tar -tzf</code> first</em>) Don't forget
+		    to run <code>':helptags ~/.vim/doc'</code>, if you install
+		    from <b>tar.gz</b> bundle.<br> Here is a list of <a
 			href="requirements.html"><b><i>requirements</i></b></a>.
+		    <p>You need to set <code>:syntax on</code> and <code>:filetype
+			plugin on</code> in your vimrc file for ATP to work.
+		    If you want to have indentation you should also add
+		    <code>:filetype indent on</code>.</p>
 		    <h2> Updates</h2>
 		    If you have ATP you can use <code>:UpdateATP[!]</code> to
 		    <em>update ATP</em> to the <i>latest release</i> (without bang "!") or to the

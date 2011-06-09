@@ -1,0 +1,38 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<a name="atp-requirements"></a>
+<h2>REQUIREMENTS</h2>
+<div>
+    <p class="alignleft"><a href="atp-editing.html">Previous:</a> Editing Tools</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-viewers.html">Next:</a> Viewers</p>
+</div>
+<div style="clear: both;"></div>
+
+<p>This plugin requires Vim version 7.3.  Several tools uses syntax, so even if
+you do not like colours on the screen you should set "syntax on". For example,
+the recognition of math mode used by |atp-completion|, and |atp-:TexAlign|
+command (but also some other things, and some maps!).</p>
+
+<a name="atp-requirements-python"></a>
+<p>ATP uses python 2.7 (also works with python 3). You need psutil library which
+you can get from <a href="http://code.google.com/p/psutil/">here</a>.
+    
+<p>Other libraries are standard ones so they should be available. If you have
+a problem you can try to set g:atp_debugPythonCompiler=1 and then look at the
+file PythonCompiler.log under <a href="#g:atp_TempDir">g:atp_TempDir</a> it
+will contain python errors.</p>
+
+<p>It is nice to have 'texdoc' program. This plugin maps <F1> to a function which
+calls it. This allows to speed up searches for documentation. Also the option
+'keywordprg' has the value "texdoc -m", thus pressing 'K' (see |K|) over a tex
+package should open you the package documentation. The same applies to this
+help file.</p>
+
+<p>Another good programs are: texloganalyzer (which is now not used by ATP) and pdffonts
+There is a map to use pdffonts, see: <a href="#pdffonts">pdffonts</a>.</p>
+
+<p>The command <a href="#atp-:WordCount">atp-:WordCount</a> is using detex program. It is included in TexLive
+tex distrubution.</p>

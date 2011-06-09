@@ -1,0 +1,112 @@
+h1
+    {
+    font-weight: bold;
+    font-variant: small-caps;
+    font-family: palatino, roman;
+    font-weight: bold;
+    background-color: #4E03C7;
+    color: #ffffff;
+    }
+h2
+    {
+    font-weight: bold;
+    font-variant: small-caps;
+    font-family: palatino, roman;
+    background-color: #4E03C7;
+    color: #ffffff;
+    }
+h3
+    {
+    background-color: #4E03C7;
+    color: #ffffff;
+    }
+a:link 
+    {
+	color: #2E006C
+    }
+a:visited 
+    { 
+	color: #DE0055
+    }
+div.variable
+   {
+       color: #0925DC;
+       padding-left: 25pt;
+       padding-right: 50pt;
+   }
+div.map
+   {
+       color: #70049E;
+       padding-left: 25pt;
+       padding-right: 50pt;
+   }
+div.abbreviate
+   {
+       color: #70049E;
+       padding-left: 25pt;
+       padding-right: 50pt;
+   }
+div.aucommand
+   {
+       color: #400068;
+       padding-left: 25pt;
+       padding-right: 50pt;
+   }
+div.command
+   {
+       color: #290268;
+       padding-left: 25pt;
+       padding-right: 50pt;
+   }
+div.example
+   {
+       color: #499C00;
+       padding-right: 50pt;
+   }
+div.indented
+   {
+       padding-left: 50pt;
+       padding-right: 50pt;
+   }
+div.double_indent
+   {
+       padding-left: 100pt;
+       padding-right: 50pt;
+   }
+div.triple_indent
+   {
+       padding-left: 150pt;
+       padding-right: 50pt;
+   }
+td.mainpanel
+   {
+       font-size: 12pt;
+       padding-left: 50pt;
+       padding-right: 50pt;
+       text-align: left;
+       font-family: palatino, times, times new roman ;
+   }
+td.leftpanel
+   {
+       color: red ;
+       font-size: 12pt;
+       text-align: left;
+       font-family: palatino, times, times new roman ;
+   }
+.alignleft
+    {
+	float: left;
+	width: 32%;
+	text-align: left;
+    }
+.alignright
+    {
+	width: 32%;
+	float: right;
+    }
+.aligncenter
+    {
+	float: left;
+	width: 32%;
+	text-align: center;
+    }

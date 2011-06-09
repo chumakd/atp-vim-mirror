@@ -1,0 +1,1525 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<a name="atp-commands"></a> <a name="atp-:"></a>
+<h2>COMMANDS</h2>
+<div>
+    <p class="alignleft"><a href="atp-installation.html">Previous:</a> Installation</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-toc-window.html">Next:</a> ToC Window</p>
+</div>
+<div style="clear: both;"></div>
+<a name="atp-compilation"></a>
+<p>The main function is not seen by the user (it is called s:compiler, for
+those who want to read the plugin). It executes tex compiler specified by the
+variable <a href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>. It is executed as
+an autocommand by the line:
+<div class=aucommand>au! CursorHold $HOME*.tex silent call 's:auTeX()'</div>
+<p>where s:auTeX() is a simple function which calls s:compiler if the file
+written on the disk and the buffer differ. There are two comparing mechanism,
+the default one is using b:changedtick-variable, the seconds compares the
+buffer with the on-disk version:</p>
+<a name="g:atp_Compare"></a>
+<a name="g:atp_compare_double_empty_lines"></a>
+<a name="g:atp_compare_embedded_comments"></a>
+<p>The default value is "changedtick". Then the |b:changedtick-variable| is
+used to find if there buffer differs and to run latex. With any other value
+a compare function will be used (which compares the buffer and the written file
+on the disk) - this method is much slower but has additional features: by
+default differences in comments are skipped (if you set <a
+    href="#g:atp_compare_embedded_comments">g:atp_compare_embedded_comments</a>=0
+(the default is 1) then also the comments which do not start right at the
+beginning of line will be skipped). The second feature is to not see
+differences in amount of blank lines: two or more blank lines is the same as
+one blank line, for this set <a
+    href="#g:atp_compare_double_empty_lines">g:atp_compare_double_empty_lines</a>=0,
+which is the default.</p>
+
+<p>As you can see it will run if a key is not pressed during time defined by
+option 'updatetime' (see CursorHold) in the normal mode. If you type in
+insert mode the file won't be compiled (and that's all right as you can be in the
+middle of your very long formula). The value of 'updatetime' which works
+fine is around 1000ms ('updatetime' is set in milliseconds). Instead of
+setting 'updatetime' options directly you should set the variables
+<a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> and <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>. Here's an important
+note on using CTRL-C (i_CTRL-C) in Vim:</p>
+
+<a name="g:atp_IMapCC"></a>
+<p>In vim the key combination CTRL-C (|i_CTRL-C|) in insert mode exists to
+normal without triggering the InsertLeave autocommands. In this way it doesn't
+changes the 'updatetime' from |g:atp_updatetime_insert| to <a
+    href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>. If <a
+    href="#g:atp_IMapCC">g:atp_IMapCC</a>=1 then _CTRL-C is mapped to i_CTRL-[
+so the InsertLeave autocommands are parsed. However, it is a good habit to use
+i_CTRL-C while you are writting/editing and i_CTRL-[ or i_ESC when you whish to
+see what you wrote (then TeX will be run quicker). If you follow this you can
+even set <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>=1 (if
+you set it to 0 then the file will not be processed while Vim is in normal
+mode).</p>
+
+<a name="g:atp_updatetime_insert"></a>
+<a name="g:atp_updatetime_normal"></a>
+<p>
+<div class=variable>g:atp_updatetime_insert = 2000</div>
+<div class=variable>g:atp_updatetime_normal = 1000</div>
+These variables sets the value of 'updatetime' vim option.  Separate settings
+are for normal and insert mode. You can make <a
+    href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a> even smaller so
+that the file is processed whenever you go out from insert mode to normal mode.
+These values will overwrite the original value of 'updatetime' (unless you set
+both variables to 0)  so you should adjust them in order for the change to have
+an effect.</p>
+
+<p>If you set <a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a>=0
+the TeX compiler will not be called while Vim is in the insert mode.</p> 
+
+<p>If you set <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>=0
+the TeX compiler will not be called while Vim is in the normal mode.</p>
+
+
+<h4>Coming back to compilation ...</h4>
+
+<p>Tex compiler is run with one options:
+<div class=indented>-output-directory </div>
+which points to a unique temporary file in a temporary directory <a
+    href="atp-configure.html#b:atp_TempDir">b:atp_TempDir</a> </p>
+
+<a name="atp-:ToggleAuTeX"></a> <a name="b:atp_autex"></a>
+<p>You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
+the local to buffer variable <a href="#b:atp_autex">b:atp_autex</a>=1 (on) <a
+    href="#b:atp_autex">b:atp_autex</a>=0 (off). It is useful in some
+situations turn automatic compiling off. The key <S-F5> calls the command <a
+    href="#atp-:ToggleAuTeX">atp-:ToggleAuTeX</a> which sets the variable
+|b:atp_autex| and issue a message. You can also set this variable to 0 for some
+files that are not supposed to be processed, for example:</p>
+<div class=aucommand>au BufRead texmf/*.tex let b:atp_autex=0</div>
+On start up b:atp_autex is set to 1 if the path of opened file is not under any
+tex directory ('kpsewhich -show-path tex', except the current dir). For example,
+files located under your local texmf tree will have b:atp_autex=0. Also for
+files with other extension than the standard "tex" it will be set to 0.</p>
+
+<p>The second important variable <a
+    href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>
+configures if you use TeX, PdfTeX, LaTeX, PdfLaTeX and it should point to the
+program name so please do not use capital letters.</p>
+
+<p>Next variable to set is <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a>. It
+configures where TeX will put the output and where viewer and log analysing
+tools can find appropriate files.</p> 
+
+<p>The last top most important variable is <a
+    href="atp-configure#g:atp_keep">g:atp_keep</a> which is a list of extensions,
+by default it is
+<div class=variable>let g:atp_keep = [ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
+Files with this extension will be copied from <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> to the temporary
+directory with appropriate name to be used when (La)TeX is compiling. (log file
+will be only copied after it is created, other files will be copied back and
+forth between you <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> and the temporary
+directory)</p>
+
+<a name="atp-compile.py"></a>
+<p>There are two function compile which can compile your tex file: one written in
+python (for portability reasons) and old one in bash. They work almost the
+same with one small difference. The python code has some vim enhancments (for
+example the progres bar).</p>
+
+<p>The python code has a debug file compile.log under <a href="atp-configure.html#g:atp_TempDir">g:atp_TempDir</a> will
+contain all the errors issued by python, and 'compile.py.debug'
+- debugging info printed by the <a href="#atp-compile.py">compile.py</a> script.</p>
+
+<a name="g:atp_Compiler"></a>
+<p>If for some reason you'd like to use the old 'bash' style script there is
+a variable: 
+<div class=variable>g:atp_Compiler = "python"</div>
+just switch its value to "bash" (you don't need to restart vim).  OK, so
+what is the difference: the python script uses psutil python library (probably
+you need to install it, at least I had to.) It is for two purposes: to
+determine if xpdf is running and secondly, more importantly to check if latex
+is running. </p>
+<a name="b:atp_LatexPIDs"></a>
+<p>The python script <a href="#atp-compile.py">compile.py</a> sends PID numbers of
+latex processes to vim variable <a href="#b:atp_LatexPIDs">b:atp_LatexPIDs</a>.
+Then the function which makes the status line for ATP has a python code to
+check if the latex PIDs are still valid processes.  This is more accurate than
+the method used with bash compiler (before running latex increase variable <a
+    href="atp-configure.html#b:atp_running">b:atp_running</a> and decrease
+after getting signal that latex has ended). In many situations this was
+failing.  The new method works better, however it shows that latex is running
+after slightly longer period of time (not that first python must run the script
+and then run latex).</p> 
+
+<a name="b:atp_TexReturnCode"></a>	
+<p>The variable <a href="#b:atp_TexReturnCode">b:atp_TexReturnCode</a> stores
+the return code of compilation.</p>
+
+<p>See <a href="atp-requirements.html#atp-requirements-python">atp-requirements-python</a> for
+nonstandard python libraries that are used by ATP.</p>
+
+<a name="atp-callback"></a>
+<a name="atp-debug-mode"></a>
+<h2>CALL BACK AND DEBUG MODE</h2>
+<p>By default the call back mechanism is turned on (g:atp_callback=1)</p>
+
+<p>When call back mechanism is set, which is by default if you run gui version,
+if you invoke 'vim' from command line you need to add 'servername' variable, it
+might be desirable to alias Vim to to
+<div class=indented>		vim --servername VIM </div>
+you have additional functionalities:</p>
+
+<a name="atp-status-line-notification"></a>
+	
+	<div class=indented>* Status Line Notification: status line can show if tex is running
+	    <div class=double_indent>let g:atp_status_notification = 1</div>
+		If unset you will get a message when compiler ends.  If set the
+		number next to the name of your compiler indicates how many
+		instances are currently running. If <a
+		    href="#g:atp_ProgressBar">g:atp_ProgressBar</a>=1 then also
+		progress information of TeX compiler  will be shown.</div><br>
+	
+	<div class=indented>* The log file will be automatically read after compilation (:cgetfile).</div>
+	
+	<div class=indented>* Debug mode is set by the value of <a
+		href="#t:atp_DebugMode">t:atp_DebugMode</a>, you can set or see
+	    its value using <a href="#atp-:DebugMode">atp-:DebugMode</a>
+	    command (with completion for debug modes).</div>
+
+	<a name="t:atp_DebugMode"></a>	<a name="atp-debug-mode-silent"></a> <a name="'silent'"></a>
+	<div class=indented>* if <a href="#t:atp_DebugMode">t:atp_DebugMode</a>	= 'silent'<br>
+	    <div class=command>:DebugMode silent</div>
+	    <div class=map>nmap <LocalLeader><LocalLeader>s</div>
+	You will not get any message from compilation. </div>
+
+	<a name="atp-debug-mode-debug"></a> <a name="'debug'"></a>
+	<div class=indented>* if <a href="#t:atp_DebugMode">t:atp_DebugMode</a>	= 'debug'
+	    <div class=command>:DebugMode debug</div>
+	    <div class=map>nmap <LocalLeader><LocalLeader>d</div>
+	       After the end of compilation (invoked by the user or
+	       autocommand) you will get a message with the return status of
+	       the compilation. If the exit code is non zero it will be
+	       highlighted with hl-ErrorMsg.</div>
+
+	       <div class=indented>If you open the error window with |:copen|
+		   or with the menu option ToggleDebugMode then it will be
+		   automatically closed after first compilation with no errors.
+		   Quick fix window is closed in both 'silent' and 'debug'
+		   debug modes. This depends on |errorformat| which you can set
+		   with |atp-:ErrorFormat| and <a
+		       href="#atp-:ShowErrors">atp-:ShowErrors</a>: ATP test
+		   for 'no errors' is 'len(|getqflist()|)'. If the debug mode
+		   was 'debug' <a href="#t:atp_DebugMode">t:atp_DebugMode</a>
+		   will fall back to <a
+		       href="#g:atp_DefaultDebugMode">g:atp_DefaultDebugMode</a>
+		   (by default it is the 'silent' mode).</div>
+
+	       <a name="atp-debug-mode-Debug"></a> <a name="'Debug'"></a>
+	   <div class=indented>* if <a href="#t:atp_DebugMode">t:atp_DebugMode</a>= 'Debug'
+	    <div class=command>:DebugMode Debug</div>
+	    <div class=map>nmap <LocalLeader><LocalLeader>D</div>
+	       This mode is the same as 'debug' + after compilation ATP jumps
+	       to first error.</div>
+
+	   <a name="atp-debug-mode-verbose"></a> <a name="'verbose'"></a> <a name="b:atp_VerboseLatexInteractionMode"></a>
+	   <div class=indented>* if <a href="#t:atp_DebugMode">t:atp_DebugMode</a>= 'verbose'<br>
+	       Every compilation which is invoked by the user will be run in
+	       verbose mode (this mode is mapped to F5 key).  In this mode
+	       latex '-interaction=' switch is set from the variable
+	       <a href="#b:atp_VerboseLatexInteractionMode">b:atp_VerboseLatexInteractionMode</a> (the default value is
+	       errorstopmode).</div>
+
+<p>Note: the 'verbose' mode in 'Vim' (in the console) needs to be run, when
+there is no other latex instance running. Now you get a message to wait until
+compilation ends. In future releases, a better solution will be worked out. Gui
+version 'gvim' works better (as it doesn't suspend the editor).</p>
+
+<p>The background compilation is always done in <a
+    href="#g:atp_DefaultDebugMode">g:atp_DefaultDebugMode</a>.  Unless it is
+set to 'verbose' in which case 'debug' mode is used.</p> 
+
+<p>See also |atp-:copen|.</p>
+
+<a name="g:atp_ProgressBar"></a><br>
+<div class=variable>g:atp_ProgressBar = 1</div>
+<p>By default, when using the python compiler you will get progress message in
+your status line. The number indicates the last page number compiled by LaTeX.
+If by some reason, you want to switch this off, set g:atp_ProgressBar to 0 (use
+|let|).</p>
+
+<p>You need <a href="#g:atp_statusNotif">g:atp_statusNotif</a>=1 and 
+    <a href="atp-highlight.html#g:atp_StatusLine">g:atp_StatusLine</a>=1 for this feature to work
+(see also |laststatus| on how to activate status line in Vim).</p>
+
+<p>If there are many background processes the number which is shown belongs to
+the oldest process. (b:atp_ProgressBar is a dictionary { 'pid' : 'pagenr'
+} - status line shows max of pagenr's).</p>
+
+<p>Note: the time between you start to compile and [1] appears in the status
+line is mostly the time when LaTeX is reading all the packages that you loaded
+in the preamble.</p>
+
+<div class=variable>b:atp_ProgressBar</div>
+<p>This is a read only variable. It is equal to empty string '' if compilation
+is not going on, and while compilation it stores the page number which LaTeX is
+processing.</p>
+
+<a name="g:atp_DebugModeQuickFixHeight"></a>
+<div class=variable>g:atp_DebugModeQuickFixHeight = 8</div>
+<a name="atp-debug-mode-maps"></a>
+<p>You can invoke compiler in the 'debug' mode with '|<LocalLeader>|d',
+'|<LocalLeader>|D' for 'Debug' mode (jump to first error), '|<LocalLeader>|l'
+uses the default mode.</p>
+<a name="g:atp_DefaultDebugMode"></a>
+<div class=variable>let g:atp_DefaultDebugMode = 'silent'</div>
+<p>This is the default debug mode in which background compilation will
+run. It can be set to 'debug', setting it to 'verbose' will have the
+same effect as setting it to 'debug'. ATP will come back to this debug
+mode if compilation ends with exit status 0.</p>
+
+<p>When compilations ends without errors (i.e. when quick fix list is
+empty for the current error format) <a href="#t:atp_DebugMode">t:atp_DebugMode</a> falls back to
+<a href="#g:atp_DefaultDebugMode">g:atp_DefaultDebugMode</a>.</p>
+
+<a name="g:atp_DebugCmdHeight"></a> <a name="g:atp_cmdheight"></a>
+<div class=variable>g:atp_DebugModeCmdHeight = &cmdheight</div>
+<p>the default cmd height (see |cmdheight|) for the debug mode.  ATP will
+switch to it back and forth if needed. By default it is set to |cmdheigh| value
+(thus unless you set it to sth else you will not see the difference).</p> 
+
+<p>When going out of debug/Debug modes cmdheight is set to <a
+    href="#g:atp_cmdheight">g:atp_cmdheight</a> value (with default value set
+from 'cmdheight' option on startup).</p> 
+
+<p>Note: if you change |cmdheight| you should also change <a
+    href="#g:atp_DefaultCmdHeight">g:atp_DefaultCmdHeight</a>, unfortunately
+vim has not autocommand group event to do that automatically.</p>
+
+<a name="atp-:DebugMode"></a>
+<div class=command>:DebugMode [debug-mode]</div>
+<p>Command which help to set <a href="#t:atp_DebugMode">t:atp_DebugMode</a>
+variable (has completion).  [debug-mode] is one of "silent", "debug", "Debug",
+"verbose" (they can be suppressed to 's', 'd', 'D' or 'v' (or
+"si"/"sil"/"sile"/... etc).  If no argument is given it shows the current debug
+mode.</p>
+    <div class=indented>
+	<div class=command>:DebugMode[!] silent</div>
+	<div class=command>(:DebugMode[!] s)</div>
+	<div class=map>nmap <LocalLeader><LocalLeader>s</div>
+	<div class=double_indent>It will load error file (|cgetfile|) with bang
+	    "!" it will open |quickfix| window if there are errors (|cwindow|).
+	    If |quickfix| window was opened it will be closed.  Sets <a
+		href="#t:atp_DebugMode">t:atp_DebugMode</a>='silent'.</div>
+	<div class=command>:DebugMode debug</div>
+	<div class=command>(:DebugMode[!] d)</div>
+	<div class=map>nmap <LocalLeader><LocalLeader>d</div>
+		<div class=double_indent>It will load error file (|cgetfile|) and open |quickfix|
+		window with |:copen|.
+		Sets |t:atp_DebugMode|='debug'</div>
+	<div class=command>:DebugMode Debug</div>
+	<div class=command>(:DebugMode[!] D)</div>
+	<div class=map>nmap <LocalLeader><LocalLeader>D</div>
+		<div class=double_indent>It will load error file (|cgetfile|) and open |quickfix|
+		window with |:copen|.  Sets |t:atp_DebugMode|='Debug'</div>
+	<div class=command>:DebugMode verbose</div>
+	<div class=command>(:DebugMode[!] v)</div>
+	<div class=double_indent>Sets <a href="#t:atp_DebugMode">t:atp_DebugMode</a>='verbose'</div>
+    </div>
+
+<p>The height of the |quickfix| window will be one more than the length of
+quick fix list (|getqflist()|) but nor more than <a
+    href="#g:atp_DebugModeQuickFixHeight">g:atp_DebugModeQuickFixHeight</a>.</p>
+							
+<a name="atp-:copen"></a>
+<div class=command>:copen</div>
+<p>Works slightly different than |:copen|. The [height] argument will not take
+efect. Use |:resize| instead. ATP computes the hiegth of the QuickFix window,
+and uses the variable |g:atp_DebugModeQuickFixHeight| as an upper bound for
+QuickFix window height.</p>
+
+<a name="b:atp_ReloadOnError"></a>
+<p>The variable b:atp_ReloadOnError if set to 1 (which is the default) reload the
+file even when the exit status of compiler was non zero. If set to 0, then the
+file will not be reloaded [actually for viewers other than Xpdf it will not be
+copied from the temporary directory, for Xpdf it will be copied but not
+reloaded).</p> 
+
+<p>There is also a variable which stores the last command which executed
+your tex compiler, see |g:atp_TexCommand|.</p>   
+
+<a name="atp-:TEX"></a><br>
+<div class=command>:{runs}TEX[!] [debug_mode]</div>
+<div class=map>map \l, map \d</div>
+	</p>If anyway you want to run TeX yourself but you do not want to see
+	the output this is the right tool. This runs TeX in 'nonstopmode'. You
+	can specify an argument {runs} which tells how many consecutive runs of
+	TeX you need (this is important if you want to compile Table of
+	Contents, or index, or the bibliography (see <a
+	    href="#atp-:Bibtex">atp-:Bibtex</a>)</p>
+
+	<p>Without "!" it copies the aux file only if there are no compilation
+	errors, with "!" it updates the aux file even if there were errors.
+	This is done to make the labels completion work better, when there are
+	errors they often affect the aux file in a way that interferes with
+	<a href="#atp-:Labels">atp-:Labels</a> command.</p>
+
+	<p>If b:atp_OpenViewer=1 and there current viewer (b:Viewer) is not
+	running on the output file then this function will open a viewer. By
+	default b:atp_OpenViewer=0 and this feature is disabled.</p> 
+
+	<p>The command :2TEX will call the compiler two times.</p>
+
+	<p>It is useful when you want to make the outline (using hyperref
+	package) of your article in pdf files, the tex file has to be
+	'sourced' twice. To make the bibliography you can use |atp-:Bibtex|.</p>
+
+	<p>If {runs} > 5 it will be reduced to 5, to avoid running tex for hundreds
+	(or event thousands) of times (what could happen otherwise by
+	a mistake giving the range of the command to be the current line
+	number).</p>
+
+	<p>The optional argument [debug_mode] has possible values: '', 'silent',
+	'debug', 'Debug', 'verbose'. When '' the current debug mode is used
+	(<a href="#t:atp_DebugMode">t:atp_DebugMode</a>). ( [debug_mode] can be
+	suppressed to 's', 'd', 'D', 'v' or "si"/"sil"/"sile"/... etc.) See the
+	description of <a href="#atp-debug-mode">atp-debug-mode</a>.</p>
+
+	<p>\d is mapped to :TEX debug and \l to :TEX (thus it uses your default
+	debug mode).</p>
+<a name="atp-:DTEX"></a><br>
+<div class=command>:DTEX </div>
+<div class=map>map \d</div>
+    <p>This is equivalent to ':TEX debug'.</p>
+
+<a name="atp-:MakeLatex"></a><br>
+<div class=command>:MakeLatex[!]</div>
+    <p>With one command you can make your whole document: cross references,
+	bibliography (with or without bibtex), index, table of contents, table
+	of figures, table of theorems ([ntheorem package]), table of
+	algorithms. ':MakeLatex!' should be used when an entry in the
+	bibliography was deleted (when 'bibtex' is involved this is when you
+	delete last citation command of a bib entry).</p>
+
+	<p>If aux or log files are loaded in a buffer then they will be deleted
+	- this is a requirement of vimgrep internal grep command (other wise
+	vimgrep will search in the buffer not the hard disk version and they
+	may differ). </p>
+
+	<p>Returns with error message if log contains '! Emergency stop.'</p>
+
+	<p>If <a href="#g:atp_Compiler">g:atp_Compiler</a> = 'python' it uses
+	the python script to compile document, if <a
+	    href="#g:atp_Compiler">g:atp_Compiler</a> = 'bash' it uses a bash
+	command (UNIX only).</p>
+
+<a name="atp-:ShowErrors"></a>
+<div class=command>:ShowErrors [flag]</div>					
+<div class=map>nmap <LocalLeader>e</div>					/for other maps see <a href="#atp-:ShowErrors-maps">atp-:ShowErrors-maps</a>/
+<p>This command shows error/warning messages. It sets the |'errorformat'|
+	variable accordingly to the optional [flag] argument, which is a word
+	made of letters:<p>
+
+<div class=indented>
+    <table border=0 vspace=0 cellspacing=20 >
+<tr><td valign=top>e</td><td>- include errors</td></tr>
+<tr><td valign=top>w</td><td>- include all warning messages</td></tr>
+<tr><td valign=top>r</td><td>- include all reference warnings</td></tr>
+<tr><td valign=top>c</td><td>- include all citations warnings</td></tr>
+<tr><td valign=top>f</td><td>- include all font warnings</td></tr>
+<tr><td valign=top>fi</td><td>- include font info massages</td></tr>
+<tr><td valign=top>F</td><td>- show files listed in the log<br>
+(messages which start with 'File: ') shows the files loaded by tex for example fd files that LaTeX is using</td></tr>
+<tr><td valign=top>p</td><td>- show packages loaded by tex<br>
+			    (messages which start with 'Package: ')</td></tr>
+<tr><td valign=top>all</td><td>- show all above,</td></tr>
+<tr><td valign=top>All</td><td>- show All the log file,</td></tr>
+<tr><td valign=top>o</td><td>- open the log file in a new buffer (split).</td></tr>
+    </table>
+</div>
+<p>If none flag is given <a
+    href="#g:atp_DefaultErrorFormat">g:atp_DefaultErrorFormat</a> value is
+used.  If 'o' flag is used the split buffer with log message has a map 'q' to
+':bd'.  Example:
+    <div class=command>		:ShowErrors r</div>
+will show all reference and citation warnings.</p>
+
+<p>Note: this command works in quickfix window. It will change errorformat but
+will not reload quickfix list. Better use <a
+    href="#atp-:ErrorFormat">atp-:ErrorFormat</a> instead.</p>
+
+<a name="g:atp_DefaultErrorFormat"></a>
+<div class=variable>g:atp_DefaultErrorFormat = 'erc'</div>
+<p>The value is the  same as argument to <a
+    href="#atp-:ShowErrors">atp-:ShowErrors</a> and <a
+    href="#atp-:ErrorFormat">atp-:ErrorFormat</a>. This is the default argument
+for these commands when they are used without any argument. Also corresponding
+'errorformat' is set up at startup.</p>
+						 
+<a name="b:atp_ErrorFormat"></a>
+<div class=variable>b:atp_ErrorFormat = 'ecw'</div>
+<p>This variable stores the current format of errors. It is a word with letters
+given in [flag] argument to <a href="#atp-:ShowErrors">atp-:ShowErrors</a>. You
+can set it with <a href="#atp-:ErrorFormat">atp-:ErrorFormat</a> command. It is
+used by serveral ATP functions, for example call back feature checks if there
+are errors looking into Quick Fix list (with |getqflist()|), which will depend
+on the variable <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
+	    
+<a name="atp-:ShowErrors-maps"></a>
+<p>ShowErrors maps:					 
+
+<div class=indented>
+    <table border=0 vspace=0 cellspacing=20 >
+	<tr><td valign=top><div class=map>&ltLocalLeader&gte</div></td><td>view errors with current <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a></td><td><div class=command>:ShowErrors</div></td></tr>
+	<tr><td valign=top><div class=map>F6+e</div></td><td>to see all errors</td><td><div class=command>:ShowErrors e</div></td></tr>
+	<tr><td valign=top><div class=map>F6+w</div></td><td>to see all warnings</td><td><div class=command>:ShowErrors w</div></td></tr>
+	<tr><td valign=top><div class=map>F6+r</div></td><td>to see warnings coming<br>from references or citations</td><td><div class=command>:ShowErrors rc<div class=command></td></tr>  
+	<tr><td valign=top><div class=map>F6+f</div></td><td>to see font warnings</td><td><div class=command>:ShowErrors f</div></td></tr>
+</table>
+
+<p>this is not a texloganalyzer mapping but it is a good place to mention it:
+<div class=map>F6+l</div>
+to open log file in a new split window this is a mapping to the <a
+    href="#atp-:OpenLog">atp-:OpenLog</a>.</p>
+
+<a name="atp-:ErrorFormat"></a>
+<div class=command>:ErrorFormat {flag}</div> 
+<p>This command has the same syntax as <a
+    href="#atp-:ShowErrors">atp-:ShowErrors</a>. It sets the <a
+    href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> variable and vim option
+|'erroformat'|, and the rereads the log file with |cgetfile|. If {flag} is not
+given it only shows the current value of <a
+    href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.  The variable <a
+    href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> is also set when you use
+the command <a href="#atp-:ShowErrors">atp-:ShowErrors</a>.</p>
+
+<p>As an argument you mey use +{flag} and -{flag} then {flag} will be
+added/removed from |b:atp_ErrorFormat|, example:
+	<div class=command>:ErrorFormat +w</div>
+will add 'w' to |b:atp_ErrorFormat|.		
+Note: this command works in quickfix window.</p>
+
+<a name="atp-:Compiler"></a>
+<div class=command>:Compiler {compiler-program}</div>
+<p>Command which help to set <a href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>
+variable (with completion).</p>
+
+<a name="atp-:Bibtex"></a>
+<div class=command>:Bibtex[!] [debug_mode]</div>
+<div class=map>map \b</div>
+<p>With BANG "!": This function will call bibtex to produce the bibliography
+file (.bbl). If in <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> there is no 'aux'
+file it first calls tex compiler. After the 'bbl' file is produced two
+consecutive runs of tex compiler are called to make the bibliography.</p>
+
+<p>If you specify any value to the [debug_mode] option (for the values see <a
+    href="#atp-:TEX">atp-:TEX</a>) In verbose mode (only the last time tex
+compiler will run in errorstop mode and echoed to the console). This gives you
+the chance to see the output of bibtex command (it will be also printed when
+latex ends).</p> 
+	
+<p>If bibtex returns with non zero exit code, latex will not be run
+afterwards.</p> 
+	
+<p>Wihtout BANG "!"
+If you want to just run bibtex use :Bibtex without bang.</p>
+
+<p>The command :Bibtex  will :call Bibtex(), while :Bibtex v (and :Bibtex
+[debug_mode]) will :call Bibtex(1)</p>
+
+<p>The bang "!" is used in the same way as for <a href="#atp-:TEX">atp-:TEX</a>
+command.</p>
+
+<p>For the description of optional argument [debug_mode] see <a
+    href="#atp-:TEX">atp-:TEX</a>.</p>
+
+<a name="g:atp_raw_bibinputs"></a>
+<div class=map>g:atp_raw_bibinputs</div>
+<p>Tex is looking for the date base files in the path: `kpsewhich -show-path
+bib`. The variable g:atp_bibinputs contains these directories separated by
+commas. If atp cannot find your bib file, tex also won't be able.</p> 
+<a name="g:atp_raw_texinputs"></a>
+<div class=map>g:atp_raw_texinputs</div>
+<p>Similarly this variable stores all of path reported by `kpsewhich -show-path
+tex`.</p>
+<a name="g:atp_bibinputs"></a>
+<div class=map>g:atp_bibinputs</div>
+<p>This is a list of directories as g:atp_raw_bibinputs with appended '**' see
+':h file-searching'.</p>
+<a name="g:atp_texinputs"></a>
+<div class=map>g:atp_texinputs</div>
+<p>This is a list of directories as g:atp_raw_texinputs with appended '**' see
+':h file-searching'.</p>
+
+<a name="atp-:ViewOutput"></a>
+<div class=command>:ViewOutput</div>
+<div class=map>map \v,map F3, imap F3</div>
+<p>You would like to see what you are editing use this function. It will use
+the program defined in the variable b:atp_Viewer. See <a
+    href="atp-configure.html#b:atp_Viewer">b:atp_Viewer</a>, <a
+    href="atp-configure.html#g:atp_XpdfServer">g:atp_XpdfServer</a>, <a
+    href="atp-configure.html#b:xpdfOptions">b:xpdfOptions</a>. When there is no output file
+it will run TeX and open the file. Read more about particular viewers
+(inverse/reverse searching) in <a href="atp-viewers.html#atp-Viewers">atp-viewers</a>.</p> 
+<a name="atp-:SyncTex"></a>
+<div class=command>:SyncTex[!]</div>
+<div class=map>map t, map <S-LeftMouse></div>
+<p>Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
+Xpdf and Xdvi with this feature (Evince is not yet supported).</p>
+
+<p>Note: you can also set reverse search for Okular and Xdvi, see <a
+    href="atp-viewers.html#atp-Viewers-Okular">atp-Viewers-Okular</a> and 
+    <a href="atp-viewers.html#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a> for an instruction how to do
+that. Xpdf doesn't support reverse searching.</p>
+
+<a href="#atp-:SyncTex_Xpdf-hack">atp-:SyncTex_Xpdf-hack</a>
+<p>Note: there is a bug in Xpdf, one canot sent commands to Xpdf to quickly. If
+the <a href="#atp-:SyncTex">atp-:SyncTex</a> command only updates the page, but
+doesn't shift it then you can try to set g:atp_XpdfSleepTime variable to
+something higher than the default 0.1 (this is sleep time between sending
+commands to Xpdf in seconds)</p>
+
+<p>When the output file or the synctex file (.synctex.gz) doesn't exists then
+first it will be generated. It can also open the document if it is not yet
+opened.</p>
+
+<p>Note: with bang <a href="#atp-:SyncTex">atp-:SyncTex</a> will not check if
+viewer is running.</p>
+
+<p>Read <a href="#atp-:SyncTex_with_Okular">atp-:SyncTex_with_Okular</a> if you
+use Okular.</p>
+<a name="atplib-:Kill"></a>
+<div class=command>:Kill</div>
+<p>Kill python scripts running (b:atp_PythonPIDs) and all pids in <a
+    href="#b:atp_LatexPIDs">b:atp_LatexPIDs</a>. This only works with <a
+    href="#g:atp_Compiler">g:atp_Compiler</a>="python".</p>
+
+<a name="atp-:Viewer"></a>
+<div class=command>:Viewer {viewer-program}</div>
+<p>Command which help to set b:atp_Viewer variable (with nice completion).</p>
+
+<a name="atp-:SetXdvi"></a>
+<div class=command>:SetXdvi</div>
+<p>This command sets the options for xdvi viewer, which enables inverse and
+reverse searching. You can use the command |atp-:SyncTex| for forward searches
+(Vim->Xdvi)</p>
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td><div class=command>:SyncTex</div></td><td>(although dvi is using srcspecials rather than synctex)</td></tr>
+	<tr><td><div class=map>map t</div></td><td></td></tr>
+    <tr><td><div class=map>nmap &ltS-LeftMouse&gt</div></td><td></td></tr>
+    </table>
+For inverse searching hold CTRL and click left mouse button on the text in xdvi
+viewer. It sets:
+    <div class=variable>let b:atp_TexOptions="-src-specials"</div>
+and also other variable to enable reverse searching (Xdvi->Vim) see more
+<a href="atp-viewers.html#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a>.</p>
+
+<a name="atp-:SetXpdf"></a> <a name="atp-SetOkular"></a>
+<div class=command>:SetXpdf</div>
+<div class=command>:SetOkular</div>				
+	<p>This command sets options for Xpdf viewer. Xpdf supports forward
+	searching (vim->Xpdf) with command: <a href="#atp-:SyncTex">atp-:SyncTex</a>. It sets
+	    <div class=variable>let b:atp_TexOptions="-synctex=1"</div>
+ 	Thus it enables the forward searching (the above is the default 
+	value for ATP, but it will change when you use |atp-:SetXdvi| which
+	uses "-src-specials".</p>
+
+	<p>It reads the Xpdf viewer options from the variables
+	<a href="atp-configure.html#b:atp_xpdfOptions">b:atp_xpdfOptions</a> and g:atp_xpdfOptions. Similarly for Okular.</p>
+						
+	<div class=command>:BibSearch /{pattern}/ [flag]</div>				
+	<div align=right>See <a href="#atp-:BibSearch">atp-:BibSearch</div>
+	<p>This command finds bib entries in bib files defined in your tex file
+	and in the variable b:atp_BibFiles (see <a
+	    href="#b:atp_BibFiles">b:atp_BibFiles</a>), which match the
+	[pattern] (a Vim regular expression). The output is configurable by the
+	[flag] argument, see <a href="atp-bibsearch.html#atp-bibflags">atp-bibflags</a>. By
+	default the pattern is case insensitive.</p>
+
+	<a name="atp-:AMSRef"></a>
+<div class=command>:AMSRef[!] {bibdata}</div> 
+<p>A command to get bib data from <a href="http://www.ams.org/mathscinet-mref">AMSRef</a>.</p>
+		     
+<p>The bib data will be appended to bibliography of the current document. If
+there are many bib files will get a choice which one to use. This command is
+also available in bib files.  Without bang, i.e. "!", it writes and closes the
+bib buffer with it will leave you in unsaved bib file buffer.  You will be also
+asked for the bib key, the default choice is to use the AMS bib key. </p>
+
+<p>This command also works when you use \begin{bibliography} environment. But
+the default is to use a bib file.  The obtained bibliographic reference is
+copied to the register g:atp_bibrefRegister (the default is "0" so you can
+paste it using Vim command 'p'). In addition, it is stored in the variable
+g:atp_bibref.</p>
+
+<div class=command>:BibChoose</div>						
+<div class=map>map c, map y, map p</div>
+<div align=right>See <a href="#atp-:BibChoose">atp-:BibChoose</a></div>
+<p>This function is defined in the buffer with results of BibSearch command. It
+is mapped to 'y', 'c' and 'p' and let you copy the bib entry key to a register
+(see |atp-:BibChoose|) or directly to last opened buffer (after the last cursor
+position). When you choose to paste, it will close the BibSearch window.</p>
+
+<a name="atp-:FindBibFiles"></a>
+<div class=command>:FindBibFiles</div>
+<p>This updates the variables s:bibfiles, s:allbibfiles, s:notreadablebibfiles.
+Finds all bib files defined in all '\bibliography' commands. For more about the
+above variables read <a href="atp-bibsearch.html#atp-variables-bib">atp-variables-bib</a>. This
+function is called internally be the script functions BibSearch/BibChoose.  The
+command :FindBibFiles finds bib files in the current buffer.</p> 
+
+<p>If a readable bib file was not found under one of path listed in of
+g:atp_bibinputs variable (see <a href="#g:atp_bibinputs">g:atp_bibinputs</a>)
+it is classified as not readable. </p> 
+
+<a name="atp-:GotoFile"></a> <a name="atp-:EditInputFile"></a>
+<div class=command>:GotoFile[!]</div>
+<div class=command>:EditInputFile[!]</div>
+<div class=map>nmap gf</div>
+<p>This command finds input files under b:atp_MainFile (it is recursive).  The
+nmap 'gf' checks first if there is a file under the cursor. If there is no file
+under the cursor it list all input files. Input file is one introduced in the
+source file with \input{<file>}, \input <file> \include{<file>}. The current
+file is now shown with highlight group: |hl-WarningMsg|. </p>
+
+<p>This command uses kpsewhich to find in which path to find input files.
+Actually the path variables: <a href="#g:atp_texinputs">g:atp_texinputs</a> for
+input files and <a href="#g:atp_bibinputs">g:atp_bibinputs</a> for bib files
+are used.</p>
+
+<p>The bibliographic declared are also listed. The command searches for them in
+any directory listed in g:atp_bibinputs (see <a
+    href="#g:atp_bibinputs">g:atp_bibinputs</a>).</p>
+
+<p>If g:atp_developer = 1 (default 0) then the map 'gf' can also open package
+files and document class files, but only when using 'gf' over \usepackage or
+\documentclass tex commands.</p>
+
+<p>With bang "!" this command regenerates tree of files (this is important only
+in files with input lines), without it uses cached values (if they exist).</p>
+
+<p>The current file is now shown with highlight group: |hl-WarningMsg|.</p> 
+
+<a name="atp-:InputFiles"></a>
+<div class=command>:InputFiles</div>
+<p>List input files of the current project. It also updates the <a
+    href="atp-ProjectFiles.html#b:ListOfFiles">b:ListOfFiles</a> and <a
+    href="atp-ProjectFiles.html#b:TreeOfFiles">b:TreeOfFiles</a> variables to the current
+values.</p>
+
+<p>The variable <a name="g:atp_inputfile_pattern">g:atp_inputfile_pattern</a>
+is used as a pattern to find input files. If you use 'biblatex' you do not need
+to put any pattern matching bibliographies (\addbibresource, \bibliography,
+...), ATP has special way of dealing with them which is faster. If you use
+'subfile' package ATP will add \\subfile pattern.</p>
+
+<a name="atp-:Open"></a> <a name="g:atp_LibraryPath"></a>
+<div class=command>:Open[!] [pattern]</div> 
+	<p>If you configure g:atp_LibraryPath, this function will find files
+	matching [pattern] under g:atp_LibraryPath and let them open with
+	a program defined in 
+		<div class=variable>g:atp_OpenTypeDict</div>
+	The g:atp_LibraryPath is a comma-separeted list of directory names.
+	You should use wildcards '**' and '*' as in |globpath()|, if you want
+	to include subdirectories, etc. For example
+	    <div class=variable>let g:atp_LibraryPath=$HOME."/**"</div>
+	will search for files under your $HOME directory. The default value of
+	g:atp_OpenTypeDict is: 
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td><div class=variable>let g:atp_OpenTypeDict</div></td><td> = {</td><td></td></tr>
+	<tr><td></td><td>\ "pdf" : "xpdf",</td><td> "ps" 	: "evince",</td></tr>
+	<tr><td></td><td>\ "djvu": "djview",</td><td> "txt" 	: "split" ,</td></tr>
+	<tr><td></td><td>\ "tex"	: "edit",</td><td> "dvi"	: "xdvi -s 5" }</td></tr>
+    </table>
+	The values of g:atp_OpenTypeDict should be a program to open the file,
+	or one of 'tabe', 'split', 'edit', (if 'vim' is specified, then 'tabe'
+	will be used). The cat program is also supported.</p>
+
+	<p>Found files (all not just matching ones) are stored in the variable
+	g:atp_Library. It is set by |globpath()| on g:atp_LibraryPath and then
+	filtered, only files which extensions are given in g:atp_OpenTypeDict
+	will be stored. This variable is restored by the global project script.
+	You can use {bang} "!" to regenerate the library if it has changed.
+	This is particularly useful as by default ATP remembers g:atp_Library in
+	the common project script (see <a href="#atp-ProjectScript">atp-ProjectScript</a>).</p>
+
+<a name="atp-:OpenLog"></a>
+<div class=command>:ShowErrors o</div>
+<div class=command>:OpenLog</div>
+<div class=map>map F6+l, imap F6+l</div>
+	<p>Opens log file in a new split window with two options (which are set
+	locally): 'ruler', 'nospell', and a map 'q' to ':bd'.</p>	
+
+	<p>You can also use the command ':Explore' to see log, aux, ... files
+	(which is a part of 'netrw' Vim plugin).</p>
+
+
+<p>In the log file there are some special tools to syncronize the tex source
+file and the Viewer (currently only Xpdf is supported) with log file: <a
+    href="#atp-:SyncTex">atp-:SyncTex</a> and <a
+    href="#atp-:SyncXpdfLog">atp-:SyncXpdfLog</a>) These tools can sync tex
+file/Xpdf automatically using autocommand group |CursorMoved|.</p>
+
+<a name="atp-:SyncTex-(log_file)"></a>
+<div class=command>:SyncTex[!]	(inside log file)</div>
+<div class=map>nmap \g</div>
+	<p>If you open log file with ':ShowErrors o' command then you can use
+	this command to move to the place in the source code where the error
+	occurs. It works with project files and also can go to error which
+	appear in a declared package. It will go to the first error line
+	declared in the log file below the cursor position (more precisely, to
+	first line which matches '^l\.\d\+\|on input line\|at lines' will be used).</p>
+
+	<p>With bang [!] it opens new window if the file with error is not shown
+	in the current tab page. Without bang it opens the file in the window
+	where ':ShowErrors o' was used.</p>
+	<a name="g:atp_LogSync"></a>
+	<p>If you set g:atp_SyncLog = 1 (the default value is 0) then the source
+	file will be syncronize with the log file via autocommand (with
+	|CursorMoved|). This sets 'cursorline' option to indicate the
+	corresponding line in the source file. When the log buffer becomes
+	hidden this option should be unset.</p>
+	<a name="atp-:LogSync"></a>
+	<p>To set g:atp_SyncLog you can use :Sync command. ':Sync' will toggle
+	the value, ':Sync on' will set it to 1 and ':Sync off' will set it 
+	to 0.</p>
+
+	<p>If you set g:atp_developer = 1 this command will also go to files
+	under texmf tree (packages and classes).</p>
+
+	<a name="atp-:SyncXpdf"></a> <a name="g:atp_SyncXpdfLog"></a>
+	<p>If you set g:atp_SyncXpdfLog = 1 (the default value is 0) and you use
+	Xpdf as a viewer it will be synchronised with the log file (with
+	autocommand group |CursorMoved|). You can also use the command
+	:SyncXpdf or :Xpdf in the log buffer which does the same.</p>
+
+	<a name="atp-:Delete"></a>
+<div class=command>:Delete[!]</div>
+<div class=map>map <F6>d</div>
+	<p>Deletes all files which extension belongs to g:atp_tex_extensions in
+	the directory <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a>. By default |g:atp_tex_extensions| does
+	not contain 'tex', 'pdf', 'dvi' so none of your important files will
+	be deleted. When the command is used without bang the the extensions
+	from |g:atp_DeleteWithBang| are removed from |g:atp_tex_extensions|.
+	The defualt value of |g:atp_DeleteWithBang| contains for exemple
+	'synctex.gz' extensions, thus it won't be removed by :Delete (without
+	bang "!").</p>
+	<a name="g:atp_delete_output"></a>
+	<p>If you set |g:atp_delete_output|=1 the function will delete also the
+	current output file (but not any other!) and 'synctex.gz' file.</p>
+
+	<a name="g:atp_DeleteWithBang"></a>
+ <div class=map>g:atp_DeleteWithBang = ['synctex.gz', 'tex.project.vim']</div>
+	<p>This is list of extensions which will not be removed when
+	<a href="#atp-:Delete">atp-:Delete</a> is run without bang. You do not need to add "pdf" or
+	"dvi", extensions.</p>
+  							
+	<a name="atp-:WordCount"></a>
+<div class=command>:WordCount[!]</div> 
+	<p>The command to compute the number of words. With bang [!] it will show
+	the word count of each input file. It uses 'detex' program (which is
+	present in 'texlive') to remove the latex markups prior to word
+	counting (done by the external 'wc' program). 
+	Note: This command will first save the file.</p> 
+
+	<a name="atp-:SshPrint"></a>
+<div class=command>:SshPrint [lpr_options]</div>
+	<p>It will run 'lpr' command and append to it the options defined in
+	the variable 'g:printeroptions' + options given in the second argument.
+	It prints the pdf or dvi depending on the value of <a
+	    href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>.</p>
+	<a name="g:atp_ssh"></a>
+	<div class=variable>g:atp_ssh</div>
+	<p>If you specify the variable 'g:atp_ssh=<user>@<host>' it will print
+	via ssh on the <host> using the [lpr_options] passed to the lpr
+	command. The command ':SshPrint' has a completion set for the printers
+	available on your local system or in the host. You do not have to
+	escape white spaces.</p>
+	
+	<p>The command has completion for the names of printers (also remote
+	printers) and also other lpr options and its values, press <Tab> to
+	cycle through printers, or type first letters of the printers name and
+	press Tab to complete it.</p>
+
+	<a name="atp-:Lpr"></a>
+<div class=command>:Lpr [lpr_options]</div>
+	<p>It prints using the lpr command on a local printer. The syntax and
+	completion are the same as for <a href="#atp-:SshPrint">atp-:SshPrint</a>.</p>
+
+
+	<a name="atp-:Lpstat"></a>
+<div class=command>:Lpstat</div>
+	<p>Sends "lpstat -l" remotely (using the |g:atp_ssh| value) or locally and
+	echoes the output.</p>
+
+	<a name="atp-:ListPrinters"></a>
+<div class=command>:ListPrinters</div>
+<p>List printers available on the host <a href="#g:atp_ssh">g:atp_ssh</a>.</p>
+
+<a name="atp-:Babel"></a>
+<div class=command>:Babel</div>
+	<p>If g:atp_babel variable is set on start up to 1 (however, the default
+	value is 0, you can use |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file to switch it on) then
+	ATP will set the |'keymap'| option according to the default babel
+	language (which is the last language passed to babel as optional
+	argument [lang_list] in \usepackage[lang_list]{babel}).</p> 
+  
+	<p>If g:atp_babel is set to 1 the keymap name is shown in the status
+	line (if you use the <a href="#atp-status-line">atp-status-line</a>.</p>
+	<a name="g:atp_keymaps"></a>
+	<div class=map>g:atp_keymaps</div>
+	<p>The <a href="#g:atp_keymaps">g:atp_keymaps</a> variable is used to translate babel language name
+	to 'keymap' value. The default is something like:
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td><div class=map>let g:atp_keymaps</div></td><td> = { </td><td></td></tr>
+	<tr><td></td><td>	\ 'british'	: 'ignore',</td><td>		'english' 	: 'ignore',</td></tr>
+	<tr><td></td><td>	\ 'USenglish'	: 'ignore',</td><td> 		'UKenglish'	: 'ignore',</td></tr>
+	<tr><td></td><td>	\ 'american'	: 'ignore',</td><td></td></tr>
+	<tr><td></td><td>    	\ 'bulgarian' 	: 'bulgarian-bds',</td><td> 	'croatian' 	: 'croatian',</td></tr>
+	<tr><td></td><td>	\ 'czech'	: 'czech',</td><td>		'greek'		: 'greek',</td></tr>
+	<tr><td></td><td>	\ 'plutonikogreek': 'greek',</td><td>		'hebrew'	: 'hebrew',</td></tr>
+	<tr><td></td><td>	\ 'russian' 	: 'russian-jcuken',</td><td>	'serbian' 	: 'serbian',</td></tr>
+	<tr><td></td><td>	\ 'slovak' 	: 'slovak',</td><td> 		'ukrainian' 	: 'ukrainian-jcuken',</td></tr>
+	<tr><td></td><td>	\ 'polish' 	: 'polish-slash' }</td><td></td></tr>
+    </table>
+	<p>When the value is <ignore> then the function <SID>Babel() (or the
+	command <a href="#atp-:Babel">atp-:Babel</a>) will ignore setting keymap option for this
+	language. Using the above syntax you can set this variable in |vimrc|
+	or <a href="atp-configure.html#atprc">atprc</a> file.</p>
+
+	<p>This is useful if you in day to day work use one language, but some
+	times you write a tex file in some other language.</p>
+
+	<a name="atp-:ShowOptions"></a> 
+<div class=command>:ShowOptions[!] [pattern]</div>
+	<p>This will show values of variables that are currently set. 
+	With bang it also shows global variables defined in
+	'ftplugin/ATP_files/options.vim' (that means almost all global
+	variables). Completion lists are filtered out by default. </p>
+
+	<p>The optional argument [pattern] is used to filter variables names with
+	the given pattern.</p>
+
+	<p>TIP: if you are looking for a variable you can use this command to
+	find it.</p>
+
+	<a name="atp-:WrapSelection"></a>
+<div class=command>:WrapSelection {beginWrapper} [endWrapper] [cursor_pos] [new_lines]</div>
+
+	<p>Puts selected text between {beginWrapper} and [endWrapper]. Also sets
+	the cursor position according to the [cursor_pos]. Possible values
+	are: a number -- indicates the character offset from beginning of
+	{beginWrapper}; or 'end' put the cursor at the end of [endWrapper] or
+	'begin' leave the cursor at the beginning (to be precise at the end of
+	the starting wrapper).  The default [endWrapper] is '}'.  The last
+	argument [new_lines] 0/1 (default is 0): if 1 then the {beginWrapper}
+	and [endWrapper] are put in separate lines (the begin line and end
+	line are split), this is useful for putting text into and environment
+	\begin{}:\end{}. </p>
+
+	<p>See |<f-args>| to know how to pass arguments. (They are separated with
+	spaces, white spaces in arguments should be escaped with backslash
+	'\'.)</p>
+
+	<p>For the predefined maps which use WrapSelection see below <a
+	    href="#atp-maps-WrapSelection">atp-maps-WrapSelection</a> or use <a
+	    href="#atp-:HelpVMaps">atp-:HelpVMaps</a>.</p>
+
+	<a name="atp-:InteligentWrapSelection"></a>
+<div class=command>:InteligentWrapSelection {mathWrapperPair}, {textWrapperPair}, [cursor_pos], [new_lines]</div>
+
+	<p>Puts the selected text inside {mathWrapperPair} if the cursor stands
+	in mathematics otherwise inside {textWrapperPair}.  {mathWrapperPair}
+	{textWrapperPair} are Vim lists of length at least 1, the first wrapper
+	is the opening and the second is the closing one (if not given the
+	default '}' is used. The other arguments are as for <a
+	    href="#atp-:WrapSelection">atp-:WrapSelection</a>. If the opening
+	leader in is not given then this command is not wrapping the text (see
+	below for the suggested map '\tx').</p>
+
+	<p>The command arguments should be separated with commas and quoted
+	separately (see |<args>|).</p>
+
+	<p>For the predefined maps which use <a
+	    href="#atp-:WrapSelection">atp-:WrapSelection</a> see below <a
+	    href="#atp-maps-InteligentWrapSelection">atp-maps-InteligentWrapSelection</a>
+	or use <a href="#atp-:HelpVMaps">atp-:HelpVMaps</a>.</p>
+
+	<a name="atp-maps-WrapSelection"></a> <a name="atp-maps-InteligentWrapSelection"></a>
+	<p>These are the provided maps in visual mode:
+	    <div class=map>vmap &ltbuffer&gt \rm	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\mathrm{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&lt \em	:&ltC-U&gtInteligentWrapSelection ['\\emph{'],	['\\mathit{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \it	:&ltC-U&gtInteligentWrapSelection ['\\textit{'],	['\\mathit{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \sf	:&ltC-U&gtInteligentWrapSelection ['\\textsf{'],	['\\mathsf{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \tt	:&ltC-U&gtInteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \bf	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbf{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \bb	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbb{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\text{']&gtCR&lt</div>
+	    <div class=map>vmap &ltbuffer&gt \sl	:&ltC-U&gtWrapSelection \\textsl{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \sc	:&ltC-U&gtWrapSelection \\textsc{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \up	:&ltC-U&gtWrapSelection \\textup{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \md	:&ltC-U&gtWrapSelection \\textmd{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \un	:&ltC-U>WrapSelection \\underline{&ltCR&gt</div&gt
+	    <div class=map>vmap &ltbuffer&gt \ov	:&ltC-U&gtWrapSelection \\overline{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \n	:&ltC-U&gtInteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \cal	:&ltC-U&gtInteligentWrapSelection [''],['\\mathcal{']&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtmb :WrapSelection \\mbox{ } begin&ltCR&gt</div>
+   	Suggested maps: 
+	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection [''],['\\text{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \in	:&ltC-U&gtInteligentWrapSelection [''],['\\intertext{']&ltCR&gt"</div>
+	The leader '\' in above commands is configurable: the value of
+	<div class=map>g:atp_vmap_text_font_leader is used (the default value is &ltLocalLeader&gt).</div></p>
+
+	<p>Another provided font wrapper: 
+	    <div class=map>vmap LocalLeaderf	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'&ltCR&gt'</div>
+	Where the variable:
+	    <div class=variable>g:atp_font_encoding</div>
+	<p>stores the default encoding which is 'OT1', unless you use fontenc
+	package, then the default for fontenc is used (the last defined in
+	\usepackage[...]{fontenc} see the 'Latex2e font selection'
+	/font user guide/ available on CTAN).</p>
+
+	<p>Other wrappers: 
+	    <div class=map>vmap m			:WrapSelection \( \)&ltCR&gt</div>
+	    <div class=map>vmap M			:WrapSelection \[ \]&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt(		:WrapSelection ( ) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt[		:WrapSelection [ ] begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt{		:WrapSelection { } begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt)		:WrapSelection ( ) end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt]		:WrapSelection [ ] end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt}		:WrapSelection { } end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
+ 	And the maps to put the selected text into an environment:
+	    <div class=map>vmap &ltLocalLeader&gtA	:WrapSelection \begin{align} \end{align} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtC	:WrapSelection \begin{center} \end{center} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtE	:WrapSelection \begin{equation} \end{equation} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtL	:WrapSelection \begin{flushleft} \end{flushleft} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtR	:WrapSelection \begin{flushright} \end{flushright} 0 1&ltCR&gt</div>
+
+	    The leader <LocalLeader> can be changes using the variable <a name="g:atp_vmap_environment_leader">g:atp_vmap_environment_leader</a> 
+	(its default value is &ltLocalLeader&gt).
+	Note: that the arguments for this command must be put in ':' or ":".
+   	the highlighted text will put inside \textbf{ }.</p>
+
+	<p>You can also use a wrapper which was yanked into register 'a':
+	<div class=command>	:WrapSelection @a</div>
+  	This will work not only in visual mode. It will operate on last
+	selected text. So if you accidentally lost the selection you can still
+	use this command (but not the maps)!</p>
+
+<a name="atp-:TexAlign"></a>
+<div class=command>:TexAlign</div>
+<div class=map>map \a </div>
+<p>This is a wrapper around Align command of the great <a
+    href="http://www.vim.org/scripts/script.php?script_id=884">AutoAlign Vim
+    plugin</a> This command sets correct align options and aligns the
+environment.  The following LaTeX environments are supported: equation, align,
+alignat, flalign, displaymath and tabular Equation, align, alignat, flalign and
+displaymath are checked using syntax, tabular environment is checked using
+searchpair() function, the g:atp_completion_limits[2] applies.</p>
+
+<a name="atp-:TOC"></a>
+<div class=command>:TOC[!]</div>
+<div class=map>nmap \t</div>
+	<p>Shows Table of Contents of your document. It do not yet support the
+	starred version of chapter, section,... . </p>
+
+	<p>The optional argument bang controls if the table of contents data base
+	must be generated: by default map \t doesn't regenerate the toc data
+	base (unless if it doesn't exist), :TOC command regenerate the
+	data base, :TOC! not.</p>
+
+	<p>See <a href="atp-toc-window.html#atp-toc-window">atp-toc-window</a> for commands and maps defined in the toc window.</p>
+
+	<p>TOC() supports many edited files. For example if you have in your
+	buffer list two files a.tex and b.tex this command will produce table
+	of contents of both of them. If you have just one opened window
+	(excluding the ToC window) then pressing &ltspace&gt, &ltenter&gt, p and q
+	will take you to the right buffer (which will be read if is unloaded
+	or hidden). If you split a window then &ltspace&gt, &ltenter&gt,
+	p, q will take you to the window from which you are coming. However,
+	if you have two windows with two different buffers loaded they will
+	act on the window with the matching buffer name.</p>
+
+	<p>The variable t:toc_window_width sets the width of table of contents
+	window. By default t:toc_window_width=30. You can set a global
+	variable g:toc_window_width to override the default value.</p>
+
+	<a name="atp-:CTOC"></a>
+<div class=command>:CTOC</div>
+	<p>This function returns the name of the currently edited chapter/
+	section/subsection/subsubsection. Use ':echo CTOC()' or just ':CTOC' to
+	see the returned value. If you added a section unit the function will
+	not update the database, run ':TOC' to do that (map \t).</p>
+
+	<a name="atp-:Labels"></a>
+<div class=command>:Labels[!]</div>
+<div class=map>map \L</div> 
+	<p>Shows labels defined in your file. You can also use the commands and
+	mappings described in <a href="atp-toc-window.html#atp-toc-window">atp-toc-window</a>.</p>
+
+	<p>If you forget what are these mappings, write ':map <buffer>' in the
+	TOC or LABELS window, or move to the end of the LABELS window to see
+	a short help message.</p>
+
+	<p>The key 's' shows the context of the label under the cursor (your
+	current window splits).</p>
+
+	<p>The variable t:labels_window_width sets the width of labels window. By
+	default t:labels_window_width=30. You can set a global
+	variable g:labels_window_width to override the default value.</p>
+
+	<p>Without bang "!" the labels data base will not be generated.
+	Difference of \t and \L  is that \L regenerates the database (which is
+	quite fast).</p>
+
+	<a name="atp-:GotoLabel"></a>
+<div class=command>:GotoLabel[!] {pattern} </div>
+	<p>The command does the obvious thing. The {pattern} matches against the
+	label or label value (as appears in output file). When matching the
+	label value '^' is added at the beginning of pattern. With bang it
+	doesn't regenerate the labels dictionary. It works with project files.
+	It has completion.  If pattern matches many labels they all are listed
+	with some useful info: label value, label and the file where it was
+	defined (only in projects). Examples:
+	    <div class=command>:GotoLabel 1.2</div>
+	    <div class=command>:GotoLabel ^thm:</div>
+	    Note: there is <a href="#atp-:Tags">atp-:Tags</a> command which makes the tag file, and you
+	can use vim |tags| commands.</p>
+
+	<p>Note: You can also use a tag file and vim |tags| commands, see
+	<a href="#atp-:Tags">atp-:Tags</a>.</p>
+
+	<a name="atp-:GotoNamedDest"></a>
+<div class=command>:GotoNamedDest &ltdestination_name&gt</div>
+<div align=right>{only in Xpdf}</div>
+	<p>Using '\hypertarget{&ltdestination_name&gt}{&lttext&gt}' from hyperref package
+	you can insert into PDF named destinations. This command will set the
+	position of PDF file in Xpdf to this destination. There is
+	a completion for destination names. This command solely works with
+	Xpdf. Using:
+	    <div class=command>:%s/\\label{\([^}]*\)}/\hypertarget{\1}{}/gc</div>
+       you can turned labels into named destinations.</p>
+
+
+       <a name="atp-:F"></a>
+<p>:[count]F {arg}</div>
+	<p>Go (forward) to {arg}, {arg} might be: part, section, subsection,
+	subsubsection, and defined environment. You can use command completion
+	which uses all the locally defined environments.</p>
+
+	<a name="atp-:B"></a>
+<div class=command>:[count]B {arg}</div>
+<p>Go (backward) to {arg}, like above <a href="#atp-:F">atp-:F</a>.</p>
+
+
+<a name="atp-:NEnv"></a> <a name="atp->e"></a> <a name="atp-<C-F>"></a>
+<div class=command>:NEnv {environment}</div>
+<div class=command>:[count]F {environment}</div>
+<div class=map>[count]map &gte</div>
+<div class=map>[count]map &ltC-F&gt</div>
+	<p>Move to next environment, for example ':NEnv definition'. Completion
+	is set, which finds environments defined in current tex source file.
+	This function omits environments in comment lines.</p>
+
+	<a name="atp->m"></a> <a name="atp->M"></a>
+	<p>{environment} can be also math or displayedmath. For convenience
+	there are maps: }m and }M respectively.</p>
+
+	<p>If <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
+	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p>
+
+	<a name="atp-:PEnv"></a> <a name="atp-<e"></a> <a name="atp-<C-B>"></a>
+<div class=command>:PEnv {environment}</div>
+<div class=command>[count]:B {environment}</div>
+<div class=map>[count]map &lte</div>
+<div class=map>[count]map &ltC-B&gt</div>
+	<p>Move to previous environment, for example ':NEnv definition'. Completion
+	is set, which finds environments defined in current tex source file.
+	This function omits environments in comment lines.</p>
+
+	<a name="atp-<m"</a> <a name="atp-<M"</a>
+	<p>{environment} can be also math or displayedmath. For convenience
+	there are maps: {m and {M respectively.</p>
+
+	<p>If g:atp_mapNn is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
+	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p>
+
+<a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a name="atp->p"></a> <a name="atp-:NChap"></a>	<a name="atp->c"></a> <a name="atp-:NSec"></a>	<a name="atp->s"></a> <a name="atp-:NSSec"></a>	<a name="atp->S"></a> <a name="atp-:NSSSec"></a>
+<div class=command>:NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]</div>
+<div class=command>[count]:F {section}</div>
+<div class=map> map &gtp,  map &gtc,  map &gts,  map &gtS</div>
+<div class=map>vmap &gtp, vmap &gtc, vmap &gts, vmap &gtS</div>
+
+	<p>Go to next part/chapter/section/subsection/subsubsection which title
+	matches optionally given [title_pattern]. With bang "!" the command
+	doesn't skip commented sections. Maps skip them. The search will wrap
+	around the end of a file if 'wrapscan' is set.</p>
+
+	<p>The {section} argument for :F is one off:
+	    part/chapter/section/subsection/subsubsection.</p>
+
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td>Map</td><td>  		Command</td><td>			Meaning
+		<tr><td><div class=map>&gtp</div></td><td>		<div class=command>:NPart</div></td><td>go to next part</td></tr>
+	<tr><td><div class=map>&gtc</div></td><td>		<div class=command>:NChap</div></td><td>go to next chapter</td></tr>
+	<tr><td><div class=map>&gts</div></td><td>		<div class=command>:NSec</div></td><td>go to next section</td></tr>
+	<tr><td><div class=map>&gtS</div></td><td>		<div class=command>:NSSec</div></td><td>go to next subsection</td></tr>
+    </table>
+
+    <a name="g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
+    <p>You can set the leader '>' using <a href="#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>r
+	variable.</p>
+
+	<p>Note: If you leave the default value of |g:atp_forward_motion_leader|
+	then ATP remaps |&gt&gt| to &gt&gt and also |v_&gt| to &gt&gt. |&gt| is working and is
+	not touched by ATP. If you have |'timeout'| set then the map is
+	executed faster, if you use |'notimeout'| this workaround it makes
+	these operators work.</p>
+
+	<p>Note: If you set <a href="#g:atp_forward_motion_leader">g:atp_forward_motion_leader</a>="}" then ATP remaps |}|
+	operator to }}</p>
+
+	<p>Note: the maps work in visual mode and operator pending mode ('d\ns'
+	will delete till the end of the section). You can use |n| and |N| Vim
+	normal commands (also in visual mode) to go further. </p>
+
+	<p>In visual mode these maps go to end of current section or, if already
+	at the end of section, end of next section. </p>
+
+	<p>[title_pattern] is the pattern which will match for the pattern, it
+	should start with '.*' when you want to match somewhere in a middle of
+	the title. </p>
+	
+	<p>These commands (and maps) use Vim |search()| function or <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>
+	command depending on the value of <a
+	    href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> (see <a
+	    href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>, when g:atp_mapNn=1 the 
+	    <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command is used). You can set the value
+	of <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> using the command <a
+	    href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>. If 'wrapscan' is set and
+	g:atp_mapNn=1 the search will wrap around the end of the project (not
+	the end of the current buffer).</p>
+
+	<p>You can unmap these keys and use &ltPlug&gtGotoNextSubSection,
+	&ltPlug&gtGotoNextSection, &ltPlug&gtGotoNextChapter, &ltPlug&gtGotoNextPart to
+	define new maps.</p>
+
+
+	<a name="atp-:PrevSection"></a> <a name="atp-:PPart"></a>	<a name="atp-<p"></a> <a name="atp-:PChap"></a>	<a name="atp-<c"></a> <a name="atp-:PSec"></a>     <a name="atp-<s"></a> <a name="atp-:PSSec"></a>	<a name="atp-<S"></a> <a name="atp-:PSSSec"></a>
+<div class=command>:PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]</div>
+<div class=command>[count]:B {section}</div>
+<div class=map> map &ltp,  map &ltc,  map &lts,  map &ltS</div>
+<div class=map>vmap &ltp, vmap &ltc, vmap &lts, vmap &ltS</div>
+
+	<p>Go to previous part/chapter/section/subsection/subsubsection which
+	title matches [title_pattern] (an optional argument). With bang "!"
+	the command doesn't skip commented sections. Maps skip them. The
+	search will wrap around the beginning of a file if 'wrapscan' is set.</p>
+
+	<a align=right name="g:atp_map_backward_motion_leader">"g:atp_map_backward_motion_leader"</a>
+	<p>You can set the leader '&lt' using <a href="#g:atp_map_bacward_motion_leade">g:atp_map_bacward_motion_leader</a>r
+	variable.</p>
+
+	<p>The {section} argument for :B is one off:
+	    part/chapter/section/subsection/subsubsection.</p>
+
+	    <p>For description of arguments read <a href="#atp-:NextSection">atp-:NextSection</a> just above.</p>
+
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td>Map</td><td>Command</td><td>Meaning</td></tr>
+	<tr><td><div class=map>&ltp</div></td><td>		<div class=command>:PPart</div></td><td>go to previous part</td></tr>
+	<tr><td><div class=map>&ltc</div></td><td>		<div class=command>:PChap</div></td><td>go to previous chapter</td></tr>
+	<tr><td><div class=map>&lts</div></td><td>		<div class=command>:PSec</div></td><td>go to previous section</td></tr>
+	<tr><td><div class=map>&ltS</div></td><td>		<div class=command>:PSSec</div></td><td>go to previous subsection</td></tr>
+    </table>
+
+    <p>These commands (and maps) use Vim |search()| function or <a
+	href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command depending on the value of
+    <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>, when
+    g:atp_mapNn<a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a>=1 the <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command is used). If
+    'wrapscan' is set and <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a>=1 the search will wrap around the
+    beginning of the project (not the beginning of the current buffer).</p>
+
+	<p>You can unmap these keys and use &ltPlug&gtGotoPreviousSubSection,
+	&ltPlug&gtGotoPreviousSection, &ltPlug&gtGotoPreviousChapter,
+	&ltPlug&gtGotoPreviousPart to define new maps.</p>
+
+
+	<p>Note: If you leave the default value of <a
+	    href="#g:atp_forward_motion_leade">g:atp_forward_motion_leader</a>r
+	then ATP remaps |&lt&lt| to &lt&lt and also |v_&lt| to &lt&lt. |&lt| is
+	working and is not touched by ATP. If you have |'timeout'| set then the
+	map is executed faster, if you use |'notimeout'| this workaround it
+	makes these operators work.</p>
+
+	<p>Note: If you set <a
+	    href="#g:atp_forward_motion_leader">g:atp_forward_motion_leader</a>="{"
+	then ATP remaps |}| operator to {{</p>
+
+
+<p>Previous commands where using relative position - goto next/previous
+section/chapter. The following commands/maps will go to section/chapter as
+counted from first one.</p>
+<a name="atp-:SSec"></a> <a name="atp--S"></a> <a name="atp-:Sec"></a>  <a name="atp--s"></a> <a name="atp-:Chap"></a> <a name="atp--c"></a> <a name="atp-:Part"></a> <a name="atp--p"></a>
+<div class=command>:[count]SSec</div>
+<div class=map>nmap -S</div>
+<div class=command>:[count]Sec</div>
+<div class=map>nmap -s</div>
+<div class=command>:[count]Chap</div>
+<div class=map>nmap -c</div>
+<div class=command>:[count]Part</div>
+<div class=map>nmap -p</div>
+	<p>Go to subsection/section/chapter/part [count] from begin of the
+	section/chapter/document, i.e. 3]s will jump to section 3 in current
+	chapter. Mark ' is preserved.</p>
+
+	<p>Note: if you are in a section which has no subsections :SSec and -S
+	will go to next section, the same aplies to other section types.</p>
+
+	<p>You can set the leader for maps with <a
+	    name="g:atp_goto_section_leader">g:atp_goto_section_leader</a>.</p>
+
+
+    <a name="atp-:SkipCommentForward"></a> <a name="atp-]star"></a> <a name="atp-gc"></a>
+<div class=command>:SkipCommentForward</div> 
+<div class=map>nmap ]* gc</div>
+	<p>Go to end of current/next comment group.</p>
+
+	<a name="atp-:SkipCommentBackward"></a> <a name="atp-[star"></a> <a name="atp-gC"></a>
+<div class=command>:SkipCommentBackward</div>
+<div class=map>nmap [* gC</div>
+	<p>Go to begining of current/previous comment group.</p>
+
+    <a name="atp-function-ToDo"></a> <a name="atp-:ToDo"></a> <a name="atp-:Note"></a>
+<div class=command>ToDo({keyword}, {stop}, [bufname])</div>
+<div class=command>:ToDo [bufname]</div>
+<div class=command>:Note [bufname]</div>
+	<p>The function list all the lines of the buffer [bufname] which match
+	for the pattern '%.*{keyword}'. The {stop} argument is the pattern to
+	before which to stop. The optional argument is the buffer name
+	(the buffer name completion is set on). If not given the current
+	buffer is assumed.  You can set highlighting for this command by:
+		<div class=map>highlight atp-Todo ctermfg=... 	guifg=...</div>
+	The command :ToDo sets keyword='\c\<todo\>' and
+	stop='\s*%.*\c\<note\>', and the command :Note sets
+	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
+	listing ToDo lines with Notes and vice versa. </p>
+
+	<a name="atp-:ToggleStar"></a>
+<div class=command>:ToggleStar</div>
+<div class=map>map &ltLocalLeader&gts</div>
+	<p>Add/removs a star from the current environment (if it is not one
+	belonging to the list:
+	<div class=variable>g:atp_no_star_environments</div>
+	See <a href="atp-mappings.html#b:atp_StarEnvDefault">b:atp_StarEnvDefault</a> and <a
+	    href="atp-mappings.html#b:atp_StarMathEnvDefault">b:atp_StarMathEnvDefault</a>.</p>
+
+<a name="atp-:ToggleEnv"></a>
+<div class=command>:ToggleEnv</div>
+<div class=map>map &ltS-F4&gt</div>
+	<p>mapped to &ltF4&gt and &ltS-F4&gt, switches environment name. See
+	(i.e. echo ) g:atp_toggle_environments_1...7 (you can change or add
+	your own variables, just add numbers - they must be consecutive). </p>
+	
+	<p>Read <a href="#g:atp_toggle_labels">g:atp_toggle_labels</a> below
+	how it handles the prefixes of labels.</p>
+
+<a name="atp-:ChangeEnv"></a>
+<div class=command>:ChangeEnv</div>
+<div class=map>nmap &ltF4&gt</div>
+	<p>This does the same as the above command but asks for environment name</p>
+
+	<p>Read <a href="#g:atp_toggle_labels">g:atp_toggle_labels</a> below
+	how it handles the prefixes of labels.</p>
+
+	<a name="g:atp_toggle_labels"></a>
+	<p>The commands <a href="#atp-:ToggleEnv">atp-:ToggleEnv</a> and <a
+	    href="#atp-:ChangeEnv">atp-:ChangeEnv</a> changes the prefixes of
+	labels (if there is one, which belongs to g:atp_shortnames_dict) and
+	all ref's (\ref, \eqref and \pageref).  You have to turn on this
+	feature by putting g:atp_toggle_labels=1 (by default it is 0).  Check
+	if it works for you!  If there is a label or reference to which it
+	wants to change it doesn't change labels and issue a Warning Message,
+	thus I believe it should work for every one, but as this changes your
+	file it is turned off by default.)</p> 
+
+	<p>In project files this is done in all files belonging to the project.
+	Changes are not saved by default (ATP uses |'hidden'| option, so when
+	you use q! or qa! all changes will be lost).</p>
+
+	<a name="atp-:WrapEnvironment"></a>
+<div class=command>:WrapEnvironment {environment}</div> 
+<div class=map>vmap &ltF4&gt</div>
+	<p>Mark part of the text and wrap it into anvironment given as the
+	argument, the map will let you choose the environment name.</p>
+
+	<a name="atp-:SetOutDir"></a>
+<div class=command>:SetOutDir</div>
+<p>This is a command which sets the <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable and the
+|'errorfile'| option.  See <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> for the default value.</p>
+
+<a name="atp-:SetErrorFile"></a>
+<div class=command>:SetErrorFile</div>
+<p>If you change <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable and you want
+to update the |'errorfile'| option use this command. It will show you the value
+to which |'errorfile'| was set.</p> 
+
+<a name="atp-:Wdiff"></a>
+<div class=command>:Wdiff {old-file} {new-file}</div>
+	<p>This is diff using the GNU wdiff. This command will split the view and
+	show the wdiff output. You can use ]s and [s to go to next previous
+	change. The deleted parts of {old-file} are marked embraced into
+	{=...=} and highlighted with |hl-DiffDelete|. The added parts of
+	{new-file} are embraced with {+...+} and highlighted with
+	|hl-DiffAdd|. If the preambles differ you will be asked which one to
+	use in the diff file.</p>
+
+	<p>This is an alternative for latexdiff program, but is much faster.</p>
+
+	<p>The diff file might not compile well (thus the b:atp_autex is set to
+	0 by default), this is mainly because the math environments can be
+	break and the output might contain: \( a {= =c\)=} {+ !=c\)+} Other
+	things which are not taken into account are changes of environment
+	names, changes of coordinates in tikz. It would be nice to tell to
+	wdiff to not diff them, but this is not implemented.</p>
+
+	<p>After you resolve such conflicts the file should compile nicely
+	(though I didn't do many tests). After that you can change {=...=} and
+	{+...+} for something better. For example you can change {= and =} for
+	\textcolor{red}{=} and {+, +} for \textcolor{blue}{+}. If you resolved
+	syntactic conflicts in a very nice way you can change whole {=<old>=}
+	for \textcolor{red}{<old>} and {+<new>+} for \textcolor{blue}{<new>}.
+	For this you can use the following Vim command:</p>
+
+	<a name="atp-:NiceDiff"></a>
+<div class=command>:NiceDiff</div>
+	<p>(which also remaps ]s and [s and keeps the highlighted areas).
+	The :NiceDiff command, although I tried, is not changing all the regions,
+	I will try to fix this in next releases. (Thus not all parts of the output
+	file might be highlighted).</p>
+
+
+    <a name="atp-status-line"></a> <a name="atp-:Status"></a> <a name="atp-:ATPStatus"></a>
+<div class=command>:Status[!]</div>
+<div class=command>:ATPStatus[!]</div>
+	<p>This comman sets the status line, which include: the name of currently
+	edited chapter (or section) the value of <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> (unless used
+	with bang!) and it will warn you if <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable is not
+	set. The status line will also contain the information about
+	processing compelation: see |atp-status-line-notification|,
+	|g:atp_ProgressBar|. This function is called at startup unless the
+	variable '<a href="atp-highlight.html#g:atp_StatusLine">g:atp_StatusLine</a>=0' is set. The status is set by the
+	autocommand:
+		<div class=aucommand>au BufWinEnter *.tex :call Status()</div>
+	In this way every opened window with a '*.tex' file will get the correct
+	status line.</p>
+
+	<p>If there was a command with name 'Status', atp is not overwriting it,
+	it uses ATPStatus name.</p>
+
+	<a name="g:atp_statusOutDir" align=right ><div class=variable>g:atp_statusOutDir</div></a>
+	<p>Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
+	output directory will be not seen in the statusline.</p>
+
+	<a name="atp-:FontSearch"></a>
+<div class=command>:FontSearch[!] [pattern]</div>
+	
+	</p>For example:
+	<div class=indented>
+	<div class=command>:FontSearch ^t1</div>
+		will list all the fd files in your tex distribution which
+		names starts with t1 (i.e. which describes fonts in encoding
+		'T1')
+	<div class=command>:FontSearch! bookman</div>
+	will list all fd files which full path matches 'bookman'.</div></p>
+
+    <p>In the opened window there are several mappings defined:
+    <div class=indented>
+    <table border=0 vspace=0 cellspacing=1 >
+	<tr><td valign=top>&ltEnter&gt</td><td>open the fd file under the cursor</td></tr>
+	<tr><td valign=top>&ltTab&gt</td><td>list fonts defined in the fd file
+		(shows the command that you can use in your tex file to use
+		this font)</td></tr>
+	<tr><td valign=top>p</td><td>preview the fonts defined in the fd file
+		under the cursor, do not shows the latex source. </td></tr>	
+	<tr><td valign=top>P</td><td>preview fonts and show the latex source
+		<br> (then you can see the errors why the preview was not
+		produced; in many cases there are no encoding files or fonts
+		themselves for which you have to look in <a
+		    href="http://www.ctan.org/"><b>ctan archive</b></a>
+		yourself; or <em>you can just see how to use fonts :)</em>
+		)</td></tr> <tr><td valign=top>q</td><td>close the window
+		(actually, delete the buffer using :bd, it will be still in the
+		list if you type ":ls!", so even then you can reload previous
+		searches.)
+	</td></tr>
+    </table></div>
+
+	<p>In addition to 'p' and 'P' maps there is a :Preview command. 
+	Note: the maps 'p' and 'P' work in both normal and visual mode.
+	You can select a part of the text and use this maps or the command
+	:Preview to make one preview file for all the font files.</p>
+
+
+	<p>The same mappings are defined in the window with fd file opened
+	(except &ltEnter&gt, &ltTab&gt).</p> 
+
+	<p>Additionally, read |font-lowlevelcommands| to learn how to use
+	|\usefont|, |\fontsize|, |\selectfont| and other such commands.
+	The 'Latex 2e font selection' by 'LeTeX3 Project Team' might be very
+	useful. It is available on the net (you probably have it in your tex
+	distribution if it is installed with the documentation, if not check
+	the <a href="http://www.ctan.org/"><b>ctan archive</b></a>).</p>
+
+	<p>ATP also has a very nice completion for various font declaration
+	commands, see <a href="#atp-completion-fontdeclaration">atp-completion-fontdeclaration</a>.</p>
+
+	<p>Hopefully, this will help your documents to become beautiful :)</p>
+
+	<a name="atp-:FontPreview"></a>
+<div class=command>:FontPreview[!] {fdFile} [encoding] [keep_tex]</div>
+<p>Previews all fonts defined in fd file matching the pattern <fd_file> with
+encoding [encoding] (optional). If [keep_tex] is 1 (default is 0) it will keep
+the latex source file for debugging purposes.</p>
+
+<p>Without [!] it matches just the name of the fd files, with [!] the pattern
+{fdFile} matches for full path.</p>
+
+<p>It returns a list of fonts which fd files matches the {fdFile} pattern in
+[encoding]. You will be asked to chose for which files make a preview, possible
+answers are: 
+<div class=indented>1,2,3</div>
+which is equivalent to 
+<div class=indented>1-3</div>
+you can also mix this notation: 
+<div class=indented>1,2-5,7</div>
+As in FontSearch command the [keep_tex] variable specifies if
+the source file will be shown (for debugging purposes, or just to look how
+to use the font :).</p>
+
+<a name="atp-:HelpEnvIMaps"></a> <a name="atp-:HelpMathIMaps"></a> <a name="atp-:HelpVMaps"></a>	
+<div class=command>:HelpEnvIMaps</div>
+<div class=command>:HelpMathIMaps</div>
+<div class=command>:HelpVMaps</div>
+<p>These commands list valid mappings defined by ATP (unless g:no_plugin_maps
+or g:no_atp_maps are defined).</p>
+
+<a name="atp-:PID"></a>
+<div class=command>:PID</div>
+<p>Prints PIDs of all running instances of <a
+    href="#b:atp_TexComopiler">b:atp_TexComopiler</a>.</p>
+
+<a name="atp-:ShowPackages"></a>
+<div class=command>:ShowPackages</div>	
+<p>lists LaTeX packages defined in the preamble.</p>
+<a name="atp-:Preamble"></a>
+<div class=command>:Preamble</div>	
+<p>echoes the preamble to vim pager.</p>
+
+<a name="atp-:ReloadATP"></a>
+<div class=command>:ReloadATP</div> 
+<p>Reloads ATP plugin: variables, functions, and maps. Note that maps are not
+deleted.</p>

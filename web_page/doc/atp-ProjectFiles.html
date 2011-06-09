@@ -1,0 +1,366 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
+<h2>WRITING PROJECTS</h2>
+<div>
+    <p class="alignleft"><a href="atp-configure.html">Previous:</a> Configure ATP</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-mappings.html">Next:</a> Mappings</p>
+</div>
+<div style="clear: both;"></div>
+
+<div class=variable>let b:atp_MainFile	= expand("%:p")</div>
+<p>This variable points to the main file of the project, it is set on the
+start up to the file you open. If you edit project file (for the first time),
+start with the main file and use gf (see <a href="#atp-gf">atp-gf)</a> to go
+to the project file you want to edit. In this way all the project files will
+have correctly set this variable. The value of this variable is used by
+compilation functions. This variable is written in the project script (see <a
+    href="#atp-ProjectScript">atp-ProjectScript)</a>. And when the project
+script is on (see <a href="#atp-ProjectScript">atp-ProjectScript,</a> or set
+<a href="#b:atp_ProjectScript">b:atp_ProjectScript=</a>1) it is restored
+between sessions. In this way, next time, you can open any project file and
+the b:atp_MainFile variable will be set to the correct value.</p>
+
+<a name="b:TreeOfFiles"></a> <a name="b:ListOfFiles"></a> <a name="b:TypeDict"></a> <a name="b:LevelDict"></a>
+<div class=variable>b:TreeOfFiles</div>
+<div class=variable>b:ListOfFiles</div>
+<div class=variable>b:TypeDict</div>
+<div class=variable>b:LevelDict</div>
+<p>The project feature stores more variables: <a
+    href="#b:TreeOfFiles">b:TreeOfFiles </a>a dictionary which contains the
+tree of input files, <a href="#b:ListOfFiles">b:ListOfFiles </a>- list of
+input files, <a href="#b:TypeDict">b:TypeDict </a>dictionary of types of input
+files, where the type is one of following: {preamble}, {input}, {bib}. The
+last variable is <a href="#b:LevelDict">b:LevelDict </a>which is a dictionary
+of input levels (for example: an input file in input file has level 2).</p>
+
+<p>There are other tools to make editing project files more easy. There is
+search function: <a href="#atp-:S">atp-:S </a>which works better than the Vim
+|:ijump| command, which cannot go above the current file in the tree of input
+files /but |:ijump| is much faster/.</p> 
+
+<a name="b:atp_ProjectDir"></a>
+<div class=variable>b:atp_ProjectDir</div>
+<p>Stores the project directory, by default where <a
+    href="#b:atp_MainFile">b:atp_MainFile </a>is located (the filename is
+resolved if it is a symbolic link). It is not written to the <a
+    href="#atp-ProjectScript">atp-ProjectScript </a>(this makes the <a
+    href="#atp-ProjectScript">atp-ProjectScript</a> independent of the host
+when <a href="#g:atp_RelativePath">g:atp_RelativePath</a>is set). This
+variable is mainly for internal purposes. If you want to set the output
+directory use <a href="#b:atp_OutDir">b:atp_OutDir.</a>
+
+<a name="g:atp_RelativePath"></a>
+<div class=variable>g:atp_RelativePath = 1</div>
+<p>If set to 1 (which is the default), project variables: <a
+    href="#b:atp_MainFile">b:atp_MainFile,</a> <a
+    href="#b:TreeOfFiles">b:TreeOfFiles,</a> <a
+    href="#b:ListOfFiles">b:ListOfFiles,</a> <a
+    href="#b:TypeDict">b:TypeDict,</a> <a href="#b:LevelDict">b:LevelDict
+</a>will store path relative to <a href="#b:atp_ProjectDir">b:atp_ProjectDir
+</a>(which is the same as path to your main file, however if the file is
+a symbolic link it will hint to the resolved path). The <a
+    href="#atp-:S">atp-:S </a>will use correctly these values. This is
+particularly useful if you want to share the project file.</p>
+	 
+<p>If you run into problems with <a href="#atp-:S">atp-:S </a>you can set this variable to
+0 and use <a href="#atp-:InputFiles">atp-:InputFiles </a>to regenerate the variables - they will
+now store the full path (the other way around also works).</p>
+
+<a name="atp-:ToggleNn"></a>
+<div class=command>:ToggleNn [on]</div>
+<p>The command <a href="#atp-:ToggleNn">atp-:ToggleNn </a>toggles the value of
+<a href="#g:atp_mapNn">g:atp_mapNn </a>variable.  The optional argument [on]
+has three possible values: "",  "on" or "off".  The default "", toggles the
+value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
+1 and "off" sets it to 0.</p>
+
+<a name="g:atp_mapNn"></a>
+<div class=variable>g:atp_mapNn = 0</div>
+<p>If it is set to 1 then several tools use |atp-:S| command instead of Vim
+|search()| function (which looks only in the current buffer).  These are: <a
+    href="#atp-:NPart">atp-:NPart</a>, <a href="#atp-:NChap">atp-:NChap</a>,
+<a href="#atp-:NSec">atp-:NSec</a>, <a href="#atp-:NSSec">atp-:NSSec</a>, <a
+    href="#atp-:NSSSec">atp-:NSSSec</a>, <a href="#atp-:PPart">atp-:PPart</a>,
+<a href="#atp-:PChap">atp-:PChap</a>, <a href="#atp-:PSec">atp-:PSec</a>, <a
+    href="#atp-:PSSec">atp-:PSSec</a>, <a href="#atp-:PSSSec">atp-:PSSSec</a>,
+<a href="#atp-:NEnv">atp-:NEnv</a>, <a href="#atp-:PEnv">atp-:PEnv</a>.</p>
+
+<p>The default value of <a href="#g:atp_mapNn">g:atp_mapNn</a>is 0.</p>
+
+<p>The variable g:atp_mapNn should be always set as follows (in
+<a href="#atprc">atprc</a> or |vimrc| file):<pre>
+	if !exists("g:atp_mapNn")	
+	    let g:atp_mapNn = 1
+	endif
+</pre>
+Then the value will be preserved when atp opens new buffer when using <a
+    href="#atp-:S">atp-:S</a> command. If you want to have project specific
+setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p>
+
+<p>Another good tip for LaTeX project files is to set |b:atp_TexFlavor|
+variable to 'tex' (in your |vimrc| or |atprc| file). This will prevent
+from situations that Vim recognizes input file as a plain TeX while it
+is an input file into a LaTeX project. 
+Another way is add options to 'viewoptions' (see |'viewoptions'|). And
+set mkview and loadview via autocommands >
+<div class=aucommand>au BufWinLeave *.tex mkview</div>
+<div class=aucommand>au BufWinEnter *.tex silent loadview</div>
+<p>This will ensure that filetype variable is set correctly. Some ATP tools
+behave in a different way in plaintex files. For example TreeOfFiles function
+(it makes the variables <a href="#b:TreeOfFiles">b:TreeOfFiles</a>, <a
+    href="#b:ListOfFiles">b:ListOfFiles</a>, <a
+    href="#b:TypeDict">b:TypeDict</a>, <a
+    href="#b:LevelDict">b:LevelDict</a>). It is recursive in LaTeX files but
+not in plain TeX files). On this function is based the command <a
+    href="#atp-:LocalCommands">atp-:LocalCommands</a> which makes list of
+commands, environments and colours for Tab Completion and also <a
+    href="#atp-:S">atp-:S</a> command. It is done so, because in plain tex
+there is no way to distinguish input files from input packages which we do not
+want to scan (especially recursively, which might be time consuming). </p>
+<a name="atp-ProjectScript"></a>
+<h3>Project Script</h3>
+<p>The file: <a href="#b:atp_MainFile">b:atp_MainFile</a> . ".project.vim", in the same directory as
+<a href="#b:atp_MainFile">b:atp_MainFile</a> stores values of local variables saved before Vim
+	leaved a buffer (it is very similar to |View|). Also values of some global 
+	variables are stored in a seprate file (oine for all tex files).</p>
+
+<p>Loading procedure searches for files which ends with .project.vim. There
+might be many such files in one directory. The file is used which contains the
+current buffer in the list <a href="#b:ListOfFiles">b:ListOfFiles</a>. If none
+of the project scripts was containing the current buffer name in <a
+    href="#b:ListOfFiles">b:ListOfFiles</a> then new project script will be
+written for the current buffer. Before writing the project script file if <a
+    href="#b:ListOfFiles">b:ListOfFiles</a> doesn't exists it will be
+generated and written.</p>
+
+       <p>If the project script is stored locally the it is easier to include it
+       in a revision system (bzr, svn, etc.) and share it with collaborators.</p>
+
+       <p>The global project script (which, by default, stores global variables:
+       <a href="#g:atp_LatexPackages">g:atp_LatexPackages</a>, <a
+	   href="#g:atp_LatexClasses">g:atp_LatexClasses</a>, <a
+	   href="#g:atp_Library">g:atp_Library</a>) is now
+       '~/.vim/ftplugin/ATP_files/common_var.vim'.</p>
+
+       <p><a href="#atprc">atprc</a> file is executed before project script file (with local
+       variables) and common_var.vim (with global variables) files are
+       sourced. Thus this files will override the settings in |vimrc|
+       and <a href="#atprc">atprc</a> files.</p> 
+
+<a name="b:atp_ProjectScript"></a> <a name="g:atp_ProjectScript"></a>
+<div class=variable>b:atp_ProjectScript = 1</div>
+<div class=variable>g:atp_ProjectScript (not set)</div>
+<p>Setting one of the variables <a
+    href="#b:atp_ProjectScript">b:atp_ProjectScript</a> or <a
+    href="#g:atp_ProjectScript">g:atp_ProjectScript</a> to 0 the feature will
+be turned off. Local variable, i.e. b: has precedence over the global one g:.
+So you can turned off the feature for only specific files. The global variable
+will turn it off for all files.</p>
+	
+<a name="b:atp_ProjectScriptFile"></a>
+<div class=variable>let b:atp_ProjectScriptFile = b:atp_MainFile.".project.vim"</div>
+	<p>This variables stores the name of local project script file.</p>
+
+	<p>Local and global variables are supported. The local variables which
+	are cached in this way are listed in </p>
+<a name="g:atp_ProjectLocalVariables"></a>
+    <pre><div class=variable>let g:atp_ProjectLocalVariables = [
+		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
+		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
+		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
+		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
+		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
+		\ "b:LevelDict", 	"b:atp_BibCompiler", 	
+		\ ] 
+    </div></pre>
+	<p>If your vim doesn't have python support |+python| three more
+	variables are stored: <a
+	    href="#b:atp_LocalEnvironments">b:atp_LocalEnvironments</a> <a
+	    href="#b:atp_LocalCommands">b:atp_LocalCommands</a>, and <a
+	    href="#b:atp_LocalColors">b:atp_LocalColors</a>. With |+python|
+	this is not needed since <a
+	    href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> is then very
+	fast and is run on |BufEnter|.</p>
+
+	<p>The each file has separate project scrips which stores the values
+	of these variables. It's name is stored in <a
+	    href="#b:atp_ProjectScriptFile">b:atp_ProjectScriptFile</a>.</p>
+
+<a name="atp-ProjectScript_Global"></a>	
+	<p>There is also file for variables for all projects. It stores values of
+	global variables (by default it is "ftplugin/ATP_files/common_var.vim". 
+	The global variables that are written in this file are given in Vim
+	list: </p>
+<a name="g:atp_ProjectGlobalVariables"></a>
+<pre><div class=variable>let g:atp_ProjectGlobalVariables = [ 
+			\ 'g:atp_LatexPackages', 	
+			\ 'g:atp_LatexClasses', 
+			\ 'g:atp_Library' ]
+</div></pre>
+	<p>If you want to disable this feature for some reason you can set:
+		<div class=variable>let g:atp_ProjectScript = 0</div>
+	or
+		<div class=variable>let b:atp_ProjectScript = 0</div>
+	if you want to disable this feature only for a given buffer. 
+	(The value of local variable overrides the value of global one!).
+	Hint: (if you want to disable loading project script for one file): 
+	    In your .vimrc file you can set the local variable via
+	    autocommand group BufEnter or you can put an if statement in your
+	    |atprc| file:<pre><div class=variable> 
+		if expand("%:p") == <path_to_file>
+		    let b:atp_ProjectScript = 0
+		endif
+		</div></pre>
+	    or you can add to the project scrpit:
+	    <div class=indented>(1) write in its first line 'finish', or</div>
+	    <div class=indented>(2) include in it 'let |b:atp_ProjectScript| = 0'.</div>
+
+<a name="atp-:LoadProjectScript"></a> <a name="atp-:WriteProjectScript"></a> <a name="atp-:DeleteProjectScript"></a> <a name="atp-:ToggleProjectScript"></a>
+	</p>There are these commands:
+	<div class=command>:LoadProjectScript[!] [local/common]</div>	
+	<div class=command>:WriteProjectScript[!] [local/common]</div>			
+	<div class=command>:DeleteProjectScript[!] [local/common]</div>			
+	<div class=command>:ToggleProjectScript[!] [on/off]</div>			
+
+	    <p>which do the obvious thing (if <a
+		href="#g:atp_ProjectScript">g:atp_ProjectScript</a>=0 or |b:atp_ProjectScript|=0 they
+	will not work). The default value of the optional argument is "local".
+	:DeleteProjectScript [local] command (with optional argument [local]) deletes
+	the project script file for the current buffer (only the local one), with
+	bang "!" it deletes also globa project scrip. The bang of
+	:WriteProjectScript forces to write to project script even when
+	project script is turned off (<a
+	    href="#b:atp_ProjectScript">b:atp_ProjectScript</a>==0 or
+	!exists("<a href="#b:atp_ProjectScript">b:atp_ProjectScript</a>") and <a
+	    href="#g:atp_ProjectScript">g:atp_ProjectScript</a>==0).</p>
+
+	<p>The command ':ToggleProjectScript [on/off]' turns on/off the feature
+	for this buffer (it sets <a
+	    href="#b:atp_ProjectScript">b:atp_ProjectScript</a>). When no argument is
+	given it will toggle the value. With bang it also sets the global
+	variable.  <a href="#b:atp_ProjectScript">b:atp_ProjectScript</a> is by default in the >
+	    <div class=variable>g:atp_ProjectLocalVariables </div>
+	so it will be restored afterwards. |b:atp_ProjectScript| if defined
+	overrides the value of global variable |g:atp_ProjectScript|. So you can set
+	in your atp file g:atp_ProjectScript = 0 and for some files using the
+	if-construction:<pre><div class=variable>
+		let g:atp_ProjectScript = 0
+		if expand("%:t") == "myfile.tex"
+		    let b:atp_ProjectScript = 1
+		endif
+	</div></pre>
+	will turn on the feature only for myfile.tex. Something more elaborate
+	would be to set <a href="#b:atp_ProjectScript">b:atp_ProjectScript</a>
+	only for files with modification time less than two days for
+	example.</p>
+
+	<p>Note: If you delete the project script for the current buffer it will be
+	written after exiting Vim, unless you turn off the project feature.</p>
+
+	<p>The project script is disabled for files which full path matches
+	"texmf".  With the optional bang <a
+	    href="#atp-:LoadProjectScript">atp-:LoadProjectScript</a> loads the
+	common project script also for them. <a
+	    href="#atp-:WriteProjectScript">atp-:WriteProjectScript</a> command
+	will write the project script disregarding if the file is under texmf
+	directory or not.</p>
+
+	<p>Note: If you use this feature, you might need to use the commands:
+	<a href="atp-commands.html#atp-:LocalCommands">atp-:LocalCommands</a> and <a
+	    href="#atp-:InputFiles">atp-:InputFiles</a> which will update
+	b:atp_LocalCommands, b:atp_LocalColors, b:atp_LocalEnvironments and <a
+	    href="#b:TreeOfFiles">b:TreeOfFiles</a>, <a
+	    href="#b:ListOfFiles">b:ListOfFiles</a>, <a
+	    href="#b:TypeDict">b:TypeDict</a> and <a
+	    href="#b:LevelDict">b:LevelDict</a>. Use these commands with
+	a bang "!". The second set of variables is also updated by <a
+	    href="#atp-:S">atp-:S</a> (also with "!") and and <a
+	    href="#atp-:GotoFile">atp-:GotoFile</a> (with "!" as well).</p>
+
+	<p>Note: Also when you add a package to tex you should remove the common
+	project scrip, so that the new packages will be added to completion
+	list. </p>
+
+<a name="atp-:S"></a>
+<div class=command>:S[!] /{pattern}/ [flags]</div>
+	<p>The pattern is a Vim pattern (with 'magic'). With bang "!" it
+	regenerates the tree of input files.<p>
+
+	<p>This is command does the same job as |/| but is recursive in the tree
+	of files (so it is useful only in project files). The syntax of this
+	command is similar to |:vimgrep|.</p> 
+
+	<p>This works similarly to |:ijump|. But also goes back to the root file
+	(b:atp_MainFile).</p>
+
+	<p>It sets the alternate file to the buffer from which the search begun.
+	Note that this means that if nothing was found the alternate file
+	before search will be lost.</p>
+
+	<p>The {pattern} is any Vim pattern as described in |pattern| (it was only
+	tested with 'magic' set on).</p>
+			
+	<p>The supported [flags] are 'bcewW'. Their meaning is the same as flags
+	for |search()| function. </p>
+
+	<p>You can enclose the pattern with any non-ID character (see
+	|'isident'|) instead of /, as far as it does not appear in the
+	{pattern}. Examples: 
+	    <div class=example>:S pattern\_swith\_sspaces</div>
+	will work but:
+	    <div class=example>:S pattern with spaces</div>
+	will not.</p>	
+
+	<p>Note that the function might be slow when the project files where not
+	yet opened.</p>
+
+	<p>There is a function to check where the input file is on the hard drive
+	if the name in the input command doesn't include the full path.  It
+	asks kpsewhich which directories to search, filters out 
+	directories which are not under '/home' (I assume that there is your
+	local texmf tree) and also directories which name contains one of the
+	two keywords 'texlive' and 'kpsewhich'. This makes the searching
+	faster. </p>
+<a name="atp-:S_input"></a>
+	<p>Furthermore, the command is designed so that it can find all patterns
+	'\\input' (and thus easily find next/previous input file). You can
+	use:
+		<div class=command>:S \\input</div>
+		<div class=command>:S \\input b</div> 
+	<p>and you can use |n| and |N| Vim normal commands. 
+	Note that it if you go backward, then it means that it will find the
+	most deep line, e.g.:<pre>
+		file.tex
+			----
+			----
+			\input{file.1} ---->  -------
+					      -------
+					      \input{file.1.1}
+					      -------
+	                ----X	 			      
+	</pre>
+	':S /\\input/ b' in the X position fill find \input{file.1.1} assuming 
+	file.1.1.tex doesn't includes any other file.</p> 
+
+	<p>The pattern can be '\\input'. Then it goes recursively to the first
+	input line. </p>
+	
+	<a name="atp-:NInput"></a> 	<a name="atp-&gti"></a>   <a name="atp-&gtgf"></a> <a name="atp-:PInput"></a> 	<a name="atp-&lti"></a>   <a name="atp-&ltgf"></a>
+	<p>Now it also doesn't search inside commented input files. There two
+	commands:
+<div class=command>:NInput</div> 
+<div class=map>nmap ]gf, nmap &gti</div>
+<div class=command>:PInput </div>
+<div class=map>nmap [gf, nmap &lti</div>
+	<p>which finds the next/previous input line (also commented). See
+	<a href="#atp-:S_input">atp-:S_input</a> to find how it works. They
+	depend on <a href="#g:atp_mapNn">g:atp_mapNn</a>, if
+	1 <a href="#atp-S:">atp-S:</a> is used if 0 Vim |search()| function. To repeat search you
+	can use |n| and |N| Vim normal commands. These commands omit comment
+	lines.</p>
+
+

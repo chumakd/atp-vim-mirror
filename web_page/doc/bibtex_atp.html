@@ -1,0 +1,63 @@
+<head>
+    <title >Documentation of Automatic LaTeX Plugin for Vim</title>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<h2 align=center>Help for BibTeX file type plugin of ATP</h2>
+<p align=center>	    by Marcin Szamotulski<br>
+		    atp-vim-list [AT] lists.sourceforge.net <br></p>
+<div>
+    <p class="alignleft"><a href="atp-toc-window.html">Previous:</a> ToC Window</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-bibsearch.html">Next:</a> BibSearch</p>
+</div>
+<div style="clear: both;"></div>
+
+<a name="#atp-bibtex"></a>
+<a name="#atp-bibtex-motions"></a>
+<h3>MOTIONS</h3>
+<p><div class=indented><table border=0 vspace=0 cellspacing=0 >
+    <tr><td><div class=map>]], }</div></td><td>	go to next field (and use zz to redraw the screen)</td></tr>
+    <tr><td><div class=map>[[, {</div></td><td>	go to previous field (and use zz to redraw the screen)</td></tr>
+    <tr><td><div class=map>][</div></td><td>		go to end of the current bib field</td></tr>
+    <tr><td><div class=map>[]</div></td><td>		go to end of the previous bib field</td></tr>
+    <tr><td><div class=map>&ltC-j&gt</div></td><td>	(both map and imap) go to next bib entry (after { or ( or " or ').</td></tr>
+    <tr><td><div class=map>&ltC-k&gt</div></td><td>	(both map and imap) go to previous bib entry (after { or ( or " or ').</td></tr>
+</table></div></p>
+
+<a name="#atp-bibtex-:AMSRef"></a>
+<h3>COMMANDS</h3>
+<p><div class=command>:AMSRef {bib_data}</div>  
+Command to get bib data from <a
+    href="http://www.ams.org/mathscinet-mref">AMSRef web page</a>.</p>
+		 
+<p>The bib data will be appended to the currently edited bibliography just
+before the next bib field. You will be asked for the bib key, the default
+choice is to use the AMS bib key.  The obtained bibliographic reference is
+copied to the register g:atp_bibrefRegister (the default is "0" so you can
+paste it using vim command 'p') and also is stored in the variable
+g:atp_bibref.</p>
+	
+<a name="#atp-bibtex-maps"></a>
+<h3>MAPS</h3>
+    <p>There is a new ftplugin for bib files. It only defines a small set of
+    useful maps and the AMSRef command. The defined maps are listead below: 
+    <div class=indented><table border=0 vspace=0 cellspacing=0 >
+    <tr><td>MAP KEY</td><td>	FIELD TYPE: </td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gta</div></td><td>	article</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtb (or bo)</div></td><td>	book</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtbl</div></td><td>booklet</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtc</div></td><td>	conference</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtib</div></td><td>inbook</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtic</div></td><td>incollection</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtip</div></td><td>inproceedings</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtma</div></td><td>manual</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtmt</div></td><td>mastersthesis</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtmi</div></td><td>misc</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtphd</div></td><td>phdthesis</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtpr</div></td><td>proceedings</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gttr</div></td><td>techreport</td></tr>
+    <tr><td><div class=map>&ltLocalLeader&gtun</div></td><td>unpublished</td></tr>
+</table></div>
+
+    With &ltF1&gt you will get help on bibtex: 'BibTeXing' by Oren Patashnik.</p>

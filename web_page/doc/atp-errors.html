@@ -1,0 +1,29 @@
+<head>
+    <link rel="stylesheet" href="../doc_style.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+</head>
+<a name="atp-errors"></a>
+<h2>DEBUGGING ATP</h2>
+<div>
+    <p class="alignleft"><a href="atp-abbreviations.html">Previous:</a> Abbreviatios</p>
+    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
+    <p class="alignright"><a href="atp-editing.html">Next:</a> Editing Tools</p>
+</div>
+<div style="clear: both;"></div>
+    <p>This section describes some limitation of ATP (as you see, this section is
+    not written, but the aim is to make it disappear anyway ;).</p>
+
+    <p>There are many debug variables with names g:atp_debug{fname} where {fname} is
+    a shortname of the function for which it will turn on the debug info. These
+    variables are documented in ftplugin/ATP_files/options.vim file.</p>
+
+    <a name="atp-errors-bibsearch"></a>
+    <p>A possible error which may occur using the :BibSearch commands has a simple
+    cause: we count number of brackets '()', '{}' and '"' (but nor '\"') to see
+    where the bib entry ends and where to join lines. The message error is echoed
+    when more than 30 lines where processed and the matching bracket was not found
+    (or the number of '"' is odd). Look at your bib file at the specified
+    position.  Syntax highlighting for bib files can help you finding where such
+    an error is located. (After reading the bib file comment lines and lines which
+    begin with @string are removed, so that the brackets in comment lines do not
+    count.)</p>
