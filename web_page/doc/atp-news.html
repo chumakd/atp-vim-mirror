@@ -28,7 +28,7 @@
   <p>I added <a href="#b:atp_LocalEnvironments">b:atp_LocalEnvironments</a>, <a
       href="#b:atp_LocalCommands">b:atp_LocalCommands</a> and <a
       href="#b:atp_LocalColors">b:atp_LocalColors</a> to <a
-      href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a> if
+      href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a> if
   vim doesn't have +python feature otherwise <a
       href="#g:atp_local_completion">g:atp_local_completion</a> is set to 2,
   hence <a href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> is run with
@@ -49,7 +49,7 @@
   <p>The F2 map is back -- it turns on/off <space> cmap to \_s\+. But this time
   this map by default is turned on. It is made to it doesn't interact with
   other command modes than / and ?. If you want to turn in off/on use F2. If
-  you want to turn it off in your vimrc or <a href="#atprc">atprc</a> files
+  you want to turn it off in your vimrc or <a href="atp-configure.html#atprc">atprc</a> files
   use: <div class=variable>let g:atp_cmap_space = 0</div> Pressing F2 will
   define this map.</p>
 
@@ -110,7 +110,7 @@
 
 <h4>TIP</h4>
 <p>Checkout cmdalias plugin (vimscript#745). It lets define lower case
-aliases to commands. You can put in your <a href="#atprc">atprc</a> file:
+aliases to commands. You can put in your <a href="atp-configure.html#atprc">atprc</a> file:
 <div class=indented>Alias tex TEX</div>
 <div class=indented>Alias toc TOC</div></p>
 
@@ -146,7 +146,7 @@ inside LaTeX (or TeX) mathematical environment.</p>
 disabled by default. If you like longer and more intuitive environment
 insert mode maps set <a
     href="#g:atp_ShortEnvIMaps">g:atp_ShortEnvIMaps</a>=0 in your vimrc or
-<a href="#atpr">atprc</a>c files. Use <a
+<a href="atp-configure.html#atpr">atprc</a>c files. Use <a
     href="#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a> to see them. There is
 also one new environment ]let in this new layout which inputs a letter
 environment. If you want a short imap for it you can set
@@ -176,22 +176,22 @@ environments with ':let g:atp_EnvName<C-d>'. If you set
 g:atp_imap_{envname} to empty string "" the corresponding imap will not be
 defined.</p>
 
-<p>See also <a href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
+<p>See also <a href="atp-mappings.html#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
 
 <h4>NEW MOTIONS</h4>
-<a name="atp->E"></a> <a name="atp-<E"></a> <p>There are two more nice map
+<a name="atp-&gtE"></a> <a name="atp-&ltE"></a> <p>There are two more nice map
 >E which is something like %>e, i.e. jump over the current environment and
 go to next one. The reverse <E is also implemented, thought it is not
 simply <e%. They do not support count (yet), and actually count breaks
 them. If you want to add zz, (zt or zb) after >E you can put this in your
-|atprc| file:
-<div class=indented>map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz</div>
-<div class=indented>map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz</div></p>
+<a href="atp-configure.html#atprc">atprc</a> file:
+<div class=indented>map &ltbuffer&gt &ltsilent&gt &gtE	&ltPlug&gtJumptoNextEnvironmentzz</div>
+<div class=indented>map &ltbuffer&gt &ltsilent&gt &ltE	&ltPlug&gtJumptoPreviousEnvironmentzz</div></p>
 
-<p><a href="#atp--S">atp--S</a>, <a href="#atp--s">atp--s</a>, <a
-    href="#atp--c">atp--c</a>, <a href="#atp--p">atp--p</a> new maps for <a
-    href="#atp-:SSec">atp-:SSec</a>, <a href="#atp-:Sec">atp-:Sec</a>, <a
-    href="#atp-:Chap">atp-:Chap</a> and <a href="#atp-:Part">atp-:Part</a>.
+<p><a href="atp-commands.html#atp--S">atp--S</a>, <a href="atp-commands.html#atp--s">atp--s</a>, <a
+    href="atp-commands.html#atp--c">atp--c</a>, <a href="atp-commands.html#atp--p">atp--p</a> new maps for <a
+    href="atp-commands.html#atp-:SSec">atp-:SSec</a>, <a href="atp-commands.html#atp-:Sec">atp-:Sec</a>, <a
+    href="atp-commands.html#atp-:Chap">atp-:Chap</a> and <a href="atp-commands.html#atp-:Part">atp-:Part</a>.
 They also works relatively to the current unit (section/chapter/part), i.e.
 2]s will jump to second section of the current chapter.</p>
 
@@ -199,10 +199,10 @@ They also works relatively to the current unit (section/chapter/part), i.e.
 <h4>UPDATETIME</h4>
 <p><a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> can be
 changed on the fly to 0 (previously it requires to quitting vim and making
-changes in vimrc/<a href="#atprc">atprc</a> files.</p> 
+changes in vimrc/<a href="atp-configure.html#atprc">atprc</a> files.</p> 
 
 <h4>MAKE LATEX</h4>
-<p><a href="#atp-:MakeLatex">atp-:MakeLatex</a> is rewritten in python. The
+<p><a href="atp-commands.html#atp-:MakeLatex">atp-:MakeLatex</a> is rewritten in python. The
 "!" is not yet implemented.</p>
 
 <h4>PYTHON 3 compatibility</h4>
@@ -230,7 +230,7 @@ when it returns.</p>
 and warnings printed (this depends on <a href="atp-commands.html#b:atp_ErrorFormat">b:atp_ErrorFormat</a>).</p>
 
 <h4>BIBER AND BIBLATEX SUPPORT</h4>
-<p>Support for biber and biblatex is added (in <a href="#atp-:MakeLatex">atp-:MakeLatex</a>,
+<p>Support for biber and biblatex is added (in <a href="atp-commands.html#atp-:MakeLatex">atp-:MakeLatex</a>,
 <a href="atp-commands.html#atp-:Bibtex">atp-:Bibtex</a>, <a
     href="atp-commands.html#atp-:Delete">atp-:Delete</a>, <a
     href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> commands), <a
@@ -251,7 +251,7 @@ preamble.  This makes it work slightly faster.</p>
 <p><a href="#b:atp_TexOptions">b:atp_TexOptions</a> is a comma separated list of TeX compiler options.
 If you use <a href="#g:atp_Compiler">g:atp_Compiler</a>="bash" this might be just a white space
 separated list.</p>
-<a href="#atp-<space">atp-space</a>
+<a href="#atp-space">atp-space</a>
 <h4>SPACE CMAP</h4>
 <div class=map>cmap <buffer> <C-Space> 	\_s\+</div>
 <div class=map>cmap <buffer> <C-_> 	\_s\+</div>
@@ -292,7 +292,7 @@ interfering with an ATP font map).</p>
 <p>(Almost all) maps became :map-silent.</p> 
 
 <h4>ATPRC</h4>
-<p>The <a href="#atprc">atprc</a> file is now sourced twice at startup: at the
+<p>The <a href="atp-configure.html#atprc">atprc</a> file is now sourced twice at startup: at the
 beginning to set the variables, and once again at the end to set the maps
 defined in it.</p>
 

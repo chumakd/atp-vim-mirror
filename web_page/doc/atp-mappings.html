@@ -28,6 +28,19 @@ using the variables:</p>
 <a name="g:atp_imap_fourth_leader"></a>
 	    <div class=variable>g:atp_imap_fourth_leader == "["</div>
 	    	<p>for extra environments in the old layout (this will be removed).</p>
+<div class=variable><a
+	href="atp-commands.html#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
+ == "&lt"</div>
+	    <p>for maps to <a href="atp-commands.html#atp-:NInput">atp-:NInput</a>, <a
+		href="atp-commands.html#atp-:NSec">atp-:NSec</a>, .... , <a
+		href="atp-commands.html#atp-&gtE">atp-&gtE</a>, <a href="atp-commands.html#atp-&gte">atp-&gte</a>.</p>
+<div class=variable><a
+	href="atp-commands.html#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a> ==
+"&gt"</div>
+	    <p>for maps to <a href="atp-commands.html#atp-:NInput">atp-:PInput</a>, <a
+		href="atp-commands.html#atp-:NSec">atp-:PSec</a>, .... , <a
+		href="atp-commands.html#atp-&ltE">atp-&ltE</a>, <a
+		href="atp-commands.html#atp-&lte">atp-&lte</a>.</p>
 
 <p>Note: the best way to list mappings with leader '#' in insert mode is to use
       <div class=map>':imap #&ltCR&gt'.</div></p>
@@ -314,7 +327,7 @@ Note: This can be effectivly set only in <a href="atp-configure.html#atprc">atpr
     star is added to theorem like environment imaps (<a
 	href="#atp-imap-environments">atp-imap-environments</a>).  By default
     it will be restored by the project script. See <a
-	href="#g:atp_cached_common_variables">g:atp_cached_common_variables</a>.</p>
+	href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
 
 <p><a name="b:atp_StarMathEnvDefault"></a>	
 <div class=map>b:atpStarMathEnvDefault</div>
@@ -322,7 +335,7 @@ Note: This can be effectivly set only in <a href="atp-configure.html#atprc">atpr
      equation imaps (<a
 	 href="#atp-imap-environments">atp-imap-environments</a>).  By default
      it will be restored by the project script. See <a
-	 href="#g:atp_cached_common_variables">g:atp_cached_common_variables</a>.</p>
+	 href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
 
 <table border=0 vspace=0 cellspacing=1 >
     <tr><td><div class=map>imap ]b</div></td><td><div class=map>]beg</div></td><td> \begin{}&ltLeft&gt</td></tr>

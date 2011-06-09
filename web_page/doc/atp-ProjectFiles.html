@@ -92,7 +92,7 @@ value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
 <p>The default value of <a href="#g:atp_mapNn">g:atp_mapNn</a>is 0.</p>
 
 <p>The variable g:atp_mapNn should be always set as follows (in
-<a href="#atprc">atprc</a> or |vimrc| file):<pre>
+<a href="atp-configure.html#atprc">atprc</a> or |vimrc| file):<pre>
 	if !exists("g:atp_mapNn")	
 	    let g:atp_mapNn = 1
 	endif
@@ -102,7 +102,7 @@ Then the value will be preserved when atp opens new buffer when using <a
 setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p>
 
 <p>Another good tip for LaTeX project files is to set |b:atp_TexFlavor|
-variable to 'tex' (in your |vimrc| or |atprc| file). This will prevent
+variable to 'tex' (in your |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file). This will prevent
 from situations that Vim recognizes input file as a plain TeX while it
 is an input file into a LaTeX project. 
 Another way is add options to 'viewoptions' (see |'viewoptions'|). And
@@ -116,7 +116,7 @@ behave in a different way in plaintex files. For example TreeOfFiles function
     href="#b:TypeDict">b:TypeDict</a>, <a
     href="#b:LevelDict">b:LevelDict</a>). It is recursive in LaTeX files but
 not in plain TeX files). On this function is based the command <a
-    href="#atp-:LocalCommands">atp-:LocalCommands</a> which makes list of
+    href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> which makes list of
 commands, environments and colours for Tab Completion and also <a
     href="#atp-:S">atp-:S</a> command. It is done so, because in plain tex
 there is no way to distinguish input files from input packages which we do not
@@ -146,10 +146,10 @@ generated and written.</p>
 	   href="#g:atp_Library">g:atp_Library</a>) is now
        '~/.vim/ftplugin/ATP_files/common_var.vim'.</p>
 
-       <p><a href="#atprc">atprc</a> file is executed before project script file (with local
+       <p><a href="atp-configure.html#atprc">atprc</a> file is executed before project script file (with local
        variables) and common_var.vim (with global variables) files are
        sourced. Thus this files will override the settings in |vimrc|
-       and <a href="#atprc">atprc</a> files.</p> 
+       and <a href="atp-configure.html#atprc">atprc</a> files.</p> 
 
 <a name="b:atp_ProjectScript"></a> <a name="g:atp_ProjectScript"></a>
 <div class=variable>b:atp_ProjectScript = 1</div>
@@ -174,7 +174,8 @@ will turn it off for all files.</p>
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler", 	
+		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
+		\ "b:atp_StarMathEnvDefault"
 		\ ] 
     </div></pre>
 	<p>If your vim doesn't have python support |+python| three more
@@ -210,7 +211,7 @@ will turn it off for all files.</p>
 	Hint: (if you want to disable loading project script for one file): 
 	    In your .vimrc file you can set the local variable via
 	    autocommand group BufEnter or you can put an if statement in your
-	    |atprc| file:<pre><div class=variable> 
+	    <a href="atp-configure.html#atprc">atprc</a> file:<pre><div class=variable> 
 		if expand("%:p") == <path_to_file>
 		    let b:atp_ProjectScript = 0
 		endif

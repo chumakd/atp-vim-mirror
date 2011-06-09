@@ -1395,7 +1395,8 @@ map <F6>d
 
 	Another provided font wrapper: >
 	    vmap <LocalLeader>f	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
-<	Where the variable: >
+<	Where the variable: 				*g:atp_font_encoding*
+>
 	    g:atp_font_encoding
 <	stores the default encoding which is 'OT1', unless you use fontenc
 	package, then the default for fontenc is used (the last defined in
@@ -2381,23 +2382,9 @@ map c, map y, map p
 	|atp-:Dsearch| (default is 15).
 
 								
-=============================================================================
-SOME VARIABLES						*atp-bibsearch-variables*
-							*atp-variables-bib*
-	All the values of important variables with their values can be shown
-	(grepped) by |atp-:ShowOptions| command.
-
-  							*g:atp_VimCompatible*
->
- g:atp_VimCompatible variable
-<   	with default value 0 ("no"). Its values are 0/1 or yes/no. It changes 
-	the behaviour of '%'. In nocomatible mode it gen go to matching pair
-	in a different line in compatible mode it find the matching pair only
-	if the ending bracket is in the same line.
-
-
------------------------------------------------------------------------------------
-								*atp-bibsearch-comments*
+-----------------------------------------------------------------------------
+BIBSEARCH COMMENTS					*atp-bibsearch-comments*	
+					
 	Please do not hesitate to report any bug to the mailing list
 	|atp-mailing-list|.
 	
@@ -3110,6 +3097,9 @@ There are several options you can set, and they might be set in your Vimrc
 file. The default values are given below (except the completion setup and
 bibtex documented above). Note: not all variables are listed below.
 
+All the values of important variables with their values can be shown
+(grepped) by |atp-:ShowOptions| command.
+
 							*atprc*
 $HOME/.atprc.vim (only on Unix and GNU/Linux) or 
 $VIMRUNTIME/ftplugin/ATP_files/atprc.vim					
@@ -3131,26 +3121,29 @@ then the best way to do that is by using an autocommand:
 If you put just let |b:atp_TexCompiler|, this will also work but not always: for
 example when you open a new buffer in existing Vim session. However, if you
 put them in your |atprc| it is enough to use the standard "let b:...=".
-
-let b:atp_TexCompiler	= "pdflatex"			*b:atp_TexCompiler*
-	Used by functions: TEX() (map \l, imap \l), VTEX() (map <F5>, imap <F5>)
+							*b:atp_TexCompiler*
+>
+ let b:atp_TexCompiler	= "pdflatex"			
+<	Used by functions: TEX() (map \l, imap \l), VTEX() (map <F5>, imap <F5>)
 
 	You can set it to latex, tex, luatex, and so on and possibly to
 	lilypond as well.  
 
 	There is a command to set this variable with nice completion, see
 	|atp-:Compiler|. 
-
-let b:atp_TexCompilerVariable = "max_print_line=2000" 	*b:atp_TexCompilerVariable*	
-	You can use it to set an environment variables for the compiler. The
+							*b:atp_TexCompilerVariable*
+>
+ let b:atp_TexCompilerVariable = "max_print_line=2000" 	
+<	You can use it to set an environment variables for the compiler. The
 	"max_print_line" sets the maximal length of a line in the log file.
 	The value 2000 is high enough to prevent line breaking.
 
 	Note: the gramar for this variable: it should be a semicolon separated
 	list of variables and values, i.e. 'variable_1=value_1;variable_2=value_2'
-
-let b:atp_BibCompiler	= "bibtex"			*b:atp_BibCompiler*
-	This variable sets the bibtex backend. There are other programs which
+							*b:atp_BibCompiler*
+>
+ let b:atp_BibCompiler	= "bibtex"			
+<	This variable sets the bibtex backend. There are other programs which
 	might be used, for example biber and pybib (not tested with ATP).
 	
 	The default value will be "biber" if the preamule contains
@@ -3158,25 +3151,26 @@ let b:atp_BibCompiler	= "bibtex"			*b:atp_BibCompiler*
 	adjust |g:atp_keep| variable (add run.xml, bcf extensions) when you use
 	|atp-:TEX|, |atp-:Bibtex|, or |atp-:MakeLatex| commands.
 
-
 							*b:atp_TexFlavor*
-let b:atp_TexFlavor	= "tex"	
-	If you are editing a plain tex file it is automatically set to
+>
+ let b:atp_TexFlavor	= "tex"	
+<	If you are editing a plain tex file it is automatically set to
 	'plaintex', then you get highlighting for $$:$$. Some other features
 	are planned (you can also set this while editing a 'tex' file, i.e.
 	latex document but using $$:$$ is latex is not recommended it is know
 	to break some latex specific things).
-
-let b:atp_TexOptions	= "-synctex=1"			*b:atp_TexOptions*
-	This is a comma ',' sepparated list of TeX compiler options. If you
+							*b:atp_TexOptions*
+>
+ let b:atp_TexOptions	= "-synctex=1"			
+<	This is a comma ',' sepparated list of TeX compiler options. If you
 	want to set some additional options to your tex compiler you can use
 	this variable, note that '-output-directory' and '-interaction' are
 	set by ATP. 
 
 							*b:atp_OutDir*
-let b:atp_OutDir	= fnameescape(fnamemodify(resolve(b:atp_MainFile,":h")) . "/"
-
-	This is the directory in which tex will put the output files. If the
+>
+ let b:atp_OutDir	= fnameescape(fnamemodify(resolve(b:atp_MainFile,":h")) . "/"
+<	This is the directory in which tex will put the output files. If the
 	open file is not a symbolic link it is equal to the directory in which
 	the tex file is located. If the open file is a symbolic link it points
 	to the directory in which the real file is located. 
@@ -3192,11 +3186,10 @@ let b:atp_OutDir	= fnameescape(fnamemodify(resolve(b:atp_MainFile,":h")) . "/"
 	You can see the current output directory in the status (it is in the
 	short notation) to see it whole type:
 		:echo b:atp_OutDir
-	or use the function ShowOptions() (see |apt-:ShowOptions|).		
+	or use the |atp-:ShowOptions| command.		
 
 	If in your environment the variable $TEXMFOUTDIR is set the value of
 	b:atp_OutDir will be set to its value.
-
 
 							*b:atp_auruns*
 >
@@ -3213,7 +3206,6 @@ let b:atp_OutDir	= fnameescape(fnamemodify(resolve(b:atp_MainFile,":h")) . "/"
 	When it is greater than 1 a message in the status line is shown. If :PID
 	command returns that no latex is running this variable this variable
 	is reset to 0. 
-
 							*g:atp_MathVimOptions*
 >
  g:atp_MathVimOptions	= { 'textwidth' : '0' }
@@ -3417,6 +3409,14 @@ s:notreadablebibfiles
 	directory, which is done for using with globpath() and findfile()
 	functions.
 
+  							*g:atp_VimCompatible*
+>
+ g:atp_VimCompatible variable
+<   	with default value 0 ("no"). Its values are 0/1 or yes/no. It changes 
+	the behaviour of '%'. In nocomatible mode it gen go to matching pair
+	in a different line in compatible mode it find the matching pair only
+	if the ending bracket is in the same line.
+
 ================================================================================
 WRITING PROJECTS					*atp-ProjectFiles*
 							*b:atp_MainFile*
@@ -3475,8 +3475,9 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	"off".  The default "", toggles the value of |g:atp_mapNn|, "on" sets
 	g:atp_mapNn to 1 and "off" sets it to 0.
 							*g:atp_mapNn*
-g:atp_mapNn = 0
-	If it is set to 1 then several tools use |atp-:S| command instead of
+>
+ g:atp_mapNn = 0
+<	If it is set to 1 then several tools use |atp-:S| command instead of
 	Vim |search()| function (which looks only in the current buffer).
 	These are: 
 	|atp-:NPart|, |atp-:NChap|, |atp-:NSec|, |atp-:NSSec|, |atp-:NSSSec|, 
@@ -3563,7 +3564,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler", 	
+		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
+		\ "b:atp_StarMathEnvDefault"
 		\ ] 
 <	If your vim doesn't have python support |+python| three more variables
 	are stored: |b:atp_LocalEnvironments| |b:atp_LocalCommands|, and
@@ -3758,6 +3760,15 @@ using the variables:
 >
 	    g:atp_imap_fourth_leader == "["
 <	    	for extra environments in the old layout (this will be removed).
+
+							|g:atp_map_forward_motion_leader|
+>
+	    g:atp_map_forward_motion_leader == ">"
+<		for maps to |atp-:NInput|, |atp-:NSec|, .... , |atp->E|, |atp->e|.
+							|g:atp_map_backward_motion_leader|
+>
+	    g:atp_map_backward_motion_leader == "<"
+<		for maps to |atp-:PInput|, |atp-:PSec|, .... , |atp-<E|, |atp-<e|. 
 
 Note: the best way to list mappings with leader '#' in insert mode is to use
       ':imap #<CR>'.
@@ -4028,13 +4039,13 @@ Note: This can be effectivly set only in |atprc| or |vimrc| files.
     b:atp_StarEnvDefault variable with value "*" or "" (the default). This
     star is added to theorem like environment imaps (|atp-imap-environments|).
     By default it will be restored by the project script. See
-    |g:atp_cached_common_variables|.
+    |g:atp_ProjectLocalVariables|.
 
     							*b:atp_StarMathEnvDefault*	
     b:atpStarMathEnvDefault variable with values "*" or "" (the default).  It
     is added to align and equation imaps (|atp-imap-environments|).  By
     default it will be restored by the project script. See
-    |g:atp_cached_common_variables|.
+    |g:atp_ProjectLocalVariables|.
 
 imap ]b   ]beg 		\begin{}<Left>
 imap ]e   ]end		\end{}<Left>

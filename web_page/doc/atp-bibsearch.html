@@ -338,22 +338,13 @@ and for the bib field labels for the latex command \cite{}.</p>
 <p>You can set the maximal hieght of the window wich shows the results of
 <a href="#atp-:Dsearch">atp-:Dsearch </a>(default is 15).</p>
 
-<a name="atp-bibsearch-variables"></a> <a name="atp-variables-bib"></a>
-<h3>Some Variables</h3>
-<p>All the values of important variables with their values can be shown
-(grepped) by <a href="atp-commands.html#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
-
-<a name="g:atp_VimCompatible"></a>
-<div class=variable>g:atp_VimCompatible</div> 
-    <p>variable with default value 0 ("no"). Its values are 0/1 or yes/no. It
-    changes the behaviour of '%'. In nocomatible mode it gen go to matching
-    pair in a different line in compatible mode it find the matching pair only
-    if the ending bracket is in the same line.</p>
-
-
+<a name="atp-bibsearch-notes"></a>
+<h3>Final Notes</h3>
     <a name="atp-bibsearch-comments"></a>
-	<p>Please do not hesitate to report any bug to the mailing list
-	<a href="#atp-mailing-list">atp-mailing-list.</a></p>
+	<p>Please do not hesitate to report any bug to the 
+	<a
+	    href="http://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">mailing
+	    list</a>.</p>
 	
 	<p>The algorithm will work only if all kind of bib entries of your bib
 	file are included in the list g:bibentries. However, changing just this
@@ -361,8 +352,9 @@ and for the bib field labels for the latex command \cite{}.</p>
 	s:search) will produce correct output, but the function which displays
 	found entries, will not know how to work with the new entries. One
 	would have to add an entry to the dictionary 'g:bibflagsdict'. If it is
-	the case, please let me know: <a
-	    href="#atp-mailing-list">atp-mailing-list.</a> </p> 
+	the case, please let me know on the <a
+	    href="http://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">mailing
+	    list</a>.</p> 
 
 	<p>As you can see entries of the type '@string' which can be used in
 	bib files are not supported (i.e. there is no function which

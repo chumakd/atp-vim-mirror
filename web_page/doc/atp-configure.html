@@ -14,13 +14,16 @@
 file. The default values are given below (except the completion setup and
 bibtex documented above). Note: not all variables are listed below.</p>
 
+<p>All the values of important variables with their values can be shown
+(grepped) by <a href="atp-commands.html#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
+
 <a name="atprc"></a>
 $HOME/.atprc.vim (only on Unix and GNU/Linux) or<br> 
 $VIMRUNTIME/ftplugin/ATP_files/atprc.vim					
 <p>A configuration file for ATP. You do not have to use autocommands to set
 local-buffer variables, just place them here. The settings in <a
     href="#atprc">atprc</a> file override the values in the project script (<a
-    href="#atp-ProjectScript">atp-ProjectScript</a>). You can also overwrite
+    href="atp-ProjectFiles.html#atp-ProjectScript">atp-ProjectScript</a>). You can also overwrite
 the plugin maps there it you want to have different behaviour on the key map
 used by ATP.</p>
 
@@ -28,12 +31,12 @@ used by ATP.</p>
 and ':let b:atp_&ltCTRL_D&gt'.</p>
 
 <p>All buffer variables (see |b:var|), i.e. these which name begins with "b:",
-should be set in your |vimrc| or |atprc| file. If you want to use your vimrc file
+should be set in your |vimrc| or <a href="#atprc">atprc</a> file. If you want to use your vimrc file
 then the best way to do that is by using an autocommand:</p>
 <div class=aucommand>au BufReadPre *.tex let b:atp_TexCompiler="latex"</div>
 If you put just let |b:atp_TexCompiler|, this will also work but not always: for
 example when you open a new buffer in existing Vim session. However, if you
-put them in your |atprc| it is enough to use the standard "let b:...=".</p>
+put them in your <a href="#atprc">atprc</a> it is enough to use the standard "let b:...=".</p>
 <a name="b:atp_TexCompiler"></a>
 <div class=variable>let b:atp_TexCompiler	= "pdflatex"</div>
 	<p>Used by functions: TEX() (map \l, imap \l), VTEX() (map &ltF5&gt, imap &ltF5&gt)</p>
@@ -95,8 +98,9 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	<p>You can see the current output directory in the status (it is in the
 	short notation) to see it whole type:
 		<div class=example>:echo b:atp_OutDir</div>
-	or use the function ShowOptions(). See <a
-	    href="atp-commands.html#apt-:ShowOptions">apt-:ShowOptions</a>.</p>		
+	or use the <a
+	    href="atp-commands.html#atp-:ShowOptions">apt-:ShowOptions</a>
+	command.</p>
 
 	<p>If in your environment the variable $TEXMFOUTDIR is set the value of
 	b:atp_OutDir will be set to its value.</p>
@@ -161,10 +165,10 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	example if b:atp_Viewer="xpdf" then you might use:</p>
 
 <a name="atp-Viewers_Options"></a> <a name="b:atp_xdviOptions"></a> <a name="b:atp_xpdfOptions"></a> <a name="b:atp_okularOptions"></a> <a name="b:atp_evinceOptions"></a>
-<a href="#b:atp_xpdfOptions">b:atp_xpdfOptions</a>
-<a href="#b:atp_xdviOptions">b:atp_xdviOptions</a>
-<a href="#b:atp_okularOptions">b:atp_okularOptions</a>
-<a href="#b:atp_evinceOptions">b:atp_evinceOptions</a>
+<a href="#b:atp_xpdfOptions">b:atp_xpdfOptions</a><br>
+<a href="#b:atp_xdviOptions">b:atp_xdviOptions</a><br>
+<a href="#b:atp_okularOptions">b:atp_okularOptions</a><br>
+<a href="#b:atp_evinceOptions">b:atp_evinceOptions</a><br>
 <p>, etc ... (also global variables g:atp_...Options)
 	Used by function: ViewOutput() (map \v, map &ltF3&gt, imap &ltF3&gt)</p>
 
@@ -262,15 +266,16 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	is used.</p>
 
 
-<div class=variable>g:defaultbibflags</div>		see <a href="#atp-bibflags:default">atp-bibflags:default</a>
-<div class=variable>g:defaultallbibflags</div>		see <a href="#atp-bibflags:all">atp-bibflags:all</a>
-<div class=variable>b:atp_LastBibFlags</div>		see <a href="#atp-bibflags:last">atp-bibflags:last</a>
+<div class=variable>g:defaultbibflags</div>		see <a
+    href="atp-bibsearch.html#atp-bibflags:default">atp-bibflags:default</a>
+<div class=variable>g:defaultallbibflags</div>		see <a href="atp-bibsearch.html#atp-bibflags:all">atp-bibflags:all</a>
+<div class=variable>b:atp_LastBibFlags</div>		see <a href="atp-bibsearch.html#atp-bibflags:last">atp-bibflags:last</a>
 
-<div class=variable>b:bibfiles</div>				see <a href="#atp-variables-bib">atp-variables-bib</a>
+<div class=variable>b:bibfiles</div>				see <a href="atp-bibsearch.html#atp-variables-bib">atp-variables-bib</a>
 <div class=variable>s:bibfiles</div>
 <div class=variable>s:allbibfiles</div>
 <div class=variable>s:notreadablebibfiles</div>
-    <p>For more on bib flags see <a href="#atp-bibflags">atp-bibflags</a>.</p>
+    <p>For more on bib flags see <a href="atp-bibsearch.html#atp-bibflags">atp-bibflags</a>.</p>
 
  <div class=variable>let t:toc_window_width=g:atp_toc_window_width</div>
 	<p>t:toc_window with is set to g:atp_toc_window_width (by default is 30)
@@ -300,4 +305,9 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	directory, which is done for using with globpath() and findfile()
 	functions.</p>
 
-
+<a name="g:atp_VimCompatible"></a>
+<div class=variable>g:atp_VimCompatible</div> 
+    <p>variable with default value 0 ("no"). Its values are 0/1 or yes/no. It
+    changes the behaviour of '%'. In nocomatible mode it gen go to matching
+    pair in a different line in compatible mode it find the matching pair only
+    if the ending bracket is in the same line.</p>

@@ -344,7 +344,7 @@ defined.</p>
 <p>See also <a href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
 
 <h4>New Motions</h4>
-<a name="atp->E"></a> <a name="atp-<E"></a> <p>There are two more nice map
+<a name="atp-&gtE"></a> <a name="atp-&ltE"></a> <p>There are two more nice map
 >E which is something like %>e, i.e. jump over the current environment and
 go to next one. The reverse <E is also implemented, thought it is not
 simply <e%. They do not support count (yet), and actually count breaks
@@ -413,7 +413,7 @@ preamble.  This makes it work slightly faster.</p>
 <p><a href="#b:atp_TexOptions">b:atp_TexOptions</a> is a comma separated list of TeX compiler options.
 If you use <a href="#g:atp_Compiler">g:atp_Compiler</a>="bash" this might be just a white space
 separated list.</p>
-<a href="#atp-<space">atp-space</a>
+<a href="#atp-space">atp-space</a>
 <h4>Space cmap</h4>
 <div class=map>cmap <buffer> <C-Space> 	\_s\+</div>
 <div class=map>cmap <buffer> <C-_> 	\_s\+</div>
@@ -1471,7 +1471,8 @@ file/Xpdf automatically using autocommand group |CursorMoved|.</p>
 	<p>Another provided font wrapper: 
 	    <div class=map>vmap LocalLeaderf	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'&ltCR&gt'</div>
 	Where the variable:
-	    <div class=variable>g:atp_font_encoding</div>
+	<a name="g:atp_font_encoding"></a>
+	<div class=variable>g:atp_font_encoding</div>
 	<p>stores the default encoding which is 'OT1', unless you use fontenc
 	package, then the default for fontenc is used (the last defined in
 	\usepackage[...]{fontenc} see the 'Latex2e font selection'
@@ -1616,7 +1617,7 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 <p>Go (backward) to {arg}, like above <a href="#atp-:F">atp-:F</a>.</p>
 
 
-<a name="atp-:NEnv"></a> <a name="atp->e"></a> <a name="atp-<C-F>"></a>
+<a name="atp-:NEnv"></a> <a name="atp-&gte"></a> <a name="atp-&ltC-F&gt"></a>
 <div class=command>:NEnv {environment}</div>
 <div class=command>:[count]F {environment}</div>
 <div class=map>[count]map &gte</div>
@@ -1625,14 +1626,15 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.</p>
 
-	<a name="atp->m"></a> <a name="atp->M"></a>
+	<a name="atp-&gtm"></a> <a name="atp->M"></a>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: }m and }M respectively.</p>
 
 	<p>If g:atp_mapNn is set to one (see <a href="#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
 	is using <a href="#atp-:S">atp-:S</a>.</p>
 
-	<a name="atp-:PEnv"></a> <a name="atp-<e"></a> <a name="atp-<C-B>"></a>
+	<a name="atp-:PEnv"></a> <a name="atp-&lte"></a> <a
+	    name="atp-&ltC-B&gt"></a>
 <div class=command>:PEnv {environment}</div>
 <div class=command>[count]:B {environment}</div>
 <div class=map>[count]map &lte</div>
@@ -1641,14 +1643,17 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.</p>
 
-	<a name="atp-<m"</a> <a name="atp-<M"</a>
+	<a name="atp-&ltm"</a> <a name="atp-&ltM"</a>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: {m and {M respectively.</p>
 
 	<p>If g:atp_mapNn is set to one (see <a href="#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
 	is using <a href="#atp-:S">atp-:S</a>.</p>
 
-<a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a name="atp->p"></a> <a name="atp-:NChap"></a>	<a name="atp->c"></a> <a name="atp-:NSec"></a>	<a name="atp->s"></a> <a name="atp-:NSSec"></a>	<a name="atp->S"></a> <a name="atp-:NSSSec"></a>
+<a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a
+    name="atp-&gtp"></a> <a name="atp-:NChap"></a>	<a
+    name="atp-&gtc"></a> <a name="atp-:NSec"></a>	<a
+    name="atp-&gts"></a> <a name="atp-:NSSec"></a>	<a name="atp-&gtS"></a> <a name="atp-:NSSSec"></a>
 <div class=command>:NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]</div>
 <div class=command>[count]:F {section}</div>
 <div class=map> map &gtp,  map &gtc,  map &gts,  map &gtS</div>
@@ -1709,7 +1714,11 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	define new maps.</p>
 
 
-	<a name="atp-:PrevSection"></a> <a name="atp-:PPart"></a>	<a name="atp-<p"></a> <a name="atp-:PChap"></a>	<a name="atp-<c"></a> <a name="atp-:PSec"></a>     <a name="atp-<s"></a> <a name="atp-:PSSec"></a>	<a name="atp-<S"></a> <a name="atp-:PSSSec"></a>
+	<a name="atp-:PrevSection"></a> <a name="atp-:PPart"></a>	<a
+	    name="atp-&ltp"></a> <a name="atp-:PChap"></a>	<a
+	    name="atp-&ltc"></a> <a name="atp-:PSec"></a>     <a
+	    name="atp-&lts"></a> <a name="atp-:PSSec"></a>	<a
+	    name="atp-&ltS"></a> <a name="atp-:PSSSec"></a>
 <div class=command>:PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]</div>
 <div class=command>[count]:B {section}</div>
 <div class=map> map &ltp,  map &ltc,  map &lts,  map &ltS</div>
@@ -2454,22 +2463,13 @@ and for the bib field labels for the latex command \cite{}.</p>
 <p>You can set the maximal hieght of the window wich shows the results of
 <a href="#atp-:Dsearch">atp-:Dsearch </a>(default is 15).</p>
 
-<a name="atp-bibsearch-variables"></a> <a name="atp-variables-bib"></a>
-<h3>Some Variables</h3>
-<p>All the values of important variables with their values can be shown
-(grepped) by <a href="#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
-
-<a name="g:atp_VimCompatible"></a>
-<div class=variable>g:atp_VimCompatible</div> 
-    <p>variable with default value 0 ("no"). Its values are 0/1 or yes/no. It
-    changes the behaviour of '%'. In nocomatible mode it gen go to matching
-    pair in a different line in compatible mode it find the matching pair only
-    if the ending bracket is in the same line.</p>
-
-
+<a name="atp-bibsearch-notes"></a>
+<h3>Notes</h3>
     <a name="atp-bibsearch-comments"></a>
-	<p>Please do not hesitate to report any bug to the mailing list
-	<a href="#atp-mailing-list">atp-mailing-list.</a></p>
+	<p>Please do not hesitate to report any bug to the 
+	<a
+	    href="http://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">mailing
+	    list</a>.</p>
 	
 	<p>The algorithm will work only if all kind of bib entries of your bib
 	file are included in the list g:bibentries. However, changing just this
@@ -2477,9 +2477,9 @@ and for the bib field labels for the latex command \cite{}.</p>
 	s:search) will produce correct output, but the function which displays
 	found entries, will not know how to work with the new entries. One
 	would have to add an entry to the dictionary 'g:bibflagsdict'. If it is
-	the case, please let me know: <a
-	    href="#atp-mailing-list">atp-mailing-list.</a> </p> 
-
+	the case, please let me know on the <a
+	    href="http://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">mailing
+	    list</a>.</p> 
 	<p>As you can see entries of the type '@string' which can be used in
 	bib files are not supported (i.e. there is no function which
 	substitutes the variables defined in @string to their values), but it
@@ -3140,6 +3140,9 @@ href="#atp-omnicompletion-commands">atp-omnicompletion-commands.</a></p>
 file. The default values are given below (except the completion setup and
 bibtex documented above). Note: not all variables are listed below.</p>
 
+<p>All the values of important variables with their values can be shown
+(grepped) by <a href="#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
+
 <a name="atprc"></a>
 $HOME/.atprc.vim (only on Unix and GNU/Linux) or<br> 
 $VIMRUNTIME/ftplugin/ATP_files/atprc.vim					
@@ -3221,8 +3224,8 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	<p>You can see the current output directory in the status (it is in the
 	short notation) to see it whole type:
 		<div class=example>:echo b:atp_OutDir</div>
-	or use the function ShowOptions() (see <a
-	    href="#apt-:ShowOptions">apt-:ShowOptions)</a>.</p>		
+	or use the <a
+	    href="#atp-:ShowOptions">apt-:ShowOptions</a> command.</p>		
 
 	<p>If in your environment the variable $TEXMFOUTDIR is set the value of
 	b:atp_OutDir will be set to its value.</p>
@@ -3426,6 +3429,13 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	directory, which is done for using with globpath() and findfile()
 	functions.</p>
 
+<a name="g:atp_VimCompatible"></a>
+<div class=variable>g:atp_VimCompatible</div> 
+    <p>variable with default value 0 ("no"). Its values are 0/1 or yes/no. It
+    changes the behaviour of '%'. In nocomatible mode it gen go to matching
+    pair in a different line in compatible mode it find the matching pair only
+    if the ending bracket is in the same line.</p>
+
 <a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
 <h2>WRITING PROJECTS</h2>
 
@@ -3592,7 +3602,8 @@ will turn it off for all files.</p>
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler", 	
+		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
+		\ "b:atp_StarMathEnvDefault"
 		\ ] 
     </div></pre>
 	<p>If your vim doesn't have python support |+python| three more
@@ -3801,6 +3812,16 @@ using the variables:</p>
 <a name="g:atp_imap_fourth_leader"></a>
 	    <div class=variable>g:atp_imap_fourth_leader == "["</div>
 	    	<p>for extra environments in the old layout (this will be removed).</p>
+<div class=variable><a
+	href="atp-commands.html#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
+== "&lt"</div>
+	    <p>for maps to <a href="#atp-:NInput">atp-:NInput</a>, <a
+		href="#atp-:NSec">atp-:NSec</a>, .... , <a
+		href="#atp-&gtE">atp-&gtE</a>, <a href="#atp-&gt">atp-&gte</a>.</p>
+<div class=variable><a href="atp-commands.html#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a> == "&gt"</div>
+	    <p>for maps to <a href="#atp-:NInput">atp-:PInput</a>, <a
+		href="#atp-:NSec">atp-:PSec</a>, .... , <a
+		href="#atp-&ltE">atp-&ltE</a>, <a href="#atp-&lt">atp-&lte</a>.</p>
 
 <p>Note: the best way to list mappings with leader '#' in insert mode is to use
       <div class=map>':imap #&ltCR&gt'.</div></p>
@@ -4087,7 +4108,7 @@ Note: This can be effectivly set only in <a href="#atprc">atprc</a> or |vimrc| f
     star is added to theorem like environment imaps (<a
 	href="#atp-imap-environments">atp-imap-environments</a>).  By default
     it will be restored by the project script. See <a
-	href="#g:atp_cached_common_variables">g:atp_cached_common_variables</a>.</p>
+	href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
 
 <p><a name="b:atp_StarMathEnvDefault"></a>	
 <div class=map>b:atpStarMathEnvDefault</div>
@@ -4095,7 +4116,7 @@ Note: This can be effectivly set only in <a href="#atprc">atprc</a> or |vimrc| f
      equation imaps (<a
 	 href="#atp-imap-environments">atp-imap-environments</a>).  By default
      it will be restored by the project script. See <a
-	 href="#g:atp_cached_common_variables">g:atp_cached_common_variables</a>.</p>
+	 href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
 
 <table border=0 vspace=0 cellspacing=1 >
     <tr><td><div class=map>imap ]b</div></td><td><div class=map>]beg</div></td><td> \begin{}&ltLeft&gt</td></tr>

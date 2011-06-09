@@ -738,7 +738,7 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	will be stored. This variable is restored by the global project script.
 	You can use {bang} "!" to regenerate the library if it has changed.
 	This is particularly useful as by default ATP remembers g:atp_Library in
-	the common project script (see <a href="#atp-ProjectScript">atp-ProjectScript</a>).</p>
+	the common project script (see <a href="atp-ProjectFiles.html#atp-ProjectScript">atp-ProjectScript</a>).</p>
 
 <a name="atp-:OpenLog"></a>
 <div class=command>:ShowErrors o</div>
@@ -753,7 +753,7 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 
 <p>In the log file there are some special tools to syncronize the tex source
 file and the Viewer (currently only Xpdf is supported) with log file: <a
-    href="#atp-:SyncTex">atp-:SyncTex</a> and <a
+    href="atp-commands.html#atp-:SyncTex">atp-:SyncTex</a> and <a
     href="#atp-:SyncXpdfLog">atp-:SyncXpdfLog</a>) These tools can sync tex
 file/Xpdf automatically using autocommand group |CursorMoved|.</p>
 
@@ -970,6 +970,7 @@ file/Xpdf automatically using autocommand group |CursorMoved|.</p>
 	<p>Another provided font wrapper: 
 	    <div class=map>vmap LocalLeaderf	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'&ltCR&gt'</div>
 	Where the variable:
+	<a name="g:atp_font_encoding"></a>
 	    <div class=variable>g:atp_font_encoding</div>
 	<p>stores the default encoding which is 'OT1', unless you use fontenc
 	package, then the default for fontenc is used (the last defined in
@@ -1115,7 +1116,7 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 <p>Go (backward) to {arg}, like above <a href="#atp-:F">atp-:F</a>.</p>
 
 
-<a name="atp-:NEnv"></a> <a name="atp->e"></a> <a name="atp-<C-F>"></a>
+<a name="atp-:NEnv"></a> <a name="atp-&gte"></a> <a name="atp-&ltC-F&gt"></a>
 <div class=command>:NEnv {environment}</div>
 <div class=command>:[count]F {environment}</div>
 <div class=map>[count]map &gte</div>
@@ -1124,14 +1125,15 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.</p>
 
-	<a name="atp->m"></a> <a name="atp->M"></a>
+	<a name="atp-&gtm"></a> <a name="atp-&gtM"></a>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: }m and }M respectively.</p>
 
 	<p>If <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
 	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p>
 
-	<a name="atp-:PEnv"></a> <a name="atp-<e"></a> <a name="atp-<C-B>"></a>
+	<a name="atp-:PEnv"></a> <a name="atp-&lte"></a> <a
+	    name="atp-&ltC-B&gt"></a>
 <div class=command>:PEnv {environment}</div>
 <div class=command>[count]:B {environment}</div>
 <div class=map>[count]map &lte</div>
@@ -1140,14 +1142,17 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.</p>
 
-	<a name="atp-<m"</a> <a name="atp-<M"</a>
+	<a name="atp-&ltm"</a> <a name="atp-&ltM"</a>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: {m and {M respectively.</p>
 
 	<p>If g:atp_mapNn is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
 	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p>
 
-<a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a name="atp->p"></a> <a name="atp-:NChap"></a>	<a name="atp->c"></a> <a name="atp-:NSec"></a>	<a name="atp->s"></a> <a name="atp-:NSSec"></a>	<a name="atp->S"></a> <a name="atp-:NSSSec"></a>
+<a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a
+    name="atp-&gtp"></a> <a name="atp-:NChap"></a>	<a
+    name="atp-&gtc"></a> <a name="atp-:NSec"></a>	<a
+    name="atp-&gts"></a> <a name="atp-:NSSec"></a>	<a name="atp-&gtS"></a> <a name="atp-:NSSSec"></a>
 <div class=command>:NPart[!], :NChap[!], :NSec[!], :NSSec[!], :NSSSec[!] [title_pattern]</div>
 <div class=command>[count]:F {section}</div>
 <div class=map> map &gtp,  map &gtc,  map &gts,  map &gtS</div>
@@ -1173,13 +1178,14 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
     <p>You can set the leader '>' using <a href="#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>r
 	variable.</p>
 
-	<p>Note: If you leave the default value of |g:atp_forward_motion_leader|
+	<p>Note: If you leave the default value of <a href="#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>
 	then ATP remaps |&gt&gt| to &gt&gt and also |v_&gt| to &gt&gt. |&gt| is working and is
 	not touched by ATP. If you have |'timeout'| set then the map is
 	executed faster, if you use |'notimeout'| this workaround it makes
 	these operators work.</p>
 
-	<p>Note: If you set <a href="#g:atp_forward_motion_leader">g:atp_forward_motion_leader</a>="}" then ATP remaps |}|
+	<p>Note: If you set <a
+	    href="#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>="}" then ATP remaps |}|
 	operator to }}</p>
 
 	<p>Note: the maps work in visual mode and operator pending mode ('d\ns'
@@ -1208,7 +1214,11 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	define new maps.</p>
 
 
-	<a name="atp-:PrevSection"></a> <a name="atp-:PPart"></a>	<a name="atp-<p"></a> <a name="atp-:PChap"></a>	<a name="atp-<c"></a> <a name="atp-:PSec"></a>     <a name="atp-<s"></a> <a name="atp-:PSSec"></a>	<a name="atp-<S"></a> <a name="atp-:PSSSec"></a>
+	<a name="atp-:PrevSection"></a> <a name="atp-:PPart"></a>	<a
+	    name="atp-&ltp"></a> <a name="atp-:PChap"></a>	<a
+	    name="atp-&ltc"></a> <a name="atp-:PSec"></a>     <a
+	    name="atp-&lts"></a> <a name="atp-:PSSec"></a>	<a
+	    name="atp-&ltS"></a> <a name="atp-:PSSSec"></a>
 <div class=command>:PPart[!], :PChap[!], :PSec[!], :PSSec[!], :PSSSec[!] [title_pattern]</div>
 <div class=command>[count]:B {section}</div>
 <div class=map> map &ltp,  map &ltc,  map &lts,  map &ltS</div>
@@ -1220,7 +1230,8 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 	search will wrap around the beginning of a file if 'wrapscan' is set.</p>
 
 	<a align=right name="g:atp_map_backward_motion_leader">"g:atp_map_backward_motion_leader"</a>
-	<p>You can set the leader '&lt' using <a href="#g:atp_map_bacward_motion_leade">g:atp_map_bacward_motion_leader</a>r
+	<p>You can set the leader '&lt' using <a
+	    href="#g:atp_map_bacward_motion_leader">g:atp_map_bacward_motion_leader</a>
 	variable.</p>
 
 	<p>The {section} argument for :B is one off:
@@ -1249,14 +1260,14 @@ searchpair() function, the g:atp_completion_limits[2] applies.</p>
 
 
 	<p>Note: If you leave the default value of <a
-	    href="#g:atp_forward_motion_leade">g:atp_forward_motion_leader</a>r
+	    href="atp-mappings.html#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>r
 	then ATP remaps |&lt&lt| to &lt&lt and also |v_&lt| to &lt&lt. |&lt| is
 	working and is not touched by ATP. If you have |'timeout'| set then the
 	map is executed faster, if you use |'notimeout'| this workaround it
 	makes these operators work.</p>
 
 	<p>Note: If you set <a
-	    href="#g:atp_forward_motion_leader">g:atp_forward_motion_leader</a>="{"
+	    href="#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>="{"
 	then ATP remaps |}| operator to {{</p>
 
 
@@ -1510,7 +1521,7 @@ or g:no_atp_maps are defined).</p>
 <a name="atp-:PID"></a>
 <div class=command>:PID</div>
 <p>Prints PIDs of all running instances of <a
-    href="#b:atp_TexComopiler">b:atp_TexComopiler</a>.</p>
+    href="atp-configure.html#b:atp_TexComopiler">b:atp_TexComopiler</a>.</p>
 
 <a name="atp-:ShowPackages"></a>
 <div class=command>:ShowPackages</div>	

@@ -27,7 +27,7 @@ command inside mathematics.</p>
 
 <a name="atp-Tab-note"></a>
 <p>If you prefer to not map &ltTab&gt key then you can define
-g:atp_no_tab_map=1 in your vimrc file or atprc file |atprc|. Note that Vim can
+g:atp_no_tab_map=1 in your vimrc file or <a href="atp-configure.html#atprc">atprc</a> file. Note that Vim can
 add/remove tabshift width from the beginning of line in other ways: in normal
 mode with |&gt&gt| and |&lt&lt|, in insert mode: |i_CTRL-T|, |i_CTRL-D| and in
 visual mode with |&gt| and |&lt|. Also you can use <a
@@ -94,7 +94,7 @@ and <a href="#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 
 		<p>If you do not want math commands completions at all define
 		':let g:atp_no_math_command_completion=1' (you can put it in
-		your |vimrc| or <a href="#atprc">atprc </a>file, or define while writing,
+		your |vimrc| or <a href="atp-configure.html#atprc">atprc </a>file, or define while writing,
 		both will work, so you can switch off the math completions
 		temporarily).</p>
 
@@ -125,7 +125,7 @@ and <a href="#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 		version 8.4 for this you have to switch off abbreviations by
 		setting g:atp_noabbreviations to 1 - but anyway it is not time
 		consuming because these variables are loaded from
-		<a href="#atp-ProjectScript">atp-ProjectScript)</a>.</p>
+		<a href="atp-ProjectFiles.html#atp-ProjectScript">atp-ProjectScript)</a>.</p>
 
 		<a name="atp-:LocalCommands"></a>	
 <div class=command>:LocalCommands[!]</div>
@@ -379,7 +379,7 @@ and <a href="#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 		<p>If &ltfont_family&gt is defined, &ltfont_series&gt and &ltfont_shape&gt
 		come from the particular font definition file (the declared
 		encoding is used if not the value of
-		<a href="#g:atp_font_encoding">g:atp_font_encoding </a>is used).</p>
+		<a href="atp-commands.html#g:atp_font_encoding">g:atp_font_encoding </a>is used).</p>
 
 		<p>If &ltfont_family&gt and &ltfont_series&gt are defined then the
 		&ltfont_shape&gt for this font (in the above encoding) is found.</p></div>
@@ -530,7 +530,7 @@ above).</p>
 <div class=variable>g:atp_LatexClasses</div>
 <p>stores list of packages and classes in your tex distribution. They are
 restored when you exit Vim from the global project script (see <a
-    href="#atp-ProjectScript_global">atp-ProjectScript_global</a>).  They are
+    href="atp-ProjectFiles.html#atp-ProjectScript_global">atp-ProjectScript_global</a>).  They are
 used for completion of the LaTeX commands \usepackage and \documentclass.</p>
 
 <p>If you reinstall, add or remove tex classes/packages from your tex

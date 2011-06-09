@@ -1128,7 +1128,8 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload_variables
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler",
+		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
+		\ "b:atp_StarMathEnvDefault"
 		\ ] 
     if !has("python")
 	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])
