@@ -62,42 +62,9 @@
     solution for updating the Table of Contents highlighted line. It is done
     using autocommand CursorHold.</p>
 
-<a name="atp-:LatexTags"></a>
-<a name="atp-:Tags"></a>
-<div class=command>:LatexTags[!]</div>
-<div class=command>:Tags[!]</div>
-    <p>Make a tag file with a python script included in ATP. It also scans aux
-    file for associated numbers to labels which then are used as tags. If you
-    declare hyperref package in the preambule also \hyperref{}{} commands are
-    matched for tags as well. 
-    <a href="#atp-:Tags">atp-:Tags</a> command will be defined only if you do not define it yourself.</p> 
+    <p>See the new command <a href="#atp-:Tags">atp-:Tags</a>.</p>
 
-    <p>Natbib as well as biblatex commands are supported (with exception of
-    \cites, ... biblatex commands).</p>
-
-    <p>With bang the bibtags for \cite commands are not made. If you use more
-    than one bibliography file searching to which of them it belongs might
-    take some time. If this is the case and you do not want this kind of tags
-    you can make the tag file faster.</p>
-
-    <p>Note: you might need to adjust 'iskeyword' Vim option. ATP is adding <a
-	href="#g:atp_separator">g:atp_separator</a> to 'iskeyword' if <a
-	href="#g:atp_no_separator">g:atp_no_separator</a> is 0.</p>
-
-    <p>Note!:In Vim 'iskeyword' by default contains '_'. It is disabled by the
-    stadard tex syntax file (you do not want to include _ from _{} LaTeX
-    construct into 'w' motion). So it is better to avoid it in label names, so
-    that CTRL-] works well. If you need to add it use:
-    <div class=indented>au FileType set iskeyword+=_</div>
-    (this will not work with setlocal).</p>
-
-    <p>Note: the python script is sourced in the background. When the script
-    finishes it will let you know. The tag file is not accessible until the
-    script finishes.</p>
-
-    <p>Check out <a href="#tag-and-searches">tag-and-searches</a> how to use tags.</p>
-
-<a href="#atp-:Dsearc">atp-:Dsearch</a>h
+<a href="#atp-:Dsearc">atp-:Dsearch</a>
 <div class=command>:Dsearch</div>
     <p>This used to be :DefiSearch. This I found more in vim style.
     Also <a href="#g:atp_DsearchMaxWindowHeight">g:atp_DsearchMaxWindowHeight</a> is used instead of

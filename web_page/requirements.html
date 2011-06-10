@@ -42,7 +42,9 @@
 		    <b>neccessary</b> for some ATP tools, even if you don't want to
 		    use vim color highlighting. You can also add <code>:filetype
 			indent on</code> if yuo want to use the indentation
-		    feature of ATP.
+		    feature of ATP. See <a
+			href="http://vimhelp.appspot.com/filetype.txt.html#filetype.txt">filetype
+			vim help</a>.
 		    <h3>python</h3>
 		    <b>ATP</b> uses <a href="http://www.python.org">python</a>. It is
 		    written so that you can use python3 or python2.7. You can use
@@ -73,27 +75,56 @@
 			href="http://www.phys.psu.edu/~collins/software/latexmk-jcc/">Latexmk</a> program is available in <a
 			href="http://www.tug.org/texlive/">TeXLive</a> TeX
 		    distribution. Your GNU/Linux
-		    distribution might package it separately. It is needed
+		    distribution might package it separately 
+		    (<a
+			href="http://packages.debian.org/en/squeeze/all/latexmk/download">debian</a>,
+		    <a
+			href="http://packages.ubuntu.com/hardy/latexmk">ubuntu</a>,
+		    <a
+			href="http://packages.gentoo.org/package/dev-tex/latexmk?arches=all&full_cat">gentoo</a>,
+		    <a
+			href="http://rpm.pbone.net/index.php3/stat/4/idpl/15745308/dir/rawhide/com/latexmk-4.23a-1.fc16.noarch.rpm.html">fedora</a>,
+		    <a
+			href="http://ftp.eq.uc.pt/software/TeX/support/latexmk/">ctan</a>). It is needed
 		    for <a
 			href="http://www.vim.org/scripts/script.php?script_id=3109">Latex
 			Box</a> plugin included in <b>ATP</b>.
 		    <h3>detex</h3>
 		    The detex program is used to make proper word count with
-		    <code>:WordCount</code> <b>ATP</b> command. It is included in
-		    <a href="http://www.tug.org/texlive/">TeXLive</a> TeX
+		    <a
+			href="doc/atp-commands.html#atp-:WordCount"><code>:WordCount</code></a>
+		    <b>ATP</b> command. It is included in <a
+			href="http://www.tug.org/texlive/">TeXLive</a> TeX
 		    distribution, but your GNU/Linux distribution might have
 		    a separate package for it.
 		    <h3>wdiff</h3>
-		    If you want to use <code>:Wdiff</code> command you will
+		    If you want to use <a
+			href="doc/atp-commands.html#atp-:Wdiff"><code>:Wdiff</code></a> command you will
 		    need GNU wdiff program, available <a
-			href="http://www.gnu.org/software/wdiff/">here</a>.
+			href="http://www.gnu.org/software/wdiff/">here</a>,
+		    (<a
+			href="http://packages.debian.org/search?keywords=wdiff">debian</a>,
+		    <a
+			href="http://packages.ubuntu.com/dapper/wdiff">ubuntu</a>,
+		    <a
+			href="http://packages.gentoo.org/package/app-text/wdiff">gentoo</a>,
+		    <a
+			href="http://rpm.pbone.net/index.php3/stat/4/idpl/15646768/dir/fedora_13/com/wdiff-0.6.5-5.fc13.i686.rpm.html">fedora</a>).
 		    <h3>pdffonts</h3>
-		    <b>ATP</b> has a map to see the embedded fonts inside your pdf
-		    output file. Sometimes some institutions requires that all
-		    the fonts must be embedded. This is mapped to <F6>g in
-		    <b>ATP</b>. And it uses pdffonts program.It is available in
-		    <em>app-text/poppler</em> package (at least in <a
-			href="www.gentoo.org">gentoo</a>).
+		    <b>ATP</b> has a command <a
+			href="doc/atp-mappings.html#atp-:PdfFonts"><code>:PdfFonts</code></a>
+		    to see the embedded fonts inside your pdf output file.
+		    Sometimes some institutions requires that all the fonts
+		    must be embedded. This is mapped to <F6>g in <b>ATP</b>.
+		    And it uses pdffonts program. It is available for various
+		    GNU/Linux distributions: <a
+			href="http://packages.debian.org/sid/poppler-utils">debian</a>, 
+		    <a
+			href="http://packages.ubuntu.com/dapper/poppler-utils">ubuntu</a>, 
+		    <a
+			href="http://packages.gentoo.org/package/app-text/poppler">gentoo</a>,
+		    <a
+			href="http://rpm.pbone.net/index.php3/stat/4/idpl/13686417/dir/fedora_10/com/poppler-utils-0.8.7-7.fc10.x86_64.rpm.html">fedora</a>.
 		    <h3>vim-latex</h3>
 		    You should not use <a
 			href="http://vim-latex.sf.net"><b>vim-latex</b></a> plugin

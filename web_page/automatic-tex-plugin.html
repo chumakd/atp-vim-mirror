@@ -227,42 +227,9 @@ features which might not yet work well, or might change (commands, maps, etc
     solution for updating the Table of Contents highlighted line. It is done
     using autocommand CursorHold.</p>
 
-<a name="atp-:LatexTags"></a>
-<a name="atp-:Tags"></a>
-<div class=command>:LatexTags[!]</div>
-<div class=command>:Tags[!]</div>
-    <p>Make a tag file with a python script included in ATP. It also scans aux
-    file for associated numbers to labels which then are used as tags. If you
-    declare hyperref package in the preambule also \hyperref{}{} commands are
-    matched for tags as well. 
-    <a href="#atp-:Tags">atp-:Tags</a> command will be defined only if you do not define it yourself.</p> 
+    <p>See the new command <a href="#atp-:Tags">atp-:Tags</a>.</p>
 
-    <p>Natbib as well as biblatex commands are supported (with exception of
-    \cites, ... biblatex commands).</p>
-
-    <p>With bang the bibtags for \cite commands are not made. If you use more
-    than one bibliography file searching to which of them it belongs might
-    take some time. If this is the case and you do not want this kind of tags
-    you can make the tag file faster.</p>
-
-    <p>Note: you might need to adjust 'iskeyword' Vim option. ATP is adding <a
-	href="#g:atp_separator">g:atp_separator</a> to 'iskeyword' if <a
-	href="#g:atp_no_separator">g:atp_no_separator</a> is 0.</p>
-
-    <p>Note!:In Vim 'iskeyword' by default contains '_'. It is disabled by the
-    stadard tex syntax file (you do not want to include _ from _{} LaTeX
-    construct into 'w' motion). So it is better to avoid it in label names, so
-    that CTRL-] works well. If you need to add it use:
-    <div class=indented>au FileType set iskeyword+=_</div>
-    (this will not work with setlocal).</p>
-
-    <p>Note: the python script is sourced in the background. When the script
-    finishes it will let you know. The tag file is not accessible until the
-    script finishes.</p>
-
-    <p>Check out <a href="#tag-and-searches">tag-and-searches</a> how to use tags.</p>
-
-<a href="#atp-:Dsearc">atp-:Dsearch</a>h
+<a href="#atp-:Dsearch">atp-:Dsearch</a>
 <div class=command>:Dsearch</div>
     <p>This used to be :DefiSearch. This I found more in vim style.
     Also <a href="#g:atp_DsearchMaxWindowHeight">g:atp_DsearchMaxWindowHeight</a> is used instead of
@@ -613,7 +580,7 @@ tools can find appropriate files.</p>
 
 <p>The last top most important variable is |g:atp_keep| which is a list of extensions,
 by default it is
-<div class=variable>let g:atp_keep = [ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
+<div class=variable>let g:atp_keep = [ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
 Files with this extension will be copied from |b:atp_OutDir| to the temporary
 directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
@@ -911,6 +878,27 @@ your tex compiler, see |g:atp_TexCommand|.</p>
 	    href="#g:atp_Compiler">g:atp_Compiler</a> = 'bash' it uses a bash
 	command (UNIX only).</p>
 
+
+<a name="atp-:Latexmk"></a>
+<p><div class=command>:Latexmk[!]</div>
+<div class=indented>Compile with latexmk in background. 
+    With bang "!": Force compilation with latexmk in background.</div></p>
+
+<a name="atp-:LatexmkClean"></a>
+<p><div class=command>:LatexmkClean[!]</div>
+	<div class=indented>Clean temporary output from LaTeX. 
+	With bang "!": Clean temporary output from LaTeX.</div></p>
+
+<a name="atp-:LatexmkStop"></a>
+<p><div class=command>:LatexmkStop</div>
+	<div class=indented>Stop latexmk if it is running.</div></p>
+
+<a name=":LatexmkStatus"></a>
+<p><div class=command>:LatexmkStatus[!]</div>
+	<div class=indented>Show the running status of latexmk for the current buffer. 
+	With bang "!": show the running status of latexmk for all buffers with
+	process group ID's.</div></p>
+
 <a name="atp-:ShowErrors"></a>
 <div class=command>:ShowErrors [flag]</div>					
 <div class=map>nmap <LocalLeader>e</div>					/for other maps see <a href="#atp-:ShowErrors-maps">atp-:ShowErrors-maps</a>/
@@ -1126,13 +1114,12 @@ and also other variable to enable reverse searching (Xdvi->Vim) see more
 	<a href="#b:atp_xpdfOptions">b:atp_xpdfOptions</a> and g:atp_xpdfOptions. Similarly for Okular.</p>
 						
 	<div class=command>:BibSearch /{pattern}/ [flag]</div>				
-	<div align=right>See <a href="#atp-:BibSearc">atp-:BibSearch</div>
+	<div align=right>See <a href="#atp-:BibSearch">atp-:BibSearch</a></div>
 	<p>This command finds bib entries in bib files defined in your tex file
-	and in the variable b:atp_BibFiles (see <a
-	    href="#b:atp_BibFiles">b:atp_BibFiles</a>), which match the
-	[pattern] (a Vim regular expression). The output is configurable by the
-	[flag] argument, see <a href="#atp-bibflags">atp-bibflags</a>. By
-	default the pattern is case insensitive.</p>
+	and in the variable b:atp_BibFiles, which match the [pattern] (a Vim
+	regular expression). The output is configurable by the [flag] argument,
+	see <a href="#atp-bibflags">atp-bibflags</a>. By default the pattern is
+	case insensitive.</p>
 
 	<a name="atp-:AMSRef"></a>
 <div class=command>:AMSRef[!] {bibdata}</div> 
@@ -1285,11 +1272,12 @@ file/Xpdf automatically using autocommand group |CursorMoved|.</p>
 	<p>If you set g:atp_developer = 1 this command will also go to files
 	under texmf tree (packages and classes).</p>
 
-	<a name="atp-:SyncXpdf"></a> <a name="g:atp_SyncXpdfLog"></a>
-	<p>If you set g:atp_SyncXpdfLog = 1 (the default value is 0) and you use
-	Xpdf as a viewer it will be synchronised with the log file (with
-	autocommand group |CursorMoved|). You can also use the command
-	:SyncXpdf or :Xpdf in the log buffer which does the same.</p>
+<a name="atp-:SyncXpdf"></a> <a name="g:atp_SyncXpdfLog"></a>
+<p><div class=command>:SyncXpdf</div>
+If you set g:atp_SyncXpdfLog = 1 (the default value is 0) and you use
+Xpdf as a viewer it will be synchronised with the log file (with
+autocommand group |CursorMoved|). You can also use the command
+:SyncXpdf or :Xpdf in the log buffer which does the same.</p>
 
 	<a name="atp-:Delete"></a>
 <div class=command>:Delete[!]</div>
@@ -1521,6 +1509,41 @@ environment.  The following LaTeX environments are supported: equation, align,
 alignat, flalign, displaymath and tabular Equation, align, alignat, flalign and
 displaymath are checked using syntax, tabular environment is checked using
 searchpair() function, the g:atp_completion_limits[2] applies.</p>
+
+<a name="atp-:LatexTags"></a>
+<a name="atp-:Tags"></a>
+<div class=command>:LatexTags[!]</div>
+<div class=command>:Tags[!]</div>
+    <p>Make a tag file with a python script included in ATP. It also scans aux
+    file for associated numbers to labels which then are used as tags. If you
+    declare hyperref package in the preambule also \hyperref{}{} commands are
+    matched for tags as well. 
+    <a href="#atp-:Tags">atp-:Tags</a> command will be defined only if you do not define it yourself.</p> 
+
+    <p>Natbib as well as biblatex commands are supported (with exception of
+    \cites, ... biblatex commands).</p>
+
+    <p>With bang the bibtags for \cite commands are not made. If you use more
+    than one bibliography file searching to which of them it belongs might
+    take some time. If this is the case and you do not want this kind of tags
+    you can make the tag file faster.</p>
+
+    <p>Note: you might need to adjust 'iskeyword' Vim option. ATP is adding <a
+	href="#g:atp_separator">g:atp_separator</a> to 'iskeyword' if <a
+	href="#g:atp_no_separator">g:atp_no_separator</a> is 0.</p>
+
+    <p>Note!:In Vim 'iskeyword' by default contains '_'. It is disabled by the
+    stadard tex syntax file (you do not want to include _ from _{} LaTeX
+    construct into 'w' motion). So it is better to avoid it in label names, so
+    that CTRL-] works well. If you need to add it use:
+    <div class=indented>au FileType set iskeyword+=_</div>
+    (this will not work with setlocal).</p>
+
+    <p>Note: the python script is sourced in the background. When the script
+    finishes it will let you know. The tag file is not accessible until the
+    script finishes.</p>
+
+    <p>Check out <a href="#tag-and-searches">tag-and-searches</a> how to use tags.</p>
 
 <a name="atp-:TOC"></a>
 <div class=command>:TOC[!]</div>
@@ -1934,6 +1957,22 @@ to which |'errorfile'| was set.</p>
 	<p>Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
 	output directory will be not seen in the statusline.</p>
 
+    <a name="atp-:Dsearch"></a>
+<div class=command>:Dsearch[!] [/]{pattern}[/]</div> 
+	<p>The {pattern} argument is optional. It is any vim pattern. Finds all
+	definitions which matches the pattern. It looks in the main file (only
+	in the preamble, unless the optional bang '!' is used) and all the
+	input files (except bib files). This command respects the options:
+	'ignorecase' and 'smartcase'. You can override them with '\C' (match
+	case what follows) and '\c' (ignore case in what follows).<p>
+
+	<p>It works likes ]d but handles multi line definitions.<p>
+
+	<a name="g:atp_DsearchMaxWindowHeight"></a>
+<div class=variable>g:atp_DsearchMaxWindowHeight=15</div>
+<p>You can set the maximal hieght of the window wich shows the results of
+<a href="#atp-:Dsearch">atp-:Dsearch </a>(default is 15).</p>
+
 	<a name="atp-:FontSearch"></a>
 <div class=command>:FontSearch[!] [pattern]</div>
 	
@@ -2137,7 +2176,7 @@ the file name.</p>
 <h2>SEARCHING IN BIB FILES</h2>
 
 	<div class=indented><h4>Table of Contents:</h4></div>
-	<div class=indented><a href="#atp-BibSearch">atp-BibSearch</a></div>
+	<div class=indented><a href="#atp-:BibSearch">atp-BibSearch</a></div>
 	<div class=indented><a href="#atp-bibpatterns">atp-bibpatterns</a></div>
 	<div class=indented><a href="#atp-bibflags">atp-bibflags</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:default">atp-bibflags:default</a></div>
@@ -2147,12 +2186,10 @@ the file name.</p>
 	    <div class=double_indent><a href="#atp-bibflags:all">atp-bibflags:all</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:last">atp-bibflags:last</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:add-flag">atp-bibflags:add-flag</a></div>	
+	    <div class=double_indent><a href="#atp-bibflags:examples">atp-bibflags:examples</a></div>
 	<div class=indented><a href="#atp-:BibChoose">atp-:BibChoose</a></div>	
 	<div class=indented><a href="#atp-bibsearch-highlight">atp-bibsearch-highlight</a></div>
 	<div class=indented><a href="#atp-:BibSearch">atp-:BibSearch</a></div>
-	<div class=indented><a href="#atp-bibflags:examples">atp-bibflags:examples</a></div>
-	<div class=indented><a href="#atp-bibsearch-variables">atp-bibsearch-variables</a></div>
-	    <div class=double_indent><a href="#b:atp_BibFiles">b:atp_BibFiles</a></div>
 
 	    <h4>Naming Conventions:</h4>
 	    <pre>
@@ -2171,29 +2208,31 @@ the file name.</p>
 <p>One more function is provided which searches the bib files for bib fields, 
 and for the bib field labels for the latex command \cite{}.</p>
 
-<a name="atp-BibSearch"></a>
-<div class=command>BibSearch({bang}, [pattern], [flags])</div>
-	<p>The function BibSearch allows you to search for the [pattern] in bib
-	files and opens a new window with results. For the command, please read
-	<a href="#atp-:BibSearch">atp-:BibSearch</a>.</p>
+    <a name="atp-:BibSearch"></a> 	
+<div class=command>:BibSearch /{pattern}/ [flag]</div>
+	<p>which do what you expect. The arguments should not be quoted and
+	separated by a white spaces (if you want to include a white space use
+	'\ '), for more see |f-args|. If you do not provide any argument then
+	all entries of all bib files will be shown. </p>
+	
+	<a name="g:atp_bibsearch"></a>
+	<p>Note: {pattern} should be python regular expression not vim regular
+	exression. Unless you set |g:atp_bibsearch|="vim" (the default is
+	"python"). Python regular expressions are quite similar to vim with
+	'nomagic' set ( grouping with '(' and ')', with separating
+	alternatives with '|'). But there is no vim '\&' in python regexp.</p>
 
-	<p>Note: by default python written search engine is used so [pattern]
-	should be python regexp, unless you set <a href="#g:atp_bibsearch">g:atp_bibsearch</a>="vim", when
-	you can use vim regexp. Python regexp are similar to vim with
-	'nomagic' set.</p>
+	<p>The pattern to highlight matching string is passed to |@/| hence you can
+	use |n| and |N| in the BibSearch buffer. This will only work for
+	{pattern} which is both vim and python regular expression.</p>
 
-	<p>{bang} has two possible values "!" or "", with "!" it looks first for
-	input files, while if {bang}="" only if ATP has not done it yet.</p> 
+	<p>See <a href="#atp-bibflags">atp-bibflags</a> for the [flag] argument.</p>
 
-	<p>The function BibSearch takes two arguments (the last one is optional).
-	The first one is the [pattern] to match against each line of the
-	bibliographic files supplied in the commands \bibliography (if there
-	are several names,please do not add a white space ' ' after ',' unless
-	the file name begins with a space, i.e.</p>
-	<div class=indented>\bibliography(Mathematics, Physics,/home/user/Bibliography)</div>
-	then the plugin will understand that the names of the bib files are
-	'Mathematics.bib', ' Physics.bib' and '/home/user/Bibliography.bib'.</p>
+	<p>The next one shows all bib fields which were written by Joyal and
+	Tirney (and may by somebody else).</p>
 
+	    <div class=command>:BibSearch author.*Joyal\&.*Tirney</div>
+ 	<div class=indented>This is not possible with |g:atp_bibsearch|="python" (the default).</div>
 
 	<a name="atp-bibpatterns"></a>
 	<p>Note: Upper pattern is vim pattern lower one is python regexp.</p> 
@@ -2368,6 +2407,21 @@ and for the bib field labels for the latex command \cite{}.</p>
 	you want to have a nice output put the bib entry name and that much of
 	white spaces to get 13 strings.</p>
 
+	<a name="atp-bibflags:examples"></a>
+	<p>Some examples:						
+	    <div class=command>:BibSearch</div> 
+				<div class=indented>Above command shows all bib fields with
+				the default flags (might be slow, why not to
+				open bib file with :GotoFile)</div>
+	    <div class=command>:BibSearch @ yt</div>	
+				<div class=indented>and this is a tip how to show all bib fields with
+				different flags than the default ones(the '@'
+				will match at every bib field!). It is
+				equivalent to:</div>
+	    <div class=command>:BibSearch // yt</div>
+
+	    <div class=command>:BibSearch /title[\s.]*Galois Theory/  aetb</div>
+
 <a name="atp-:BibChoose"></a>
 <div class=command>:BibChoose {BibEntry[RegisterName]}</div>
 <div class=map>map c, map y, map p</div>
@@ -2408,61 +2462,6 @@ and for the bib field labels for the latex command \cite{}.</p>
 	colours.  See |highlight| or just read a colour file. For example,
 	this is a nice set of colours for dark background </p>
 		
-    <a name="atp-:BibSearch"></a> 	
-<div class=command>:BibSearch /{pattern}/ [flag]</div>
-	<p>which do what you expect. The arguments should not be quoted and
-	separated by a white spaces (if you want to include a white space use
-	'\ '), for more see |f-args|. If you do not provide any argument then
-	all entries of all bib files will be shown. </p>
-	
-	<a name="g:atp_bibsearch"></a>
-	<p>Note: {pattern} should be python regular expression not vim regular
-	exression. Unless you set |g:atp_bibsearch|="vim" (the default is
-	"python"). Python regular expressions are quite similar to vim with
-	'nomagic' set ( grouping with '(' and ')', with separating
-	alternatives with '|'). But there is no vim '\&' in python regexp.</p>
-
-	<p>The pattern to highlight matching string is passed to |@/| hence you can
-	use |n| and |N| in the BibSearch buffer. This will only work for
-	{pattern} which is both vim and python regular expression.</p>
-
-	<a name="atp-bibflags:examples"></a>
-	<p>Some examples:						
-	    <div class=command>:BibSearch</div> 
-				<div class=indented>Above command shows all bib fields with
-				the default flags (might be slow, why not to
-				open bib file with :GotoFile)</div>
-	    <div class=command>:BibSearch @ yt</div>	
-				<div class=indented>and this is a tip how to show all bib fields with
-				different flags than the default ones(the '@'
-				will match at every bib field!). It is
-				equivalent to:</div>
-	    <div class=command>:BibSearch // yt</div>
-
-	    <div class=command>:BibSearch /title[\s.]*Galois Theory/  aetb</div>
-
-	<p>The next one shows all bib fields which were written by Joyal and
-	Tirney (and may by somebody else).</p>
-
-	    <div class=command>:BibSearch author.*Joyal\&.*Tirney</div>
- 	<div class=indented>This is not possible with |g:atp_bibsearch|="python" (the default).</div>
-
-	<a name="atp-:Dsearch"></a>
-<div class=command>:Dsearch[!] [/]{pattern}[/]</div> 
-	<p>The {pattern} argument is optional. It is any vim pattern. Finds all
-	definitions which matches the pattern. It looks in the main file (only
-	in the preamble, unless the optional bang '!' is used) and all the
-	input files (except bib files). This command respects the options:
-	'ignorecase' and 'smartcase'. You can override them with '\C' (match
-	case what follows) and '\c' (ignore case in what follows).<p>
-
-	<p>It works likes ]d but handles multi line definitions.<p>
-
-	<a name="g:atp_DsearchMaxWindowHeight"></a>
-<div class=variable>g:atp_DsearchMaxWindowHeight=15</div>
-<p>You can set the maximal hieght of the window wich shows the results of
-<a href="#atp-:Dsearch">atp-:Dsearch </a>(default is 15).</p>
-
 <a name="atp-bibsearch-notes"></a>
 <h3>Notes</h3>
     <a name="atp-bibsearch-comments"></a>
@@ -3333,7 +3332,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </p>
 	 files with the specified extension in the directory <a
 	     href="#b:atp_OutDir">b:atp_OutDir</a>.</p>
 <a name="g:atp_keep"></a>			
-<div class=variable> let g:atp_keep	= [ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
+<div class=variable> let g:atp_keep	= [ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
 	<p>Files with an extension belonging to this list will be copied from
 	'b:atp_OutDir' to the temporary directory with appropriate name. Then it
 	will be used by (La)TeX. (log file will be copied after it is created,
@@ -3969,8 +3968,10 @@ This is a mapping to the command <a href="#atp-:Labels">atp-:Labels</a></p>
 <div class=map>nmap [gf</div>
 	Goto previous input file.</p>
 
-<p>pdffonts is mapped to &ltF6&gtg	
-There is also a command ':PdfFonts' which does the same.</p> 
+<a name="pdffonts"></a> <a name="atp-:PdfFonts"></a>
+<p><div class=command>:PdfFonts</div>
+<div class=map>&ltF6&gtg</div>
+Runs pdffonts command on pdf output file.</p> 
 
 <a name="atp-comment-lines"></a> <a name="atp-uncomment-lines"></a> <a name="g:atp_MapCommentLines"></a>
 <p><div class=map>nmap \c, vmap \c</div>		
@@ -4520,7 +4521,7 @@ tex distrubution.</p>
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again.</p> 
 
-	<p>If you set the command as above (with python befor the path to
+	<p>If you set the command as above (with python before the path to
 	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
 	Note, that otherwise whenever you update ATP you will have to make the
 	script executable!</p>

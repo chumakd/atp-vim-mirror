@@ -32,44 +32,53 @@
 
 		<td class=mainpanel>
 		    <h3>Compilation Features:</h3>
-		    * <b>Background TeX/LaTeX processing</b> with status info
-		    (current page number processed by LaTeX in status line - what
-		    I call <em>progress bar</em>)<br>
-		    * <b>reverse/inverse searching</b> for: <b>okular</b>, <b>xdvi</b> (<i>okular,xdvi->vim</i>)<br>
-		    * <b>forward searching</b> (<i>vim->xpdf, okular, xdvi</i>)
-		    <code>:SyncTex</code><br>
-		    * <i>goto named destination</i>: using
-		    <code>hyperref</code> package
-		    you can put named destinations into pdf file, you can go
-		    to them with one command from vim (Xpdf only)<br>
-		    * <b>Making LaTeX projects</b> with just one command
-		    <code>:MakeLatex</code><br>
-		    <div class="indented">/ bibliography, makeindex, table of
-			contents, lists of: figures, tables, theorems [with
-			ntheorem package], algorithms /</div>
-		    * <i>various debug modes</i>: silent/debug/Debug/verbose.<br>
-		    <div class="indented">/ automatically close <i>QuickFix
-			    window</i> (<code>:copen</code>) if there are no errors in it /</div>
-		    * <i>show errors, warnings, citation/reference warnings, font warnings, files used</i> ...<br>
-		    <div class="indented">/ <i>error file is automatically read after compilation</i> /</div>
-		    * open log, in log file you can <em>sync the tex source
+		    <div>* <b>background TeX/LaTeX processing</b> with status
+			info (current page number processed by LaTeX in status
+			line - what I call <a href="doc/atp-commands.html#g:atp_ProgressBar"><em>progress bar</em></a>)</div>
+		    <div>* interface for <a href="http://www.phys.psu.edu/~collins/software/latexmk-jcc/">latexmk</a></div>
+		    <div>* <b>reverse/inverse searching</b> for: <b>okular</b>,
+			<b>xdvi</b> (<i>okular,xdvi->vim</i>)</div>
+		    <div>* <b>forward searching</b> (<i>vim->xpdf, okular,
+			    xdvi</i>) <a
+			    href="doc/atp-commands.html#atp-:SyncTex"><code>:SyncTex</code></a></div>
+		    <div>* <i>goto <a
+				href="doc/atp-commands.html#atp-:GotoNamedDest">named
+				destination</a></i>: using
+			<code>hyperref</code> package you can put named
+			destinations into pdf file, you can go to them with one
+			command from vim (Xpdf only)</div>
+		    <div>* <b>Making LaTeX projects</b> with just one command
+			<a
+			    href="doc/atp-commands.html#atp-:MakeLatex"><code>:MakeLatex</code></a>
+			<div class="indented">/ bibliography, makeindex, table of
+			    contents, lists of: figures, tables, theorems [with
+			    ntheorem package], algorithms /</div></div>
+		    <div>* <i>various <a
+				href="doc/atp-commands.html#atp-debug-mode">debug
+				modes</a></i>: silent/debug/Debug/verbose.
+			<div class="indented">/ automatically close <i>QuickFix
+				window</i> (<code>:copen</code>) if there are
+			    no errors in it /</div></div>
+		    <div>* <i><a href="doc/atp-commands.html#atp-:ShowErrors">show errors</a>, warnings, citation/reference warnings, font warnings, files used</i> ...<br>
+			<div class="indented">/ <i>error file is automatically read after compilation</i> /</div></div>
+		    <div>* <a href="doc/atp-commands.html#atp-:OpenLog">open log</a>, in log file you can <em>sync the tex source
 			with the log file</em> (then errors in the source file
 		    will be higlighted!) or the <em>xpdf viewer with the
 			log</em> file. There are also maps to go to
 		    next/previous error/warning/info/... message. And there is
-		    syntax file for tex log files.<br>
+		    syntax file for tex log files.</div><br>
 
 	    <h3>Editing Features:</h3>
-	    * indentation<br>
-	    * selection tools for environments (<code>vie</code>,
+	    <div>* indentation</div>
+	    <div>* selection tools for <a href="doc/atp-editing.html#atp-visual">environments</a> (<code>vie</code>,
 	    <code>vae</code>) , in line math (<code>vim</code>,
-	    <code>vam</code>)<br>
-            * changing the environment name <br>
+	    <code>vam</code>)</div>
+	    <div> * changing the environment name 
 	    <div class="indented">/ and changes the label if you use the labeling system; this needs activation /</div>   
-            * changing the star (add remove a star from environment)<br>
+	    * changing the star (add remove a star from environment)</div><br>
 
 	     <h3>Completions:</h3>
-             * <b>completion for commands</b> (also user defined in associate files), 
+	     <div>* <b><a href="doc/atp-completion.html">completion</a> for commands</b> (also user defined in associate files), 
                 environments, citations, references, tikz commands, keywords, provided abbreviations, and much more<br>
 		  <div class="indented">/ there are two completion modes: when you know what you want with <Tab>
                          and when you search for a command with Shift+Tab /</div>
@@ -87,24 +96,33 @@
 				   <div class="triple_indent">/ finds completions in font definition files /</div>
 			<div class="double_indent">+ <b>completion for</b>
 			    <code>\cite{</code> <b>supports regular expression</b> which are</div>
-                                                               passed to the searching tool in bibliography files<br>
-             * <b>closing brackets and environments</b> (preserves nested environments in  100%)<br>
-                         <div class="indented">/ which is included into completion with <Tab> key)</div>
-             * many usefull maps<br>
-                         <div class="indented">/ some of them are configurable (on the fly): for example you can change if * is added to </div>
-                           environments which are put by imaps. /<br>
-             * abbreviations for environments (<i>with tab completion</i>)<br>
+                                                               passed to the searching tool in bibliography files</div>
+	     <div>* <b>closing brackets and environments</b> (preserves nested environments in  100%)<br>
+		 <div class="indented">/ which is included into completion with <Tab> key)</div></div>
+	     <div>* many usefull <a href="doc/atp-mappings.html">maps</a><br>
+	     <div class="indented">/ some of them are configurable (on the
+		 fly): for example you can change if * is added to </div>
+	     environments which are put by imaps. /</div>
+	     <div>* <a href="doc/atp-abbreviations.html">abbreviations</a> for
+		 environments (<i>with tab <a
+			 href="doc/atp-completion.html#atp-completion-abbreviations">completion</a></i>)</div><br>
             
 	     <h3>Moving Tools:</h3>
-             * <b>table of contents</b>
-                         <div class="indented">/ which allows moving through
-			     files, chapters, sections, opening a preview
-			     window, but also yanking (coping), pasting
-			     section-wise /</div>
-	     * <b>tag file</b>: with <code>:LatexTags</code> (or just <code>:Tags</code>) ATP will make a very nice tag file to be used with tag feature of vim
-             * list of labels<br>
-                         <div class="indented">/ as with toc, you can see the context of the label in a preview window /</div>
-             * moving commands to next environment<br>
+	     <div>* <a href="doc/atp-commands.html#atp-:TOC"><b>table of contents</b></a>
+	     <div class="indented">/ which allows moving through files,
+		 chapters, sections, opening a preview window, but also yanking
+		 (coping), pasting section-wise /</div></div>
+	     <div>* <b>tag file</b>: with <a
+		 href="doc/atp-commands.html#atp-:LatexTags"><code>:LatexTags</code></a>
+	     (or just <a
+		 href="doc/atp-commands.html#atp-:Tags"><code>:Tags</code></a>)
+	     ATP will make a very nice tag file to be used with tag feature of
+	     vim</div>
+	     <div>* list of <a
+		     href="doc/atp-commands.html#atp-:Labels">labels</a><br>
+		 <div class="indented">/ as with toc, you can see the context
+		     of the label in a preview window /</div></div>
+	     <div>* moving commands to <a href="doc/atp-commands.html#atp-:F">next environment</a><br>
                          <div class="indented">/ configured with vim normal commands:
 			     <code>n</code> and <code>N</code> for repeating /</div>
                          <div class="indented">/ also to next [inline/displayed] math environment /</div>
@@ -112,53 +130,64 @@
 			 * <b>% operates on</b> <code>$:$</code>,
 			 <code>\(:\)</code> and <code>\[:\]</code> (in plain tex also on
 			 <code>$$:$$</code>), brackets and <code>\begin:\end</code> pairs, which also
-	     gets highlighted<br>
-	     * <i>TeX</i>/<i>LaTeX</i> oriented normal <code>gf</code> command<br>
+	     gets highlighted</div>
+	     <div>* <i>TeX</i>/<i>LaTeX</i> oriented normal <code>gf</code> command<br>
 	     <div class="indented">/ <code>gf</code> = go to file under
 		 cursor, if there is no file under the cursor gives
 		 a list of input files /</div>
 			       <div class="double_indent">+ with nice indentation for the list of files to chose</div>
-			       <div class="double_indent">+ with <code>g:atp_developer=1</code> you can easily open package (.sty) and classes (.cls) files</div>
+			       <div class="double_indent">+ with <code>g:atp_developer=1</code> you can easily open package (.sty) and classes (.cls) files</div></div><br>
 
 	     <h3>Searching Tools:</h3>
-             * <i>reverse/inverse searching</i><br>
-             * <i>tags</i> - python script to make a tag file.<br>
-	     * search for definitions ( <code>\def</code> ) declared in input
-	     files (<code>:Dsearch [pattern]</code><br>
-                            <div class="indented">/ like [D command but works with multiple line definitions /</div>
-             * <b>extended search</b> in <b>bib files</b><br>
-	     * <b>query <a href="http://www.ams.org/mref"><i>AMS Ref</i></a> web page for bibliography data</b><br> 
-	     * white space mapped to <code>\_s\+</code> in searching command lines / and ?:<br>
-                            <div class="indented">/ this is a handy way to
+	     <div>* <i>reverse/inverse searching</i></div>
+	     <div>* <a href="doc/atp-commands.html#atp-:Tags"><i>tags</i></a>
+		 - python script to make a tag file.</div>
+	     <div>* search for definitions ( <code>\def</code> ) declared in
+		 input files (<a
+		     href="doc/atp-commands.html#atp-:Dsearch"><code>:Dsearch</code></a>)<br>
+		 <div class="indented">/ like [D command but works with
+		     multiple line definitions /</div></div>
+	     <div>* <a href="doc/atp-bibsearch.html#atp-:BibSearch"><b>extended search</b></a> in <b>bib files</b></div>
+	     <div>* <b>query <a href="http://www.ams.org/mref"><i>AMS Ref</i></a> web page for bibliography data</b></div> 
+	     <div>* white space mapped to <code>\_s\+</code> in searching command lines / and ?:<br>
+			    <div class="indented">/ this is a handy way to
 				search in text which is broken into lines, can
-				be turned off/on with F2 key/</div>
+				be turned off/on with F2 key/</div></div><br>
 
-    	    <h3>Support for Projects:</h3>
-             * <b>project script</b> which restores project specific variables
-	     ( for example: <code>b:atp_MainFile</code>,
-	     <code>b:ListOfFiles</code> - the list of files included in the project, ...)<br> 
+	    <h3>Support for Projects:</h3>
+	    <div>* <a
+		    href="doc/atp-ProjectFiles.html#atp-ProjectScript"><b>project
+			script</b></a> which restores project specific
+		variables ( for example: <a href="doc/atp-ProjectFiles.html#b:atp_MainFile"><code>b:atp_MainFile</code></a>,
+		<a href="doc/atp-ProjectFiles.html#b:ListOfFiles"><code>b:ListOfFiles</code></a> - the list of files included in the project, ...)<br> 
 			    <div class="indented">/ The project script name is
 				<MainProjectFile>.project.vim /</div>
 			    <div class="indented">/ It is possible to store
 				many projects in one directory! /</div>
 			    <div class="indented">/ There is no need to make
 				a project file to mark the project
-				directory/</div>
-             * <code>:GotoFile</code> function (replace vim gf map), which list all the input files
-                            for the main project file and let you go to one of them
-                            (it also sets the main file variable for the new buffer
-                             to correct value automaticaly).<br>
-             * <code>:GotoLabel</code> command, you can pass label number which appears in the output
-                             as an argument (or the label name).<br>
-             * <code>:GotoNamedDest</code> - jump to named destination in Xpdf (named
-	     destinations are inserted with <code>\hypertarget</code> commands).<br>
-             * <code>:S</code> - a command to <b>search in project files</b> (like it would be
-	     just one long file)<br>
-                                       <div class="indented">+ supports flags: bceswW of vim search() function and the
-                                                                 vim 'wrapscan' option.</div>
-	     * <code>:Labels</code> command (which list all defined labels) support project files.<br>
-	     * <code>:TOC</code> command (Table of Contents) almost supports project files (work in progress).<br>
-	     * <code>:Ninput</code>/<code>:PInput</code> commands : to go to next/previous input file.<br>
+				directory/</div></div>
+	    <div>* <a
+		href="doc/atp-commands.html#atp-:GotoFile"><code>:GotoFile</code></a>
+	    function (replace vim gf map), which list all the input files for
+	    the main project file and let you go to one of them (it also sets
+	    the main file variable for the new buffer to correct value
+	    automaticaly).</div>
+	    <div>* <a href="doc/atp-commands.html#atp-:GotoLabel"><code>:GotoLabel</code></a> command, 
+		you can pass label number which appears in the output as an
+		argument (or the label name).</div>
+	    <div>*  <a href="doc/atp-commands.html#atp-:GotoNamedDest"><code>:GotoNamedDest</code></a> - jump to named destination in Xpdf (named
+	     destinations are inserted with <code>\hypertarget</code> commands).</div>
+	     <div>* <a
+		     href="doc/atp-ProjectFiles.html#atp-:S"><code>:S</code></a>
+		 - a command to <b>search in project files</b> (like it would
+		 be just one long file)<br>
+		   <div class="indented">+ supports flags: bceswW of vim
+		       search() function and the vim 'wrapscan'
+		       option.</div></div>
+	   <div>* <a href="doc/atp-commands.html#atp-:Labels"><code>:Labels</code></a> command (which list all defined labels) support project files.</div>
+	   <div>* <a href="doc/atp-commands.html#atp-:TOC"><code>:TOC</code></a> command (Table of Contents) almost supports project files (work in progress).</div>
+	   <div>* <a href="doc/atp-ProjectFiles.html#atp-:NInput"><code>:NInput</code></a>/<a href="doc/atp-ProjectFiles.html#atp-:NInput"><code>:PInput</code></a> commands : to go to next/previous input file.</div>
 
 		</td>
 </body>

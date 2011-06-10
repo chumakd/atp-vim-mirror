@@ -11,8 +11,8 @@
 </div>
 <div style="clear: both;"></div>
 	<a name="atp-visual"></a>
-	<p>visual mode: ie, iE, ae, im, am, ip, ap, iS, aS, &ltLocalLeader&gtsc normal
-	and mode: &ltLocalLeader&gtsc.</p> 
+	<p>visual mode: ie, iE, ae, im, am, ip, ap, iS, aS, &ltLocalLeader&gtsc
+	normal and mode: &ltLocalLeader&gtsc.</p> 
 
 	<p>They select the current environment in two ways: 
 	<table border=0 vspace=0 cellspacing=1 >
@@ -28,48 +28,50 @@
 	</table>
 
 	<a name="atp-vie"></a> <a name="atp-viE"></a> <a name="atp-vae"></a>
-	<p><div class=map>ie, iE, ae</div> select environment: from the nearest \begin (top) to the nearest \end (bottom).</p>	
+	<p><div class=map>ie, iE, ae</div> 
+		<div class=indented>select environment: from the nearest \begin
+		(top) to the nearest \end (bottom).  'viE' selects a bit more
+		than 'vie' but less than 'vae', it selects a bracket pair
+		before the beginning of the inner part of an environment, so it
+		can be environment name or an option just after.</div></p>
 
-		<p>'viE' selects a bit more than 'vie' but less than 'vae', it
-		selects a bracket pair before the beginning of the inner part
-		of an environment, so it can be environment name or an option
-		just after.</p>	
-
-	    <a name="atp-vim"></a> <a name="atp-vam"></a>
-	<p><div class=map>im, am</div>	selects mathematics.</p>
+	<a name="atp-vim"></a> <a name="atp-vam"></a>
 	<a name="atp-vip"></a> <a name="atp-vap"></a>
-	<p><div class=map>ip, ap</div>  selects paragraph. <br>
-		In inner mode: from the nearest 
+	<p><div class=map>im, am</div>	
+		<div class=indented>selects mathematics.</div>
+	<div class=map>ip, ap</div>  
+		<div class=indented>selects paragraph.  In inner mode: from the
+		nearest 
 		<div class=example>\begin, \end, \par, \newline or empty line (top)</div> 
-		to the nearest >
+		to the nearest
 		<div class=example>\begin, \end, \par, \newline or empty line (bottom).</div>
-		in outer mode: from the nearest >
+		in outer mode: from the nearest
 		<div class=example>\par or empty line (top)</div> 
-		to the nearest >
-		<div class=example>\par or empty line (bottom).</div></p>
+		to the nearest
+		<div class=example>\par or empty line (bottom).</div>
+	</div></p>
 
-		<a name="atp-viS"></a> <a name="atp-vaS"></a>
-	<p><div class=map>iS, aS</div>	selects using syntax stack (see |synstack()|), inner is the
+	<a name="atp-viS"></a> <a name="atp-vaS"></a>
+	<p><div class=map>iS, aS</div>	
+		<div class=indented>selects using syntax stack (see |synstack()|), inner is the
 		top element in the syntax stack (the highlighted area will be
 		small) and outer uses the most bottom element in the syntax
 		stack (the resulting are will be wide). Some syntax groups are
 		filtered out (like 'texDocZone') which not always are
-		synchronised.</p>
-		<a name="atp-select-comments"></a> <a name="atp-_c"></a>
+		synchronised.</div></p>
+	<a name="atp-select-comments"></a> <a name="atp-_c"></a>
 	<p><div class=map>_c</div>	
-		select comment lines which begin with '^\s*%'. If not in
+		<div class=indented>select comment lines which begin with '^\s*%'. If not in
 		comment line, end visual mode. You can change this map with
 		variables g:atp_MapSelectComment (this can be only changed in
 		<a href="atp-configure.html#atprc">atprc</a> or vimrc file, you need restart Vim, or use
-		<a href="atp-commands.html#atp-:ReloadATP">atp-:ReloadATP</a>).</p>
+		<a href="atp-commands.html#atp-:ReloadATP">atp-:ReloadATP</a>).</div></p>
 
-		<a name="atp-gw"></a>	
-<p><div class=map>nmap gw</div>
-	Quite useful normal map: m`vipgq``. It is mapped to gw (in normal
-	mode).</p>
+	<a name="atp-gw"></a>	
+	<p><div class=map>nmap gw</div>
+		<div class=indented>Quite useful normal map: m`vipgq``. It is mapped to gw (in normal
+		mode).</div></p>
 
 	<a name="atp-g&lt"></a> <a name="atp-g&gt"></a>	
-<p><div class=map>nmaps: g&gt, g&lt, 2g&gt, ..., 6g&gt</div> 
-	A normal map to m`vipg&gt`` (or m`vip2g&gt``).</p>
-
-
+	<p><div class=map>nmaps: g&gt, g&lt, 2g&gt, ..., 6g&gt</div> 
+		<div class=indented>A normal map to m`vipg&gt`` (or m`vip2g&gt``).</div></p>

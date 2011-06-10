@@ -540,25 +540,6 @@ endfunction
 "{{{ <SID>KillAll
 " the argument is a list of pids
 " a:1 if present supresses a message.
-function! <SID>KillPIDs(pids,...)
-    if len(a:pids) == 0 && a:0 == 0
-	return
-    endif
-python << END
-import os, signal
-from signal import SIGKILL
-pids=vim.eval("a:pids")
-for pid in pids:
-    try:
-	os.kill(int(pid),SIGKILL)
-    except OSError, e:
-	if e.errno == 3:
-             # No such process error.
-             pass
-        else:
-             raise
-END
-endfunction 
 function! <SID>Kill(bang)
     if !has("python")
 	if a:bang != "!"
@@ -569,10 +550,10 @@ function! <SID>Kill(bang)
 	return
     endif
     if len(b:atp_PythonPIDs)
-	call <SID>KillPIDs(b:atp_PythonPIDs)
+	call atplib#KillPIDs(b:atp_PythonPIDs)
     endif
     if len(b:atp_LatexPIDs)
-	call <SID>KillPIDs(b:atp_LatexPIDs)
+	call atplib#KillPIDs(b:atp_LatexPIDs)
     endif
 endfunction
 
@@ -634,7 +615,7 @@ function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, b
 
 	" This is not working: (I should kill compile.py scripts)
 	echomsg "[ATP:] killing all instances of ".get(g:CompilerMsg_Dict,b:atp_TexCompiler,'TeX')
-	call <SID>KillPIDs(b:atp_LatexPIDs,1)
+	call atplib#KillPIDs(b:atp_LatexPIDs,1)
 	sleep 1
 	PID
     endif

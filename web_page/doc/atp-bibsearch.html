@@ -12,22 +12,18 @@
 <div style="clear: both;"></div>
 
 	<div class=indented><h4>Table of Contents:</h4></div>
-	<div class=indented><a href="#atp-BibSearch">atp-BibSearch</a></div>
+	<div class=indented><a href="#atp-:BibSearch">atp-:BibSearch</a></div>
 	<div class=indented><a href="#atp-bibpatterns">atp-bibpatterns</a></div>
 	<div class=indented><a href="#atp-bibflags">atp-bibflags</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:default">atp-bibflags:default</a></div>
 	    <div class=double_indent><a href="#atp-bibsearch-show-only-keys">atp-bibsearch-show-only-keys</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:+">atp-bibflags:+</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:output">atp-bibflags:output</a></div>
-	    <div class=double_indent><a href="#atp-bibflags:all">atp-bibflags:all</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:last">atp-bibflags:last</a></div>
 	    <div class=double_indent><a href="#atp-bibflags:add-flag">atp-bibflags:add-flag</a></div>	
+	    <div class=doublf_indent><a href="#atp-bibflags:examples">atp-bibflags:examples</a></div>
 	<div class=indented><a href="#atp-:BibChoose">atp-:BibChoose</a></div>	
 	<div class=indented><a href="#atp-bibsearch-highlight">atp-bibsearch-highlight</a></div>
-	<div class=indented><a href="#atp-:BibSearch">atp-:BibSearch</a></div>
-	<div class=indented><a href="#atp-bibflags:examples">atp-bibflags:examples</a></div>
-	<div class=indented><a href="#atp-bibsearch-variables">atp-bibsearch-variables</a></div>
-	    <div class=double_indent><a href="#b:atp_BibFiles">b:atp_BibFiles</a></div>
 
 	    <h4>Naming Conventions:</h4>
 	    <pre>
@@ -46,29 +42,31 @@
 <p>One more function is provided which searches the bib files for bib fields, 
 and for the bib field labels for the latex command \cite{}.</p>
 
-<a name="atp-BibSearch"></a>
-<div class=command>BibSearch({bang}, [pattern], [flags])</div>
-	<p>The function BibSearch allows you to search for the [pattern] in bib
-	files and opens a new window with results. For the command, please read
-	<a href="#atp-:BibSearch">atp-:BibSearch</a>.</p>
+    <a name="atp-:BibSearch"></a> 	
+<div class=command>:BibSearch /{pattern}/ [flag]</div>
+	<p>which do what you expect. The arguments should not be quoted and
+	separated by a white spaces (if you want to include a white space use
+	'\ '), for more see |f-args|. If you do not provide any argument then
+	all entries of all bib files will be shown. </p>
+	
+	<a name="g:atp_bibsearch"></a>
+	<p>Note: {pattern} should be python regular expression not vim regular
+	exression. Unless you set |g:atp_bibsearch|="vim" (the default is
+	"python"). Python regular expressions are quite similar to vim with
+	'nomagic' set ( grouping with '(' and ')', with separating
+	alternatives with '|'). But there is no vim '\&' in python regexp.</p>
 
-	<p>Note: by default python written search engine is used so [pattern]
-	should be python regexp, unless you set <a href="#g:atp_bibsearch">g:atp_bibsearch</a>="vim", when
-	you can use vim regexp. Python regexp are similar to vim with
-	'nomagic' set.</p>
+	<p>The pattern to highlight matching string is passed to |@/| hence you can
+	use |n| and |N| in the BibSearch buffer. This will only work for
+	{pattern} which is both vim and python regular expression.</p>
 
-	<p>{bang} has two possible values "!" or "", with "!" it looks first for
-	input files, while if {bang}="" only if ATP has not done it yet.</p> 
+	<p>See <a href="#atp-bibflags">atp-bibflags</a> for the [flag] argument.</p>
 
-	<p>The function BibSearch takes two arguments (the last one is optional).
-	The first one is the [pattern] to match against each line of the
-	bibliographic files supplied in the commands \bibliography (if there
-	are several names,please do not add a white space ' ' after ',' unless
-	the file name begins with a space, i.e.</p>
-	<div class=indented>\bibliography(Mathematics, Physics,/home/user/Bibliography)</div>
-	then the plugin will understand that the names of the bib files are
-	'Mathematics.bib', ' Physics.bib' and '/home/user/Bibliography.bib'.</p>
+	<p>The next one shows all bib fields which were written by Joyal and
+	Tirney (and may by somebody else).</p>
 
+	    <div class=command>:BibSearch author.*Joyal\&.*Tirney</div>
+ 	<div class=indented>This is not possible with |g:atp_bibsearch|="python" (the default).</div>
 
 	<a name="atp-bibpatterns"></a>
 	<p>Note: Upper pattern is vim pattern lower one is python regexp.</p> 
@@ -243,6 +241,21 @@ and for the bib field labels for the latex command \cite{}.</p>
 	you want to have a nice output put the bib entry name and that much of
 	white spaces to get 13 strings.</p>
 
+	<a name="atp-bibflags:examples"></a>
+	<p>Some examples:						
+	    <div class=command>:BibSearch</div> 
+				<div class=indented>Above command shows all bib fields with
+				the default flags (might be slow, why not to
+				open bib file with :GotoFile)</div>
+	    <div class=command>:BibSearch @ yt</div>	
+				<div class=indented>and this is a tip how to show all bib fields with
+				different flags than the default ones(the '@'
+				will match at every bib field!). It is
+				equivalent to:</div>
+	    <div class=command>:BibSearch // yt</div>
+
+	    <div class=command>:BibSearch /title[\s.]*Galois Theory/  aetb</div>
+
 <a name="atp-:BibChoose"></a>
 <div class=command>:BibChoose {BibEntry[RegisterName]}</div>
 <div class=map>map c, map y, map p</div>
@@ -283,63 +296,8 @@ and for the bib field labels for the latex command \cite{}.</p>
 	colours.  See |highlight| or just read a colour file. For example,
 	this is a nice set of colours for dark background </p>
 		
-    <a name="atp-:BibSearch"></a> 	
-<div class=command>:BibSearch /{pattern}/ [flag]</div>
-	<p>which do what you expect. The arguments should not be quoted and
-	separated by a white spaces (if you want to include a white space use
-	'\ '), for more see |f-args|. If you do not provide any argument then
-	all entries of all bib files will be shown. </p>
-	
-	<a name="g:atp_bibsearch"></a>
-	<p>Note: {pattern} should be python regular expression not vim regular
-	exression. Unless you set |g:atp_bibsearch|="vim" (the default is
-	"python"). Python regular expressions are quite similar to vim with
-	'nomagic' set ( grouping with '(' and ')', with separating
-	alternatives with '|'). But there is no vim '\&' in python regexp.</p>
-
-	<p>The pattern to highlight matching string is passed to |@/| hence you can
-	use |n| and |N| in the BibSearch buffer. This will only work for
-	{pattern} which is both vim and python regular expression.</p>
-
-	<a name="atp-bibflags:examples"></a>
-	<p>Some examples:						
-	    <div class=command>:BibSearch</div> 
-				<div class=indented>Above command shows all bib fields with
-				the default flags (might be slow, why not to
-				open bib file with :GotoFile)</div>
-	    <div class=command>:BibSearch @ yt</div>	
-				<div class=indented>and this is a tip how to show all bib fields with
-				different flags than the default ones(the '@'
-				will match at every bib field!). It is
-				equivalent to:</div>
-	    <div class=command>:BibSearch // yt</div>
-
-	    <div class=command>:BibSearch /title[\s.]*Galois Theory/  aetb</div>
-
-	<p>The next one shows all bib fields which were written by Joyal and
-	Tirney (and may by somebody else).</p>
-
-	    <div class=command>:BibSearch author.*Joyal\&.*Tirney</div>
- 	<div class=indented>This is not possible with |g:atp_bibsearch|="python" (the default).</div>
-
-	<a name="atp-:Dsearch"></a>
-<div class=command>:Dsearch[!] [/]{pattern}[/]</div> 
-	<p>The {pattern} argument is optional. It is any vim pattern. Finds all
-	definitions which matches the pattern. It looks in the main file (only
-	in the preamble, unless the optional bang '!' is used) and all the
-	input files (except bib files). This command respects the options:
-	'ignorecase' and 'smartcase'. You can override them with '\C' (match
-	case what follows) and '\c' (ignore case in what follows).<p>
-
-	<p>It works likes ]d but handles multi line definitions.<p>
-
-	<a name="g:atp_DsearchMaxWindowHeight"></a>
-<div class=variable>g:atp_DsearchMaxWindowHeight=15</div>
-<p>You can set the maximal hieght of the window wich shows the results of
-<a href="#atp-:Dsearch">atp-:Dsearch </a>(default is 15).</p>
-
 <a name="atp-bibsearch-notes"></a>
-<h3>Final Notes</h3>
+<h3>Notes</h3>
     <a name="atp-bibsearch-comments"></a>
 	<p>Please do not hesitate to report any bug to the 
 	<a

@@ -1024,7 +1024,7 @@ endif
 if !exists("g:atp_keep") || g:atp_reload_variables
     " Files with this extensions will be compied back and forth to/from temporary
     " directory in which compelation happens.
-    let g:atp_keep=[ "log", "aux", "toc", "bbl", "ind", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
+    let g:atp_keep=[ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
     " biber stuff is added before compelation, this makes it possible to change 
     " to biber on the fly
     if b:atp_BibCompiler =~ '^\s*biber\>'

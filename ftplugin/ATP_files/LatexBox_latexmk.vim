@@ -75,6 +75,7 @@ function! LatexBox_Latexmk(force)
 	let max_print_line = 2000
 	let cmd = 'cd ' . shellescape(b:atp_ProjectDir) . ' ; max_print_line=' . max_print_line .
 				\ ' latexmk ' . l:options	. ' ' . shellescape(b:atp_MainFile)
+	let g:cmd=cmd
 
 	" callback after latexmk is finished
 	let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' . 
@@ -125,7 +126,7 @@ function! s:kill_latexmk(gpid)
 	endfor
 	call delete(tmpfile)
 	if !empty(pids)
-		silent execute '! kill ' . join(pids)
+		call atplib#KillPIDs(pids)
 	endif
 endfunction
 " }}}
@@ -183,34 +184,13 @@ function! LatexBox_LatexmkStatus(detailed)
 
 endfunction
 " }}}
-
-" LatexErrors {{{
-" LatexBox_LatexErrors(jump, [basename])
-function! LatexBox_LatexErrors(jump, ...)
-	if a:0 >= 1
-		let log = a:1 . '.log'
-	else
-		let log = LatexBox_GetLogFile()
-	endif
-
-	if (a:jump)
-		execute 'cfile ' . fnameescape(log)
-	else
-		execute 'cgetfile ' . fnameescape(log)
-	endif
-endfunction
-" }}}
 endif
 
 " Commands {{{
-command! -buffer Latexmk				call LatexBox_Latexmk(0)
-command! -buffer LatexmkForce			call LatexBox_Latexmk(1)
-command! -buffer LatexmkClean			call LatexBox_LatexmkClean(0)
-command! -buffer LatexmkCleanAll		call LatexBox_LatexmkClean(1)
-command! -buffer LatexmkStatus			call LatexBox_LatexmkStatus(0)
-command! -buffer LatexmkStatusDetailed	call LatexBox_LatexmkStatus(1)
+command! -buffer -bang Latexmk			call LatexBox_Latexmk((<q-bang> == "!" ? 1 : 0))
+command! -buffer -bang LatexmkClean			call LatexBox_LatexmkClean((<q-bang> == "!" ? 1 : 0))
+command! -buffer -bang LatexmkStatus			call LatexBox_LatexmkStatus((<q-bang> == "!" ? 1 : 0))
 command! -buffer LatexmkStop			call LatexBox_LatexmkStop()
-command! -buffer LatexErrors			call LatexBox_LatexErrors(1)
 " }}}
 
 autocmd VimLeavePre * call <SID>kill_all_latexmk()

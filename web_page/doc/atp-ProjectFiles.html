@@ -2,7 +2,6 @@
     <link rel="stylesheet" href="../doc_style.css"> 
     <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
 </head>
-<a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
 <h2>WRITING PROJECTS</h2>
 <div>
     <p class="alignleft"><a href="atp-configure.html">Previous:</a> Configure ATP</p>
@@ -11,6 +10,7 @@
 </div>
 <div style="clear: both;"></div>
 
+<a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
 <div class=variable>let b:atp_MainFile	= expand("%:p")</div>
 <p>This variable points to the main file of the project, it is set on the
 start up to the file you open. If you edit project file (for the first time),
@@ -67,7 +67,7 @@ a symbolic link it will hint to the resolved path). The <a
 particularly useful if you want to share the project file.</p>
 	 
 <p>If you run into problems with <a href="#atp-:S">atp-:S </a>you can set this variable to
-0 and use <a href="#atp-:InputFiles">atp-:InputFiles </a>to regenerate the variables - they will
+0 and use <a href="atp-commands.html#atp-:InputFiles">atp-:InputFiles </a>to regenerate the variables - they will
 now store the full path (the other way around also works).</p>
 
 <a name="atp-:ToggleNn"></a>
@@ -80,14 +80,14 @@ value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
 
 <a name="g:atp_mapNn"></a>
 <div class=variable>g:atp_mapNn = 0</div>
-<p>If it is set to 1 then several tools use |atp-:S| command instead of Vim
+<p>If it is set to 1 then several tools use <a href="#atp-:S">atp-:S</a> command instead of Vim
 |search()| function (which looks only in the current buffer).  These are: <a
-    href="#atp-:NPart">atp-:NPart</a>, <a href="#atp-:NChap">atp-:NChap</a>,
-<a href="#atp-:NSec">atp-:NSec</a>, <a href="#atp-:NSSec">atp-:NSSec</a>, <a
-    href="#atp-:NSSSec">atp-:NSSSec</a>, <a href="#atp-:PPart">atp-:PPart</a>,
-<a href="#atp-:PChap">atp-:PChap</a>, <a href="#atp-:PSec">atp-:PSec</a>, <a
-    href="#atp-:PSSec">atp-:PSSec</a>, <a href="#atp-:PSSSec">atp-:PSSSec</a>,
-<a href="#atp-:NEnv">atp-:NEnv</a>, <a href="#atp-:PEnv">atp-:PEnv</a>.</p>
+    href="atp-commands.html#atp-:NPart">atp-:NPart</a>, <a href="atp-commands.html#atp-:NChap">atp-:NChap</a>,
+<a href="atp-commands.html#atp-:NSec">atp-:NSec</a>, <a href="atp-commands.html#atp-:NSSec">atp-:NSSec</a>, <a
+    href="atp-commands.html#atp-:NSSSec">atp-:NSSSec</a>, <a href="atp-commands.html#atp-:PPart">atp-:PPart</a>,
+<a href="atp-commands.html#atp-:PChap">atp-:PChap</a>, <a href="atp-commands.html#atp-:PSec">atp-:PSec</a>, <a
+    href="atp-commands.html#atp-:PSSec">atp-:PSSec</a>, <a href="atp-commands.html#atp-:PSSSec">atp-:PSSSec</a>,
+<a href="atp-commands.html#atp-:NEnv">atp-:NEnv</a>, <a href="atp-commands.html#atp-:PEnv">atp-:PEnv</a>.</p>
 
 <p>The default value of <a href="#g:atp_mapNn">g:atp_mapNn</a>is 0.</p>
 
@@ -97,8 +97,8 @@ value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
 	    let g:atp_mapNn = 1
 	endif
 </pre>
-Then the value will be preserved when atp opens new buffer when using <a
-    href="#atp-:S">atp-:S</a> command. If you want to have project specific
+Then the value will be preserved when atp opens new buffer when using
+<a href="#atp-:S">atp-:S</a> command. If you want to have project specific
 setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p>
 
 <p>Another good tip for LaTeX project files is to set |b:atp_TexFlavor|
@@ -141,9 +141,9 @@ generated and written.</p>
        in a revision system (bzr, svn, etc.) and share it with collaborators.</p>
 
        <p>The global project script (which, by default, stores global variables:
-       <a href="#g:atp_LatexPackages">g:atp_LatexPackages</a>, <a
-	   href="#g:atp_LatexClasses">g:atp_LatexClasses</a>, <a
-	   href="#g:atp_Library">g:atp_Library</a>) is now
+       <a href="atp-completion.html#g:atp_LatexPackages">g:atp_LatexPackages</a>, <a
+	   href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>, <a
+	   href="atp-commands.html#g:atp_Library">g:atp_Library</a>) is now
        '~/.vim/ftplugin/ATP_files/common_var.vim'.</p>
 
        <p><a href="atp-configure.html#atprc">atprc</a> file is executed before project script file (with local
@@ -271,8 +271,8 @@ will turn it off for all files.</p>
 	directory or not.</p>
 
 	<p>Note: If you use this feature, you might need to use the commands:
-	<a href="atp-commands.html#atp-:LocalCommands">atp-:LocalCommands</a> and <a
-	    href="#atp-:InputFiles">atp-:InputFiles</a> which will update
+	<a href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> and <a
+	    href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> which will update
 	b:atp_LocalCommands, b:atp_LocalColors, b:atp_LocalEnvironments and <a
 	    href="#b:TreeOfFiles">b:TreeOfFiles</a>, <a
 	    href="#b:ListOfFiles">b:ListOfFiles</a>, <a
@@ -280,7 +280,7 @@ will turn it off for all files.</p>
 	    href="#b:LevelDict">b:LevelDict</a>. Use these commands with
 	a bang "!". The second set of variables is also updated by <a
 	    href="#atp-:S">atp-:S</a> (also with "!") and and <a
-	    href="#atp-:GotoFile">atp-:GotoFile</a> (with "!" as well).</p>
+	    href="atp-commands.html#atp-:GotoFile">atp-:GotoFile</a> (with "!" as well).</p>
 
 	<p>Note: Also when you add a package to tex you should remove the common
 	project scrip, so that the new packages will be added to completion

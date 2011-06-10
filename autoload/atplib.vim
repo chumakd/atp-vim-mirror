@@ -5,6 +5,27 @@
 " URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 
+" Kill:
+" {{{
+function! atplib#KillPIDs(pids,...)
+    if len(a:pids) == 0 && a:0 == 0
+	return
+    endif
+python << END
+import os, signal
+from signal import SIGKILL
+pids=vim.eval("a:pids")
+for pid in pids:
+    try:
+	os.kill(int(pid),SIGKILL)
+    except OSError, e:
+	if e.errno == 3:
+             # No such process error.
+             pass
+        else:
+             raise
+END
+endfunction " }}}
 " Write:
 function! atplib#write(...) "{{{
     let backup		= &backup
@@ -709,7 +730,7 @@ endfunction
 " resove(fnamemodify(bufname("%"),":p"))
 
 " {{{2 --------------- atplib#GrepAuxFile
-silent! function! atplib#GrepAuxFile(...)
+function! atplib#GrepAuxFile(...)
     " Aux file to read:
     if exists("b:atp_MainFile")
 	let atp_MainFile	= atplib#FullPath(b:atp_MainFile)

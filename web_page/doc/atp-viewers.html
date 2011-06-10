@@ -46,16 +46,16 @@
 	open Okular and go to 
 		<div class=indented>settings&gtConfigure Okular&gtEditor</div>
 	and set 
-	    <table border=0 vspace=0 cellspacing=1 >
+	    <div class=indented><table border=0 vspace=0 cellspacing=10 >
 		<tr><td>Editor</td><td>Custom Text Editor</td></tr>
 		<tr><td>Command</td><td>python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%f' '%l'</td></tr>
-		</table>
+		</table></div>
 	NOTE: You must substitute $HOME directory to its value!!! It will not
 	work other way. You can also copy the script somewhere inside your
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again.</p> 
 
-	<p>If you set the command as above (with python befor the path to
+	<p>If you set the command as above (with python before the path to
 	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
 	Note, that otherwise whenever you update ATP you will have to make the
 	script executable!</p>
