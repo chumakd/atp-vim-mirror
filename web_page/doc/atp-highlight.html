@@ -1,15 +1,33 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
 <a name="atp-highlight"></a>
-<h2>COLOUR HIGHLIGHTING AND SYNTAX GROUPS</h2>
+<h1>Colour Highlighting and Syntax Groups</h1>
+<hr>
 <div>
-    <p class="alignleft"><a href="atp-tips.html">Previous:</a> Tips</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-remarks.html">Next:</a> Remarks</p>
+    <p class="alignleft"><a href="atp-tips.html"><b>Previous:</b></a><b> Tips</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-remarks.html"><b>Next:</b></a><b> Remarks</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
 <p>When the cursor is positioned on \begin{envname} or \end{envname} both
 corresponding \begin:\end get highlighted with syntax group MatchParen. 
@@ -27,8 +45,7 @@ it (in the terminal). </p>
 <p>These are the highlights groups defined for various files and the default
 links:
 
-<h4>ToC file</h4>
-
+<h2>ToC file</h2>
 	<div class=indented><table border=0 vspace=0 cellspacing=1 >
 	    <tr><td>highlight atp_FileName</td><td> Title</td></tr>
 	    <tr><td>highlight atp_LineNr</td><td> LineNr</td></tr>
@@ -43,14 +60,14 @@ links:
     what is your top level section in your latex document. This applies,
     accordingly, to other groups.</p>
 
-<h4>Labels file</h4>
+<h2>Labels file</h2>
     <div class=indented><table border=0 vspace=0 cellspacing=1 >
 	<tr><td>highlight atp_label_FileName</td><td>Title</td></tr>
 	<tr><td>highlight atp_label_LineNr</td><td>LineNr</td></tr>
 	<tr><td>highlight atp_label_Name</td><td>Label</td></tr>
 	<tr><td>highlight atp_label_Counter</td><td>Keyword</td></tr>
     </table></div>
-<h4>BibSearch file</h4>
+<h2>BibSearch file</h2>
 <p>this is very much the same as the standard syntax for bib files. Groups
     are named bibsearch&ltNAME&gt instead of bib&ltNAME&gt. There is one more group
     added:
@@ -62,7 +79,7 @@ links:
     If you like it, I'm glad, if you have a nice (non standard) colour scheme,
     I'm happy to get it, if you like to share it.</p>
 
-    <h4>Status line:</h4>
+<h2>Status line</h2>
     <p>The notification message that your compiler is running can be highlighted.
     For this set the variables: 
     	<div class=variable>g:atp_notification_{g:colors_name}_gui</div>
@@ -100,3 +117,13 @@ links:
     <p>The variable g:atp_StatusLine is stores the value of Vim option
     'statusline'; actually 'statusline' option is set by:
 	<div class=variable>set statusline=%!g:atp_StatusLine</div></p>
+<br><hr>
+<div>
+    <p class="alignleft"><a href="atp-tips.html"><b>Previous:</b></a><b> Tips</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-remarks.html"><b>Next:</b></a><b> Remarks</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr><br><br><br>
+</body>
+</html>

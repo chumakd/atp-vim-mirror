@@ -1745,11 +1745,11 @@ augroup ATP_BufList
     au BufEnter *.tex call s:buflist()
 augroup END
 " {{{1
-command! -buffer -bang LatexTags					:call <SID>LatexTags(<q-bang>)
-try
-command  -buffer -bang Tags						:call <SID>LatexTags(<q-bang>)
-catch /E174:/
-endtry
+if exists(":Tags") != 2
+    command! -buffer -bang Tags						:call <SID>LatexTags(<q-bang>)
+else
+    command! -buffer -bang LatexTags					:call <SID>LatexTags(<q-bang>)
+endif
 command! -nargs=? -complete=custom,RemoveFromToCComp RemoveFromToC	:call RemoveFromToC(<q-args>)
 map	<buffer> <silent> <Plug>JumptoPreviousEnvironment		:call <SID>JumptoEnvironment(1)<CR>
 map	<buffer> <silent> <Plug>JumptoNextEnvironment			:call <SID>JumptoEnvironment(0)<CR>

@@ -73,15 +73,17 @@ function! LatexBox_Latexmk(force)
 	" latexmk command
 	" wrap width in log file
 	let max_print_line = 2000
-	let cmd = 'cd ' . shellescape(b:atp_ProjectDir) . ' ; max_print_line=' . max_print_line .
+	let pwd = getcwd()
+	exe "lcd ". fnameescape(b:atp_ProjectDir)
+	let cmd =  'max_print_line=' . max_print_line .
 				\ ' latexmk ' . l:options	. ' ' . shellescape(b:atp_MainFile)
-	let g:cmd=cmd
 
 	" callback after latexmk is finished
 	let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' . 
 				\ shellescape(callback) . '\(\"' . fnameescape(basename) . '\",$?\)'
 
 	silent execute '! ( ' . vimsetpid . ' ; ( ' . cmd . ' ) ; ' . vimcmd . ' ) &'
+	exe "lcd " . fnameescape(pwd)
 endfunction
 " }}}
 
@@ -141,8 +143,7 @@ endfunction
 " }}}
 
 " LatexmkClean {{{
-function! LatexBox_LatexmkClean(cleanall)
-
+function! LatexBox_LatexmkClean(cleanall) 
 	if a:cleanall
 		let l:options = '-C'
 	else

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 10 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 11 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.1)
 			by Marcin Szamotulski
@@ -280,7 +280,7 @@ NEW IMAPS ~
     g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
     the corresponding imap will not be defined.
 
-    See also |atp-:ToggleMathIMaps|.
+    See also |atp-:ToggleIMaps|.
 
 NEW MOTIONS ~
  							*atp->E* *atp-<E*
@@ -844,6 +844,67 @@ map \d
 	document, if |g:atp_Compiler| = 'bash' it uses a bash command (UNIX
 	only).
 
+:Bibtex[!] [debug_mode]					*atp-:Bibtex*
+map \b
+    With BANG "!":
+	This function will call bibtex to produce the bibliography file
+	(.bbl). If in |b:atp_OutDir| there is no 'aux' file it first calls tex
+	compiler. After the 'bbl' file is produced two consecutive runs of tex
+	compiler are called to make the bibliography.
+
+	If you specify any value to the [debug_mode] option (for the values
+	see |atp-:TEX|) In verbose mode (only the last time tex compiler will
+	run in errorstop mode and echoed to the console). This gives you the
+	chance to see the output of bibtex command (it will be also printed
+	when latex ends). 
+	
+	If bibtex returns with non zero exit code, latex will not be run
+	afterwards. 
+	
+    Wihtout BANG "!"
+	If you want to just run bibtex use :Bibtex without
+	bang.
+
+	The command :Bibtex  will :call Bibtex(), while :Bibtex v
+	(and :Bibtex [debug_mode]) will :call Bibtex(1)
+
+	The bang "!" is used in the same way as for |atp-:TEX| command.
+
+	For the description of optional argument [debug_mode] see |atp-:TEX|.
+
+							*g:atp_raw_bibinputs*
+    Tex is looking for the date base files in the path: `kpsewhich -show-path
+    bib`. The variable g:atp_bibinputs contains these directories separated by
+    commas. If atp cannot find your bib file, tex also won't be able. 
+							*g:atp_raw_texinputs*
+    Similarly this variable stores all of path reported by `kpsewhich
+    -show-path tex`.
+							*g:atp_bibinputs*
+    This is a list of directories as g:atp_raw_bibinputs with appended '**'
+    see ':h file-searching'.
+							*g:atp_texinputs*
+    This is a list of directories as g:atp_raw_texinputs with appended '**'
+    see ':h file-searching'.
+
+
+							*atplib-:Kill*
+:Kill							
+	Kill python scripts running (b:atp_PythonPIDs) and all pids in
+	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
+
+:PID 							*atp-:PID*
+	Prints PIDs of all running instances of |b:atp_TexComopiler|.
+
+
+:Compiler {compiler-program}				*atp-:Compiler*
+	Command which help to set |b:atp_TexCompiler| variable (with
+	completion).
+
+							*atp-:SetOutDir*
+:SetOutDir					
+	This is a command which sets the |b:atp_OutDir| variable and the
+	|'errorfile'| option.  See |b:atp_OutDir| for the default value.
+
 							*atp-:Latexmk*
 :Latexmk[!]
 	Compile with latexmk in background. 
@@ -858,7 +919,7 @@ map \d
 :LatexmkStop
 	Stop latexmk if it is running.
 
-							*:LatexmkStatus*
+							*atp-:LatexmkStatus*
 :LatexmkStatus[!]
 	Show the running status of latexmk for the current buffer. 
 	With bang "!": show the running status of latexmk for all buffers with
@@ -940,52 +1001,60 @@ this is not a texloganalyzer mapping but it is a good place to mention it:
 <	will add 'w' to |b:atp_ErrorFormat|.		
 	Note: this command works in quickfix window.
 
-:Compiler {compiler-program}				*atp-:Compiler*
-	Command which help to set |b:atp_TexCompiler| variable (with
-	completion).
+							*atp-:SetErrorFile*
+:SetErrorFile					
+	If you change |b:atp_OutDir| variable and you want to update the
+	|'errorfile'| option use this command. It will show you the value to
+	which |'errorfile'| was set. 
 
-:Bibtex[!] [debug_mode]					*atp-:Bibtex*
-map \b
-    With BANG "!":
-	This function will call bibtex to produce the bibliography file
-	(.bbl). If in |b:atp_OutDir| there is no 'aux' file it first calls tex
-	compiler. After the 'bbl' file is produced two consecutive runs of tex
-	compiler are called to make the bibliography.
+:ShowErrors o						*atp-:OpenLog*
+:OpenLog, map <F6>l, imap <F6>l
+	Opens log file in a new split window with two options (which are set
+	locally): 'ruler', 'nospell', and a map 'q' to ':bd'.	
 
-	If you specify any value to the [debug_mode] option (for the values
-	see |atp-:TEX|) In verbose mode (only the last time tex compiler will
-	run in errorstop mode and echoed to the console). This gives you the
-	chance to see the output of bibtex command (it will be also printed
-	when latex ends). 
-	
-	If bibtex returns with non zero exit code, latex will not be run
-	afterwards. 
-	
-    Wihtout BANG "!"
-	If you want to just run bibtex use :Bibtex without
-	bang.
+	You can also use the command ':Explore' to see log, aux, ... files
+	(which is a part of 'netrw' Vim plugin).
 
-	The command :Bibtex  will :call Bibtex(), while :Bibtex v
-	(and :Bibtex [debug_mode]) will :call Bibtex(1)
 
-	The bang "!" is used in the same way as for |atp-:TEX| command.
+In the log file there are some special tools to syncronize the tex source file
+and the Viewer (currently only Xpdf is supported) with log file:
+|atp-:SyncTex| and |atp-:SyncXpdfLog|) These tools can sync tex file/Xpdf
+automatically using autocommand group |CursorMoved|.
 
-	For the description of optional argument [debug_mode] see |atp-:TEX|.
+							*atp-:SyncTex-(log_file)*
+:SyncTex[!]	(inside log file)
+:nmap \g
+	If you open log file with ':ShowErrors o' command then you can use
+	this command to move to the place in the source code where the error
+	occurs. It works with project files and also can go to error which
+	appear in a declared package. It will go to the first error line
+	declared in the log file below the cursor position (more precisely, to
+	first line which matches '^l\.\d\+\|on input line\|at lines' will be used).
 
-							*g:atp_raw_bibinputs*
-	Tex is looking for the date base files in the path: `kpsewhich
-	-show-path bib`. The variable g:atp_bibinputs contains
-	these directories separated by commas. If atp cannot find your
-	bib file, tex also won't be able. 
-							*g:atp_raw_texinputs*
-	Similarly this variable stores all of path reported by `kpsewhich
-	-show-path tex`.
-							*g:atp_bibinputs*
-	This is a list of directories as g:atp_raw_bibinputs with appended '**' 
-	see ':h file-searching'.
-							*g:atp_texinputs*
-	This is a list of directories as g:atp_raw_texinputs with appended '**' 
-	see ':h file-searching'.
+	With bang [!] it opens new window if the file with error is not shown
+	in the current tab page. Without bang it opens the file in the window
+	where ':ShowErrors o' was used.
+							*g:atp_LogSync*
+	If you set g:atp_SyncLog = 1 (the default value is 0) then the source
+	file will be syncronize with the log file via autocommand (with
+	|CursorMoved|). This sets 'cursorline' option to indicate the
+	corresponding line in the source file. When the log buffer becomes
+	hidden this option should be unset.
+							*atp-:LogSync*
+	To set g:atp_SyncLog you can use :Sync command. ':Sync' will toggle
+	the value, ':Sync on' will set it to 1 and ':Sync off' will set it 
+	to 0.
+
+	If you set g:atp_developer = 1 this command will also go to files
+	under texmf tree (packages and classes).
+
+							*atp-:SyncXpdf*
+							*g:atp_SyncXpdfLog*
+:SyncXpdf
+	If you set g:atp_SyncXpdfLog = 1 (the default value is 0) and you use
+	Xpdf as a viewer it will be synchronised with the log file (with
+	autocommand group |CursorMoved|). You can also use the command
+	:SyncXpdf or :Xpdf in the log buffer which does the same.
 
 :ViewOutput 						*atp-:ViewOutput*
 map \v,map <F3>, imap <F3>  
@@ -1004,7 +1073,7 @@ map t, map <S-LeftMouse>
 	|atp-viewers-Okular| and |atp-viewers-Xdvi| for an instruction how to
 	do that. Xpdf doesn't support reverse searching.
 
-							|atp-:SyncTex_Xpdf-hack|
+							*atp-:SyncTex_Xpdf-hack*
 	Note: there is a bug in Xpdf, one canot sent commands to Xpdf to
 	quickly. If the |atp-:SyncTex| command only updates the page, but
 	doesn't shift it then you can try to set g:atp_XpdfSleepTime variable
@@ -1018,10 +1087,6 @@ map t, map <S-LeftMouse>
 	Note: with bang |atp-:SyncTex| will not check if viewer is running.
 
 	Read |atp-:SyncTex_with_Okular| if you use Okular.
-
-:Kill							*atplib-:Kill*
-	Kill python scripts running (b:atp_PythonPIDs) and all pids in
-	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
 
 :Viewer {viewer-program}				*atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
@@ -1163,55 +1228,6 @@ nmap gf
 	This is particularly useful as by default ATP remembers g:atp_Library in
 	the common project script (see |atp-ProjectScript|).
 
-:ShowErrors o						*atp-:OpenLog*
-:OpenLog, map <F6>l, imap <F6>l
-	Opens log file in a new split window with two options (which are set
-	locally): 'ruler', 'nospell', and a map 'q' to ':bd'.	
-
-	You can also use the command ':Explore' to see log, aux, ... files
-	(which is a part of 'netrw' Vim plugin).
-
-
-In the log file there are some special tools to syncronize the tex source file
-and the Viewer (currently only Xpdf is supported) with log file:
-|atp-:SyncTex| and |atp-:SyncXpdfLog|) These tools can sync tex file/Xpdf
-automatically using autocommand group |CursorMoved|.
-
-							*atp-:SyncTex-(log_file)*
-:SyncTex[!]	(inside log file)
-:nmap \g
-	If you open log file with ':ShowErrors o' command then you can use
-	this command to move to the place in the source code where the error
-	occurs. It works with project files and also can go to error which
-	appear in a declared package. It will go to the first error line
-	declared in the log file below the cursor position (more precisely, to
-	first line which matches '^l\.\d\+\|on input line\|at lines' will be used).
-
-	With bang [!] it opens new window if the file with error is not shown
-	in the current tab page. Without bang it opens the file in the window
-	where ':ShowErrors o' was used.
-							*g:atp_LogSync*
-	If you set g:atp_SyncLog = 1 (the default value is 0) then the source
-	file will be syncronize with the log file via autocommand (with
-	|CursorMoved|). This sets 'cursorline' option to indicate the
-	corresponding line in the source file. When the log buffer becomes
-	hidden this option should be unset.
-							*atp-:LogSync*
-	To set g:atp_SyncLog you can use :Sync command. ':Sync' will toggle
-	the value, ':Sync on' will set it to 1 and ':Sync off' will set it 
-	to 0.
-
-	If you set g:atp_developer = 1 this command will also go to files
-	under texmf tree (packages and classes).
-
-							*atp-:SyncXpdf*
-							*g:atp_SyncXpdfLog*
-:SyncXpdf
-	If you set g:atp_SyncXpdfLog = 1 (the default value is 0) and you use
-	Xpdf as a viewer it will be synchronised with the log file (with
-	autocommand group |CursorMoved|). You can also use the command
-	:SyncXpdf or :Xpdf in the log buffer which does the same.
-
 :Delete[!]						*atp-:Delete*
 map <F6>d
 	Deletes all files which extension belongs to g:atp_tex_extensions in
@@ -1232,15 +1248,9 @@ map <F6>d
 <	This is list of extensions which will not be removed when
 	|atp-:Delete| is run without bang. You do not need to add "pdf" or
 	"dvi", extensions.
-  							
-:WordCount[!] 						*atp-:WordCount*
-	The command to compute the number of words. With bang [!] it will show
-	the word count of each input file. It uses 'detex' program (which is
-	present in 'texlive') to remove the latex markups prior to word
-	counting (done by the external 'wc' program). 
-	Note: This command will first save the file. 
 
-:SshPrint [lpr_options]					*atp-:SshPrint*
+							*atp-:SshPrint*
+:SshPrint [lpr_options]
 	It will run 'lpr' command and append to it the options defined in the
 	variable 'g:printeroptions' + options given in the second argument. It
 	prints the pdf or dvi depending on the value of |b:atp_TexCompiler|.
@@ -1261,7 +1271,6 @@ map <F6>d
 	It prints using the lpr command on a local printer. The syntax and
 	completion are the same as for |atp-:SshPrint|.
 
-
 							*atp-:Lpstat*
 :Lpstat
 	Sends "lpstat -l" remotely (using the |g:atp_ssh| value) or locally and
@@ -1270,50 +1279,6 @@ map <F6>d
 							*atp-:ListPrinters*
 :ListPrinters
 	List printers available on the host |g:atp_ssh|.
-
-							*atp-:Babel*
-:Babel
-	If g:atp_babel variable is set on start up to 1 (however, the default
-	value is 0, you can use |vimrc| or |atprc| file to switch it on) then
-	ATP will set the |'keymap'| option according to the default babel
-	language (which is the last language passed to babel as optional
-	argument [lang_list] in \usepackage[lang_list]{babel}). 
-  
-	If g:atp_babel is set to 1 the keymap name is shown in the status
-	line (if you use the |atp-status-line|.
-							*g:atp_keymaps*
-	The |g:atp_kemaps| variable is used to translate babel language name
-	to 'keymap' value. The default is something like: >
-    let g:atp_keymaps = { 
-		\ 'british'	: 'ignore',		'english' 	: 'ignore',
-		\ 'USenglish'	: 'ignore', 		'UKenglish'	: 'ignore',
-		\ 'american'	: 'ignore',
-	    	\ 'bulgarian' 	: 'bulgarian-bds', 	'croatian' 	: 'croatian',
-		\ 'czech'	: 'czech',		'greek'		: 'greek',
-		\ 'plutonikogreek': 'greek',		'hebrew'	: 'hebrew',
-		\ 'russian' 	: 'russian-jcuken',	'serbian' 	: 'serbian',
-		\ 'slovak' 	: 'slovak', 		'ukrainian' 	: 'ukrainian-jcuken',
-		\ 'polish' 	: 'polish-slash' }
-<	When the value is <ignore> then the function <SID>Babel() (or the
-	command |atp-:Babel|) will ignore setting keymap option for this
-	language. Using the above syntax you can set this variable in |vimrc|
-	or |atprc| file.
-
-	This is useful if you in day to day work use one language, but some
-	times you write a tex file in some other language.
-
-							*atp-:ShowOptions* 
-:ShowOptions[!] [pattern]
-	This will show values of variables that are currently set. 
-	With bang it also shows global variables defined in
-	'ftplugin/ATP_files/options.vim' (that means almost all global
-	variables). Completion lists are filtered out by default. 
-
-	The optional argument [pattern] is used to filter variables names with
-	the given pattern.
-
-	TIP: if you are looking for a variable you can use this command to
-	find it.
 
 							*atp-:WrapSelection*
 :WrapSelection {beginWrapper} [endWrapper] [cursor_pos] [new_lines]
@@ -1438,8 +1403,8 @@ map \a
 
     							*atp-:LatexTags*
 							*atp-:Tags*
-:LatexTags[!]
 :Tags[!]
+:LatexTags[!]
     Make a tag file with a python script included in ATP. It also scans aux
     file for associated numbers to labels which then are used as tags. If you
     declare hyperref package in the preambule also \hyperref{}{} commands are
@@ -1469,6 +1434,8 @@ map \a
     script finishes.
 
     Check out |tag-and-searches| how to use tags.
+
+    :LatexTags command is only defined if there was :Tags command defined.
 
 :TOC[!] 							*atp-:TOC*
 nmap \t
@@ -1744,21 +1711,6 @@ nmap ]* gc
 nmap [* gC
 	Go to begining of current/previous comment group
 
-
-ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
-:ToDo [bufname]					*atp-:ToDo*
-:Note [bufname]					*atp-:Note*
-	The function list all the lines of the buffer [bufname] which match
-	for the pattern '%.*{keyword}'. The {stop} argument is the pattern to
-	before which to stop. The optional argument is the buffer name
-	(the buffer name completion is set on). If not given the current
-	buffer is assumed.  You can set highlighting for this command by:
-		highlight atp-Todo ctermfg=... 	guifg=...
-	The command :ToDo sets keyword='\c\<todo\>' and
-	stop='\s*%.*\c\<note\>', and the command :Note sets
-	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
-	listing ToDo lines with Notes and vice versa. 
-
 							*atp-:ToggleStar*
 :ToggleStar 	 	 
 map |<LocalLeader>|s	  
@@ -1805,17 +1757,6 @@ vmap <F4>
 	Mark part of the text and wrap it into anvironment given as the
 	argument, the map will let you choose the environment name.
 
-							*atp-:SetOutDir*
-:SetOutDir					
-	This is a command which sets the |b:atp_OutDir| variable and the
-	|'errorfile'| option.  See |b:atp_OutDir| for the default value.
-
-							*atp-:SetErrorFile*
-:SetErrorFile					
-	If you change |b:atp_OutDir| variable and you want to update the
-	|'errorfile'| option use this command. It will show you the value to
-	which |'errorfile'| was set. 
-
 							*atp-:Wdiff*
 :Wdiff {old-file} {new-file}
 	This is diff using the GNU wdiff. This command will split the view and
@@ -1849,29 +1790,6 @@ vmap <F4>
 	The :NiceDiff command, although I tried, is not changing all the regions,
 	I will try to fix this in next releases. (Thus not all parts of the output
 	file might be highlighted).
-
-
-							*atp-status-line*
-:Status[!]						*atp-:Status*
-(:ATPStatus[!])						*atp-:ATPStatus*
-	This comman sets the status line, which include: the name of currently
-	edited chapter (or section) the value of |b:atp_OutDir| (unless used
-	with bang!) and it will warn you if |b:atp_OutDir| variable is not
-	set. The status line will also contain the information about
-	processing compelation: see |atp-status-line-notification|,
-	|g:atp_ProgressBar|. This function is called at startup unless the
-	variable '|g:atp_statusline|=0' is set. The status is set by the
-	autocommand: >
-		au BufWinEnter *.tex :call Status()
-<	In this way every opened window with a '*.tex' file will get the correct
-	status line.
-
-	If there was a command with name 'Status', atp is not overwriting it,
-	it uses ATPStatus name.
-
-							*g:atp_statusOutDir*
-	Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
-	output directory will be not seen in the statusline.
 
 							*atp-:Dsearch*
 :Dsearch[!] [/]{pattern}[/] 					
@@ -1956,6 +1874,95 @@ vmap <F4>
 	the source file will be shown (for debugging purposes, or just to look how
 	to use the font :).
 
+
+							*atp-status-line*
+:Status[!]						*atp-:Status*
+(:ATPStatus[!])						*atp-:ATPStatus*
+	This comman sets the status line, which include: the name of currently
+	edited chapter (or section) the value of |b:atp_OutDir| (unless used
+	with bang!) and it will warn you if |b:atp_OutDir| variable is not
+	set. The status line will also contain the information about
+	processing compelation: see |atp-status-line-notification|,
+	|g:atp_ProgressBar|. This function is called at startup unless the
+	variable '|g:atp_statusline|=0' is set. The status is set by the
+	autocommand: >
+		au BufWinEnter *.tex :call Status()
+<	In this way every opened window with a '*.tex' file will get the correct
+	status line.
+
+	If there was a command with name 'Status', atp is not overwriting it,
+	it uses ATPStatus name.
+
+							*g:atp_statusOutDir*
+	Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
+	output directory will be not seen in the statusline.
+
+ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
+:ToDo [bufname]					*atp-:ToDo*
+:Note [bufname]					*atp-:Note*
+	The function list all the lines of the buffer [bufname] which match
+	for the pattern '%.*{keyword}'. The {stop} argument is the pattern to
+	before which to stop. The optional argument is the buffer name
+	(the buffer name completion is set on). If not given the current
+	buffer is assumed.  You can set highlighting for this command by:
+		highlight atp-Todo ctermfg=... 	guifg=...
+	The command :ToDo sets keyword='\c\<todo\>' and
+	stop='\s*%.*\c\<note\>', and the command :Note sets
+	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
+	listing ToDo lines with Notes and vice versa. 
+
+  							*atp-:WordCount*
+:WordCount[!] 					
+	The command to compute the number of words. With bang [!] it will show
+	the word count of each input file. It uses 'detex' program (which is
+	present in 'texlive') to remove the latex markups prior to word
+	counting (done by the external 'wc' program).  Note: This command will
+	first save the file. 
+
+							*atp-:Babel*
+:Babel
+	If g:atp_babel variable is set on start up to 1 (however, the default
+	value is 0, you can use |vimrc| or |atprc| file to switch it on) then
+	ATP will set the |'keymap'| option according to the default babel
+	language (which is the last language passed to babel as optional
+	argument [lang_list] in \usepackage[lang_list]{babel}). 
+  
+	If g:atp_babel is set to 1 the keymap name is shown in the status
+	line (if you use the |atp-status-line|.
+							*g:atp_keymaps*
+	The |g:atp_kemaps| variable is used to translate babel language name
+	to 'keymap' value. The default is something like: >
+    let g:atp_keymaps = { 
+		\ 'british'	: 'ignore',		'english' 	: 'ignore',
+		\ 'USenglish'	: 'ignore', 		'UKenglish'	: 'ignore',
+		\ 'american'	: 'ignore',
+	    	\ 'bulgarian' 	: 'bulgarian-bds', 	'croatian' 	: 'croatian',
+		\ 'czech'	: 'czech',		'greek'		: 'greek',
+		\ 'plutonikogreek': 'greek',		'hebrew'	: 'hebrew',
+		\ 'russian' 	: 'russian-jcuken',	'serbian' 	: 'serbian',
+		\ 'slovak' 	: 'slovak', 		'ukrainian' 	: 'ukrainian-jcuken',
+		\ 'polish' 	: 'polish-slash' }
+<	When the value is <ignore> then the function <SID>Babel() (or the
+	command |atp-:Babel|) will ignore setting keymap option for this
+	language. Using the above syntax you can set this variable in |vimrc|
+	or |atprc| file.
+
+	This is useful if you in day to day work use one language, but some
+	times you write a tex file in some other language.
+
+							*atp-:ShowOptions* 
+:ShowOptions[!] [pattern]
+	This will show values of variables that are currently set. 
+	With bang it also shows global variables defined in
+	'ftplugin/ATP_files/options.vim' (that means almost all global
+	variables). Completion lists are filtered out by default. 
+
+	The optional argument [pattern] is used to filter variables names with
+	the given pattern.
+
+	TIP: if you are looking for a variable you can use this command to
+	find it.
+
 							*atp-:HelpEnvIMaps*
 							*atp-:HelpMathIMaps*
 							*atp-:HelpVMaps*	
@@ -1964,9 +1971,6 @@ vmap <F4>
 :HelpVMaps
 	These commands list valid mappings defined by ATP (unless g:no_plugin_maps or
 	g:no_atp_maps are defined).
-
-:PID 							*atp-:PID*
-	Prints PIDs of all running instances of |b:atp_TexComopiler|.
 
  							*atp-:ShowPackages*
 :ShowPackages	lists LaTeX packages defined in the preamble.
@@ -3569,7 +3573,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	|b:atp_LocalColors|. With |+python| this is not needed since
 	|atp-:LocalCommands| is then very fast and is run on |BufEnter|.
 
-	The each file has separate project scrips which stores the values of
+	Each file has separate project scrips which stores the values of
 	these variables. It's name is stored in |b:atp_ProjectScriptFile|.
 
 							*atp-ProjectScript_Global*	
@@ -3619,7 +3623,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	The command ':ToggleProjectScript [on/off]' turns on/off the feature
 	for this buffer (it sets |b:atp_ProjectScript|). When no argument is
 	given it will toggle the value. With bang it also sets the global
-	variable.  |b:atp_ProjectScript| is by default in the >
+	variable |g:atp_ProjectScript|. |b:atp_ProjectScript| is by default in the >
 	    g:atp_ProjectLocalVariables 
 <	so it will be restored afterwards. |b:atp_ProjectScript| if defined
 	overrides the value of global variable |g:atp_ProjectScript|. So you can set
@@ -4098,13 +4102,24 @@ MATH IMAPS						*atp-imap-math*
 	  insert mode was inside mathematics.
 
     Note: You can turn on/off math imaps on the fly using '<tab> imap and nmap.
-	  See |atp-:ToggleMathIMaps| below.
+	  See |atp-:ToggleIMaps| below.
 							    *g:atp_imap_define_math*
 							    *g:atp_imap_define_math_misc*
-    Note: If you do not want to set math imaps you can set
-	  |g:atp_imap_define_math| and |g:atp_imap_define_math_misc| to 0. The
-	  first will disable maps defined in g:atp_imap_math the second variable
-	  will disable imaps defined in g:atp_imap_math_misc.
+							    *g:atp_imap_math*
+							    *g:atp_imap_math_misc*
+    Note: If you do not want to set math imaps defined in |g:atp_imap_math|
+    and |g:atp_imap_math_misc| you can set |g:atp_imap_define_math| and
+    |g:atp_imap_define_math_misc| to 0 (respectively). The first will disable
+    maps defined in g:atp_imap_math the second variable will disable imaps
+    defined in g:atp_imap_math_misc.
+
+							    *g:atp_imap_define_diacritics*
+							    *g:atp_imap_diacritics*
+    If ATP thinks you are editing math environment then imaps from |g:atp_imap_math_misc|
+    are defined, if ATP thinks you are editing non math environment it defines
+    |g:atp_imap_diacritics| . In this way `' in math environment will produce
+    \acute{} while in non math \'{}. You can disable |g:atp_imap_diacritics|
+    maps by setting |g:atp_imap_define_diacritics| to 0.
 			
     AuTeX maps:
 imap __ 	_{}<Left>
@@ -4116,7 +4131,7 @@ imap ^^		^{}<Left>
     LaTeX). 
 							    *g:atp_imaps*
     Both above maps can be turned on/off on the fly with |g:atp_imaps| (1
-    - on, 0 - off). Use |atp-:ToggleMathIMaps| (mapped to '<Tab>) to switch it
+    - on, 0 - off). Use |atp-:ToggleIMaps| (mapped to '<Tab>) to switch it
     on/off.
 
 
@@ -4125,7 +4140,7 @@ imap ]M 	\[\]<Left><Left>
 
     The following imaps can be turned on/off on the fly with
     |g:atp_imap_define_math| variable (0 - off, 1 - on). You can use
-    |atp-:ToggleMathIMaps| (mapped to '<Tab>).
+    |atp-:ToggleIMaps| (mapped to '<Tab>).
 
 imap #\		\setminus
 imap #/		\frac{}{}
@@ -4190,12 +4205,12 @@ imap s>		\supseteq	[    set >]
 
     If you want to write 'o*' you can wait until |'timeoutlen'| passes or
     write 'o *' (TeX in math mode doesn't see spaces).
-							*atp-:ToggleMathIMaps*
-:ToggleMathIMaps
+							*atp-:ToggleIMaps*
+:ToggleIMaps
 nmap, imap '<Tab> 
     It is a command to toggle the impas off/on by imaps defined in the vim
-    lists g:atp_imap_math and g:atp_imap_math_misc. These are the maps above
-    plus _ for  _{} and ^ for ^{}. 
+    lists g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics.
+    These are the maps above plus _ for  _{} and ^ for ^{}. 
     
 ============
 LOG FILE MAPS						*atp-maps-log*
@@ -4409,7 +4424,7 @@ Okular
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again. 
 
-	If you set the command as above (with python befor the path to
+	If you set the command as above (with python before the path to
 	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
 	Note, that otherwise whenever you update ATP you will have to make the
 	script executable!

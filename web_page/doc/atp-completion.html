@@ -1,15 +1,33 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
 <a name="atp-completion"></a>	
-<h2>COMPLETION</h2>
+<h1>Completion</h1>
+<hr>
 <div>
-    <p class="alignleft"><a href="atp-bibsearch.html">Previous:</a> BibSearch</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-omnicompletion.html">Next:</a> Omni Completion</p>
+    <p class="alignleft"><a href="atp-bibsearch.html"><b>Previous:</b></a><b> BibSearch</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-omnicompletion.html"><b>Next:</b></a><b> Omni Completion</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
 <p>The completion is by default mapped to <Tab>. For example if you type
 \math<Tab> you will get a list of choices which completes this command. (See
@@ -60,12 +78,12 @@ corresponding variable: <a href="atp-completion.html#g:atp_LatexPackages">g:atp_
 and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 
 <a name="atp-:ToggleTab"></a>
-<div class=command>:ToggleTab</div>
+<p><div class=command>:ToggleTab</div>
 <div class=map>nmap, imap `&ltTab&gt</div>
-    <p>It is a command to toggle the tab map off/on: :ToggleTab, it is also mapped
-    to `&ltTab&gt.</p> 
+<div class=indented>It is a command to toggle the tab map off/on: :ToggleTab, it is also mapped
+    to `&ltTab&gt. 
 
-    <p>Note: see <a href="#atp-Tab-note">atp-Tab-note</a>.</p>
+    <p>Note: see <a href="#atp-Tab-note">atp-Tab-note</a>.</p></div></p>
 
 <a name="atp-completion-modes"></a> <a name="atp-completion-commands"></a>
 <h3>Completion Modes</h3>
@@ -94,7 +112,7 @@ and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 
 		<p>If you do not want math commands completions at all define
 		':let g:atp_no_math_command_completion=1' (you can put it in
-		your |vimrc| or <a href="atp-configure.html#atprc">atprc </a>file, or define while writing,
+		your |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file, or define while writing,
 		both will work, so you can switch off the math completions
 		temporarily).</p>
 
@@ -132,7 +150,7 @@ and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 		<p>If you added a command or an environment the command
 		:LocalCommands! will update the list of local definitions.
 		With bang "!" it update the list of input files
-		<a href="#b:ListOfFiles">b:ListOfFiles </a>in which the search is done. The output is
+		<a href="#b:ListOfFiles">b:ListOfFiles</a> in which the search is done. The output is
 		stored in three variables:
 				<div class=variable>b:atp_LocalColors</div>
 				<div class=variable>b:atp_LocalCommands</div>
@@ -379,7 +397,7 @@ and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 		<p>If &ltfont_family&gt is defined, &ltfont_series&gt and &ltfont_shape&gt
 		come from the particular font definition file (the declared
 		encoding is used if not the value of
-		<a href="atp-commands.html#g:atp_font_encoding">g:atp_font_encoding </a>is used).</p>
+		<a href="atp-commands.html#g:atp_font_encoding">g:atp_font_encoding</a> is used).</p>
 
 		<p>If &ltfont_family&gt and &ltfont_series&gt are defined then the
 		&ltfont_shape&gt for this font (in the above encoding) is found.</p></div>
@@ -400,31 +418,31 @@ and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 <p>These are all variables which can help to customise the completion:
 (if the value is given it is the default, if it is not means it is too long to
 put it here).</p>
-<a name="g:atp_completion_limits"></a>
+<p><a name="g:atp_completion_limits"></a>
 <div class=variable>g:atp_completion_limits		= [ '40', '60', '80',
     '100' ]</div>
-<p>The above variable specifies how long should atp plugin search for
+<div class=indented>The above variable specifies how long should atp plugin search for
 closed/unclosed environments:
 <pre>
 	    the first value 	- search for \(:\)  [ in line math ]
 	    the second	 	- search for \[:\]  [ displayed math ]
 	    the third	 	- search for \begin{<env>:\end{<env>	
 	    the fourth	 	- for environments defined in the variable
-</pre></p>
-<div class=variable>g:atp_long_environments</div>
-<p>You can also put "-1" as the values of g:atp_completion_limits, then the
+</pre></div></p>
+<p><div class=variable>g:atp_long_environments</div>
+<div class=indented>You can also put "-1" as the values of g:atp_completion_limits, then the
 search forward/backward will last till first/last line. However, this makes it
-run slower.</p>
+run slower.</div></p>
 <a name="g:atp_long_environments"></a>
-    <div class=variable>g:atp_long_environments 	= []</div>
-<p>If some of your environments are very long put their names in this list. Do
+<p><div class=variable>g:atp_long_environments 	= []</div>
+<div class=indented>If some of your environments are very long put their names in this list. Do
 not forget that is environment &ltenv&gt is long and is put inside environment
-&ltcenter&gt then &ltcenter&gt is also long!</p>
+&ltcenter&gt then &ltcenter&gt is also long!
 				 
 <p>However, this will not close long environments (for that you have to change
 the third argument of g:atp_completion_limits !). This just prevents closing
-environments which are closed and to long to see that.</p>
-<pre><div class=variable>g:atp_completion_modes = [
+environments which are closed and to long to see that.</p></div></p>
+<p><pre><div class=variable>g:atp_completion_modes = [
 		    \ 'commands', 		'inline_math', 
 		    \ 'displayed_math', 	'package_names', 
 		    \ 'tikz_libraries', 	'environment_names', 
@@ -432,62 +450,68 @@ environments which are closed and to long to see that.</p>
 		    \ 'bibitems', 		'input_files',
 		    \ 'bibfiles',		'bibstyles',
 		    \ 'documentclass' ] </div></pre>
-<p>This is the list of completion modes.</p>
-<a name="g:atp_completion_active_modes"></a>
+<div class=indented>This is the list of completion modes.</div></p>
+<p><a name="g:atp_completion_active_modes"></a>
 <div class=variable>g:atp_completion_active_modes	= g:atp_completion_modes</div>
-<p>This is the list of completion modes which are active, by default all modes
+<div class=indented>This is the list of completion modes which are active, by default all modes
 are active. Remove a value from this list to make it inactive (You can use
-remove() command, see ':h remove()').</p> 
-<div class=variable>g:atp_sort_completion_list	= 12</div>
-<p>If the length of completion list for Tab Completion is longer than this
+remove() command, see ':h remove()').</div></p> 
+
+<p><div class=variable>g:atp_sort_completion_list	= 12</div>
+<div class=indented>If the length of completion list for Tab Completion is longer than this
 value, entries will be sorted alphabetically, else they are provided in,
 I hope, useful order. If set to 0 the list will not be sorted (if set to 1 it
-will be always sorted).</p>
-<div class=variable>g:atp_environments</div>
+will be always sorted).</div></p>
+
+<p><div class=variable>g:atp_environments</div>
 <div class=variable>g:atp_amsmath_environments</div>
 <div class=variable>g:atp_shortname_dict</div>
-<p>It is used to define <short_name> in \label{<short_name><separator> when
-completing the \label command.</p>
+<div class=indented>It is used to define <short_name> in \label{<short_name><separator> when
+completing the \label command.</div></p>
+
 <a name="g:atp_separator"></a>
-<div class=variable>g:atp_separator			= ':'</div>
-<p>It is used as a separator in: \label{<short_name><separator> when completing the \label command.</p>
+<p><div class=variable>g:atp_separator			= ':'</div>
+<div class=indented>It is used as a separator in: \label{<short_name><separator> when completing the \label command.</div></p>
+
 <a name="g:atp_no_separator"></a> <a name="g:atp_env_short_names"></a> <a name="g:atp_no_serparator_list"></a>
-<div class=variable>g:atp_no_separator 		= 0</div>
+<p><div class=variable>g:atp_no_separator 		= 0</div>
 <div class=variable>g:atp_no_separator_list		= ['', 'titlepage']</div>
-<p>The following variabe if set to one then completion for \label command will
+<div class=indented>The following variabe if set to one then completion for \label command will
 put short name of the environment where it stand. It uses the dictionary
-g:atp_shortname_dict to get the short name.</p>
+g:atp_shortname_dict to get the short name.</div></p>
+
 <div class=variable>g:atp_env_short_names 		= 1</div>
-<a name="g:atp_commands"></a> <a name="g:atp_math_commands"></a> <a name="g:atp_ams_negations"></a> <a name="g:atp_math_commands_non_expert_mode"></a> <a name="g:atp_ams_negations_non_exprt_mode"></a>
-<p>These variables are lists which stores LaTeX commands used in
-completion.</p>
-<div class=variable>g:atp_commands</div>
+<p><a name="g:atp_commands"></a> <a name="g:atp_math_commands"></a> <a name="g:atp_ams_negations"></a> <a name="g:atp_math_commands_non_expert_mode"></a> <a name="g:atp_ams_negations_non_exprt_mode"></a>
+<div class=indented>These variables are lists which stores LaTeX commands used in
+completion.</div></p>
+
+<p><div class=variable>g:atp_commands</div>
 <div class=variable>g:atp_math_commands</div>
 <div class=variable>g:atp_ams_negations</div>
 <div class=variable>g:atp_math_commands_non_expert_mode</div>
 <div class=variable>g:atp_ams_negations_non_expert_mode</div>
-<p>The two last are lists of commands will be add only in the non expert mode
-(<a href="#atp-completion-non-expert-mode">atp-completion-non-expert-mode</a>).</p>
-<div class=variable>g:atp_amsmath_commands</div>
+<div class=indented>The two last are lists of commands will be add only in the non expert mode
+(<a href="#atp-completion-non-expert-mode">atp-completion-non-expert-mode</a>).</div></p>
+<p><div class=variable>g:atp_amsmath_commands</div>
 <div class=variable>g:atp_fancyhdr_commands</div>
 <div class=variable>g:atp_tikz_environments</div>
 <div class=variable>g:atp_tikz_libraries</div>
 <div class=variable>g:atp_tikz_commands</div>
 <div class=variable>g:atp_completion_truncate	= 4</div>
-<p>do not complete commands less than 4 characters (not counting the leading
+<div class=indented>do not complete commands less than 4 characters (not counting the leading
 '\' if present). If 0 then complete all the defined commands. This only works
-in the expert mode.</p>
+in the expert mode.</div></p>
 
 <a name="g:atp_MathOpened"></a>
-<div class=variable>g:atp_MathOpened		= 1</div>
-the default value is 1. With the default value expert mode completion will
+<p><div class=variable>g:atp_MathOpened		= 1</div>
+<div class=indented>the default value is 1. With the default value expert mode completion will
 check if you are completing inside mathematical environment or not. Inside
 math environment only math commands are completed and outside math commands
 are disabled. This makes the set of completions more accurate. If you need non
 math command (like \textrm{}) inside math use non expert mode (see <a
-    href="#atp-completion-non-expert-mode">atp-completion-non-expert-mode</a>)</p>
+    href="#atp-completion-non-expert-mode">atp-completion-non-expert-mode</a>)</div></p>
 
-<a name="g:atp_MathZones"></a>
+<p><a name="g:atp_MathZones"></a>
 <pre>
 	<div class=variable>let g:atp_MathZones	= [
 	    		\ 'texMathZoneV', 	'texMathZoneW', 
@@ -506,33 +530,44 @@ math command (like \textrm{}) inside math use non expert mode (see <a
 	    		\ 'texMathZoneL', 	'texMathZoneLS',
 			\ 'texMathZoneT' ]
 </div></pre>
-<p>the default value in plaintex files is </p>
+<div class=indented>the default value in plaintex files is</div>
 <div class=variable>g:atp_MathZones	= [ 'plaintexMath' ]</div> 
-<p>These are zones recognized by tab completion as mathematical ones (see <a
-    href="#g:atp_MathOpened">g:atp_MathOpened</a>).</p>
+<div class=indented>These are zones recognized by tab completion as mathematical ones (see <a
+    href="#g:atp_MathOpened">g:atp_MathOpened</a>).</div></p>
 
-<div class=variable>g:atp_no_tab_map</div>
+<p><div class=variable>g:atp_no_tab_map</div>
 <div class=variable>g:atp_no_complete		= ['document']</div>
-<p>List of environments which is not closed by &lttab&gt completion. (The
+<div class=indented>List of environments which is not closed by &lttab&gt completion. (The
 document environment in longer documents can be not seen by the algorithm as
 closed, because it searches only in a part of the text, see <a
     href="#g:atp_completion_limits">g:atp_completion_limits</a> variable
-above).</p>
-<div class=variable>g:atp_bracket_dict  	= { '(' : ')', '{' : '}', '[' : '] }</div>
+above).</div></p>
+
+<p><div class=variable>g:atp_bracket_dict  	= { '(' : ')', '{' : '}', '[' : '] }</div>
 <pre><div class=variable>g:atp_sizes_of_brackets = {
 			\ '\left'	: '\right', 		'\bigl'	: '\bigr', 
 			\ '\Bigl' 	: '\Bigr', 		'\biggl': '\biggr' , 
 			\ '\Biggl' 	: '\Biggr', 		'\' 	: '\' }
-</div></pre>
+</div></pre></p>
 <a name="g:atp_LatexPackages"></a> <a name="g:atp_LatexClasses"></a>
-<p>The variables: </p>
+<p>The variables:
 <div class=variable>g:atp_LatexPackages</div>
 <div class=variable>g:atp_LatexClasses</div>
-<p>stores list of packages and classes in your tex distribution. They are
+<div class=indented>stores list of packages and classes in your tex distribution. They are
 restored when you exit Vim from the global project script (see <a
     href="atp-ProjectFiles.html#atp-ProjectScript_global">atp-ProjectScript_global</a>).  They are
-used for completion of the LaTeX commands \usepackage and \documentclass.</p>
+used for completion of the LaTeX commands \usepackage and \documentclass.
 
 <p>If you reinstall, add or remove tex classes/packages from your tex
 distribution it is enough to unlet these variables. ATP will find new values
-when it will need them for the first time.</p> 
+when it will need them for the first time.</p></div></p> 
+<br><hr>
+<div>
+    <p class="alignleft"><a href="atp-bibsearch.html"><b>Previous:</b></a><b> BibSearch</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-omnicompletion.html"><b>Next:</b></a><b> Omni Completion</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr><br><br><br>
+</body>
+</html>

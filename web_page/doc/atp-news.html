@@ -1,16 +1,34 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-</head>
-<h2>NEWS</h2>							
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
+<h1>News</h1>							
+<hr>
 <div>
-    <p class="alignleft"><a href="index.html">Previous:</a> Table of Contents</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-installation.html">Next:</a> Installation</p>
+    <p class="alignleft"><a href="index.html"><b>Previous:</b></a><b> Table of Contents</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-installation.html"><b>Next:</b></a><b> Installation</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
-<h3>Changes in version 9.6</h3>
+<h2>Changes in version 9.6</h2>
 
 <p>Some functions where rewritten in python making ATP much faster.</p>
 
@@ -56,7 +74,7 @@
 
   <p>Some other small fixes.</p>
 
-<h3>Changes in version 9.5</h3>
+<h2>Changes in version 9.5</h2>
 
     <p>The keys j, k, gj and gk are no longer mapped by ATP. There is a better
     solution for updating the Table of Contents highlighted line. It is done
@@ -75,26 +93,26 @@
 
 <p>And bunch of other fixes :).</p>
 
-<h4>TIP</h4>
+<h3>TIP</h3>
 <p>Checkout cmdalias plugin (vimscript#745). It lets define lower case
 aliases to commands. You can put in your <a href="atp-configure.html#atprc">atprc</a> file:
 <div class=indented>Alias tex TEX</div>
 <div class=indented>Alias toc TOC</div></p>
 
-<h3>Changes in version 9.4</h3>
+<h2>Changes in version 9.4</h2>
 
-<h4>ATP AND GENTOO LINUX</h4>
+<h3>ATP and Gentoo Linux</h3>
 <p>Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
 automatictexplugin in the portage tree.</p>
 
-<h4>COMPLETION</h4>
+<h3>Completion</h3>
 <p>Small but nice change in closing environments: If you type
 \begin{envname}<Tab> the cursor position will not change. You can use
 i_CTRL-M (i_CTRL-J is used by <a href="#atp-j_motion">atp-j_motion</a>) after <Tab> to open new
 line inside {envname}.  Otherwise the cursor position will be right after
 the closing \end{envname}.</p>
 
-<h4>LOCAL COMMANDS</h4>
+<h3>Local Commands</h3>
 <p><a href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a><br>
 <div class=double_indent>-- do not search in comments, </div>
 <div class=double_indent>-- add single { if command has defined arguments.</div></p>
@@ -103,7 +121,7 @@ the closing \end{envname}.</p>
 list.  Every option and its value should be placed as a separate element
 of vim list.  See <a href="atp-configure.html#atp-Viewers_Options">atp-Viewers_Options</a> for examples.</p>
 
-<h4>NEW IMAPS</h4>
+<h3>New Imaps</h3>
 <p>New imaps for some commonly used math commands: see <a href="#atp-imap-math">atp-imap-math</a>.</p> 
 
 <p>All mathematical imaps: for symbols, greek letters, are defined only when
@@ -145,7 +163,7 @@ defined.</p>
 
 <p>See also <a href="atp-mappings.html#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
 
-<h4>NEW MOTIONS</h4>
+<h3>New Motions</h3>
 <a name="atp-&gtE"></a> <a name="atp-&ltE"></a> <p>There are two more nice map
 >E which is something like %>e, i.e. jump over the current environment and
 go to next one. The reverse <E is also implemented, thought it is not
@@ -163,20 +181,20 @@ They also works relatively to the current unit (section/chapter/part), i.e.
 2]s will jump to second section of the current chapter.</p>
 
 
-<h4>UPDATETIME</h4>
+<h3>Updatetime</h3>
 <p><a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> can be
 changed on the fly to 0 (previously it requires to quitting vim and making
 changes in vimrc/<a href="atp-configure.html#atprc">atprc</a> files.</p> 
 
-<h4>MAKE LATEX</h4>
+<h3>Make LaTeX</h3>
 <p><a href="atp-commands.html#atp-:MakeLatex">atp-:MakeLatex</a> is rewritten in python. The
 "!" is not yet implemented.</p>
 
-<h4>PYTHON 3 compatibility</h4>
+<h3>Python 3 Compatibility</h3>
 <p>All python scripts are compatible with Python 3. Traceback info is
 forwarded to vim (and log files) in case exceptions are handled.</p>
 
-<h4>DICTIONARIES</h4>
+<h3>Dictionaries</h3>
 <p>I added extended versions of dictionaries of latex-suite to ATP (the files
 dictionaries/dictionary and dictionary/SIunits). They are added to
 'complete' vim option, so you can use them through ins-completion.
@@ -185,7 +203,7 @@ and environment names. It will be added to the vim 'complete' option if
 you use amsmath package or if the document class is one of the standard
 ams classes or of <a href="#g:atp_amsmath">g:atp_amsmath</a> is set to 1.</p>
 
-<h4>STATUS LINE</h4>
+<h3>Status Line</h3>
 <p>Status notifications has the ability to show if <a
     href="#b:atp_BibCompiler">b:atp_BibCompiler</a>, or "makeindex" are
 running. Unless |g:atp_statusNotif|=0 or <a
@@ -196,7 +214,7 @@ when it returns.</p>
 <p>There is also new status line for QuickFix window with number of errors
 and warnings printed (this depends on <a href="atp-commands.html#b:atp_ErrorFormat">b:atp_ErrorFormat</a>).</p>
 
-<h4>BIBER AND BIBLATEX SUPPORT</h4>
+<h3>Biber and Biblatex Support</h3>
 <p>Support for biber and biblatex is added (in <a href="atp-commands.html#atp-:MakeLatex">atp-:MakeLatex</a>,
 <a href="atp-commands.html#atp-:Bibtex">atp-:Bibtex</a>, <a
     href="atp-commands.html#atp-:Delete">atp-:Delete</a>, <a
@@ -214,12 +232,12 @@ etc.). The <a href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> comma
 search for them in a special subroutine which only searches in the
 preamble.  This makes it work slightly faster.</p>
 
-<h4>TEX OPTIONS VARIABLE (new format)</h4>
+<h3>TeX Options Variable (new format)</h3>
 <p><a href="#b:atp_TexOptions">b:atp_TexOptions</a> is a comma separated list of TeX compiler options.
 If you use <a href="#g:atp_Compiler">g:atp_Compiler</a>="bash" this might be just a white space
 separated list.</p>
 <a href="#atp-space">atp-space</a>
-<h4>SPACE CMAP</h4>
+<h3>Space Cmap</h3>
 <div class=map>cmap <buffer> <C-Space> 	\_s\+</div>
 <div class=map>cmap <buffer> <C-_> 	\_s\+</div>
 <p>The C-Space Vim, instead C-@ is used which works as C-Space. In Vim, and
@@ -229,7 +247,7 @@ gVim as well, you can also use <a href="#atp-Q/">atp-Q/</a>, <a
 <p>Note: from version 9.6 Space is mapped to \_s\+ in cmdline modes / and
 ?.  F2 turns it on/off. The above maps are always on.</p>
 
-<h4>ERRORS</h4><br>
+<h3>Errors</h3><br>
 <div class=map>nmap &ltLocalLeader&gte</div>
 <p>To get list of errors with current <a href="atp-commands.html#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
 <a href="atp-commands.html#atp-:ErrorFormat">atp-:ErrorFormat</a>
@@ -241,7 +259,7 @@ show the current value <a href="atp-commands.html#b:atp_ErrorFormat">b:atp_Error
 <a href="atp-commands.html#atp-:ShowErrors">atp-:ShowErrors</a>. In addition you can use +{flag} and -{flag} as an
 argument, then {flag} will be added/removed from <a href="atp-commands.html#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
 
-<h4>EasyMotion and ATP</h4>
+<h3>EasyMotion and ATP</h3>
 <p>If you want to use <a href="http://www.vim.org/scripts/script.php?script_id=3526">EaseMotion</a> vim plugin (which is quite handy).</p>
 	
 <p>You can set <a href="#g:atp_Compare">g:atp_Compare</a>="". Alternatively, if
@@ -258,19 +276,19 @@ interfering with an ATP font map).</p>
 
 <p>(Almost all) maps became :map-silent.</p> 
 
-<h4>ATPRC</h4>
+<h3>ATPRC</h3>
 <p>The <a href="atp-configure.html#atprc">atprc</a> file is now sourced twice at startup: at the
 beginning to set the variables, and once again at the end to set the maps
 defined in it.</p>
 
-<h4>QUICKFIX WINDOW</h4>
+<h3>Quickfix Window</h3>
 <p>Despite the status line for quick fix window, :cgetfile will be run when you
 open new files, this nicely works with :edit command but not :split if you want
 to keep the old log file in QuickFix window. If this is the case set 
 <div class=variable>let g:atp_cgetfile = 0</div>
 You can also put this in your <a href="#atprc">atprc</a> or |vimrc| file.</p>
 
-<h4>DEBUG ATP</h4>
+<h3>Debug ATP</h3>
 <div class=command>:DebugPrint</div>
 <p>if you want to develop/debug ATP set g:atp_atpdev to 1 run <a
     href="atp-commands.html#atp-:ReloadATP">atp-:ReloadATP</a> and this command will allow to
@@ -282,3 +300,15 @@ you can always read the svn logs at <a href="#atp-sourceforge">atp-sourceforge</
 
 
 <div class=triple_indent>Chears, Marcin</div>
+<br>
+<hr>
+<div>
+    <p class="alignleft"><a href="index.html"><b>Previous:</b></a><b> Table of Contents</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-installation.html"><b>Next:</b></a><b> Installation</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr>
+<br><br>
+</body>
+</html>

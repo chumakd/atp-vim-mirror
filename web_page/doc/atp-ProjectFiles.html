@@ -1,20 +1,38 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-</head>
-<h2>WRITING PROJECTS</h2>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
+<h1>Writing Projects</h1>
+<hr>
 <div>
-    <p class="alignleft"><a href="atp-configure.html">Previous:</a> Configure ATP</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-mappings.html">Next:</a> Mappings</p>
+    <p class="alignleft"><a href="atp-configure.html"><b>Previous:</b></a><b> Configure ATP</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-mappings.html"><b>Next:</b></a><b> Mappings</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
 <a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
-<div class=variable>let b:atp_MainFile	= expand("%:p")</div>
-<p>This variable points to the main file of the project, it is set on the
+<p><div class=variable>let b:atp_MainFile	= expand("%:p")</div>
+<div class=indented>This variable points to the main file of the project, it is set on the
 start up to the file you open. If you edit project file (for the first time),
-start with the main file and use gf (see <a href="#atp-gf">atp-gf)</a> to go
+start with the main file and use gf (see <a href="atp-commands.html#atp-:GotoFile">atp-gf</a>) to go
 to the project file you want to edit. In this way all the project files will
 have correctly set this variable. The value of this variable is used by
 compilation functions. This variable is written in the project script (see <a
@@ -22,40 +40,40 @@ compilation functions. This variable is written in the project script (see <a
 script is on (see <a href="#atp-ProjectScript">atp-ProjectScript,</a> or set
 <a href="#b:atp_ProjectScript">b:atp_ProjectScript=</a>1) it is restored
 between sessions. In this way, next time, you can open any project file and
-the b:atp_MainFile variable will be set to the correct value.</p>
+the b:atp_MainFile variable will be set to the correct value.</div></p>
 
 <a name="b:TreeOfFiles"></a> <a name="b:ListOfFiles"></a> <a name="b:TypeDict"></a> <a name="b:LevelDict"></a>
-<div class=variable>b:TreeOfFiles</div>
+<p><div class=variable>b:TreeOfFiles</div>
 <div class=variable>b:ListOfFiles</div>
 <div class=variable>b:TypeDict</div>
 <div class=variable>b:LevelDict</div>
-<p>The project feature stores more variables: <a
-    href="#b:TreeOfFiles">b:TreeOfFiles </a>a dictionary which contains the
-tree of input files, <a href="#b:ListOfFiles">b:ListOfFiles </a>- list of
-input files, <a href="#b:TypeDict">b:TypeDict </a>dictionary of types of input
+<div class=indented>The project feature stores more variables: <a
+    href="#b:TreeOfFiles">b:TreeOfFiles</a> a dictionary which contains the
+tree of input files, <a href="#b:ListOfFiles">b:ListOfFiles</a> - list of
+input files, <a href="#b:TypeDict">b:TypeDict</a> dictionary of types of input
 files, where the type is one of following: {preamble}, {input}, {bib}. The
-last variable is <a href="#b:LevelDict">b:LevelDict </a>which is a dictionary
-of input levels (for example: an input file in input file has level 2).</p>
+last variable is <a href="#b:LevelDict">b:LevelDict</a> which is a dictionary
+of input levels (for example: an input file in input file has level 2).
 
 <p>There are other tools to make editing project files more easy. There is
-search function: <a href="#atp-:S">atp-:S </a>which works better than the Vim
+search function: <a href="#atp-:S">atp-:S</a> which works better than the Vim
 |:ijump| command, which cannot go above the current file in the tree of input
-files /but |:ijump| is much faster/.</p> 
+files /but |:ijump| is much faster/.</p></div></p> 
 
 <a name="b:atp_ProjectDir"></a>
-<div class=variable>b:atp_ProjectDir</div>
-<p>Stores the project directory, by default where <a
-    href="#b:atp_MainFile">b:atp_MainFile </a>is located (the filename is
+<p><div class=variable>b:atp_ProjectDir</div>
+<div class=indented>Stores the project directory, by default where <a
+    href="#b:atp_MainFile">b:atp_MainFile</a> is located (the filename is
 resolved if it is a symbolic link). It is not written to the <a
-    href="#atp-ProjectScript">atp-ProjectScript </a>(this makes the <a
+    href="#atp-ProjectScript">atp-ProjectScript</a> (this makes the <a
     href="#atp-ProjectScript">atp-ProjectScript</a> independent of the host
-when <a href="#g:atp_RelativePath">g:atp_RelativePath</a>is set). This
+when <a href="#g:atp_RelativePath">g:atp_RelativePath</a> is set). This
 variable is mainly for internal purposes. If you want to set the output
-directory use <a href="#b:atp_OutDir">b:atp_OutDir.</a>
+directory use <a href="#b:atp_OutDir">b:atp_OutDir.</a></div></p>
 
 <a name="g:atp_RelativePath"></a>
-<div class=variable>g:atp_RelativePath = 1</div>
-<p>If set to 1 (which is the default), project variables: <a
+<p><div class=variable>g:atp_RelativePath = 1</div>
+<div class=indented>If set to 1 (which is the default), project variables: <a
     href="#b:atp_MainFile">b:atp_MainFile,</a> <a
     href="#b:TreeOfFiles">b:TreeOfFiles,</a> <a
     href="#b:ListOfFiles">b:ListOfFiles,</a> <a
@@ -63,31 +81,31 @@ directory use <a href="#b:atp_OutDir">b:atp_OutDir.</a>
 </a>will store path relative to <a href="#b:atp_ProjectDir">b:atp_ProjectDir
 </a>(which is the same as path to your main file, however if the file is
 a symbolic link it will hint to the resolved path). The <a
-    href="#atp-:S">atp-:S </a>will use correctly these values. This is
-particularly useful if you want to share the project file.</p>
+    href="#atp-:S">atp-:S</a> will use correctly these values. This is
+particularly useful if you want to share the project file.
 	 
-<p>If you run into problems with <a href="#atp-:S">atp-:S </a>you can set this variable to
-0 and use <a href="atp-commands.html#atp-:InputFiles">atp-:InputFiles </a>to regenerate the variables - they will
-now store the full path (the other way around also works).</p>
+<p>If you run into problems with <a href="#atp-:S">atp-:S</a> you can set this variable to
+0 and use <a href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> to regenerate the variables - they will
+now store the full path (the other way around also works).</p></div></p>
 
 <a name="atp-:ToggleNn"></a>
-<div class=command>:ToggleNn [on]</div>
-<p>The command <a href="#atp-:ToggleNn">atp-:ToggleNn </a>toggles the value of
-<a href="#g:atp_mapNn">g:atp_mapNn </a>variable.  The optional argument [on]
+<p><div class=command>:ToggleNn [on]</div>
+<div class=indented>The command <a href="#atp-:ToggleNn">atp-:ToggleNn</a> toggles the value of
+<a href="#g:atp_mapNn">g:atp_mapNn</a> variable.  The optional argument [on]
 has three possible values: "",  "on" or "off".  The default "", toggles the
 value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
-1 and "off" sets it to 0.</p>
+1 and "off" sets it to 0.</div></p>
 
 <a name="g:atp_mapNn"></a>
-<div class=variable>g:atp_mapNn = 0</div>
-<p>If it is set to 1 then several tools use <a href="#atp-:S">atp-:S</a> command instead of Vim
+<p><div class=variable>g:atp_mapNn = 0</div>
+<div class=indented>If it is set to 1 then several tools use <a href="#atp-:S">atp-:S</a> command instead of Vim
 |search()| function (which looks only in the current buffer).  These are: <a
     href="atp-commands.html#atp-:NPart">atp-:NPart</a>, <a href="atp-commands.html#atp-:NChap">atp-:NChap</a>,
 <a href="atp-commands.html#atp-:NSec">atp-:NSec</a>, <a href="atp-commands.html#atp-:NSSec">atp-:NSSec</a>, <a
     href="atp-commands.html#atp-:NSSSec">atp-:NSSSec</a>, <a href="atp-commands.html#atp-:PPart">atp-:PPart</a>,
 <a href="atp-commands.html#atp-:PChap">atp-:PChap</a>, <a href="atp-commands.html#atp-:PSec">atp-:PSec</a>, <a
     href="atp-commands.html#atp-:PSSec">atp-:PSSec</a>, <a href="atp-commands.html#atp-:PSSSec">atp-:PSSSec</a>,
-<a href="atp-commands.html#atp-:NEnv">atp-:NEnv</a>, <a href="atp-commands.html#atp-:PEnv">atp-:PEnv</a>.</p>
+<a href="atp-commands.html#atp-:NEnv">atp-:NEnv</a>, <a href="atp-commands.html#atp-:PEnv">atp-:PEnv</a>.
 
 <p>The default value of <a href="#g:atp_mapNn">g:atp_mapNn</a>is 0.</p>
 
@@ -99,17 +117,18 @@ value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
 </pre>
 Then the value will be preserved when atp opens new buffer when using
 <a href="#atp-:S">atp-:S</a> command. If you want to have project specific
-setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p>
+setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p></div></p>
 
-<p>Another good tip for LaTeX project files is to set |b:atp_TexFlavor|
+<p>Another good tip for LaTeX project files is to set <a
+    href="atp-configure.htm#b:atp_TexFlavor">b:atp_TexFlavor</a>
 variable to 'tex' (in your |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file). This will prevent
 from situations that Vim recognizes input file as a plain TeX while it
 is an input file into a LaTeX project. 
 Another way is add options to 'viewoptions' (see |'viewoptions'|). And
-set mkview and loadview via autocommands >
+set mkview and loadview via autocommands
 <div class=aucommand>au BufWinLeave *.tex mkview</div>
 <div class=aucommand>au BufWinEnter *.tex silent loadview</div>
-<p>This will ensure that filetype variable is set correctly. Some ATP tools
+This will ensure that filetype variable is set correctly. Some ATP tools
 behave in a different way in plaintex files. For example TreeOfFiles function
 (it makes the variables <a href="#b:TreeOfFiles">b:TreeOfFiles</a>, <a
     href="#b:ListOfFiles">b:ListOfFiles</a>, <a
@@ -121,8 +140,9 @@ commands, environments and colours for Tab Completion and also <a
     href="#atp-:S">atp-:S</a> command. It is done so, because in plain tex
 there is no way to distinguish input files from input packages which we do not
 want to scan (especially recursively, which might be time consuming). </p>
+
 <a name="atp-ProjectScript"></a>
-<h3>Project Script</h3>
+<h2>Project Script</h2>
 <p>The file: <a href="#b:atp_MainFile">b:atp_MainFile</a> . ".project.vim", in the same directory as
 <a href="#b:atp_MainFile">b:atp_MainFile</a> stores values of local variables saved before Vim
 	leaved a buffer (it is very similar to |View|). Also values of some global 
@@ -152,23 +172,24 @@ generated and written.</p>
        and <a href="atp-configure.html#atprc">atprc</a> files.</p> 
 
 <a name="b:atp_ProjectScript"></a> <a name="g:atp_ProjectScript"></a>
-<div class=variable>b:atp_ProjectScript = 1</div>
+<p><div class=variable>b:atp_ProjectScript = 1</div>
 <div class=variable>g:atp_ProjectScript (not set)</div>
-<p>Setting one of the variables <a
+<div class=indented>Setting one of the variables <a
     href="#b:atp_ProjectScript">b:atp_ProjectScript</a> or <a
     href="#g:atp_ProjectScript">g:atp_ProjectScript</a> to 0 the feature will
 be turned off. Local variable, i.e. b: has precedence over the global one g:.
 So you can turned off the feature for only specific files. The global variable
-will turn it off for all files.</p>
+will turn it off for all files.</div></p>
 	
 <a name="b:atp_ProjectScriptFile"></a>
-<div class=variable>let b:atp_ProjectScriptFile = b:atp_MainFile.".project.vim"</div>
-	<p>This variables stores the name of local project script file.</p>
+<p><div class=variable>let b:atp_ProjectScriptFile = b:atp_MainFile.".project.vim"</div>
+<div class=indented>This variables stores the name of local project script file.
 
 	<p>Local and global variables are supported. The local variables which
-	are cached in this way are listed in </p>
+	are cached in this way are listed in </p></div></p>
+
 <a name="g:atp_ProjectLocalVariables"></a>
-    <pre><div class=variable>let g:atp_ProjectLocalVariables = [
+<p><pre><div class=variable>let g:atp_ProjectLocalVariables = [
 		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
 		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
 		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
@@ -178,31 +199,31 @@ will turn it off for all files.</p>
 		\ "b:atp_StarMathEnvDefault"
 		\ ] 
     </div></pre>
-	<p>If your vim doesn't have python support |+python| three more
+	<div class=indented>If your vim doesn't have python support |+python| three more
 	variables are stored: <a
 	    href="#b:atp_LocalEnvironments">b:atp_LocalEnvironments</a> <a
 	    href="#b:atp_LocalCommands">b:atp_LocalCommands</a>, and <a
 	    href="#b:atp_LocalColors">b:atp_LocalColors</a>. With |+python|
 	this is not needed since <a
 	    href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> is then very
-	fast and is run on |BufEnter|.</p>
+	fast and is run on |BufEnter|.</div></p>
 
-	<p>The each file has separate project scrips which stores the values
-	of these variables. It's name is stored in <a
-	    href="#b:atp_ProjectScriptFile">b:atp_ProjectScriptFile</a>.</p>
+<p>Each file has separate project scrips which stores the values
+Ef these variables. It's name is stored in <a
+    href="#b:atp_ProjectScriptFile">b:atp_ProjectScriptFile</a>.</p>
 
 <a name="atp-ProjectScript_Global"></a>	
-	<p>There is also file for variables for all projects. It stores values of
+<a name="g:atp_ProjectGlobalVariables"></a>
+<p>There is also file for variables for all projects. It stores values of
 	global variables (by default it is "ftplugin/ATP_files/common_var.vim". 
 	The global variables that are written in this file are given in Vim
-	list: </p>
-<a name="g:atp_ProjectGlobalVariables"></a>
-<pre><div class=variable>let g:atp_ProjectGlobalVariables = [ 
+	list:
+<p><pre><div class=variable>let g:atp_ProjectGlobalVariables = [ 
 			\ 'g:atp_LatexPackages', 	
 			\ 'g:atp_LatexClasses', 
 			\ 'g:atp_Library' ]
 </div></pre>
-	<p>If you want to disable this feature for some reason you can set:
+	<div class=indented>If you want to disable this feature for some reason you can set:
 		<div class=variable>let g:atp_ProjectScript = 0</div>
 	or
 		<div class=variable>let b:atp_ProjectScript = 0</div>
@@ -218,7 +239,7 @@ will turn it off for all files.</p>
 		</div></pre>
 	    or you can add to the project scrpit:
 	    <div class=indented>(1) write in its first line 'finish', or</div>
-	    <div class=indented>(2) include in it 'let |b:atp_ProjectScript| = 0'.</div>
+	    <div class=indented>(2) include in it 'let |b:atp_ProjectScript| = 0'.</div></div></p>
 
 <a name="atp-:LoadProjectScript"></a> <a name="atp-:WriteProjectScript"></a> <a name="atp-:DeleteProjectScript"></a> <a name="atp-:ToggleProjectScript"></a>
 	</p>There are these commands:
@@ -227,7 +248,7 @@ will turn it off for all files.</p>
 	<div class=command>:DeleteProjectScript[!] [local/common]</div>			
 	<div class=command>:ToggleProjectScript[!] [on/off]</div>			
 
-	    <p>which do the obvious thing (if <a
+	    <div class=indented>which do the obvious thing (if <a
 		href="#g:atp_ProjectScript">g:atp_ProjectScript</a>=0 or |b:atp_ProjectScript|=0 they
 	will not work). The default value of the optional argument is "local".
 	:DeleteProjectScript [local] command (with optional argument [local]) deletes
@@ -237,14 +258,15 @@ will turn it off for all files.</p>
 	project script is turned off (<a
 	    href="#b:atp_ProjectScript">b:atp_ProjectScript</a>==0 or
 	!exists("<a href="#b:atp_ProjectScript">b:atp_ProjectScript</a>") and <a
-	    href="#g:atp_ProjectScript">g:atp_ProjectScript</a>==0).</p>
+	    href="#g:atp_ProjectScript">g:atp_ProjectScript</a>==0).
 
 	<p>The command ':ToggleProjectScript [on/off]' turns on/off the feature
 	for this buffer (it sets <a
 	    href="#b:atp_ProjectScript">b:atp_ProjectScript</a>). When no argument is
 	given it will toggle the value. With bang it also sets the global
-	variable.  <a href="#b:atp_ProjectScript">b:atp_ProjectScript</a> is by default in the >
-	    <div class=variable>g:atp_ProjectLocalVariables </div>
+	variable <a href="#g:atp_ProjectScript">g:atp_ProjectScript</a>.  <a
+    href="#b:atp_ProjectScript">b:atp_ProjectScript</a> is by default in the
+	    <a href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>
 	so it will be restored afterwards. |b:atp_ProjectScript| if defined
 	overrides the value of global variable |g:atp_ProjectScript|. So you can set
 	in your atp file g:atp_ProjectScript = 0 and for some files using the
@@ -284,12 +306,12 @@ will turn it off for all files.</p>
 
 	<p>Note: Also when you add a package to tex you should remove the common
 	project scrip, so that the new packages will be added to completion
-	list. </p>
+	list. </p></div></p>
 
 <a name="atp-:S"></a>
-<div class=command>:S[!] /{pattern}/ [flags]</div>
-	<p>The pattern is a Vim pattern (with 'magic'). With bang "!" it
-	regenerates the tree of input files.<p>
+<p><div class=command>:S[!] /{pattern}/ [flags]</div>
+	<div class=indented>The pattern is a Vim pattern (with 'magic'). With bang "!" it
+	regenerates the tree of input files.
 
 	<p>This is command does the same job as |/| but is recursive in the tree
 	of files (so it is useful only in project files). The syntax of this
@@ -326,6 +348,7 @@ will turn it off for all files.</p>
 	local texmf tree) and also directories which name contains one of the
 	two keywords 'texlive' and 'kpsewhich'. This makes the searching
 	faster. </p>
+
 <a name="atp-:S_input"></a>
 	<p>Furthermore, the command is designed so that it can find all patterns
 	'\\input' (and thus easily find next/previous input file). You can
@@ -348,20 +371,30 @@ will turn it off for all files.</p>
 	file.1.1.tex doesn't includes any other file.</p> 
 
 	<p>The pattern can be '\\input'. Then it goes recursively to the first
-	input line. </p>
+	input line. </p></div></p>
 	
-	<a name="atp-:NInput"></a> 	<a name="atp-&gti"></a>   <a name="atp-&gtgf"></a> <a name="atp-:PInput"></a> 	<a name="atp-&lti"></a>   <a name="atp-&ltgf"></a>
-	<p>Now it also doesn't search inside commented input files. There two
-	commands:
+<a name="atp-:NInput"></a> 	<a name="atp-&gti"></a>   <a name="atp-&gtgf"></a> <a name="atp-:PInput"></a> 	<a name="atp-&lti"></a>   <a name="atp-&ltgf"></a>
+<p>Now it also doesn't search inside commented input files. There two
+commands:
 <div class=command>:NInput</div> 
 <div class=map>nmap ]gf, nmap &gti</div>
 <div class=command>:PInput </div>
 <div class=map>nmap [gf, nmap &lti</div>
-	<p>which finds the next/previous input line (also commented). See
+	<div class=indented>which finds the next/previous input line (also commented). See
 	<a href="#atp-:S_input">atp-:S_input</a> to find how it works. They
 	depend on <a href="#g:atp_mapNn">g:atp_mapNn</a>, if
 	1 <a href="#atp-S:">atp-S:</a> is used if 0 Vim |search()| function. To repeat search you
 	can use |n| and |N| Vim normal commands. These commands omit comment
-	lines.</p>
+	lines.</div></p>
 
 
+<br><hr>
+<div>
+    <p class="alignleft"><a href="atp-configure.html"><b>Previous:</b></a><b> Configure ATP</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-mappings.html"><b>Next:</b></a><b> Mappings</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr><br><br><br>
+</body>
+</html>

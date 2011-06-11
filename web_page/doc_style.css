@@ -1,22 +1,30 @@
 h1
     {
+    font-family: "Lucida Grande", geneva, verdana, arial, helvetica, sans-serif;
+    font-size: 20px;
     font-weight: bold;
-    font-variant: small-caps;
-    font-family: palatino, roman;
-    font-weight: bold;
+    font-style: italic;
+    line-height: 25px;
+    padding-left: 25px;
     background-color: #4E03C7;
     color: #ffffff;
     }
 h2
     {
-    font-weight: bold;
-    font-variant: small-caps;
-    font-family: palatino, roman;
+    font-family: "Lucida Grande", geneva, verdana, arial, helvetica, sans-serif;
+    font-size: 17px;
+    font-style: italic;
+    line-height: 20px;
+    padding-left: 25px;
     background-color: #4E03C7;
     color: #ffffff;
     }
 h3
     {
+    font-family: "Lucida Grande", geneva, verdana, arial, helvetica, sans-serif;
+    font-size: 15px;
+    font-style: italic;
+    padding-left: 25px;
     background-color: #4E03C7;
     color: #ffffff;
     }
@@ -60,7 +68,7 @@ div.command
    }
 div.example
    {
-       color: #499C00;
+       color: #940000;
        padding-right: 50pt;
    }
 div.indented

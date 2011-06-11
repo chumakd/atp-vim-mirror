@@ -1,8 +1,22 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
 	<title >ATP Requirements</title>
 	<link rel="stylesheet" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
     </head>
 <body bgcolor="#ffffff">
     <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
@@ -10,127 +24,133 @@
 
 <table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
-		<td class=leftpanel valign=top> 
-		    <a
-			href="http://www.vim.org/scripts/script.php?script_id=2945"><img
-			border=0 align=left src="vim-logo-128.png" width=90></a>
-		    <br><br><br><br><br><br>
-		    <a href="index.html">Main Page</a><br><br>
-		    <a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
-		    <a href="features.html">Feature list</a><br>
-		    <a href="requirements.html">Requirements</a><br><br>
-		    <a href="help.html">Docs</a><br><br>
-		    <a
-			href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
-			list</a><br>
-		    <a href="https://sourceforge.net/news/?group_id=513143">News</a><br><br>
-		    <a
-			href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF Statistics</a><br>
-		    <a href="http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/">svn</a>
-		</td>
+	    <td class=leftpanel valign=top> 
+		<a
+		    href="http://www.vim.org/scripts/script.php?script_id=2945"><img
+		    border=0 align=left src="vim-logo-128.png" width=90></a>
+		<br><br><br><br><br><br>
+		<a href="index.html">Main Page</a><br><br>
+		<a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
+		<a href="features.html">Feature list</a><br>
+		<a href="requirements.html">Requirements</a><br><br>
+		<a href="help.html">Docs</a><br><br>
+		<a
+		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
+		    list</a><br>
+		<a href="https://sourceforge.net/news/?group_id=513143">News</a><br><br>
+		<a
+		    href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF
+		    Statistics</a><br><br>
+		<a href="http://sourceforge.net/projects/atp-vim"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10" width="80" height="15" alt="Get Automatic LaTex Plugin for Vim at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+	    </td>
 
 
-		<td class=mainpanel>
-		    <h3>vim 7.3</h3>
-		    You need <a href="http://www.vim.org">vim</a> 7.3. It was
-		    reported that <b>ATP</b> is not working on vim 7.2 (without any
-		    patches). Look at output of vim command <code>:version</code> to
-		    see which version of vim/gvim you have.
-		    <h3>vim settings</h3>
-		    You need to set <code>:filetype plugin on</code> and
-		    <code>:syntax on</code> in your vimrc. The last one is
-		    <b>neccessary</b> for some ATP tools, even if you don't want to
-		    use vim color highlighting. You can also add <code>:filetype
-			indent on</code> if yuo want to use the indentation
-		    feature of ATP. See <a
-			href="http://vimhelp.appspot.com/filetype.txt.html#filetype.txt">filetype
-			vim help</a>.
-		    <h3>python</h3>
-		    <b>ATP</b> uses <a href="http://www.python.org">python</a>. It is
-		    written so that you can use python3 or python2.7. You can use
-		    <b>ATP</b> without python, however some features will be much
-		    slower and some might not even work (for example the <i>progress
-			bar</i> and <a href="http://www.ams.org/mref"><i>AMS
-			    Ref</i></a> interface, <code>:UpdateATP</code>,
-		    <code>:Tags</code> and possibly other things as well). So your
-		    vim/gvim should be compiled with +python (or +python3) feature
-		    and you should have installed python in your OS. You can check if
-		    your vim/gvim has python by reading <code>:version</code> output
-		    (inside vim), or by using <code>:echo has("python")</code> and
-		    <code>:echo has("python3")</code>. See <code>:help +python</code>
-		    and <code>:help +python3</code>.<br> You also need one additional
-		    python library: <a
-			href="http://code.google.com/p/psutil/"><b>psutil</b></a>.
-		    You should be able to install it using OS specific tools, or you
-		    can get it using the link. Installing python libraries is quite
-		    easy. Just follow the <a
-			href="http://docs.python.org/install/index.html">link</a>.
-		    The library <i>psutil</i> is packaged in a standard way (using
-		    distutils). So it is enough to untar the file and run
-		    <code>python setup.py install</code> in the terminal from the
-		    <i>psutil</i> directory (where the setup.py <i>psutil</i> file is
-		    located).
-		    <h3>latexmk</h3>
-		    <a
-			href="http://www.phys.psu.edu/~collins/software/latexmk-jcc/">Latexmk</a> program is available in <a
-			href="http://www.tug.org/texlive/">TeXLive</a> TeX
-		    distribution. Your GNU/Linux
-		    distribution might package it separately 
-		    (<a
-			href="http://packages.debian.org/en/squeeze/all/latexmk/download">debian</a>,
-		    <a
-			href="http://packages.ubuntu.com/hardy/latexmk">ubuntu</a>,
-		    <a
-			href="http://packages.gentoo.org/package/dev-tex/latexmk?arches=all&full_cat">gentoo</a>,
-		    <a
-			href="http://rpm.pbone.net/index.php3/stat/4/idpl/15745308/dir/rawhide/com/latexmk-4.23a-1.fc16.noarch.rpm.html">fedora</a>,
-		    <a
-			href="http://ftp.eq.uc.pt/software/TeX/support/latexmk/">ctan</a>). It is needed
-		    for <a
-			href="http://www.vim.org/scripts/script.php?script_id=3109">Latex
-			Box</a> plugin included in <b>ATP</b>.
-		    <h3>detex</h3>
-		    The detex program is used to make proper word count with
-		    <a
-			href="doc/atp-commands.html#atp-:WordCount"><code>:WordCount</code></a>
-		    <b>ATP</b> command. It is included in <a
-			href="http://www.tug.org/texlive/">TeXLive</a> TeX
-		    distribution, but your GNU/Linux distribution might have
-		    a separate package for it.
-		    <h3>wdiff</h3>
-		    If you want to use <a
-			href="doc/atp-commands.html#atp-:Wdiff"><code>:Wdiff</code></a> command you will
-		    need GNU wdiff program, available <a
-			href="http://www.gnu.org/software/wdiff/">here</a>,
-		    (<a
-			href="http://packages.debian.org/search?keywords=wdiff">debian</a>,
-		    <a
-			href="http://packages.ubuntu.com/dapper/wdiff">ubuntu</a>,
-		    <a
-			href="http://packages.gentoo.org/package/app-text/wdiff">gentoo</a>,
-		    <a
-			href="http://rpm.pbone.net/index.php3/stat/4/idpl/15646768/dir/fedora_13/com/wdiff-0.6.5-5.fc13.i686.rpm.html">fedora</a>).
-		    <h3>pdffonts</h3>
-		    <b>ATP</b> has a command <a
-			href="doc/atp-mappings.html#atp-:PdfFonts"><code>:PdfFonts</code></a>
-		    to see the embedded fonts inside your pdf output file.
-		    Sometimes some institutions requires that all the fonts
-		    must be embedded. This is mapped to <F6>g in <b>ATP</b>.
-		    And it uses pdffonts program. It is available for various
-		    GNU/Linux distributions: <a
-			href="http://packages.debian.org/sid/poppler-utils">debian</a>, 
-		    <a
-			href="http://packages.ubuntu.com/dapper/poppler-utils">ubuntu</a>, 
-		    <a
-			href="http://packages.gentoo.org/package/app-text/poppler">gentoo</a>,
-		    <a
-			href="http://rpm.pbone.net/index.php3/stat/4/idpl/13686417/dir/fedora_10/com/poppler-utils-0.8.7-7.fc10.x86_64.rpm.html">fedora</a>.
-		    <h3>vim-latex</h3>
-		    You should not use <a
-			href="http://vim-latex.sf.net"><b>vim-latex</b></a> plugin
-		    together with <b>ATP</b>.  If you want you can disable <b>ATP</b>
-		    with <code>:let g:no_atp=1</code>. But this needs to be set in
-		    vimrc file or before loading tex file into vim buffer. Possibly,
-		    you could write small script which let you choose which plugin to
-		    use.
-		</td>
+	    <td class=mainpanel>
+		<h3>vim 7.3</h3>
+		You need <a href="http://www.vim.org">vim</a> 7.3. It was
+		reported that <b>ATP</b> is not working on vim 7.2 (without any
+		patches). Look at output of vim command <code>:version</code> to
+		see which version of vim/gvim you have.
+		<h3>vim settings</h3>
+		You need to set <code>:filetype plugin on</code> and
+		<code>:syntax on</code> in your vimrc. The last one is
+		<b>neccessary</b> for some ATP tools, even if you don't want to
+		use vim color highlighting. You can also add <code>:filetype
+		    indent on</code> if yuo want to use the indentation
+		feature of ATP. See <a
+		    href="http://vimhelp.appspot.com/filetype.txt.html#filetype.txt">filetype
+		    vim help</a>.
+		<h3>python</h3>
+		<b>ATP</b> uses <a href="http://www.python.org">python</a>. It is
+		written so that you can use python3 or python2.7. You can use
+		<b>ATP</b> without python, however some features will be much
+		slower and some might not even work (for example the <i>progress
+		    bar</i> and <a href="http://www.ams.org/mref"><i>AMS
+			Ref</i></a> interface, <code>:UpdateATP</code>,
+		<code>:Tags</code> and possibly other things as well). So your
+		vim/gvim should be compiled with +python (or +python3) feature
+		and you should have installed python in your OS. You can check if
+		your vim/gvim has python by reading <code>:version</code> output
+		(inside vim), or by using <code>:echo has("python")</code> and
+		<code>:echo has("python3")</code>. See <code>:help +python</code>
+		and <code>:help +python3</code>.<br> You also need one additional
+		python library: <a
+		    href="http://code.google.com/p/psutil/"><b>psutil</b></a>.
+		You should be able to install it using OS specific tools, or you
+		can get it using the link. Installing python libraries is quite
+		easy. Just follow the <a
+		    href="http://docs.python.org/install/index.html">link</a>.
+		The library <i>psutil</i> is packaged in a standard way (using
+		distutils). So it is enough to untar the file and run
+		<code>python setup.py install</code> in the terminal from the
+		<i>psutil</i> directory (where the setup.py <i>psutil</i> file is
+		located).
+		<h3>latexmk</h3>
+		<a
+		    href="http://www.phys.psu.edu/~collins/software/latexmk-jcc/">Latexmk</a> program is available in <a
+		    href="http://www.tug.org/texlive/">TeXLive</a> TeX
+		distribution. Your GNU/Linux
+		distribution might package it separately 
+		(<a
+		    href="http://packages.debian.org/en/squeeze/all/latexmk/download">debian</a>,
+		<a
+		    href="http://packages.ubuntu.com/hardy/latexmk">ubuntu</a>,
+		<a
+		    href="http://packages.gentoo.org/package/dev-tex/latexmk?arches=all&full_cat">gentoo</a>,
+		<a
+		    href="http://rpm.pbone.net/index.php3/stat/4/idpl/15745308/dir/rawhide/com/latexmk-4.23a-1.fc16.noarch.rpm.html">fedora</a>,
+		<a
+		    href="http://ftp.eq.uc.pt/software/TeX/support/latexmk/">ctan</a>). It is needed
+		for <a
+		    href="http://www.vim.org/scripts/script.php?script_id=3109">Latex
+		    Box</a> plugin included in <b>ATP</b>.
+		<h3>detex</h3>
+		The detex program is used to make proper word count with
+		<a
+		    href="doc/atp-commands.html#atp-:WordCount"><code>:WordCount</code></a>
+		<b>ATP</b> command. It is included in <a
+		    href="http://www.tug.org/texlive/">TeXLive</a> TeX
+		distribution, but your GNU/Linux distribution might have
+		a separate package for it.
+		<h3>wdiff</h3>
+		If you want to use <a
+		    href="doc/atp-commands.html#atp-:Wdiff"><code>:Wdiff</code></a> command you will
+		need GNU wdiff program, available <a
+		    href="http://www.gnu.org/software/wdiff/">here</a>,
+		(<a
+		    href="http://packages.debian.org/search?keywords=wdiff">debian</a>,
+		<a
+		    href="http://packages.ubuntu.com/dapper/wdiff">ubuntu</a>,
+		<a
+		    href="http://packages.gentoo.org/package/app-text/wdiff">gentoo</a>,
+		<a
+		    href="http://rpm.pbone.net/index.php3/stat/4/idpl/15646768/dir/fedora_13/com/wdiff-0.6.5-5.fc13.i686.rpm.html">fedora</a>).
+		<h3>pdffonts</h3>
+		<b>ATP</b> has a command <a
+		    href="doc/atp-mappings.html#atp-:PdfFonts"><code>:PdfFonts</code></a>
+		to see the embedded fonts inside your pdf output file.
+		Sometimes some institutions requires that all the fonts
+		must be embedded, then you can check if all fonts are
+		indeed embedded.  This command uses <a
+		    href="http://linuxcommand.org/man_pages/pdffonts1.html">pdffonts</a> program. It
+		is available for various GNU/Linux distributions: <a
+		    href="http://packages.debian.org/sid/poppler-utils">debian</a>, 
+		<a
+		    href="http://packages.ubuntu.com/dapper/poppler-utils">ubuntu</a>, 
+		<a
+		    href="http://packages.gentoo.org/package/app-text/poppler">gentoo</a>,
+		<a
+		    href="http://rpm.pbone.net/index.php3/stat/4/idpl/13686417/dir/fedora_10/com/poppler-utils-0.8.7-7.fc10.x86_64.rpm.html">fedora</a>.
+		<h3>vim-latex</h3>
+		You should not use <a
+		    href="http://vim-latex.sf.net"><b>vim-latex</b></a> plugin
+		together with <b>ATP</b>.  If you want you can disable <b>ATP</b>
+		with <code>:let g:no_atp=1</code>. But this needs to be set in
+		vimrc file or before loading tex file into vim buffer. Possibly,
+		you could write small script which let you choose which plugin to
+		use.
+	    </td>
+	</tr>
+    </table>
+</body>
+</html>

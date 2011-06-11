@@ -1,16 +1,34 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
 <a name="atp-omnicompletion"></a>
-<h2>OMNI COMPLETION</h2>
+<h1>Omni Completion</h1>
 <p>by David Munger (LatexBox plugin)</p>
+<hr>
 <div>
-    <p class="alignleft"><a href="atp-completion.html">Previous:</a> Completion</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-configure.html">Next:</a> Configure ATP</p>
+    <p class="alignleft"><a href="atp-completion.html"><b>Previous:</b></a><b> Completion</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-configure.html"><b>Next:</b></a><b> Configure ATP</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
 <p>Completion is achieved through omni completion |compl-omni|, with default
 bindings &ltCTRL-X&gt&ltCTRL-O&gt. There are four types of completion:</p>
@@ -18,7 +36,7 @@ bindings &ltCTRL-X&gt&ltCTRL-O&gt. There are four types of completion:</p>
 
 
 <a name="atp-omnicompletion-commands"></a>
-<h3>Commands</h3>
+<h2>Commands</h2>
 
 <p>Command completion is triggered by the '\' character.  For example,</p>
 <div class=example>\beg&ltCTRL-X&gt&ltCTRL-O&gt</div>
@@ -31,7 +49,7 @@ completes to
 
 
 <a name="atp-omnicompletion-environments"></a>
-<h3>Environments</h3>
+<h2>Environments</h2>
 
 <p>Environment completion is triggered by '\begin{'.  For example, >
 <div class=example>\begin{it&ltCTRL-X&gt&ltCTRL-O&lt</div>
@@ -46,7 +64,7 @@ completes to
 
 
 <a name="atp-omnicompletion-labels"></a>
-<h3>Labels</h3>
+<h2>Labels</h2>
 
 <p>Label completion is triggered by '\ref{' or '\eqref{'.  For example, >
 	<div class=example>\ref{sec:&ltCTRL-X&gt&ltCTRL-O&gt</div>
@@ -70,7 +88,7 @@ compilation.</p>
 
 
 <a name="atp-omnicompletion-bibtex"></a>
-<h3>BibTeX Entries</h3>
+<h2>BibTeX Entries</h2>
 
 <p>BibTeX completion is triggered by '\cite{', '\citep{' or '\citet{'.
 For example, assume you have in your .bib files an entry looking like:
@@ -88,43 +106,48 @@ Then, try:
 <p>You can also use regular expressions (or Vim patterns) after '\cite{'.</p>
 
 <p>Associated settings:</p>
-<a name="atp-g:LatexBox_cite_pattern"></a>		
-<div class=variable>let g:LatexBox_cite_pattern = '\\cite\(p\|t\)\?\*\?\_\s*{'</div>
 <a name="atp-g:LatexBox_ref_pattern"></a>		
+<a name="atp-g:LatexBox_cite_pattern"></a>		
+<p><div class=variable>let g:LatexBox_cite_pattern = '\\cite\(p\|t\)\?\*\?\_\s*{'</div>
 <div class=variable>let g:LatexBox_ref_pattern = '\\v\?\(eq\|page\)\?ref\*\?\_\s*{'</div>
-
-	<p>Patterns to match \cite and \ref commands for BibTeX and label completion.
+	<div class=indented>Patterns to match \cite and \ref commands for BibTeX and label completion.
 	Must include the trailing '{'.
 	To match all commands that contain 'cite' (case insensitive), use:
 		<div class=variable>let g:LatexBox_cite_pattern = '\c\\\a*cite\a*\*\?\_\s*{'</div>
 	To match all commands that end with 'ref' (case insensitive):
 		<div class=variable>let g:LatexBox_ref_pattern = '\c\\\a*ref\*\?\_\s*{'</div>
-	Both examples match commands with a trailing star too.</p>
+	Both examples match commands with a trailing star too.</div></p>
 
 <a name="atp-g:LatexBox_bibtex_wild_spaces"></a>
-<div class=variable>let g:LatexBox_bibtex_wild_spaces = 1</div>
-
-	<p>If nonzero, spaces act as wildcards ('.*') in completion.
-	For example, if nonzero, >
+<p><div class=variable>let g:LatexBox_bibtex_wild_spaces = 1</div>
+	<div class=indented>If nonzero, spaces act as wildcards ('.*') in completion.
+	For example, if nonzero, 
 		<div class=example>\cite{Knuth 1981</div>
-	is equivalent to >
-		<div class=example>\cite{Knuth.*1981</div></p>
+	is equivalent to 
+		<div class=example>\cite{Knuth.*1981</div></div></p>
 
 <a name="atp-g:LatexBox_completion_close_braces"></a>
-<div class=variable>let g:LatexBox_completion_close_braces = 1</div>
-
-	<p>If nonzero, omni completion will add closing brackets where relevant.
+<p><div class=variable>let g:LatexBox_completion_close_braces = 1</div>
+	<div class=indented>If nonzero, omni completion will add closing brackets where relevant.
 	For example, if nonzero,
-		<div class=example>\begin{itemize</div>
+	<div class=example>\begin{itemize</div>
 	completes to 
-	<div class=example>\begin{itemize}</div>
-<br>
+	<div class=example>\begin{itemize}</div></div></p>
+
 <a name="atp-g:LatexBox_completion_environments"></a>
 <a name="atp-g:LatexBox_completion_commands"></a>
-<div class=variable>g:LatexBox_completion_environments</div>
+<p><div class=variable>g:LatexBox_completion_environments</div>
 <div class=variable>g:LatexBox_completion_commands</div>
-
-<p>Static completion lists for environments <a
-    href="#atp-omnicompletion-environments">atp-omnicompletion-environments </a>and commands <a
-href="#atp-omnicompletion-commands">atp-omnicompletion-commands.</a></p>
-
+<div class=indented>Static completion lists for environments <a
+    href="#atp-omnicompletion-environments">atp-omnicompletion-environments</a> and commands <a
+href="#atp-omnicompletion-commands">atp-omnicompletion-commands.</a></div></p>
+<br><hr>
+<div>
+    <p class="alignleft"><a href="atp-completion.html"><b>Previous:</b></a><b> Completion</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-configure.html"><b>Next:</b></a><b> Configure ATP</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr><br><br><br>
+</body>
+</html>

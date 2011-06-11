@@ -1,19 +1,37 @@
-<head>
-    <link rel="stylesheet" href="../doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<link rel="stylesheet" href="../doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-22947515-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+    </head>
+<body bgcolor="#ffffff">
 <a name="atp-Viewers"></a>
-<h2>NOTES ON VIEWERS</h2>
+<h1>Notes on Viewers</h1>
+<hr>
 <div>
-    <p class="alignleft"><a href="atp-requirements.html">Previous:</a> Requirements</p>
-    <p class="aligncenter"><a href="index.html">Table of Contents</a></p>
-    <p class="alignright"><a href="atp-tips.html">Next:</a> Tips</p>
+    <p class="alignleft"><a href="atp-requirements.html"><b>Previous:</b></a><b> Requirements</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-tips.html"><b>Next:</b></a><b> Tips</b></p>
 </div>
 <div style="clear: both;"></div>
+<hr>
 
 <p>See the section <a href="atp-configure.html#atp-Viewers_Options">atp-Viewers_Options</a> how to set options for viewer programs.</p>
 <a name="atp-Viewers-Xpdf"></a>
-<p><h3>Xpdf</h3>
+<p><h2>Xpdf</h2>
 	<div class=indented>It is supported. It is configured in the way that when your tex file
 	have errors, Xpdf viewer will not reload your file, which I found
 	useful. Xpdf supports forward searching (vim-&gtXpdf) with command:
@@ -32,10 +50,10 @@
 	    <div class=variable>let b:atp_xpdfOptions="-bg Grey30 -mattecolor SlateBlue2 -papercolor White"</div></p>
 	</div>
 
-<p><h3>Evince</h3>
+<p><h2>Evince</h2>
 	<div class=indented>Works fine.</div></p>
     <a name="atp-Viewers-Okular"></a>
-<p><h3>Okular</h3>
+<p><h2>Okular</h2>
 	<div class=indented>Works fine. It supports both forward (Vim-&gtOkular) and inverse
 	(Okular-&gtVim) searches. Okular supports forward searching (vim-&gtOkular)
 	with command: <a href="atp-commands.html#atp-:SyncTex">atp-:SyncTex</a> >
@@ -89,21 +107,21 @@
  		<div class=indented>vim --servername VIM &ltfile&gt</div>
 	<b>Limitations:</b> The project files which are split into many input files are not yet supported.</p></div>
 
-<p><h3>Kpdf</h3>
+<p><h2>Kpdf</h2>
 	<div class=indented>Works fine (moves page a little bit when updates a file).</div></p>
 
-<p><h3>EpdfView</h3>
+<p><h2>EpdfView</h2>
 	<div class=indented>This viewer does not support automatic reloads when the file changes
 	(but it seems that the work is in progress). You have to issue CTRL-R
 	yourself when the file is changed.</div></p>
 
-<p><h3>AcroRead</h3>
+<p><h2>AcroRead</h2>
 	<div class=indented>As with epdfview (with the difference that it supports automatic
 	updates, but it do not works somehow). There is a way to configure
 	forward searching (Vim-&gtAcroRead)! but it is not supported yet, if you
 	really want it, write to me.</div></p>
 <a name="atp-Viewers-Xdvi"></a>
-<p><h3>Xdvi</h3>
+<p><h2>Xdvi</h2>
 	<div class=indented>Works fine. The file will be updated after a click (or use the xdvi
 	options '-watchfile 1' see man xdvi for explanations). You can set
 	forward/reverse searching by the command |SetXdvi| then use
@@ -130,13 +148,23 @@
 	    href="http://Vim.wikia.com/wiki/Vim_can_interact_with_xdvi">here</a>.
 </div></p>
 
-<p><h3>Zathura</h3>							
+<p><h2>Zathura</h2>							
 	<div class=indented>Perfectly works (but there is no reverse/inverse searching).</div></p>
 
-<p><h3>Mupdf</h3>
+<p><h2>Mupdf</h2>
 	<div class=indented>It is the fastest pdf viewer program ever made, why? because it
 	renders only one page :). But it can be nicly set with ATP: via
 	autocommands and :SyncTex you can load a page where the cursor is
 	located (for example with autocmd event |CursorHold|). This might be
 	nice on a big enough monitor on which you can see both vim and mupdf
 	on one screen.</div></p>
+<br><hr>
+<div>
+    <p class="alignleft"><a href="atp-requirements.html"><b>Previous:</b></a><b> Requirements</b></p>
+    <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
+    <p class="alignright"><a href="atp-tips.html"><b>Next:</b></a><b> Tips</b></p>
+</div>
+<div style="clear: both;"></div>
+<hr><br><br><br>
+</body>
+</html>

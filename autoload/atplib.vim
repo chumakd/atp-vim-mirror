@@ -208,11 +208,14 @@ function! atplib#IsLeft(lchar,...)
     endif
 endfunction
 " try
-function! atplib#ToggleMathIMaps(var, augroup)
+function! atplib#ToggleIMaps(var, augroup, ...)
     if atplib#IsInMath() 
 	call atplib#MakeMaps(a:var, a:augroup)
     else
 	call atplib#DelMaps(a:var)
+	if a:0 >= 1
+	    call atplib#MakeMaps(a:1)
+	endif
     endif
 endfunction
 " catch E127
@@ -1704,12 +1707,19 @@ for f in files:
     f_o.close()
     for line in f_l:
         if re.match('[^%]*\\\\bibitem', line):
-            match=re.search('\\\\bibitem\s*\[([^\]]*)\]\s*{([^}]*)}\s*(.*)', line)
-            label=match.group(1)
-            key=match.group(2)
-            rest=match.group(3)
-            if key != "":
-                citekey_label_dict[key]={ 'label' : label, 'rest' : rest }
+            match=re.search('\\\\bibitem\s*(?:\[([^\]]*)\])?\s*{([^}]*)}\s*(.*)', line)
+            if match:
+                label=match.group(1)
+                if label == None:
+                    label = ""
+                key=match.group(2)
+                if key == None:
+                    key = ""
+                rest=match.group(3)
+                if rest == None:
+                    rest = ""
+                if key != "":
+                    citekey_label_dict[key]={ 'label' : label, 'rest' : rest }
 vim.command("let l:citekey_label_dict="+str(citekey_label_dict))
 PEND
     else
