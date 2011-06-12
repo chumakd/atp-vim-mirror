@@ -20,7 +20,6 @@
     </head>
 <body bgcolor="#ffffff">
     <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
-    <h2 ><center>Requirements</center></h2>
 
 <table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
@@ -32,8 +31,9 @@
 		<a href="index.html">Main Page</a><br><br>
 		<a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
 		<a href="features.html">Feature list</a><br>
-		<a href="requirements.html">Requirements</a><br><br>
-		<a href="help.html">Docs</a><br><br>
+		<a href="requirements.html">Requirements</a><br>
+		<a href="plugins.html">Vim&nbspPlugins</a><br><br>
+		<a href="help.html">Help</a><br><br>
 		<a
 		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
 		    list</a><br>
@@ -41,16 +41,33 @@
 		<a
 		    href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF
 		    Statistics</a><br><br>
-		<a href="http://sourceforge.net/projects/atp-vim"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10" width="80" height="15" alt="Get Automatic LaTex Plugin for Vim at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+		<a href="http://sourceforge.net/projects/atp-vim"><img
+		    src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
+		width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
+	    at SourceForge.net. Fast, secure and Free Open Source software
+	    downloads" /></a><br>
+		<a
+		    href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
+		    width=80px
+		    src="facebook_logo.jpg"></a></br>
 	    </td>
 
 
 	    <td class=mainpanel>
+		<h2 >Requirements</h2>
 		<h3>vim 7.3</h3>
 		You need <a href="http://www.vim.org">vim</a> 7.3. It was
 		reported that <b>ATP</b> is not working on vim 7.2 (without any
 		patches). Look at output of vim command <code>:version</code> to
 		see which version of vim/gvim you have.
+		<h3>Align</h3>
+		<b>ATP</b> requires <a
+		    href="http://www.vim.org/scripts/script.php?script_id=294">Align
+		    Plugin </a>. <b>ATP</b> has <a
+		    href="doc/atp-commands.html#atp-:TexAlign"><code>:TexAlign</code></a>
+		command (and a map) which are handy to make source code of bmatrix,
+		balign, align, alignat, eqnarray, equation, falign,
+		displaymath and tabular environments look nice.<br> 
 		<h3>vim settings</h3>
 		You need to set <code>:filetype plugin on</code> and
 		<code>:syntax on</code> in your vimrc. The last one is

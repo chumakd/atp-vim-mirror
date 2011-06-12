@@ -20,7 +20,6 @@
     </head>
 <body bgcolor="#ffffff">
     <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
-    <h2><center>Feature List</center></h2>
 
 <table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
@@ -32,18 +31,28 @@
 		<a href="index.html">Main Page</a><br><br>
 		<a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
 		<a href="features.html">Feature list</a><br>
-		<a href="requirements.html">Requirements</a><br><br>
-		<a href="help.html">Docs</a><br><br>
+		<a href="requirements.html">Requirements</a><br>
+		<a href="plugins.html">Vim&nbspPlugins</a><br><br>
+		<a href="help.html">Help</a><br><br>
 		<a
 		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
 		    list</a><br>
 		<a href="https://sourceforge.net/news/?group_id=513143">News</a><br><br>
 		<a
 		    href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF Statistics</a><br><br>
-		<a href="http://sourceforge.net/projects/atp-vim"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10" width="80" height="15" alt="Get Automatic LaTex Plugin for Vim at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+		<a href="http://sourceforge.net/projects/atp-vim"><img
+		    src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
+		width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
+	    at SourceForge.net. Fast, secure and Free Open Source software
+	    downloads" /></a><br>
+		<a
+		    href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
+		    width=80px
+		    src="facebook_logo.jpg"></a></br>
 	    </td>
 
 	    <td class=mainpanel>
+		<h2>Feature List</h2>
 		<h3>Compilation Features:</h3>
 		<div>* <b>background TeX/LaTeX processing</b> with status
 		    info (current page number processed by LaTeX in status
@@ -54,7 +63,7 @@
 		<div>* <b>forward searching</b> (<i>vim->xpdf, okular,
 			xdvi</i>) <a
 			href="doc/atp-commands.html#atp-:SyncTex"><code>:SyncTex</code></a></div>
-		<div>* <i>goto <a
+		<div>* <i>go to <a
 			    href="doc/atp-commands.html#atp-:GotoNamedDest">named
 			    destination</a></i>: using
 		    <code>hyperref</code> package you can put named
@@ -63,9 +72,9 @@
 		<div>* <b>Making LaTeX projects</b> with just one command
 		    <a
 			href="doc/atp-commands.html#atp-:MakeLatex"><code>:MakeLatex</code></a>
-		    <div class="indented">/ bibliography, makeindex, table of
+		    <div class="indented">/ bibliography, index, table of
 			contents, lists of: figures, tables, theorems [with
-			ntheorem package], algorithms /</div></div>
+			<code>ntheorem</code> package], algorithms /</div></div>
 		<div>* <i>various <a
 			    href="doc/atp-commands.html#atp-debug-mode">debug
 			    modes</a></i>: silent/debug/Debug/verbose.
@@ -76,7 +85,7 @@
 		    <div class="indented">/ <i>error file is automatically read after compilation</i> /</div></div>
 		<div>* <a href="doc/atp-commands.html#atp-:OpenLog">open log</a>, in log file you can <em>sync the tex source
 		    with the log file</em> (then errors in the source file
-		will be higlighted!) or the <em>xpdf viewer with the
+		will be highlighted!) or the <em>xpdf viewer with the
 		    log</em> file. There are also maps to go to
 		next/previous error/warning/info/... message. And there is
 		syntax file for tex log files.</div><br>
@@ -91,13 +100,18 @@
 		* changing the star (add remove a star from environment)</div><br>
 
 		 <h3>Completions:</h3>
-		 <div>* <b><a href="doc/atp-completion.html">completion</a> for commands</b> (also user defined in associate files), 
-		    environments, citations, references, tikz commands, keywords, provided abbreviations, and much more<br>
+		 <div>* <b><a href="doc/atp-completion.html">completion</a>
+			 for commands</b> (also user defined in associate
+		     files), environments, citations, references,
+		     <code>tikz</code> commands, keywords, provided
+		     abbreviations, and much more<br>
 		      <div class="indented">/ there are two completion modes: when you know what you want with <Tab>
 			     and when you search for a command with Shift+Tab /</div>
 			 <div class="indented"><em>Some completion features:</em></div>
 			    <div class="double_indent">+ math commands are completed only in math mode</div>
-			    <div class="double_indent">+ tikz commands/keywords are completed only in tikz environments</div>
+			    <div class="double_indent">+ <code>tikz</code>
+				commands/keywords are completed only in
+				<code>tikz</code> environments</div>
 			    <div class="double_indent">+ <b>completion of</b>
 				<code>\ref</code>, <code>\eqref</code> <b>by
 				    numbers from the output</b>
@@ -112,7 +126,7 @@
 								   passed to the searching tool in bibliography files</div>
 		 <div>* <b>closing brackets and environments</b> (preserves nested environments in  100%)<br>
 		     <div class="indented">/ which is included into completion with <Tab> key)</div></div>
-		 <div>* many usefull <a href="doc/atp-mappings.html">maps</a><br>
+		 <div>* many useful <a href="doc/atp-mappings.html">maps</a><br>
 		 <div class="indented">/ some of them are configurable (on the
 		     fly): for example you can change if * is added to
 		 environments which are put by imaps. /</div>
@@ -138,7 +152,7 @@
 		 <div>* moving commands to <a href="doc/atp-commands.html#atp-:F">next environment</a><br>
 			     <div class="indented">/ configured with vim normal commands:
 				 <code>n</code> and <code>N</code> for repeating /</div>
-			     <div class="indented">/ also to next [inline/displayed] math environment /</div>
+			     <div class="indented">/ also to next [in line/displayed] math environment /</div>
 			     <div class="indented">/ support of project files /</div>
 			     * <b>% operates on</b> <code>$:$</code>,
 			     <code>\(:\)</code> and <code>\[:\]</code> (in plain tex also on
@@ -183,10 +197,10 @@
 				    directory/</div></div>
 		<div>* <a
 		    href="doc/atp-commands.html#atp-:GotoFile"><code>:GotoFile</code></a>
-		function (replace vim gf map), which list all the input files for
+		function (replace vim <code>gf</code> map), which list all the input files for
 		the main project file and let you go to one of them (it also sets
 		the main file variable for the new buffer to correct value
-		automaticaly).</div>
+		automatically).</div>
 		<div>* <a href="doc/atp-commands.html#atp-:GotoLabel"><code>:GotoLabel</code></a> command, 
 		    you can pass label number which appears in the output as an
 		    argument (or the label name).</div>
