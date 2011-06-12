@@ -34,31 +34,32 @@ some other key that it is not used in Vim (there are not many of them though).
 The most commonly used latex-suite plugin uses similar set of mappings (but
 there might be some differences). The easy way to change imap leaders is by
 using the variables:</p>
-<a name="g:atp_imap_first_leader"></a>
+<p><a name="g:atp_imap_first_leader"></a>
 	    <div class=variable>g:atp_imap_first_leader == "#"</div>
-	    	<p>for Greak letters and some math commands,</p>
-<a name="g:atp_imap_second_leader"></a>
+	    <div class=indented>for Greak letters and some math
+		commands,</div></p>
+<p><a name="g:atp_imap_second_leader"></a>
 	    <div class=variable>g:atp_imap_second_leader == "##"</div>
-	    	<p>for font commands, (another good choice is "_")</p> 
-<a name="g:atp_imap_third_leader"></a>
+	    <div class=indented>for font commands, (another good choice is "_")</div></p> 
+<p><a name="g:atp_imap_third_leader"></a>
 	    <div class=variable>g:atp_imap_third_leader == "]"</div>
-	    	<p>for environments,</p> 
-<a name="g:atp_imap_fourth_leader"></a>
+	    <div class=indented>for environments,</div></p> 
+<p><a name="g:atp_imap_fourth_leader"></a>
 	    <div class=variable>g:atp_imap_fourth_leader == "["</div>
-	    	<p>for extra environments in the old layout (this will be removed).</p>
-<div class=variable><a
+	    <div class=indented>for extra environments in the old layout (this will be removed).</div></p>
+<p><div class=variable><a
 	href="atp-commands.html#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
  == "&lt"</div>
-	    <p>for maps to <a href="atp-ProjectFiles.html#atp-:NInput">atp-:NInput</a>, <a
+	    <div class=indented>for maps to <a href="atp-ProjectFiles.html#atp-:NInput">atp-:NInput</a>, <a
 		href="atp-commands.html#atp-:NSec">atp-:NSec</a>, .... , <a
-		href="atp-commands.html#atp-&gtE">atp-&gtE</a>, <a href="atp-commands.html#atp-&gte">atp-&gte</a>.</p>
-<div class=variable><a
-	href="atp-commands.html#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a> ==
-"&gt"</div>
-	    <p>for maps to <a href="atp-ProjectFiles.html#atp-:PInput">atp-:PInput</a>, <a
+		href="atp-commands.html#atp-&gtE">atp-&gtE</a>, <a href="atp-commands.html#atp-&gte">atp-&gte</a>.</div></p>
+	<p><div class=variable><a
+		href="atp-commands.html#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a>
+	== "&gt"</div>
+	    <div class=indented>for maps to <a href="atp-ProjectFiles.html#atp-:PInput">atp-:PInput</a>, <a
 		href="atp-commands.html#atp-:NSec">atp-:PSec</a>, .... , <a
 		href="atp-commands.html#atp-&ltE">atp-&ltE</a>, <a
-		href="atp-commands.html#atp-&lte">atp-&lte</a>.</p>
+		href="atp-commands.html#atp-&lte">atp-&lte</a>.</div></p>
 
 <p>Note: the best way to list mappings with leader '#' in insert mode is to use
       <div class=map>':imap #&ltCR&gt'.</div></p>
@@ -122,14 +123,14 @@ which help to navigate thought brackets (but not only) in insert mode.</p>
 
 <a name="b:atp_BibtexOutput"></a>
 <a name="b:atp_BibtexReturnCode"></a>
-<div class=command>:Bibtex[!]</div>	
+<p><div class=command>:Bibtex[!]</div>	
 <div class=map>map \b</div>
-<p>run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX if you use <a
+<div class=indented>run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX if you use <a
     href="atp-commands.html#g:atp_Compiler">g:atp_Compiler</a>='python' and BibTeX returned
 with errors the compilation will stop. In the debug mode you will also get
 BibTeX output. It is stored in <a
     href="#b:atp_BibtexOutput">b:atp_BibtexOutput</a>, BibTeX return code is
-in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</p>
+in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 
 <p><div class=command>:OpenLog</div>
 <div class=command>:ShowErrors o</div>
@@ -137,16 +138,16 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</p>
 
 <p><div class=command>:Delete[!]</div>
 <div class=map>map &ltF6&gtd</div>
-See <a href="atp-commands.html#atp-:Delete">atp-:Delete</a>.</p>
+<div class=indented>See <a href="atp-commands.html#atp-:Delete">atp-:Delete</a>.</div></p>
 
 <p><div class=command>:TOC[!]</div>
-<div class=map>map \t</div><br>
-This is a mapping to the command <a href="atp-commands.html#atp-:TOC">atp-:TOC</a></p>
+<div class=map>map \t</div>
+<div class=indented>This is a mapping to the command <a href="atp-commands.html#atp-:TOC">atp-:TOC</a></div></p>
 
 
 <p><div class=command>:Labels[!]</div>
 <div class=map>map \L</div>
-This is a mapping to the command <a href="atp-commands.html#atp-:Labels">atp-:Labels</a></p>
+<div class=indented>This is a mapping to the command <a href="atp-commands.html#atp-:Labels">atp-:Labels</a></div></p>
 
 <p><div class=command>:GotoFile</div>
 <div class=command>:EditInputFile</div>
@@ -155,68 +156,69 @@ This is a mapping to the command <a href="atp-commands.html#atp-:Labels">atp-:La
 <p><div align=left><a href="#atp-&gtm">atp-&gtm</a></div>
 <div align=left><a href="#atp-&ltm">atp-&ltm</a></div>
 <div class=map>nmap &gtm, nmap &ltm</div> 
-	Goto the beginning of next/previous math environment.</p>
+	<div class=indented>Goto the beginning of next/previous math environment.</div></p>
+
 <p><div align=left><a href="#atp-&ltM">atp-&ltM</a></div>
 <div align=left><a href="#atp-&gtM">atp-&gtM</a></div>	
 <div class=map>nmap &gtM, nmap &ltM</div>
-	Goto the beginning of next/previous displayed math environment.</p> 
+	<div class=indented>Goto the beginning of next/previous displayed math environment.</div></p> 
 							
 <p><a name="atp-]]"></a>
 <div class=map>nmap ]], vmap ]]</div>
-	Goto next \begin{</p>
+	<div class=indented>Goto next \begin{</div></p>
 
 <p><a name="atp-[["></a>
 <div class=map>nmap ]], vmap ]]</div>
-	Goto previous \begin{</p>
+	<div class=indented>Goto previous \begin{</div></p>
 
 <p><a name="atp-]["></a>
 <div class=map>nmap ]], vmap ][</div>
-	Goto next \end{</p>
+	<div class=indented>Goto next \end{</div></p>
 
 <p><a name="atp-[]"></a>
 <div class=map>nmap [], vmap []</div>
-	Goto previous \end{</p>
+	<div class=indented>Goto previous \end{</div></p>
 
-<p><a href="atp-commands.html#atp-gc">atp-gc</a>
+<p><a href="atp-commands.html#atp-gc"></a>
 <div class=map>nmap gcl, vmap gc</div> 
-	Goto end of comment group (current or next if not in comment).</p>
+	<div class=indented>Goto end of comment group (current or next if not in comment).</div></p>
 
-<p><a href="atp-commands.html#atp-gC">atp-g</a>C
+<p><a href="atp-commands.html#atp-gC"></a>
 <div class=map>nmap gC, vmap gC</div>
-	Goto begin of comment group (current or previous if not in comment).</p>
+	<div class=indented>Goto begin of comment group (current or previous if not in comment).</div></p>
 	    
 <a name="atp-:TexDoc"></a>
 <p><div class=command>TexDoc:</div>
 <div class=map>map &ltF1&gt, imap &ltF1&gt</div>
-	Then you have to type what you are looking for and press enter. The
+	<div class=indented>Then you have to type what you are looking for and press enter. The
 	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
 	over a package name and you press 'K' key then you should see the
-	package document file (if it is named after the package).</p>
+	package document file (if it is named after the package).
 
 	<p>Without any argument it will open "g:atp_TeXdocDefault", by default it
 	is eqaul to "-a lshort", i.e. "The not so short introduction to LaTeX
 	2e" by Tobias Oetiker. You can change the default for something that
 	you use more often, for example you can set it to "-a faq", i.e. 'The
-	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :).</p> 
+	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :).</p></div></p> 
 
 <p><div class=command>:NInput</div>
 <div class=map>nmap ]gf</div>
-	Goto next input file.</p>
+	<div class=indented>Goto next input file.</div></p>
 <p><div class=command>:PInput</div>
 <div class=map>nmap [gf</div>
-	Goto previous input file.</p>
+    <div class=indented>Goto previous input file.</p></div></p>
 
 <a name="pdffonts"></a> <a name="atp-:PdfFonts"></a>
 <p><div class=command>:PdfFonts</div>
 <div class=map>&ltF6&gtg</div>
-Runs pdffonts command on pdf output file.</p> 
+<div class=indented>Runs pdffonts command on pdf output file.</div></p> 
 
 <a name="atp-comment-lines"></a> <a name="atp-uncomment-lines"></a> <a name="g:atp_MapCommentLines"></a>
 <p><div class=map>nmap \c, vmap \c</div>		
-comment
+<div class=indented>comment</div>
 <div class=map>nmap \u, vmap \u</div>
-uncomment<br>
-	Comment/Uncomment lines (both in |Normal| and |Visual| modes).</p> 
+<div class=indented>uncomment
+	<p>Comment/Uncomment lines (both in |Normal| and |Visual| modes).</p> 
 
 	<p>Comment leader can be set with the variable g:atp_CommentLeader (by
 	default it is '% '). If you do not want this maps or you want to remap
@@ -228,42 +230,43 @@ uncomment<br>
 	<div class=map>nmap &ltLocalLeader&gtC 	&ltPlug&gtUnCommentLines</div>
 	<div class=map>vmap &ltLocalLeader&gtC 	&ltPlug&gtUnCommentLines</div>
 	A usefull map for uncommenting <a href="atp-editing.html#atp-_c">atp-_c</a> (i.e. <a
-	    href="atp-editing.html#atp-select-comments">atp-select-comments</a>).</p>
+	    href="atp-editing.html#atp-select-comments">atp-select-comments</a>).</p></div></p>
 
 <a name="atp-space"></a>
 <p><div class=map>cmap &ltbuffer&gt &ltC-Space&gt 	\_s\+</div>
 <div class=map>cmap &ltbuffer&gt &ltC-_&gt 		\_s\+</div>
-    The &ltC-Space&gt map doesn't work in Vim, instead &ltC-@&gt is used which
+    <div class=indented>The &ltC-Space&gt map doesn't work in Vim, instead &ltC-@&gt is used which
     works as &ltC-Space&gt. In Vim, and gVim as well, you can also use
     |atp-Q/|, <a href="#atp-Q?">atp-Q?</a> or <a
 	href="#atp-&ltF2&gt">atp-&ltF2&gt</a> where &ltSpace&gt is mapped to
-    \_s\+.</p>
+    \_s\+.</div></p>
 
-    <a name="atp-Q/"></a> <a name="atp-Q?"></a> <a name="atp-&ltF2&gt"></a>
+<a name="atp-Q/"></a> <a name="atp-Q?"></a> <a name="atp-&ltF2&gt"></a>
     <p><div class=map>nmap Q/, nmap Q?, nmap &ltF2&gt</div>
-	Q/ and Q? to enter command-line window in which &ltspace&gt is mapped to
+	<div class=indented>Q/ and Q? to enter command-line window in which &ltspace&gt is mapped to
 	'\_s\+'. If you want to insert a white space type CTRL-V followed by
-	&ltSpace&gt.</p>
+	&ltSpace&gt.
 
 	<p>&ltF2&gt acts as 'Q/i' (i.e. enters insert mode).
 	If you want Q/ and Q? enter insert mode as well you can set: &gt
 	    <div class=map>nmap Q/		q/:call ATP_CmdwinToggleSpace('on')&ltCR&gti</div>
 	    <div class=map>nmap Q?		q?:call ATP_CmdwinToggleSpace('on')&ltCR&gti</div>
-	in your <a href="atp-configure.html#atprc">atprc</a> or |vimrc| file.</p>
+	in your <a href="atp-configure.html#atprc">atprc</a> or |vimrc| file.</p></div></p>
 
 <a name="atp-imap-fonts"></a>
 <h3>Font Commands</h3>
-<div class=map>imap ##rm \textrm{}&ltLeft&gt</div>
-<div class=map>imap ##it \textit{}&ltLeft&gt</div>
-<div class=map>imap ##sl \textsl{}&ltLeft&gt</div>
-<div class=map>imap ##sf \textsf{}&ltLeft&gt</div>
-<div class=map>imap ##bf \textbf{}&ltLeft&gt</div>
-	
-<div class=map>imap ##mit \mathit{}&ltLeft&gt</div>
-<div class=map>imap ##mrm \mathrm{}&ltLeft&gt</div>
-<div class=map>imap ##msf \mathsf{}&ltLeft&gt</div>
-<div class=map>imap ##mbf \mathbf{}&ltLeft&gt</div>
 
+<table border=0 vspace=0 cellspacing=1 >
+    <tr><td><div class=map>imap ##rm</div></td><td> \textrm{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##it</div></td><td> \textit{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##sl</div></td><td> \textsl{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##sf</div></td><td> \textsf{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##bf</div></td><td> \textbf{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##mit</div></td><td> \mathit{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##mrm</div></td><td> \mathrm{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##msf</div></td><td> \mathsf{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##mbf</div></td><td> \mathbf{}&ltLeft&gt</td></tr>
+</table>
 <a name="atp-imap-greek-letters"></a>							
 <h3>Greek Letters</h3>
 <p>Note: You can list this mappings using the command |atp-:HelpMathIMaps|.
@@ -272,51 +275,55 @@ mode was inside mathematics.</p>
   <a name="g:atp_imap_define_greek_letters"></a>
 <p>Note: If you do not want imaps for greek letters you can set
 <a href="#g:atp_imap_define_greek_letters">g:atp_ima_define_greek_letters</a> = 0</p>
-<div class=map>imap #a 	\alpha</div>
-<div class=map>imap #b 	\beta</div>
-<div class=map>imap #c 	\chi</div>
-<div class=map>imap #d 	\delta</div>
-<div class=map>imap #e 	\epsilon</div>
-<div class=map>imap #f 	\phi</div>
-<div class=map>imap #y 	\psi</div>
-<div class=map>imap #g 	\gamma</div>
-<div class=map>imap #h 	\eta</div>
-<div class=map>imap #k 	\kappa</div>
-<div class=map>imap #l 	\lambda</div>
-<div class=map>imap #i 	\iota</div>
-<div class=map>imap #m 	\mu</div>
-<div class=map>imap #n 	\nu</div>
-<div class=map>imap #p 	\pi</div>
-<div class=map>imap #o 	\theta</div>
-<div class=map>imap #r 	\rho</div>
-<div class=map>imap #s 	\sigma</div>
-<div class=map>imap #t 	\tau</div>
-<div class=map>imap #u 	\upsilon</div>
-<div class=map>imap #vs 	\varsigma</div>
-<div class=map>imap #vo 	\vartheta</div>
-<div class=map>imap #w 	\omega</div>
-<div class=map>imap #x 	\xi</div>
-<div class=map>imap #z 	\zeta</div>
+<table border=0 vspace=0 cellspacing=1 >
+    <tr><td><div class=map>imap #a</div></td><td>\alpha</td></tr>
+    <tr><td><div class=map>imap #b</div></td><td>\beta</td></tr>
+    <tr><td><div class=map>imap #c</div></td><td>\chi</td></tr>
+    <tr><td><div class=map>imap #d</div></td><td>\delta</td></tr>
+    <tr><td><div class=map>imap #e</div></td><td>\epsilon</td></tr>
+    <tr><td><div class=map>imap #f</div></td><td>\phi</td></tr>
+    <tr><td><div class=map>imap #y</div></td><td>\psi</td></tr>
+    <tr><td><div class=map>imap #g</div></td><td>\gamma</td></tr>
+    <tr><td><div class=map>imap #h</div></td><td>\eta</td></tr>
+    <tr><td><div class=map>imap #k</div></td><td>\kappa</td></tr>
+    <tr><td><div class=map>imap #l</div></td><td>\lambda</td></tr>
+    <tr><td><div class=map>imap #i</div></td><td>\iota</td></tr>
+    <tr><td><div class=map>imap #m</div></td><td>\mu</td></tr>
+    <tr><td><div class=map>imap #n</div></td><td>\nu</td></tr>
+    <tr><td><div class=map>imap #p</div></td><td>\pi</td></tr>
+    <tr><td><div class=map>imap #o</div></td><td>\theta</td></tr>
+    <tr><td><div class=map>imap #r</div></td><td>\rho</td></tr>
+    <tr><td><div class=map>imap #s</div></td><td>\sigma</td></tr>
+    <tr><td><div class=map>imap #t</div></td><td>\tau</td></tr>
+    <tr><td><div class=map>imap #u</div></td><td>\upsilon</td></tr>
+    <tr><td><div class=map>imap #vs</div></td><td>\varsigma</td></tr>
+    <tr><td><div class=map>imap #vo</div></td><td>\vartheta</td></tr>
+    <tr><td><div class=map>imap #w</div></td><td>\omega</td></tr>
+    <tr><td><div class=map>imap #x</div></td><td>\xi</td></tr>
+    <tr><td><div class=map>imap #z</div></td><td>\zeta</td></tr>
+</table>
 
 <p>Not all upper Greek letters are in LaTeX:</p>
-<div class=map>imap #D 	\Delta</div>
-<div class=map>imap #Y 	\Psi</div>
-<div class=map>imap #F 	\Phi</div>
-<div class=map>imap #G 	\Gamma</div>
-<div class=map>imap #L 	\Lambda</div>
-<div class=map>imap #M 	\Mu</div>
-<div class=map>imap #P 	\Pi</div>
-<div class=map>imap #O 	\Theta</div>
-<div class=map>imap #S 	\Sigma</div>
-<div class=map>imap #T 	\Tau</div>
-<div class=map>imap #U 	\Upsilon</div>
-<div class=map>imap #V 	\Varsigma</div>
-<div class=map>imap #W 	\Omega</div>
-<div class=map>imap #Z 	\mathrm{Z}</div>
+<table border=0 vspace=0 cellspacing=1 >
+    <tr><td><div class=map>imap #D</div></td><td> 	\Delta</td></tr>
+    <tr><td><div class=map>imap #Y</div></td><td> 	\Psi</td></tr>
+    <tr><td><div class=map>imap #F</div></td><td> 	\Phi</td></tr>
+    <tr><td><div class=map>imap #G</div></td><td> 	\Gamma</td></tr>
+    <tr><td><div class=map>imap #L</div></td><td> 	\Lambda</td></tr>
+    <tr><td><div class=map>imap #M</div></td><td> 	\Mu</td></tr>
+    <tr><td><div class=map>imap #P</div></td><td> 	\Pi</td></tr>
+    <tr><td><div class=map>imap #O</div></td><td> 	\Theta</td></tr>
+    <tr><td><div class=map>imap #S</div></td><td> 	\Sigma</td></tr>
+    <tr><td><div class=map>imap #T</div></td><td> 	\Tau</td></tr>
+    <tr><td><div class=map>imap #U</div></td><td> 	\Upsilon</td></tr>
+    <tr><td><div class=map>imap #V</div></td><td> 	\Varsigma</td></tr>
+    <tr><td><div class=map>imap #W</div></td><td> 	\Omega</td></tr>
+    <tr><td><div class=map>imap #Z</div></td><td> 	\mathrm{Z}</td></tr>
+</table>
 <a name="atp-imap-environments"></a> <a name="g:atp_imap_ShortEnvIMaps"></a>
 <h3>Environment Imaps</h3>
-<div class=map>g:atp_imap_ShortEnvIMaps=1</div> 
-    <p>By default the short environment imaps are defined, but if you set this
+<p><div class=map>g:atp_imap_ShortEnvIMaps=1</div> 
+    <div class=indented>By default the short environment imaps are defined, but if you set this
     variable to 0 you will get three letter abbreviations.  The only clashes
     is for proof (pro) and proposition (Pro) environments and itemize (ite)
     and \item (I). You can also reconfigure them using the variables:
@@ -324,38 +331,38 @@ mode was inside mathematics.</p>
     a map for particular environment set the corresponding variable to empty
     string ""), <a href="#g:atp_imap_third_leader">g:atp_imap_third_leader</a>
     is used as a leader (the default is ]).  Map for letter environment is not
-    defined when you use short imaps.</p>
+    defined when you use short imaps.</div></p>
 
 <p>Note: you can list this mappings using the command <a
     href="atp-commands.html#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a>.<br>
 Note: This can be effectivly set only in <a href="atp-configure.html#atprc">atprc</a> or |vimrc| files.</p>
 
-    <p>These maps are fully customizable: both sides: the lhs and rhs side ! Here
-    is how you can set the rhs:</p>
-    <div class=map><a name="g:atp_EnvNameTheorem">g:atp_EnvNameTheorem</a></div>
-    <div class=map><a name="g:atp_EnvNameProposition">g:atp_EnvNameProposition</a></div>
-    <div class=map><a name="g:atp_EnvNameLemma">g:atp_EnvNameLemma</a></div>
-    <div class=map><a name="g:atp_EnvNameCorollary">g:atp_EnvNameCorollary</a></div>
-    <div class=map><a name="g:atp_EnvNameRemark">g:atp_EnvNameRemark</a></div>
-    <div class=map><a name="g:atp_EnvNameNote">g:atp_EnvNameNote</a></div>
-    <div class=map><a name="g:atp_EnvNameDefinition">g:atp_EnvNameDefinition</a></div>
-    <p>This variables defines environment names put it the following environment imaps.</p>
+<p>These maps are fully customizable: both sides: the lhs and rhs side ! Here
+is how you can set the rhs:</p>
+<div class=map><a name="g:atp_EnvNameTheorem">g:atp_EnvNameTheorem</a></div>
+<div class=map><a name="g:atp_EnvNameProposition">g:atp_EnvNameProposition</a></div>
+<div class=map><a name="g:atp_EnvNameLemma">g:atp_EnvNameLemma</a></div>
+<div class=map><a name="g:atp_EnvNameCorollary">g:atp_EnvNameCorollary</a></div>
+<div class=map><a name="g:atp_EnvNameRemark">g:atp_EnvNameRemark</a></div>
+<div class=map><a name="g:atp_EnvNameNote">g:atp_EnvNameNote</a></div>
+<div class=map><a name="g:atp_EnvNameDefinition">g:atp_EnvNameDefinition</a></div>
+<p>This variables defines environment names put it the following environment imaps.</p>
 
 <p><a name="b:atp_StarEnvDefault"></a>
 <div class=variable>b:atp_StarEnvDefault</div>
-    variable with value "*" or "" (the default). This
+    <div class=indented>variable with value "*" or "" (the default). This
     star is added to theorem like environment imaps (<a
 	href="#atp-imap-environments">atp-imap-environments</a>).  By default
     it will be restored by the project script. See <a
-	href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
+	href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
 
 <p><a name="b:atp_StarMathEnvDefault"></a>	
 <div class=map>b:atpStarMathEnvDefault</div>
-     variable with values "*" or "" (the default).  It is added to align and
+     <div class=indented>variable with values "*" or "" (the default).  It is added to align and
      equation imaps (<a
 	 href="#atp-imap-environments">atp-imap-environments</a>).  By default
      it will be restored by the project script. See <a
-	 href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</p>
+	 href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
 
 <table border=0 vspace=0 cellspacing=1 >
     <tr><td><div class=map>imap ]b</div></td><td><div class=map>]beg</div></td><td> \begin{}&ltLeft&gt</td></tr>
@@ -402,139 +409,185 @@ Note: This can be effectivly set only in <a href="atp-configure.html#atprc">atpr
 <tr><td ><div class=map>imap ]f</div></td><td><div class=map>
 	    ]fra</div></td><td>\begin{frame}&ltCr&gt\end{frame}&ltEsc&gtO</td></tr>
 
-<tr><td valign=top><div class=map>imap ]let</div></td><td></td><td><pre>
-			\begin{letter}{&ltcursor&gt}
-			    \opening{g:atp_letter_opening} 
-			    \closing{g:atp_letter_closing}
-			\end{letter}</pre></td></tr>
+<tr><td valign=top><div class=map>imap ]let</div></td><td></td><td>
+<pre>
+\begin{letter}{&ltcursor&gt}
+    \opening{g:atp_letter_opening} 
+    \closing{g:atp_letter_closing}
+\end{letter}</pre></td></tr>
 </table>
 
 <p><div class=variable><a name="g:atp_letter_opening">g:atp_letter_opening</a></div>
 <div class=variable><a name="g:atp_letter_closing">g:atp_letter_closing</a></div>
-    By default g:atp_letter_opening and g:atp_letter_closing are ''.</p>
-    <a name="atp-imap-math"></a>
+    <div class=indented>By default g:atp_letter_opening and g:atp_letter_closing are ''.</div></p>
+
+    <p>Next three sets of imaps: <a href="#atp-imap-math">">atp-imap-math</a>,
+    <a href="#atp-imap-math-misc">atp-imap-math-misc</a> and <a
+    href="#atp-imap-diacritics">atp-imap-diacritics</a> define imaps with
+    overlaping keys (lhs), but note that first two are defined only in math
+    environment, while the last only in non math environment. In this way `' in
+    math environment will produce \acute{} while in non math \'{}. </p>
+<a name="atp-imap-math"></a>
+<a name="g:atp_imap_math"></a>
+<a name="g:atp_imap_define_math"></a>
 <h3>Math Imaps</h3>
+    <p>These imaps are defined in <a href="#g:atp_imap_math">g:atp_imap_math</a>
+    variable (except ]m and ]M imaps). They might be turned off usgin <a
+    href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or <a
+    href="#g:atp_imap_define_math">g:atp_imap_define_math</a> variable (be
+    setting it to 0, works on the fly).</p>
+
+    <p>For convienience, there are:
+    <table border=0 vspace=0 cellspacing=1 >
+	<tr><td><div class=map>imap ~~</div></td><td>		\tilde{}</td></tr>
+	<tr><td><div class=map>imap ~^</div></td><td>		\hat{}		[^^ is used for ^{}]</td></tr>	
+    </table>
+    <a name="g:atp_imap_wide"></a>
+    If g:atp_imap_wide is set to 1 (default is 0) the above imaps to
+    \widetilde{} and \widehat{}.</p>
+
+    <p><div class=indented>The last two maps and the following maps work around |'timeout'| vim
+	setting (behave like |'notimeout'| was set):</div></p>
+
+    <table border=0 vspace=0 cellspacing=1 >
+	<tr><td><div class=map>imap ==</div></td><td>		&=</td></tr>
+	<tr><td><div class=map>imap =~</div></td><td>		\cong</td></tr>
+	<tr><td><div class=map>imap ~~</div></td><td>		\approx</td></tr>
+
+	<tr><td><div class=map>imap o+</div></td><td>		\oplus</td></tr>
+	<tr><td><div class=map>imap O+</div></td><td>		\bigoplus</td></tr>
+	<tr><td><div class=map>imap o-</div></td><td>		\ominus</td></tr>
+	<tr><td><div class=map>imap o.</div></td><td>		\odot</td></tr>
+	<tr><td><div class=map>imap O.</div></td><td>		\bigodot</td></tr>
+	<tr><td><div class=map>imap o*</div></td><td>		\otimes</td></tr>
+	<tr><td><div class=map>imap O*</div></td><td>		\bigotimes</td></tr>
+	<tr><td><div class=map>imap s+</div></td><td>		\cup</td><td>		[    set +]</td><td>/set = set theoretic/</td></tr>
+	<tr><td><div class=map>imap s-</div></td><td>		\setminus</td><td>	[    set -]</td></tr>
+	<tr><td><div class=map>imap S+</div></td><td>		\bigcup</td><td>		[big set +]</td></tr>
+	<tr><td><div class=map>imap s*</div></td><td>		\cap</td><td>		[    set *]</td></tr>
+	<tr><td><div class=map>imap S*</div></td><td>		\bigcap</td><td>		[big set *]</td></tr>
+	<tr><td><div class=map>imap c*</div></td><td>		\prod</td><td>		[    cat *]</td><td>/cat = categorical/</td></tr>
+	<tr><td><div class=map>imap c+</div></td><td>		\coprod</td><td>		[    cat +]</td></tr>
+	<tr><td><div class=map>imap &lt=</div></td><td>		\leq</td></tr>
+	<tr><td><div class=map>imap &gt=</div></td><td>		\geq</td></tr>
+	<tr><td><div class=map>imap t&lt</div></td><td>		\triangleleft</td></tr>
+	<tr><td><div class=map>imap t&gt</div></td><td>		\triangleright</td></tr>
+	<tr><td><div class=map>imap s&lt</div></td><td>		\subseteq</td><td>	[    set &lt]</td></tr>
+	<tr><td><div class=map>imap s&gt</div></td><td>		\supseteq</td><td>	[    set &gt]</td></tr>
+    </table>
+
+    <div call=indented>If you want to write 'o*' you can wait until |'timeoutlen'| passes or
+    write 'o *' (TeX in math mode doesn't see spaces).</div></p>
+
+<a name="atp-imap-math"></a>
+<a name="g:atp_imap_math"></a>
+<a name="g:atp_imap_define_math"></a>
+<h3>Math Imaps Misc</h3>
+
+    <p>These imaps are defined in <a href="#g:atp_imap_math">g:atp_imap_math</a>
+    variable (except ]m and ]M imaps). They might be turned off usgin <a
+    href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or by setting the
+    variable <a href="#g:atp_imap_define_math">g:atp_imap_define_math</a> to
+    0 (this should also work on the fly).</p>
+
     <p>These are very useful mappings for typing mathematics. 
     Some of the ideas were taken from TeX_9 by Elias Toivanen and also AuTeX by
     Carl Mueller.<br>
-    Note: you might not see them using |:imap| unless the last cursor position in
-	  insert mode was inside mathematics.</p>
+    <b>Note</b>: you might not see them using |:imap| unless the last cursor position
+    in insert mode was inside mathematics.</p>
 
-    <p>Note: You can turn on/off math imaps on the fly using '<tab> imap and nmap.
-	  See |atp-:ToggleMathIMaps| below.</p>
-<a name="g:atp_imap_define_math"></a> <a name="g:atp_imap_define_math_misc"></a>
-    <p>Note: If you do not want to set math imaps you can set <a
-	href="#g:atp_imap_define_math">g:atp_imap_define_math</a> and <a
-	href="#g:atp_imap_define_math_misc">g:atp_imap_define_math_misc</a> to
-    0. The first will disable maps defined in g:atp_imap_math the second
-    variable will disable imaps defined in g:atp_imap_math_misc.</p>
-			
-<p>AuTeX maps:
+<h4>AuTeX maps</h4>
 <div class=map>imap __ 	_{}&ltLeft&gt</div>
 <div class=map>imap ^^		^{}&ltLeft&gt</div>
-    You can set the leader for these two maps using g:atp_imap_subscript,
-    g:atp_imap_supscript variables. If you do not have any maps which begins
-    with _ or ^ then you can set them to _ and ^, if this is the case thes
-    maps will not be fired if you type \_ or \^ (which means literal _ or ^ in
-    LaTeX).</p> 
-    <div class=variable><a name="g:atp_imaps">g:atp_imaps</a></div>
-    <p>Both above maps can be turned on/off on the fly with <a
-	href="#g:atp_imaps">g:atp_imaps</a> (1
-    - on, 0 - off). Use <a
-	href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a> (mapped to '<Tab>) to switch it
-    on/off.</p>
+    <div class=indented>You can set the leader for these two maps using
+	g:atp_imap_subscript, g:atp_imap_supscript variables. If you do not
+	have any maps which begins with _ or ^ then you can set them to _ and
+	^, if this is the case thes maps will not be fired if you type \_ or
+	\^ (which means literal _ or ^ in LaTeX).</div></p> 
 
+<div class=variable><a name="g:atp_imaps">g:atp_imaps</a></div>
+    <div class=indented>Both above maps can be turned on/off on the fly with
+	<a href="#g:atp_imaps">g:atp_imaps</a> (1 - on, 0 - off). Use <a
+    href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a> (mapped to '<Tab>)
+    to switch it on/off.</div></p>
 
 <p><div class=map>imap ]m 	\[\]&ltLeft&gt&ltLeft&gt</div>
 <div class=map>imap ]M 	\[\]&ltLeft&gt&ltLeft&gt</div>
-
-    The following imaps can be turned on/off on the fly with <a
-	href="#g:atp_imap_define_math">g:atp_imap_define_math</a> variable (0
-    - off, 1 - on). You can use <a
+    <div class=indented>The following imaps can be turned on/off on the fly
+	with <a href="#g:atp_imap_define_math">g:atp_imap_define_math</a>
+	variable (0 - off, 1 - on). You can use <a
 	href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a> (mapped to
-    '<Tab>).</p>
+    '&ltTab&gt).</div></p>
 
+    <table border=0 vspace=0 cellspacing=1 >
+	<tr><td><div class=map>imap #\</td><td>	\setminus</td></tr>
+	<tr><td><div class=map>imap #/</div></td><td>		\frac{}{}</td></tr>
+	<tr><td><div class=map>imap #&</div></td><td>		\wedge</td></tr>
+	<tr><td><div class=map>imap #ve</div></td><td>	\vee</td></tr>
+	<tr><td><div class=map>imap #V</div></td><td>		\Vee</td></tr>
+	<tr><td><div class=map>imap #N</div></td><td>		\Nabla</td></tr>
+	<tr><td><div class=map>imap #=</div></td><td>		\equiv</td></tr>
+	<tr><td valign=top><div class=map>imap `8</div></td><td>		\infty
+		    [the default '#' is not working, ` is used intead, but only if <a
+			href="#g:atp_imap_first_leader">g:atp_imap_first_leader</a>='#']</td></tr>
+	<tr><td><div class=map>imap `6</div></td><td>		\partial	[as above, you
+		    can also use \p&ltTab&gt]</td></tr>
+	<tr><td><div class=map>imap #@</div></td><td>		\circ</td></tr>
+	<tr><td><div class=map>imap #=</div></td><td>		\equiv</td></tr>
+	<tr><td><div class=map>imap #*</div></td><td>		\bigcap</td></tr>
+	<tr><td><div class=map>imap #+</div></td><td>		\bigcup</td></tr>
+	<tr><td><div class=map>imap #\</div></td><td>		\backslash</td></tr>
+	<tr><td><div class=map>imap #&gt</div></td><td>	\geq</td></tr>
+	<tr><td><div class=map>imap #&lt</div></td><td>	\leq</td></tr>
+	<tr><td><div class=map>imap #.</div></td><td>		\dot		[#.s will put \dots]</td></tr>
+    </table><br>
 
-<table border=0 vspace=0 cellspacing=1 >
-    <tr><td><div class=map>imap #\</td><td>	\setminus</td></tr>
-<tr><td><div class=map>imap #/</div></td><td>		\frac{}{}</td></tr>
-<tr><td><div class=map>imap #&</div></td><td>		\wedge</td></tr>
-<tr><td><div class=map>imap #ve</div></td><td>	\vee</td></tr>
-<tr><td><div class=map>imap #V</div></td><td>		\Vee</td></tr>
-<tr><td><div class=map>imap #N</div></td><td>		\Nabla</td></tr>
-<tr><td><div class=map>imap #=</div></td><td>		\equiv</td></tr>
-<tr><td valign=top><div class=map>imap `8</div></td><td>		\infty
-	    [the default '#' is not working, ` is used intead, but only if <a
-		href="#g:atp_imap_first_leader">g:atp_imap_first_leader</a>='#']</td></tr>
-<tr><td><div class=map>imap `6</div></td><td>		\partial	[as above, you
-	    can also use \p&ltTab&gt]</td></tr>
-<tr><td><div class=map>imap #@</div></td><td>		\circ</td></tr>
-<tr><td><div class=map>imap #=</div></td><td>		\equiv</td></tr>
-<tr><td><div class=map>imap #*</div></td><td>		\bigcap</td></tr>
-<tr><td><div class=map>imap #+</div></td><td>		\bigcup</td></tr>
-<tr><td><div class=map>imap #\</div></td><td>		\backslash</td></tr>
-<tr><td><div class=map>imap #&gt</div></td><td>	\geq</td></tr>
-<tr><td><div class=map>imap #&lt</div></td><td>	\leq</td></tr>
-<tr><td><div class=map>imap #.</div></td><td>		\dot		[#.s will put \dots]</td></tr>
-</table>
+<h4>Math Accents</h4>
+    <p>These imaps are defined in g:atp_imap_math_misc variable. They might be
+    turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
+    <a href="#g:atp_imap_define_math">g:atp_imap_define_math_misc</a> variable.
+    <p>
+    <table border=0 vspace=0 cellspacing=1 >
+	<tr><td><div class=map>imap ``</div></td><td>		\grave{}</td></tr>
+	<tr><td><div class=map>imap `'</div></td><td>		\acute{}</td></tr>
+	<tr><td><div class=map>imap `></div></td><td>		\vec{}</td></tr>
+	<tr><td><div class=map>imap `.</div></td><td>		\dot{}</td></tr>
+	<tr><td><div class=map>imap `v</div></td><td>		\check{}</td></tr>
+	<tr><td><div class=map>imap `_</div></td><td>		\bar{}</td></tr>
+	<tr><td><div class=map>imap `~</div></td><td>		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]</td></tr>
+	<tr><td><div class=map>imap `^</div></td><td>		\hat{}		[as above]</td></tr>
+    </table>
 
-<h3>Math Accents</h3>
-<p>
-<table border=0 vspace=0 cellspacing=1 >
-<tr><td><div class=map>imap ``</div></td><td>		\grave{}</td></tr>
-<tr><td><div class=map>imap `'</div></td><td>		\acute{}</td></tr>
-<tr><td><div class=map>imap `></div></td><td>		\vec{}</td></tr>
-<tr><td><div class=map>imap `.</div></td><td>		\dot{}</td></tr>
-<tr><td><div class=map>imap `v</div></td><td>		\check{}</td></tr>
-<tr><td><div class=map>imap `_</div></td><td>		\bar{}</td></tr>
-<tr><td><div class=map>imap `~</div></td><td>		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]</td></tr>
-<tr><td><div class=map>imap `^</div></td><td>		\hat{}		[as above]</td></tr>
-</table>
+<h3>Diacritics</h3>
+<p>These maps are defined in g:atp_imap_diacritics variable.They might be
+turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
+<a href="#g:atp_imap_define_math">g:atp_imap_define_diacritics</a> variable
+(be setting it to 0, works on the fly).
 
-    There are for convienience, there are also:
-<table border=0 vspace=0 cellspacing=1 >
-<tr><td><div class=map>imap ~~</div></td><td>		\tilde{}</td></tr>
-<tr><td><div class=map>imap ~^</div></td><td>		\hat{}		[^^ is used for ^{}]</td></tr>	
-</table>
+<p><table border=0 vspace=0 cellspacing=1 >
+    <tr><td><div class=map>imap `'</div></td><td>\'{}</td></tr>
+    <tr><td><div class=map>imap `"</div></td><td>\"{}</td></tr>
+    <tr><td><div class=map>imap `^</div></td><td>\^{}</td></tr>
+    <tr><td><div class=map>imap `v</div></td><td>\v{}</td></tr>
+    <tr><td><div class=map>imap `b</div></td><td>\b{}</td></tr>
+    <tr><td><div class=map>imap `d</div></td><td>\d{}</td></tr>
+    <tr><td><div class=map>imap ``</div></td><td>\`{}</td></tr>
+    <tr><td><div class=map>imap `H</div></td><td>\H{}</td></tr>
+    <tr><td><div class=map>imap `~</div></td><td>\~{}</td></tr>
+    <tr><td><div class=map>imap `.</div></td><td>\.{}</td></tr>
+    <tr><td><div class=map>imap `c</div></td><td>\c{}</td></tr>
+    <tr><td><div class=map>imap `t</div></td><td>\t{}</td></tr>
+</table></p>
 
-    The last two maps and the following maps work around |'timeout'| vim
-    setting (behave like |'notimeout'| was set):
-
-<table border=0 vspace=0 cellspacing=1 >
-<tr><td><div class=map>imap ==</div></td><td>		&=</td></tr>
-<tr><td><div class=map>imap =~</div></td><td>		\cong</td></tr>
-<tr><td><div class=map>imap ~~</div></td><td>		\approx</td></tr>
-
-<tr><td><div class=map>imap o+</div></td><td>		\oplus</td></tr>
-<tr><td><div class=map>imap O+</div></td><td>		\bigoplus</td></tr>
-<tr><td><div class=map>imap o-</div></td><td>		\ominus</td></tr>
-<tr><td><div class=map>imap o.</div></td><td>		\odot</td></tr>
-<tr><td><div class=map>imap O.</div></td><td>		\bigodot</td></tr>
-<tr><td><div class=map>imap o*</div></td><td>		\otimes</td></tr>
-<tr><td><div class=map>imap O*</div></td><td>		\bigotimes</td></tr>
-<tr><td><div class=map>imap s+</div></td><td>		\cup</td><td>		[    set +]</td><td>/set = set theoretic/</td></tr>
-<tr><td><div class=map>imap s-</div></td><td>		\setminus</td><td>	[    set -]</td></tr>
-<tr><td><div class=map>imap S+</div></td><td>		\bigcup</td><td>		[big set +]</td></tr>
-<tr><td><div class=map>imap s*</div></td><td>		\cap</td><td>		[    set *]</td></tr>
-<tr><td><div class=map>imap S*</div></td><td>		\bigcap</td><td>		[big set *]</td></tr>
-<tr><td><div class=map>imap c*</div></td><td>		\prod</td><td>		[    cat *]</td><td>/cat = categorical/</td></tr>
-<tr><td><div class=map>imap c+</div></td><td>		\coprod</td><td>		[    cat +]</td></tr>
-<tr><td><div class=map>imap &lt=</div></td><td>		\leq</td></tr>
-<tr><td><div class=map>imap &gt=</div></td><td>		\geq</td></tr>
-<tr><td><div class=map>imap t&lt</div></td><td>		\triangleleft</td></tr>
-<tr><td><div class=map>imap t&gt</div></td><td>		\triangleright</td></tr>
-<tr><td><div class=map>imap s&lt</div></td><td>		\subseteq</td><td>	[    set &lt]</td></tr>
-<tr><td><div class=map>imap s&gt</div></td><td>		\supseteq</td><td>	[    set &gt]</td></tr>
-</table>
-
-    If you want to write 'o*' you can wait until |'timeoutlen'| passes or
-    write 'o *' (TeX in math mode doesn't see spaces).</p>
-    <a name="atp-:ToggleMathIMaps"></a>
+<h3>atp-:ToggleIMaps</h3>
+<a name="atp-:ToggleIMaps"></a>
 <p><div class=command>:ToggleMathIMaps</div>
 <div class=map>nmap, imap '&ltTab&gt</div>
-    It is a command to toggle the impas off/on by imaps defined in the vim
-    lists g:atp_imap_math and g:atp_imap_math_misc. These are the maps above
-    plus _ for  _{} and ^ for ^{}.</p> 
+    <div class=indented>This command toggles off/on impas defined in the vim lists
+    g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics plus _ for
+    _{} and ^ for ^{}.</div></p> 
+
+
 <a name="atp-maps-log"></a> 
 <h3>Log File Maps</h3>
     <p>This are available maps in the log file, when it was opened with

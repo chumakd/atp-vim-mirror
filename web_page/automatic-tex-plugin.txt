@@ -3977,7 +3977,6 @@ imap #d 	\delta
 imap #e 	\epsilon
 imap #f 	\phi
 imap #y 	\psi
-imap #g 	\gamma
 imap #h 	\eta
 imap #k 	\kappa
 imap #l 	\lambda
@@ -4094,86 +4093,27 @@ imap      ]let		\begin{letter}{<cursor>}
 							*g:atp_letter_closing*
     By default g:atp_letter_opening and g:atp_letter_closing are ''.
 
-MATH IMAPS						*atp-imap-math*
-    These are very useful mappings for typing mathematics. 
-    Some of the ideas were taken from TeX_9 by Elias Toivanen and also AuTeX by
-    Carl Mueller.
-    Note: you might not see them using |:imap| unless the last cursor position in
-	  insert mode was inside mathematics.
 
-    Note: You can turn on/off math imaps on the fly using '<tab> imap and nmap.
-	  See |atp-:ToggleIMaps| below.
-							    *g:atp_imap_define_math*
-							    *g:atp_imap_define_math_misc*
-							    *g:atp_imap_math*
-							    *g:atp_imap_math_misc*
-    Note: If you do not want to set math imaps defined in |g:atp_imap_math|
-    and |g:atp_imap_math_misc| you can set |g:atp_imap_define_math| and
-    |g:atp_imap_define_math_misc| to 0 (respectively). The first will disable
-    maps defined in g:atp_imap_math the second variable will disable imaps
-    defined in g:atp_imap_math_misc.
+Next three sets of imaps: |atp-imap-math|, |atp-imap-math-misc| and
+|atp-imap-diacritics| define imaps with overlaping keys (lhs), but note that
+first two are defined only in math environment, while the last only in non
+math environment. In this way `' in math environment will produce \acute{}
+while in non math \'{}. 
 
-							    *g:atp_imap_define_diacritics*
-							    *g:atp_imap_diacritics*
-    If ATP thinks you are editing math environment then imaps from |g:atp_imap_math_misc|
-    are defined, if ATP thinks you are editing non math environment it defines
-    |g:atp_imap_diacritics| . In this way `' in math environment will produce
-    \acute{} while in non math \'{}. You can disable |g:atp_imap_diacritics|
-    maps by setting |g:atp_imap_define_diacritics| to 0.
-			
-    AuTeX maps:
-imap __ 	_{}<Left>
-imap ^^		^{}<Left>
-    You can set the leader for these two maps using g:atp_imap_subscript,
-    g:atp_imap_supscript variables. If you do not have any maps which begins
-    with _ or ^ then you can set them to _ and ^, if this is the case thes
-    maps will not be fired if you type \_ or \^ (which means literal _ or ^ in
-    LaTeX). 
-							    *g:atp_imaps*
-    Both above maps can be turned on/off on the fly with |g:atp_imaps| (1
-    - on, 0 - off). Use |atp-:ToggleIMaps| (mapped to '<Tab>) to switch it
-    on/off.
+ 							*atp-imap-math*
+							*g:atp_imap_math*
+MATH IMAPS						*g:atp_imap_define_math*
 
+    These imaps are defined in |g:atp_imap_math| variable (except ]m and ]M
+    imaps). They might be turned off usgin |atp-:ToggleIMaps| commands or
+    |g:atp_imap_define_math| variable (be setting it to 0, works on the fly).
 
-imap ]m 	\[\]<Left><Left>
-imap ]M 	\[\]<Left><Left>
-
-    The following imaps can be turned on/off on the fly with
-    |g:atp_imap_define_math| variable (0 - off, 1 - on). You can use
-    |atp-:ToggleIMaps| (mapped to '<Tab>).
-
-imap #\		\setminus
-imap #/		\frac{}{}
-imap #&		\wedge
-imap #ve	\vee
-imap #V		\Vee
-imap #N		\Nabla
-imap #=		\equiv
-imap `8		\infty		[the default '#' is not working, ` is used intead, 
-				 but only if |g:atp_imap_first_leader|='#']
-imap `6		\partial	[as above, you can also use \p<Tab>]
-imap #@		\circ
-imap #=		\equiv
-imap #*		\bigcap
-imap #+		\bigcup
-imap #\		\backslash
-imap #>		\geq
-imap #<		\leq
-imap #.		\dot		[#.s will put \dots]
-
-MATH ACCENTS ~
-imap ``		\grave{}
-imap `'		\acute{}
-imap `>		\vec{}
-imap `.		\dot{}
-imap `v		\check{}
-imap `_		\bar{}
-imap `~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
-imap `^		\hat{}		[as above]
-
-    There are for convienience, there are also:
+    For convienience, there are:
 imap ~~		\tilde{}	
 imap ~^		\hat{}		[^^ is used for ^{}]		
+    							*g:atp_imap_wide*
+    If |g:atp_imap_wide| is set to 1 (default is 0) the above imaps to
+    \widetilde{} and \widehat{}.
 
     The last two maps and the following maps work around |'timeout'| vim
     setting (behave like |'notimeout'| was set):
@@ -4205,14 +4145,95 @@ imap s>		\supseteq	[    set >]
 
     If you want to write 'o*' you can wait until |'timeoutlen'| passes or
     write 'o *' (TeX in math mode doesn't see spaces).
+
+ 							*atp-imap-math-misc*
+							*g:atp_imap_math_misc*
+MATH IMAPS MISC						*g:atp_imap_define_math_misc*
+
+    These imaps are defined in |g:atp_imap_math_misc| variable (except ]m and ]M
+    imaps). They might be turned off usgin |atp-:ToggleIMaps| commands or
+    by setting |g:atp_imap_define_math_misc| variable to 0 (this should also
+    work on the fly).
+
+    These are very useful mappings for typing mathematics.  Some of the ideas
+    were taken from TeX_9 by Elias Toivanen and also AuTeX by Carl Mueller.
+
+    Note: you might not see them using |:imap| unless the last cursor position in
+	  insert mode was inside mathematics.
+
+AuTeX maps: ~
+imap __ 	_{}<Left>
+imap ^^		^{}<Left>
+    You can set the leader for these two maps using g:atp_imap_subscript,
+    g:atp_imap_supscript variables. If you do not have any maps which begins
+    with _ or ^ then you can set them to _ and ^, if this is the case thes
+    maps will not be fired if you type \_ or \^ (which means literal _ or ^ in
+    LaTeX). 
+
+imap ]m 	\[\]<Left><Left>
+imap ]M 	\[\]<Left><Left>
+
+imap #\		\setminus
+imap #/		\frac{}{}
+imap #&		\wedge
+imap #ve	\vee
+imap #V		\Vee
+imap #N		\Nabla
+imap #=		\equiv
+imap `8		\infty		[the default '#' is not working, ` is used intead, 
+				 but only if |g:atp_imap_first_leader|='#']
+imap `6		\partial	[as above, you can also use \p<Tab>]
+imap #@		\circ
+imap #=		\equiv
+imap #*		\bigcap
+imap #+		\bigcup
+imap #\		\backslash
+imap #>		\geq
+imap #<		\leq
+imap #.		\dot		[#.s will put \dots]
+
+MATH ACCENTS ~
+
+These imaps are defined in g:atp_iap_math_misc variable. They might be turned
+off usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_math_misc| variable.
+
+imap ``		\grave{}
+imap `'		\acute{}
+imap `>		\vec{}
+imap `.		\dot{}
+imap `v		\check{}
+imap `_		\bar{}
+imap `~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
+imap `^		\hat{}		[as above]
+
+ 						*atp-imap-diacritics*
+						*g:atp_imap_define_diacritics*
+DIACRITICS					*g:atp_imap_diacritics*
+
+These imaps are defined in g:atp_imap_math variable.  They might be turned off
+usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
+(be setting it to 0, works on the fly).
+
+    imap `'	\'{}
+    imap `"	\"{}
+    imap `^	\^{}
+    imap `v	\v{}
+    imap `b	\b{}
+    imap `d	\d{}
+    imap ``	\`{}
+    imap `H	\H{}
+    imap `~	\~{}
+    imap `.	\.{}
+    imap `c	\c{}
+    imap `t	\t{}
+
 							*atp-:ToggleIMaps*
 :ToggleIMaps
 nmap, imap '<Tab> 
-    It is a command to toggle the impas off/on by imaps defined in the vim
-    lists g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics.
-    These are the maps above plus _ for  _{} and ^ for ^{}. 
-    
-============
+    This command toggles off/on impas defined in the vim lists
+    g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics plus imaps
+    to _{} and ^{}.
+
 LOG FILE MAPS						*atp-maps-log*
     This are available maps in the log file, when it was opened with
     |atp-:OpenLog| command >

@@ -254,12 +254,12 @@ let b:atp_running	= 0
 " these are all buffer related variables:
 function! <SID>TexCompiler()
     if buflisted(atplib#FullPath(b:atp_MainFile))
-	let line = getbufline(atplib#FullPath(b:atp_MainFile), 1)[0]
+	let line = get(getbufline(atplib#FullPath(b:atp_MainFile), 1), 0, "")
 	if line =~ '^%&\w*tex\>'
 	    return matchstr(line, '^%&\zs\w\+')
 	endif
     else
-	let line = readfile(atplib#FullPath(b:atp_MainFile))[0] 
+	let line = get(readfile(atplib#FullPath(b:atp_MainFile)), 0, "")
 	if line =~ '^%&\w*tex\>'
 	    return matchstr(line, '^%&\zs\w\+')
 	endif

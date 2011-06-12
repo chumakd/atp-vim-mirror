@@ -143,7 +143,7 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
     let cond_B	= get(get(s:project_Load, expand("%:p"), []), a:type, 0)
     if empty(expand("%:p"))
 	echohl ErrorMsg
-	echomsg "[ATP:] Error : File name is empty. Not loading project script."
+	echomsg "[ATP LoadScript:] Error : File name is empty. Not loading project script."
 	echohl Normal
 	if g:atp_debugProject
 	    redir END
