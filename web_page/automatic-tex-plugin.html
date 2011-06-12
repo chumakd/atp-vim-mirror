@@ -1,455 +1,455 @@
-<!DOCTYPE html>
-<html en="en">
-<head>
-    <title >Documentation of Automatic LaTeX Plugin for Vim</title>
-    <link rel="stylesheet" href="doc_style.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
-</head>
-</body>
-<h1 align=center>An Introduction to AUTOMATIC (La)TeX PLUGIN (ver.
-    9.6.1)</h1><br>
-<p align=center>	    by Marcin Szamotulski<br>
-		    atp-vim-list [AT] lists.sourceforge.net <br></p>
+    <!DOCTYPE html>
+    <html en="en">
+    <head>
+	<title >Documentation of Automatic LaTeX Plugin for Vim</title>
+	<link rel="stylesheet" href="doc_style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
+    </head>
+    </body>
+    <h1 align=center>An Introduction to AUTOMATIC (La)TeX PLUGIN (ver.
+	9.6.1)</h1><br>
+    <p align=center>	    by Marcin Szamotulski<br>
+			atp-vim-list [AT] lists.sourceforge.net <br></p>
 
-<p>If you found this plugin useful or you have any kind of problems with running
-it or some ideas to share, you are cordially invited to write to me:
-mszamot@gmail.com. Voting at Vim site is also welcome ;) .</p>
+    <p>If you found this plugin useful or you have any kind of problems with running
+    it or some ideas to share, you are cordially invited to write to me:
+    mszamot@gmail.com. Voting at Vim site is also welcome ;) .</p>
 
-<h2 align=center>ABSTRACT </h2>
+    <h2 align=center>ABSTRACT </h2>
 
-<p>This is a filetype plugin for Vim to comfortably write [TeX], [LaTeX],
- [PdfLaTeX],...  documents, which provides functionality not met in other
-plugins. It makes you [FREE] from compiling procedure, making this process
-automatic using autocommands. It also provides useful mappings and other
-many other commands: to analyse your .log file, to see the table contents, to
-search for a label, to search in bib files or to find a macro definition
-matching a pattern, or even to find and preview fonts in your tex
-distribution. The features include a multi-functional tab completion for:
-commands, environment names, packages, input files, bib files, bst files,
-colours, closing brackets and environments (preserves nesting),... etc. To
-have full functionality you need: python (with nonstandard psutil library, see
-|atp-requirements-python| how to get it), pdffonts available in the package
-'app-text/poppler' (at least in Gentoo).  Another good tool is texdoc, which
-is a part of TexLive - these days standard TeX distribution for Linux, and
-MikTeX on Windows.</p>
+    <p>This is a filetype plugin for Vim to comfortably write [TeX], [LaTeX],
+     [PdfLaTeX],...  documents, which provides functionality not met in other
+    plugins. It makes you [FREE] from compiling procedure, making this process
+    automatic using autocommands. It also provides useful mappings and other
+    many other commands: to analyse your .log file, to see the table contents, to
+    search for a label, to search in bib files or to find a macro definition
+    matching a pattern, or even to find and preview fonts in your tex
+    distribution. The features include a multi-functional tab completion for:
+    commands, environment names, packages, input files, bib files, bst files,
+    colours, closing brackets and environments (preserves nesting),... etc. To
+    have full functionality you need: python (with nonstandard psutil library, see
+    |atp-requirements-python| how to get it), pdffonts available in the package
+    'app-text/poppler' (at least in Gentoo).  Another good tool is texdoc, which
+    is a part of TexLive - these days standard TeX distribution for Linux, and
+    MikTeX on Windows.</p>
 
-<h2>FEATURES INCLUDE: </h2>
-* background compilation, debugging modes, progress bar<br>
-* command to make the document (cross references, references, index, tables
-of contents) <a href="#atp-:MakeLatex">atp-:MakeLatex</a>,<br>
-* completion for commands, closing environments (even nested), package names,
-citations and labels. Support for some latex packages.<br>
-<div class=indented>See <a href="#atp-completion">atp-completion</a>,</div>
-* table of contents which allows to switch between different sections, files, 
-but also to delete and paste sections:<br>
-<div class=indented>See <a href="#atp-:TOC">atp-:TOC</a>, <a href="#atp-toc-window"></a></div>
-* list of labels which allows to see the context of a label:<br>
-<div class=indented>See <a href="#atp-:Labels">atp-:Labels</a>,</div>
-* a command to get bib data from the <a href="http://www.ams.org/mathscinet-mref"><i>AMSRef web page</i></a>:<br>
-<div class=indented>See <a href="#atp-:AMSRef">atp-:AMSRef</a>,</div>
-* a powerful function to search in bibliographic files (bib files):<br>
-<div class=indented>See <a href="#atp-bibsearch">atp-bibsearch</a>,</div>
-* a command to list ToDo lines:<br>
-<div class=indented>See <a href="#atp-:ToDo">atp-:ToDo</a>,</div>
-* a command to search for a macro definition (multi-line support):<br>
-<div class=indented>See <a href="#atp-:Dsearch">atp-:Dsearch</a>,</div>
-* a command to search and PREVIEW fonts in your latex distribution:<br>
-<div class=indented>See <a href="#atp-:FontSearch">atp-:FontSearch</a>, and <a
-    href="#atp-:FontPreview">atp-:FontPreview</a>,</div>
-* indentation<br>
+    <h2>Features Include: </h2>
+    * background compilation, debugging modes, progress bar<br>
+    * command to make the document (cross references, references, index, tables
+    of contents) <a href="#atp-:MakeLatex">atp-:MakeLatex</a>,<br>
+    * completion for commands, closing environments (even nested), package names,
+    citations and labels. Support for some latex packages.<br>
+    <div class=indented>See <a href="#atp-completion">atp-completion</a>,</div>
+    * table of contents which allows to switch between different sections, files, 
+    but also to delete and paste sections:<br>
+    <div class=indented>See <a href="#atp-:TOC">atp-:TOC</a>, <a href="#atp-toc-window"></a></div>
+    * list of labels which allows to see the context of a label:<br>
+    <div class=indented>See <a href="#atp-:Labels">atp-:Labels</a>,</div>
+    * a command to get bib data from the <a href="http://www.ams.org/mathscinet-mref"><i>AMSRef web page</i></a>:<br>
+    <div class=indented>See <a href="#atp-:AMSRef">atp-:AMSRef</a>,</div>
+    * a powerful function to search in bibliographic files (bib files):<br>
+    <div class=indented>See <a href="#atp-bibsearch">atp-bibsearch</a>,</div>
+    * a command to list ToDo lines:<br>
+    <div class=indented>See <a href="#atp-:ToDo">atp-:ToDo</a>,</div>
+    * a command to search for a macro definition (multi-line support):<br>
+    <div class=indented>See <a href="#atp-:Dsearch">atp-:Dsearch</a>,</div>
+    * a command to search and PREVIEW fonts in your latex distribution:<br>
+    <div class=indented>See <a href="#atp-:FontSearch">atp-:FontSearch</a>, and <a
+	href="#atp-:FontPreview">atp-:FontPreview</a>,</div>
+    * indentation<br>
 
-<a name="atp-sourceforge"></a><br>
-<h2>SOURCEFORGE</h2><br><br>
+    <a name="atp-sourceforge"></a><br>
+    <h2>Sourceforge</h2><br><br>
 
-The project is hosted on <a href="http://sourceforge.net/projects/atp-vim/">SourceForge</a><br>
-    
-
-<a name="atp-donate"></a><br>
-<h3>Donate</h3><br>
-<p>You can [DONATE] for this project through your [PayPal] account (my email
-    is <mszamot [AT] gmail [dot] com>). This will be highly appreciated. You
-    can also feel like you are supporting my [PhD] in Mathematics :). Whether
-    you donate or not you are always cordially invited to give suggestions,
-    feature requests, bug reports or just to write that you like it or not :).</p><br>
-    Thank You.<br>
-    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-	<input type="hidden" name="cmd" value="_s-xclick">
-	<input type="hidden" name="hosted_button_id" value="B3R4JZSQMKCMW">
-	<input type="image"
-	src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
-	border="0" name="submit" alt="PayPal - The safer,
-	easier way to pay online!">
-	<img alt="" border="0"
-	src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif"
-	width="1" height="1">
-    </form>
-    
-
-    <p>Note: The donations are accepted through PayPal, if you are from Europe
-    and you want to donate Euro, use your PayPal account rather than
-    SourceForge link where you cannot donate Euro (avoiding twice money
-    exchange).</p>
-
-<a name="atp-mailing-list"></a>
-<p>- There is a mailing list which will serve for: feature requests, bug
-reports, suggestions. You can subscribe with this <a
-    href="https://lists.sourceforge.net/lists/listinfo/atp-vim-list">link</a></p>
-
-<p>- For detailed list of changes you can look <a href="http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/trunk/?sortby=rev&view=log">here</a></p>
-    
-
-<p>  - Project news can be tracked through sourceforge watch feature (you need
-sourecforge account)</p>
-
-<p>  - SourceForge hosts stable <a
-    href="http://sourceforge.net/projects/atp-vim/files/releases/">releases</a>
-(also available on Vim web page) but also <a
-    href="http://sourceforge.net/projects/atp-vim/files/snapshots/">snapshots</a>
-of unstable developed new version. The snapshots might contains fixes and new
-features which might not yet work well, or might change (commands, maps, etc
-...).</p>
-    
-
-<a name="atp"></a>
-<a name="atp-help-toc"></a>
-<h2>TABLE OF CONTENTS</h2>
-<a href="#atp-news">News</a><br>
-<a href="#atp-installation">Installation</a><br>
-<a href="#atp-commands">Functions and Commands</a><br>
-<h3><div class=indented>Some Main Commands:</div></h3>
-    <h4><div class=double_indent>compile</div><h4>
-	<div class=triple_indent><a href="#atp-:TEX">atp-:TEX</a></div>
-	<div class=triple_indent><a href="#atp-:MakeLatex">atp-:MakeLatex</a></div>
-	<div class=triple_indent><a href="#atp-:Bibtex">atp-:Bibtex</a></div>
-	<div class=triple_indent><a href="#atp-:DebugMode">atp-:DebugMode</a></div>
-	<div class=triple_indent><a href="#atp-:ShowError">atp-:ShowErrors</a></div>
-	<div class=triple_indent><a href="#atp-:ErrorFormat">atp-:ErrorFormat</a></div>
-	<div class=triple_indent><a href="#atp-:Kill">atp-:Kill</a></div>
-    <h4><div class=double_indent>viewer</h4></div>
-	<div class=triple_indent><a href="#atp-:ViewOutput">atp-:ViewOutput</a></div>
-	<div class=triple_indent><a href="#atp-:SyncTex">atp-:SyncTex</a> /forward searching/</div>
-    <h4><div class=double_indent>diff</h4></div>
-	<div class=triple_indent><a href="#atp-:Wdiff">atp-:Wdiff</a></div>
-    <h4><div class=double_indent>motion</h4></div>
-	<div class=triple_indent><a href="#atp-:TOC">atp-:TOC</a></div>
-	<div class=triple_indent><a href="#atp-:F">atp-:F</a></div>
-	<div class=triple_indent><a href="#atp-:B">atp-:B</a></div>
-	<div class=triple_indent><a href="#atp-:Tags">atp-:Tags</a> /make tags file/</div>
-    <h4><div class=double_indent>search</h4></div>
-	<div class=triple_indent><a href="#atp-:Dsearch">atp-:Dsearch</a> /definition search/</div>
-	<div class=triple_indent><a href="#atp-:S">atp-:S</a> /search in projects/</div>
-
-<div ><a href="#atp-toc-window">Commands/Maps in ToC window and Labels window.</a></div>
-<div><a href="bibtex_atp.html">Bibtex filetype plugin</a> </div>
-<div><a href="#atp-bibsearch">Searching in bib files</a> </div>
-<div class=indented><a href="#atp-variables-bib">BibSearch Variables</a></div>
-<div><a href="#atp-completion">Tab Completion</a> </div>
-<div class=indented><a href="#atp-completion-modes">Completion Modes</a></div>
-<div class=double_indent><a href="#atp-completion-commands">Completion for Commands</a></div>
-<div class=double_indent><a href="#atp-completion-tikzpicture">Completion for Tikzpicutre Environment</a></div>
-<div class=double_indent><a href="#atp-completion-ref">Completion for \ref/\label/\cite commands</a></div>
-<div class=double_indent><a href="#atp-completion-brackets">Completion for Brackets</a></div>
-<div class=double_indent><a href="#atp-completion-env">Completion for Environments</a></div>
-<div class=double_indent><a href="#atp-completion-abbreviations">Completion for Abbreviations</a></div>
-<div class=double_indent><a href="#atp-completion-fontdeclaration">Completion for Font Commands</a></div>
-<div class=double_indent><a href="#atp-completion-bibstyle">Completion for \bibstyle Command</a></div>
-<div class=double_indent><a href="#atp-completion-documentclass">Completion for \documentclass Command</a></div>
-<div class=indented><a href="#atp-completion-variables">Completion Variables</a></div>
-<div><a href="#atp-omnicompletion">Omni Completion</a></div>
-<div class=indented><a href="#atp-omnicompletion-commands">Omni Completion for Commands</a></div>
-<div class=indented><a href="#atp-omnicompletion-environments">Omni Completion for Environments</a></div>
-<div class=indented><a href="#atp-omnicompletion-labels">Omni Completion for Labels</a></div>
-<div class=indented><a href="#atp-omnicompletion-bibtex">Omni Completion for Bib Entries</a></div>
-<div><a href="#atp-configure"><b>Variables</b></a> How to configure ATP to your needs</div>
-<div><a href="#atp-ProjectFiles">A note how to write project files within ATP</a></div>
-<div><a href="#atp-ProjectScript">A script executing project specific settings</a></div>.
-<div><a href="#atp-mappings"><b>Mappings</b></a></div>
-<div><a href="#atp-abbreviations"><b>Abbreviations</b></a></div>
-<div><a href="#atp-errors">Debugging ATP</a></div>
-<div><a href="#atp-editing"><b>Editing tools</b></a></div>
-<div><a href="#atp-requirements">Requirements</a></div>
-<div><a href="#atp-viewers"><b>Viewers</b></a> (<b>with how to configure reverse searching for Okular</b>)</div>
-			
-<div><a href="#atp-tips">Some tex oriented tips</a></div>
-<div><a href="#atp-highlight">Colours and syntax files</a></div>
-<div><a href="#atp-remarks">Final remarks</a></div>
-<div><a href="#atp-copy-rights"><em>Copy Rights</em></a></div>
-
-<a name="atp-news"></a>
-<h2>NEWS</h2>							
-
-<h3>Changes in version 9.6</h3>
-
-<p>Some functions where rewritten in python making ATP much faster.</p>
-
-  <p>ATP loads 1/3 faster (after first run when you save project file, which is
-  done when you save your file!).</p>
-
-  <p>Use g:atp_no_local_abbreviations if you don't want to have abbreviations to
-  locally defined environments (this takes time if your vim was compiled
-  without |+python| feature, as it runs <a href="#atp-:LocalCommands">atp-:LocalCommands</a> command - which
-  is slow in this case). </p>
-
-  <p>Note: the python version of LocalCommands will save the current buffer,
-  without saving project script and with 'nowritebackup' and 'nobackup' set. </p>
-
-  <p>I added <a href="#b:atp_LocalEnvironments">b:atp_LocalEnvironments</a>, <a
-      href="#b:atp_LocalCommands">b:atp_LocalCommands</a> and <a
-      href="#b:atp_LocalColors">b:atp_LocalColors</a> to <a
-      href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a> if
-  vim doesn't have +python feature otherwise <a
-      href="#g:atp_local_completion">g:atp_local_completion</a> is set to 2,
-  hence <a href="#atp-:LocalCommands">atp-:LocalCommands</a> is run with
-  BufEnter. It is so because the function LocalCommands was written also in
-  python which is more than 10 times faster than the old vim
-  implementation.</p>
-
-  <p><a href="#atp-:ViewOutput">atp-:ViewOutput</a> -- removed the [sync] argument.</p>
-
-  <p><a href="#atp-:BibSearch">atp-:BibSearch</a> is written in python. It is much faster. Thus the argument
-  should be a python regular expression. If you want to use vim script (and
-  vim regular expression) set <a href="#g:atp_bibsearch">g:atp_bibsearch</a>="vim". Then both Tab
-  Completion and <a href="#atp-:BibSearch">atp-:BibSearch</a> will use vim code.</p>
-
-  <p>Tab completion for labels (\ref and \eqref commands) gives more information
-  inside the popup menu.</p>
- 
-  <p>The F2 map is back -- it turns on/off <space> cmap to \_s\+. But this time
-  this map by default is turned on. It is made to it doesn't interact with
-  other command modes than / and ?. If you want to turn in off/on use F2. If
-  you want to turn it off in your vimrc or <a href="#atprc">atprc</a> files
-  use: <div class=variable>let g:atp_cmap_space = 0</div> Pressing F2 will
-  define this map.</p>
-
-
-  <p>Some other small fixes.</p>
-
-<h3>Changes in version 9.5</h3>
-
-    <p>The keys j, k, gj and gk are no longer mapped by ATP. There is a better
-    solution for updating the Table of Contents highlighted line. It is done
-    using autocommand CursorHold.</p>
-
-    <p>See the new command <a href="#atp-:Tags">atp-:Tags</a>.</p>
-
-<a href="#atp-:Dsearch">atp-:Dsearch</a>
-<div class=command>:Dsearch</div>
-    <p>This used to be :DefiSearch. This I found more in vim style.
-    Also <a href="#g:atp_DsearchMaxWindowHeight">g:atp_DsearchMaxWindowHeight</a> is used instead of
-    g:atp_DefiSearchMaxWindowHeight.</p>
-
-<p><a href="#g:atp_statusOutDir">g:atp_statusOutDir</a> fixed.</p>
-<p><a href="#g:atp_IMapCC">g:atp_IMapCC</a> instead of g:atp_MapCC.</p>
-
-<p>And bunch of other fixes :).</p>
-
-<h4>TIP</h4>
-<p>Checkout cmdalias plugin (vimscript#745). It lets define lower case
-aliases to commands. You can put in your <a href="#atprc">atprc</a> file:
-<div class=indented>Alias tex TEX</div>
-<div class=indented>Alias toc TOC</div></p>
-
-<h3>Changes in version 9.4</h3>
-
-<h4>ATP and Gentoo Linux</h4>
-<p>Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
-automatictexplugin in the portage tree.</p>
-
-<h4>Completion</h4>
-<p>Small but nice change in closing environments: If you type
-\begin{envname}<Tab> the cursor position will not change. You can use
-i_CTRL-M (i_CTRL-J is used by <a href="#atp-j_motion">atp-j_motion</a>) after <Tab> to open new
-line inside {envname}.  Otherwise the cursor position will be right after
-the closing \end{envname}.</p>
-
-<h4>Local Commands</h4>
-<p><a href="#atp-:LocalCommands">atp-:LocalCommands</a><br>
-<div class=double_indent>-- do not search in comments, </div>
-<div class=double_indent>-- add single { if command has defined arguments.</div></p>
-
-<p>Note: the format of viewer options has changed from a string to a vim
-list.  Every option and its value should be placed as a separate element
-of vim list.  See <a href="#atp-Viewers_Options">atp-Viewers_Options</a> for examples.</p>
-
-<h4>New imaps</h4>
-<p>New imaps for some commonly used math commands: see <a href="#atp-imap-math">atp-imap-math</a>.</p> 
-
-<p>All mathematical imaps: for symbols, greek letters, are defined only when
-inside LaTeX (or TeX) mathematical environment.</p> 
-
-<p>There is new predefined layout for environment imaps available, but
-disabled by default. If you like longer and more intuitive environment
-insert mode maps set <a
-    href="#g:atp_ShortEnvIMaps">g:atp_ShortEnvIMaps</a>=0 in your vimrc or
-<a href="#atpr">atprc</a>c files. Use <a
-    href="#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a> to see them. There is
-also one new environment ]let in this new layout which inputs a letter
-environment. If you want a short imap for it you can set
-g:atp_imap_letter="w" and ATP will make a map ]w for it.  Note that "l",
-and "L" are already taken and using "le" will slow down "l", also "e" and
-"r" are used, so there is no good choice for it. You can set <a
-    href="#g:atp_letter_opening">g:atp_letter_opening</a> and <a
-    href="#g:atp_letter_closing">g:atp_letter_closing</a> to customize
-default opening and closing statements.</p>
-
-<p>If you decide to use short imaps (the default) there is one change: ]i is
-mapped to \item and ]I is mapped to itemize environment (this is the only
-type of change in the short layout. In long layout ]I is mapped ot \item
-and ]ite is mapped to itemize environment.</p>
-
-<p>There is also a small change with <Tab> completion: after typing
-\begin{envname}<Tab> the cursor will not move, so you can use |i_CTRL-M|
-to open new line.</p>
-
-<p>The abbreviations are customizable: g:atp_imap_{envname}, also the
-leader is customizable with <a
-    href="#g:atp_imap_third_leader">g:atp_imap_third_leader</a> and
-environment names for example if you set <a
-    href="#g:atp_EnvNameTheorem">g:atp_EnvNameTheorem</a>="thm" then ]the
-imap will insert \begin{thm}:\end{thm} pair. You can list supported
-environments with ':let g:atp_EnvName<C-d>'. If you set
-g:atp_imap_{envname} to empty string "" the corresponding imap will not be
-defined.</p>
-
-<p>See also <a href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
-
-<h4>New Motions</h4>
-<a name="atp-&gtE"></a> <a name="atp-&ltE"></a> <p>There are two more nice map
->E which is something like %>e, i.e. jump over the current environment and
-go to next one. The reverse <E is also implemented, thought it is not
-simply <e%. They do not support count (yet), and actually count breaks
-them. If you want to add zz, (zt or zb) after >E you can put this in your
-|atprc| file:
-<div class=indented>map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz</div>
-<div class=indented>map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz</div></p>
-
-<p><a href="#atp--S">atp--S</a>, <a href="#atp--s">atp--s</a>, <a
-    href="#atp--c">atp--c</a>, <a href="#atp--p">atp--p</a> new maps for <a
-    href="#atp-:SSec">atp-:SSec</a>, <a href="#atp-:Sec">atp-:Sec</a>, <a
-    href="#atp-:Chap">atp-:Chap</a> and <a href="#atp-:Part">atp-:Part</a>.
-They also works relatively to the current unit (section/chapter/part), i.e.
-2]s will jump to second section of the current chapter.</p>
-
-
-<h4>Updatetime</h4>
-<p><a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> can be
-changed on the fly to 0 (previously it requires to quitting vim and making
-changes in vimrc/<a href="#atprc">atprc</a> files.</p> 
-
-<h4>Make LaTeX</h4>
-<p><a href="#atp-:MakeLatex">atp-:MakeLatex</a> is rewritten in python. The
-"!" is not yet implemented.</p>
-
-<h4>Python 3 compatibility</h4>
-<p>All python scripts are compatible with Python 3. Traceback info is
-forwarded to vim (and log files) in case exceptions are handled.</p>
-
-<h4>Dictionaries</h4>
-<p>I added extended versions of dictionaries of latex-suite to ATP (the files
-dictionaries/dictionary and dictionary/SIunits). They are added to
-'complete' vim option, so you can use them through ins-completion.
-I made one more dictionary (dictionaries/ams_dictionary) with ams commands
-and environment names. It will be added to the vim 'complete' option if
-you use amsmath package or if the document class is one of the standard
-ams classes or of <a href="#g:atp_amsmath">g:atp_amsmath</a> is set to 1.</p>
-
-<h4>Status Line</h4>
-<p>Status notifications has the ability to show if <a
-    href="#b:atp_BibCompiler">b:atp_BibCompiler</a>, or "makeindex" are
-running. Unless |g:atp_statusNotif|=0 or <a
-    href="#g:atp_callback">g:atp_callback</a>=0 <a
-    href="#atp-:MakeLatex">atp-:MakeLatex</a> will echo a single message
-when it returns.</p>
-
-<p>There is also new status line for QuickFix window with number of errors
-and warnings printed (this depends on <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>).</p>
-
-<h4>Biber and BibLaTeX Support</h4>
-<p>Support for biber and biblatex is added (in <a href="#atp-:MakeLatex">atp-:MakeLatex</a>,
-<a href="#atp-:Bibtex">atp-:Bibtex</a>, <a href="#atp-:Delete">atp-:Delete</a>, <a href="#atp-:InputFiles">atp-:InputFiles</a> commands), <a href="#g:atp_kee">g:atp_keep</a>p
-variable will adjust on the fly (add run.xml and bcf extensions).
-<a href="#b:atp_BibCommand">b:atp_BibCommand</a> will be set to biber if the preamble contains
-\usepackage[backend=biber]{biblatex}</p>
-
-<p>If you use biblatex, it allows for putting \bibliography{} type commands
-only in the preamble. Thus ATP will search for them only there. The <a
-    href="#g:atp_inputfile_pattern">g:atp_inputfile_pattern</a> might not
-contain any pattern for bibliographies (\addbibresource, \bibliography,
-etc.). The <a href="#atp-:InputFiles">atp-:InputFiles</a> command will
-search for them in a special subroutine which only searches in the
-preamble.  This makes it work slightly faster.</p>
-
-<h4>TeX Options Variable (new format)</h4>
-<p><a href="#b:atp_TexOptions">b:atp_TexOptions</a> is a comma separated list of TeX compiler options.
-If you use <a href="#g:atp_Compiler">g:atp_Compiler</a>="bash" this might be just a white space
-separated list.</p>
-<a href="#atp-space">atp-space</a>
-<h4>Space cmap</h4>
-<div class=map>cmap <buffer> <C-Space> 	\_s\+</div>
-<div class=map>cmap <buffer> <C-_> 	\_s\+</div>
-<p>The C-Space Vim, instead C-@ is used which works as C-Space. In Vim, and
-gVim as well, you can also use <a href="#atp-Q/">atp-Q/</a>, <a
-    href="#atp-Q?">atp-Q?</a> where <Space> is mapped to \_s\+.</p>
-
-<p>Note: from version 9.6 Space is mapped to \_s\+ in cmdline modes / and
-?.  F2 turns it on/off. The above maps are always on.</p>
-
-<h4>Errors</h4><br>
-<div class=map>nmap &ltLocalLeader&gte</div>
-<p>To get list of errors with current <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
-<a href="#atp-:ErrorForma">atp-:ErrorFormat</a>
-<div class=command>:ErrorFormat {efm}</div>
-<p>This is new interface to :SetErrorFormat. If {efm} is not given it will
-show the current value <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>. It sets the variable
-<a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> and rereads the log file with |cgetfile|. The variable
-<a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> is also set when you use the command
-<a href="#atp-:ShowErrors">atp-:ShowErrors</a>. In addition you can use +{flag} and -{flag} as an
-argument, then {flag} will be added/removed from <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
-
-<h4>EasyMotion and ATP</h4>
-<p>If you want to use <a href="http://www.vim.org/scripts/script.php?script_id=3526">EaseMotion</a> vim plugin (which is quite handy).</p>
+    The project is hosted on <a href="http://sourceforge.net/projects/atp-vim/">SourceForge</a><br>
 	
-<p>You can set <a href="#g:atp_Compare">g:atp_Compare</a>="". Alternatively, if
-you want to use the fastest comparing method of ATP, you can add to last line
-of s:EasyMotion() function in plugin/EasyMotion.vim add <dev class=intended>let
-g:atp_changedtick = b:changedtick</div> You might want to change
-g:EasyMotion_leader_key (see |easymotion-leader-key| if you have EasyMotion),
-because some maps of ATP are interfering with EasyMotion. For example "-" might
-be a good choice.  You can also try to change |maplocalleader| which is heavily
-used by ATP.</p>
 
-<p>Select Comments nmap and vmap is now |_c| (previously \sc was
-interfering with an ATP font map).</p>
+    <a name="atp-donate"></a><br>
+    <h3>Donate</h3><br>
+    <p>You can [DONATE] for this project through your [PayPal] account (my email
+	is <mszamot [AT] gmail [dot] com>). This will be highly appreciated. You
+	can also feel like you are supporting my [PhD] in Mathematics :). Whether
+	you donate or not you are always cordially invited to give suggestions,
+	feature requests, bug reports or just to write that you like it or not :).</p><br>
+	Thank You.<br>
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+	    <input type="hidden" name="cmd" value="_s-xclick">
+	    <input type="hidden" name="hosted_button_id" value="B3R4JZSQMKCMW">
+	    <input type="image"
+	    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
+	    border="0" name="submit" alt="PayPal - The safer,
+	    easier way to pay online!">
+	    <img alt="" border="0"
+	    src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif"
+	    width="1" height="1">
+	</form>
+	
 
-<p>(Almost all) maps became :map-silent.</p> 
+	<p>Note: The donations are accepted through PayPal, if you are from Europe
+	and you want to donate Euro, use your PayPal account rather than
+	SourceForge link where you cannot donate Euro (avoiding twice money
+	exchange).</p>
 
-<h4>ATPRC</h4>
-<p>The <a href="#atprc">atprc</a> file is now sourced twice at startup: at the
-beginning to set the variables, and once again at the end to set the maps
-defined in it.</p>
+    <a name="atp-mailing-list"></a>
+    <p>- There is a mailing list which will serve for: feature requests, bug
+    reports, suggestions. You can subscribe with this <a
+	href="https://lists.sourceforge.net/lists/listinfo/atp-vim-list">link</a></p>
 
-<h4>QUICKFIX WINDOW</h4>
-<p>Despite the status line for quick fix window, :cgetfile will be run when you
-open new files, this nicely works with :edit command but not :split if you want
-to keep the old log file in QuickFix window. If this is the case set 
-<div class=variable>let g:atp_cgetfile = 0</div>
-You can also put this in your <a href="#atprc">atprc</a> or |vimrc| file.</p>
+    <p>- For detailed list of changes you can look <a href="http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/trunk/?sortby=rev&view=log">here</a></p>
+	
 
-<h4>DEBUG ATP</h4>
-<div class=command>:DebugPrint</div>
-<p>if you want to develop/debug ATP set g:atp_atpdev to 1 run <a
-    href="#atp-:ReloadATP">atp-:ReloadATP</a> and this command will allow to
-print (cat) debug files under <a href="#g:atp_TempDir">g:atp_TempDir</a>.</p>
+    <p>  - Project news can be tracked through sourceforge watch feature (you need
+    sourecforge account)</p>
+
+    <p>  - SourceForge hosts stable <a
+	href="http://sourceforge.net/projects/atp-vim/files/releases/">releases</a>
+    (also available on Vim web page) but also <a
+	href="http://sourceforge.net/projects/atp-vim/files/snapshots/">snapshots</a>
+    of unstable developed new version. The snapshots might contains fixes and new
+    features which might not yet work well, or might change (commands, maps, etc
+    ...).</p>
+	
+
+    <a name="atp"></a>
+    <a name="atp-help-toc"></a>
+    <h2>Table of Contents</h2>
+    <a href="#atp-news">News</a><br>
+    <a href="#atp-installation">Installation</a><br>
+    <a href="#atp-commands">Functions and Commands</a><br>
+    <h3><div class=indented>Some Main Commands:</div></h3>
+	<h4><div class=double_indent>compile</div><h4>
+	    <div class=triple_indent><a href="#atp-:TEX">atp-:TEX</a></div>
+	    <div class=triple_indent><a href="#atp-:MakeLatex">atp-:MakeLatex</a></div>
+	    <div class=triple_indent><a href="#atp-:Bibtex">atp-:Bibtex</a></div>
+	    <div class=triple_indent><a href="#atp-:DebugMode">atp-:DebugMode</a></div>
+	    <div class=triple_indent><a href="#atp-:ShowError">atp-:ShowErrors</a></div>
+	    <div class=triple_indent><a href="#atp-:ErrorFormat">atp-:ErrorFormat</a></div>
+	    <div class=triple_indent><a href="#atp-:Kill">atp-:Kill</a></div>
+	<h4><div class=double_indent>viewer</h4></div>
+	    <div class=triple_indent><a href="#atp-:ViewOutput">atp-:ViewOutput</a></div>
+	    <div class=triple_indent><a href="#atp-:SyncTex">atp-:SyncTex</a> /forward searching/</div>
+	<h4><div class=double_indent>diff</h4></div>
+	    <div class=triple_indent><a href="#atp-:Wdiff">atp-:Wdiff</a></div>
+	<h4><div class=double_indent>motion</h4></div>
+	    <div class=triple_indent><a href="#atp-:TOC">atp-:TOC</a></div>
+	    <div class=triple_indent><a href="#atp-:F">atp-:F</a></div>
+	    <div class=triple_indent><a href="#atp-:B">atp-:B</a></div>
+	    <div class=triple_indent><a href="#atp-:Tags">atp-:Tags</a> /make tags file/</div>
+	<h4><div class=double_indent>search</h4></div>
+	    <div class=triple_indent><a href="#atp-:Dsearch">atp-:Dsearch</a> /definition search/</div>
+	    <div class=triple_indent><a href="#atp-:S">atp-:S</a> /search in projects/</div>
+
+    <div ><a href="#atp-toc-window">Commands/Maps in ToC window and Labels window.</a></div>
+    <div><a href="bibtex_atp.html">Bibtex filetype plugin</a> </div>
+    <div><a href="#atp-bibsearch">Searching in bib files</a> </div>
+    <div class=indented><a href="#atp-variables-bib">BibSearch Variables</a></div>
+    <div><a href="#atp-completion">Tab Completion</a> </div>
+    <div class=indented><a href="#atp-completion-modes">Completion Modes</a></div>
+    <div class=double_indent><a href="#atp-completion-commands">Completion for Commands</a></div>
+    <div class=double_indent><a href="#atp-completion-tikzpicture">Completion for Tikzpicutre Environment</a></div>
+    <div class=double_indent><a href="#atp-completion-ref">Completion for \ref/\label/\cite commands</a></div>
+    <div class=double_indent><a href="#atp-completion-brackets">Completion for Brackets</a></div>
+    <div class=double_indent><a href="#atp-completion-env">Completion for Environments</a></div>
+    <div class=double_indent><a href="#atp-completion-abbreviations">Completion for Abbreviations</a></div>
+    <div class=double_indent><a href="#atp-completion-fontdeclaration">Completion for Font Commands</a></div>
+    <div class=double_indent><a href="#atp-completion-bibstyle">Completion for \bibstyle Command</a></div>
+    <div class=double_indent><a href="#atp-completion-documentclass">Completion for \documentclass Command</a></div>
+    <div class=indented><a href="#atp-completion-variables">Completion Variables</a></div>
+    <div><a href="#atp-omnicompletion">Omni Completion</a></div>
+    <div class=indented><a href="#atp-omnicompletion-commands">Omni Completion for Commands</a></div>
+    <div class=indented><a href="#atp-omnicompletion-environments">Omni Completion for Environments</a></div>
+    <div class=indented><a href="#atp-omnicompletion-labels">Omni Completion for Labels</a></div>
+    <div class=indented><a href="#atp-omnicompletion-bibtex">Omni Completion for Bib Entries</a></div>
+    <div><a href="#atp-configure"><b>Variables</b></a> How to configure ATP to your needs</div>
+    <div><a href="#atp-ProjectFiles">A note how to write project files within ATP</a></div>
+    <div><a href="#atp-ProjectScript">A script executing project specific settings</a></div>.
+    <div><a href="#atp-mappings"><b>Mappings</b></a></div>
+    <div><a href="#atp-abbreviations"><b>Abbreviations</b></a></div>
+    <div><a href="#atp-errors">Debugging ATP</a></div>
+    <div><a href="#atp-editing"><b>Editing tools</b></a></div>
+    <div><a href="#atp-requirements">Requirements</a></div>
+    <div><a href="#atp-viewers"><b>Viewers</b></a> (<b>with how to configure reverse searching for Okular</b>)</div>
+			    
+    <div><a href="#atp-tips">Some tex oriented tips</a></div>
+    <div><a href="#atp-highlight">Colours and syntax files</a></div>
+    <div><a href="#atp-remarks">Final remarks</a></div>
+    <div><a href="#atp-copy-rights"><em>Copy Rights</em></a></div>
+
+    <a name="atp-news"></a>
+    <h2>News</h2>							
+
+    <h3>Changes in version 9.6</h3>
+
+    <p>Some functions where rewritten in python making ATP much faster.</p>
+
+      <p>ATP loads 1/3 faster (after first run when you save project file, which is
+      done when you save your file!).</p>
+
+      <p>Use g:atp_no_local_abbreviations if you don't want to have abbreviations to
+      locally defined environments (this takes time if your vim was compiled
+      without |+python| feature, as it runs <a href="#atp-:LocalCommands">atp-:LocalCommands</a> command - which
+      is slow in this case). </p>
+
+      <p>Note: the python version of LocalCommands will save the current buffer,
+      without saving project script and with 'nowritebackup' and 'nobackup' set. </p>
+
+      <p>I added <a href="#b:atp_LocalEnvironments">b:atp_LocalEnvironments</a>, <a
+	  href="#b:atp_LocalCommands">b:atp_LocalCommands</a> and <a
+	  href="#b:atp_LocalColors">b:atp_LocalColors</a> to <a
+	  href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a> if
+      vim doesn't have +python feature otherwise <a
+	  href="#g:atp_local_completion">g:atp_local_completion</a> is set to 2,
+      hence <a href="#atp-:LocalCommands">atp-:LocalCommands</a> is run with
+      BufEnter. It is so because the function LocalCommands was written also in
+      python which is more than 10 times faster than the old vim
+      implementation.</p>
+
+      <p><a href="#atp-:ViewOutput">atp-:ViewOutput</a> -- removed the [sync] argument.</p>
+
+      <p><a href="#atp-:BibSearch">atp-:BibSearch</a> is written in python. It is much faster. Thus the argument
+      should be a python regular expression. If you want to use vim script (and
+      vim regular expression) set <a href="#g:atp_bibsearch">g:atp_bibsearch</a>="vim". Then both Tab
+      Completion and <a href="#atp-:BibSearch">atp-:BibSearch</a> will use vim code.</p>
+
+      <p>Tab completion for labels (\ref and \eqref commands) gives more information
+      inside the popup menu.</p>
+     
+      <p>The F2 map is back -- it turns on/off <space> cmap to \_s\+. But this time
+      this map by default is turned on. It is made to it doesn't interact with
+      other command modes than / and ?. If you want to turn in off/on use F2. If
+      you want to turn it off in your vimrc or <a href="#atprc">atprc</a> files
+      use: <div class=variable>let g:atp_cmap_space = 0</div> Pressing F2 will
+      define this map.</p>
 
 
-<p>I hope I didn't missed anything important. If you want to see detailed changes
-you can always read the svn logs at <a href="#atp-sourceforge">atp-sourceforge</a>.<p><br>
+      <p>Some other small fixes.</p>
+
+    <h3>Changes in version 9.5</h3>
+
+	<p>The keys j, k, gj and gk are no longer mapped by ATP. There is a better
+	solution for updating the Table of Contents highlighted line. It is done
+	using autocommand CursorHold.</p>
+
+	<p>See the new command <a href="#atp-:Tags">atp-:Tags</a>.</p>
+
+    <a href="#atp-:Dsearch">atp-:Dsearch</a>
+    <div class=command>:Dsearch</div>
+	<p>This used to be :DefiSearch. This I found more in vim style.
+	Also <a href="#g:atp_DsearchMaxWindowHeight">g:atp_DsearchMaxWindowHeight</a> is used instead of
+	g:atp_DefiSearchMaxWindowHeight.</p>
+
+    <p><a href="#g:atp_statusOutDir">g:atp_statusOutDir</a> fixed.</p>
+    <p><a href="#g:atp_IMapCC">g:atp_IMapCC</a> instead of g:atp_MapCC.</p>
+
+    <p>And bunch of other fixes :).</p>
+
+    <h4>TIP</h4>
+    <p>Checkout cmdalias plugin (vimscript#745). It lets define lower case
+    aliases to commands. You can put in your <a href="#atprc">atprc</a> file:
+    <div class=indented>Alias tex TEX</div>
+    <div class=indented>Alias toc TOC</div></p>
+
+    <h3>Changes in version 9.4</h3>
+
+    <h4>ATP and Gentoo Linux</h4>
+    <p>Thanks to Tim Harder there is a gentoo ebuild, if you use gentoo check for
+    automatictexplugin in the portage tree.</p>
+
+    <h4>Completion</h4>
+    <p>Small but nice change in closing environments: If you type
+    \begin{envname}<Tab> the cursor position will not change. You can use
+    i_CTRL-M (i_CTRL-J is used by <a href="#atp-j_motion">atp-j_motion</a>) after <Tab> to open new
+    line inside {envname}.  Otherwise the cursor position will be right after
+    the closing \end{envname}.</p>
+
+    <h4>Local Commands</h4>
+    <p><a href="#atp-:LocalCommands">atp-:LocalCommands</a><br>
+    <div class=double_indent>-- do not search in comments, </div>
+    <div class=double_indent>-- add single { if command has defined arguments.</div></p>
+
+    <p>Note: the format of viewer options has changed from a string to a vim
+    list.  Every option and its value should be placed as a separate element
+    of vim list.  See <a href="#atp-Viewers_Options">atp-Viewers_Options</a> for examples.</p>
+
+    <h4>New imaps</h4>
+    <p>New imaps for some commonly used math commands: see <a href="#atp-imap-math">atp-imap-math</a>.</p> 
+
+    <p>All mathematical imaps: for symbols, greek letters, are defined only when
+    inside LaTeX (or TeX) mathematical environment.</p> 
+
+    <p>There is new predefined layout for environment imaps available, but
+    disabled by default. If you like longer and more intuitive environment
+    insert mode maps set <a
+	href="#g:atp_ShortEnvIMaps">g:atp_ShortEnvIMaps</a>=0 in your vimrc or
+    <a href="#atpr">atprc</a>c files. Use <a
+	href="#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a> to see them. There is
+    also one new environment ]let in this new layout which inputs a letter
+    environment. If you want a short imap for it you can set
+    g:atp_imap_letter="w" and ATP will make a map ]w for it.  Note that "l",
+    and "L" are already taken and using "le" will slow down "l", also "e" and
+    "r" are used, so there is no good choice for it. You can set <a
+	href="#g:atp_letter_opening">g:atp_letter_opening</a> and <a
+	href="#g:atp_letter_closing">g:atp_letter_closing</a> to customize
+    default opening and closing statements.</p>
+
+    <p>If you decide to use short imaps (the default) there is one change: ]i is
+    mapped to \item and ]I is mapped to itemize environment (this is the only
+    type of change in the short layout. In long layout ]I is mapped ot \item
+    and ]ite is mapped to itemize environment.</p>
+
+    <p>There is also a small change with <Tab> completion: after typing
+    \begin{envname}<Tab> the cursor will not move, so you can use |i_CTRL-M|
+    to open new line.</p>
+
+    <p>The abbreviations are customizable: g:atp_imap_{envname}, also the
+    leader is customizable with <a
+	href="#g:atp_imap_third_leader">g:atp_imap_third_leader</a> and
+    environment names for example if you set <a
+	href="#g:atp_EnvNameTheorem">g:atp_EnvNameTheorem</a>="thm" then ]the
+    imap will insert \begin{thm}:\end{thm} pair. You can list supported
+    environments with ':let g:atp_EnvName<C-d>'. If you set
+    g:atp_imap_{envname} to empty string "" the corresponding imap will not be
+    defined.</p>
+
+    <p>See also <a href="#atp-:ToggleMathIMaps">atp-:ToggleMathIMaps</a>.</p>
+
+    <h4>New Motions</h4>
+    <a name="atp-&gtE"></a> <a name="atp-&ltE"></a> <p>There are two more nice map
+    >E which is something like %>e, i.e. jump over the current environment and
+    go to next one. The reverse <E is also implemented, thought it is not
+    simply <e%. They do not support count (yet), and actually count breaks
+    them. If you want to add zz, (zt or zb) after >E you can put this in your
+    |atprc| file:
+    <div class=indented>map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz</div>
+    <div class=indented>map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz</div></p>
+
+    <p><a href="#atp--S">atp--S</a>, <a href="#atp--s">atp--s</a>, <a
+	href="#atp--c">atp--c</a>, <a href="#atp--p">atp--p</a> new maps for <a
+	href="#atp-:SSec">atp-:SSec</a>, <a href="#atp-:Sec">atp-:Sec</a>, <a
+	href="#atp-:Chap">atp-:Chap</a> and <a href="#atp-:Part">atp-:Part</a>.
+    They also works relatively to the current unit (section/chapter/part), i.e.
+    2]s will jump to second section of the current chapter.</p>
 
 
-<div class=triple_indent>Chears, Marcin</div>
+    <h4>Updatetime</h4>
+    <p><a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> can be
+    changed on the fly to 0 (previously it requires to quitting vim and making
+    changes in vimrc/<a href="#atprc">atprc</a> files.</p> 
 
-<a name="atp-installation"></a>
-<h2>INSTALLATION</h2>
+    <h4>Make LaTeX</h4>
+    <p><a href="#atp-:MakeLatex">atp-:MakeLatex</a> is rewritten in python. The
+    "!" is not yet implemented.</p>
+
+    <h4>Python 3 compatibility</h4>
+    <p>All python scripts are compatible with Python 3. Traceback info is
+    forwarded to vim (and log files) in case exceptions are handled.</p>
+
+    <h4>Dictionaries</h4>
+    <p>I added extended versions of dictionaries of latex-suite to ATP (the files
+    dictionaries/dictionary and dictionary/SIunits). They are added to
+    'complete' vim option, so you can use them through ins-completion.
+    I made one more dictionary (dictionaries/ams_dictionary) with ams commands
+    and environment names. It will be added to the vim 'complete' option if
+    you use amsmath package or if the document class is one of the standard
+    ams classes or of <a href="#g:atp_amsmath">g:atp_amsmath</a> is set to 1.</p>
+
+    <h4>Status Line</h4>
+    <p>Status notifications has the ability to show if <a
+	href="#b:atp_BibCompiler">b:atp_BibCompiler</a>, or "makeindex" are
+    running. Unless |g:atp_statusNotif|=0 or <a
+	href="#g:atp_callback">g:atp_callback</a>=0 <a
+	href="#atp-:MakeLatex">atp-:MakeLatex</a> will echo a single message
+    when it returns.</p>
+
+    <p>There is also new status line for QuickFix window with number of errors
+    and warnings printed (this depends on <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>).</p>
+
+    <h4>Biber and BibLaTeX Support</h4>
+    <p>Support for biber and biblatex is added (in <a href="#atp-:MakeLatex">atp-:MakeLatex</a>,
+    <a href="#atp-:Bibtex">atp-:Bibtex</a>, <a href="#atp-:Delete">atp-:Delete</a>, <a href="#atp-:InputFiles">atp-:InputFiles</a> commands), <a href="#g:atp_kee">g:atp_keep</a>p
+    variable will adjust on the fly (add run.xml and bcf extensions).
+    <a href="#b:atp_BibCommand">b:atp_BibCommand</a> will be set to biber if the preamble contains
+    \usepackage[backend=biber]{biblatex}</p>
+
+    <p>If you use biblatex, it allows for putting \bibliography{} type commands
+    only in the preamble. Thus ATP will search for them only there. The <a
+	href="#g:atp_inputfile_pattern">g:atp_inputfile_pattern</a> might not
+    contain any pattern for bibliographies (\addbibresource, \bibliography,
+    etc.). The <a href="#atp-:InputFiles">atp-:InputFiles</a> command will
+    search for them in a special subroutine which only searches in the
+    preamble.  This makes it work slightly faster.</p>
+
+    <h4>TeX Options Variable (new format)</h4>
+    <p><a href="#b:atp_TexOptions">b:atp_TexOptions</a> is a comma separated list of TeX compiler options.
+    If you use <a href="#g:atp_Compiler">g:atp_Compiler</a>="bash" this might be just a white space
+    separated list.</p>
+    <a href="#atp-space">atp-space</a>
+    <h4>Space cmap</h4>
+    <div class=map>cmap <buffer> <C-Space> 	\_s\+</div>
+    <div class=map>cmap <buffer> <C-_> 	\_s\+</div>
+    <p>The C-Space Vim, instead C-@ is used which works as C-Space. In Vim, and
+    gVim as well, you can also use <a href="#atp-Q/">atp-Q/</a>, <a
+	href="#atp-Q?">atp-Q?</a> where <Space> is mapped to \_s\+.</p>
+
+    <p>Note: from version 9.6 Space is mapped to \_s\+ in cmdline modes / and
+    ?.  F2 turns it on/off. The above maps are always on.</p>
+
+    <h4>Errors</h4><br>
+    <div class=map>nmap &ltLocalLeader&gte</div>
+    <p>To get list of errors with current <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
+    <a href="#atp-:ErrorForma">atp-:ErrorFormat</a>
+    <div class=command>:ErrorFormat {efm}</div>
+    <p>This is new interface to :SetErrorFormat. If {efm} is not given it will
+    show the current value <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>. It sets the variable
+    <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> and rereads the log file with |cgetfile|. The variable
+    <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a> is also set when you use the command
+    <a href="#atp-:ShowErrors">atp-:ShowErrors</a>. In addition you can use +{flag} and -{flag} as an
+    argument, then {flag} will be added/removed from <a href="#b:atp_ErrorFormat">b:atp_ErrorFormat</a>.</p>
+
+    <h4>EasyMotion and ATP</h4>
+    <p>If you want to use <a href="http://www.vim.org/scripts/script.php?script_id=3526">EaseMotion</a> vim plugin (which is quite handy).</p>
+	    
+    <p>You can set <a href="#g:atp_Compare">g:atp_Compare</a>="". Alternatively, if
+    you want to use the fastest comparing method of ATP, you can add to last line
+    of s:EasyMotion() function in plugin/EasyMotion.vim add <dev class=intended>let
+    g:atp_changedtick = b:changedtick</div> You might want to change
+    g:EasyMotion_leader_key (see |easymotion-leader-key| if you have EasyMotion),
+    because some maps of ATP are interfering with EasyMotion. For example "-" might
+    be a good choice.  You can also try to change |maplocalleader| which is heavily
+    used by ATP.</p>
+
+    <p>Select Comments nmap and vmap is now |_c| (previously \sc was
+    interfering with an ATP font map).</p>
+
+    <p>(Almost all) maps became :map-silent.</p> 
+
+    <h4>ATPRC</h4>
+    <p>The <a href="#atprc">atprc</a> file is now sourced twice at startup: at the
+    beginning to set the variables, and once again at the end to set the maps
+    defined in it.</p>
+
+    <h4>QUICKFIX WINDOW</h4>
+    <p>Despite the status line for quick fix window, :cgetfile will be run when you
+    open new files, this nicely works with :edit command but not :split if you want
+    to keep the old log file in QuickFix window. If this is the case set 
+    <div class=variable>let g:atp_cgetfile = 0</div>
+    You can also put this in your <a href="#atprc">atprc</a> or |vimrc| file.</p>
+
+    <h4>DEBUG ATP</h4>
+    <div class=command>:DebugPrint</div>
+    <p>if you want to develop/debug ATP set g:atp_atpdev to 1 run <a
+	href="#atp-:ReloadATP">atp-:ReloadATP</a> and this command will allow to
+    print (cat) debug files under <a href="#g:atp_TempDir">g:atp_TempDir</a>.</p>
+
+
+    <p>I hope I didn't missed anything important. If you want to see detailed changes
+    you can always read the svn logs at <a href="#atp-sourceforge">atp-sourceforge</a>.<p><br>
+
+
+    <div class=triple_indent>Chears, Marcin</div>
+
+    <a name="atp-installation"></a>
+    <h2>Installation</h2>
 
 Neccessary vim settings:<br>
 <div class=indented>:filetype-plugin-on</div>
@@ -460,27 +460,29 @@ Neccessary vim settings:<br>
 colours (you should make a simple function which clears all the highlight
 groups, because ':hi clear' will not give you what you want).</p>
 
-<p>See <a href="#atp-requirements">atp-requirements</a> for other  ATP requirements.</p> 
+<p>See this <a href="../requirements.html">link</a> for other ATP requirements.</p> 
 
-<h3>Get ATP Updates</h3>
+<h2>Get ATP Updates</h2>
 <p>To get updates it is enought to use this command:</p>
 <a name="atp-:UpdateATP"></a>
-<div class=command>:UpdateATP[!]</div>
-	<p>With bang update ATP to latest {UNSTABLE} snapshot, without to latest
+<p><div class=command>:UpdateATP[!]</div>
+<div class=indented>With bang update <b>ATP</b> to latest <i>unstable</i> snapshot, without to latest
 	stable release. It makes a check if your version is the latest one. 
-	If you have installed {UNSTABLE} snapshot and then you run :UpdateATP
-	without a bang "!", then ATP will ask you if you want to DOWNGRADE to
-	the last stable release.</p>
+	If you have installed <i>unstable</i> snapshot and then you run :UpdateATP
+	without a bang "!", then <b>ATP</b> will ask you if you want to
+	<i>downgrade</i> to
+	the last stable release.
 
-	<p><b>unstable</b> snapshots contain small fixes, and rarely, major changes
+	<p><i>Unstable</i> snapshots contain small fixes, and rarely, major changes
 	of important parts of ATP (what can produce new bugs).</p>
 
-	<p>Requires python.</p>
+	<p>Requires python.</p></div></p>
 
 <a name="atp-:ATPversion"></a>
-<div class=command>:ATPversion</div>
-	<p>This command prints version information of ATP and the time stamp when
-	this version was build. The time stamp is in format 'dd-mm-yy_HH-MM'.</p>
+<p><div class=command>:ATPversion</div>
+<div class=indented>This command prints version information of ATP and the time stamp when
+	this version was build. The time stamp is in format
+	'dd-mm-yy_HH-MM'.</div></p>
 
 <a name="atp-commands"></a> <a name="atp-:"></a>
 <h2>Commands</h2>
@@ -2131,7 +2133,7 @@ or g:no_atp_maps are defined).</div></p>
 deleted.</div></p>
 
 <a name="atp-toc-window"></a>
-<h2>TABLE OF CONTENTS WINDOW</h2>
+<h2>Table of Contents Window</h2>
 
 <p>For the table of contents command and maps read <a href="#atp-:TOC">atp-:TOC</a>.</p>
 
@@ -2230,7 +2232,7 @@ the file name.</p>
 		this can be put in your '$HOME/.atp.vim' configuration file.</p>
 
 <a name="atp-bibsearch"></a>
-<h2>SEARCHING IN BIB FILES</h2>
+<h2>Searching in Bib Files</h2>
 
 	<div class=indented><h4>Table of Contents:</h4></div>
 	<div class=indented><a href="#atp-:BibSearch">atp-BibSearch</a></div>
@@ -2542,7 +2544,7 @@ and for the bib field labels for the latex command \cite{}.</p>
 	is doable.  @string{ Name = Value }</p>
 
 <a name="atp-completion"></a>	
-<h2>COMPLETION</h2>
+<h2>Completion</h2>
 
 <p>The completion is by default mapped to <Tab>. For example if you type
 \math<Tab> you will get a list of choices which completes this command. (See
@@ -3071,7 +3073,7 @@ distribution it is enough to unlet these variables. ATP will find new values
 when it will need them for the first time.</p> 
 
 <a name="atp-omnicompletion"></a>
-<h2>OMNI COMPLETION</h2>
+<h2>Omni Completion</h2>
 <p>by David Munger (LatexBox plugin)</p>
 
 <p>Completion is achieved through omni completion |compl-omni|, with default
@@ -3191,7 +3193,7 @@ Then, try:
 href="#atp-omnicompletion-commands">atp-omnicompletion-commands.</a></p>
 
 <a name="atp-configure"></a> <a name="atp-variables"></a>
-<h2>HOW TO CONFIGURE ATP TO YOUR NEEDS</h2>
+<h2>How to Configure ATP to Your Needs</h2>
 <a name="atp-ProjectFiles"></a> <a name="b:atp_MainFile"></a>
 <p>There are several options you can set, and they might be set in your Vimrc
 file. The default values are given below (except the completion setup and
@@ -3514,7 +3516,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
     changes the behaviour of '%'. In nocomatible mode it gen go to matching
     pair in a different line in compatible mode it find the matching pair only
     if the ending bracket is in the same line.</div></p>
-<h2>WRITING PROJECTS</h2>
+<h2>Writing Projects</h2>
 <p><div class=variable>let b:atp_MainFile	= expand("%:p")</div>
 <div class=indented>This variable points to the main file of the project, it is set on the
 start up to the file you open. If you edit project file (for the first time),
@@ -3874,7 +3876,7 @@ commands:
 	lines.</div></p>
 
 <a name="atp-mappings"></a> <a name="atp-maps"></a>
-<h2>MAPS</h2>
+<h2>Maps</h2>
 <p>Lots of mappings which are given here uses #. This is a convenient map on
 British keyboards, but not in the US layout, you can change them for '`' or
 some other key that it is not used in Vim (there are not many of them though).
@@ -4266,14 +4268,14 @@ is how you can set the rhs:</p>
 
 <p><div class=variable><a name="g:atp_letter_opening">g:atp_letter_opening</a></div>
 <div class=variable><a name="g:atp_letter_closing">g:atp_letter_closing</a></div>
-<div class=indented>By default g:atp_letter_opening and g:atp_letter_closing are ''.</div></p>
+    <div class=indented>By default g:atp_letter_opening and g:atp_letter_closing are ''.</div></p>
 
-<p>Next three sets of imaps: <a href="#atp-imap-math">">atp-imap-math</a>,
-<a href="#atp-imap-math-misc">atp-imap-math-misc</a> and <a
-href="#atp-imap-diacritics">atp-imap-diacritics</a> define imaps with
-overlaping keys (lhs), but note that first two are defined only in math
-environment, while the last only in non math environment. In this way `' in
-math environment will produce \acute{} while in non math \'{}. </p>
+    <p>Next three sets of imaps: <a href="#atp-imap-math">">atp-imap-math</a>,
+    <a href="#atp-imap-math-misc">atp-imap-math-misc</a> and <a
+    href="#atp-imap-diacritics">atp-imap-diacritics</a> define imaps with
+    overlaping keys (lhs), but note that first two are defined only in math
+    environment, while the last only in non math environment. In this way `' in
+    math environment will produce \acute{} while in non math \'{}. </p>
 <a name="atp-imap-math"></a>
 <a name="g:atp_imap_math"></a>
 <a name="g:atp_imap_define_math"></a>
@@ -4301,6 +4303,7 @@ math environment will produce \acute{} while in non math \'{}. </p>
 	<tr><td><div class=map>imap =~</div></td><td>		\cong</td></tr>
 	<tr><td><div class=map>imap ~~</div></td><td>		\approx</td></tr>
 
+	<tr><td><div class=map>imap ++</div></td><td>		\sum</td></tr>
 	<tr><td><div class=map>imap o+</div></td><td>		\oplus</td></tr>
 	<tr><td><div class=map>imap O+</div></td><td>		\bigoplus</td></tr>
 	<tr><td><div class=map>imap o-</div></td><td>		\ominus</td></tr>
@@ -4345,7 +4348,7 @@ math environment will produce \acute{} while in non math \'{}. </p>
 
 <h4>AuTeX maps</h4>
 <div class=map>imap __ 	_{}&ltLeft&gt</div>
-<div class=map>imap ^^		^{}&ltLeft&gt</div>
+<div class=map>imap ^^	^{}&ltLeft&gt</div>
     <div class=indented>You can set the leader for these two maps using
 	g:atp_imap_subscript, g:atp_imap_supscript variables. If you do not
 	have any maps which begins with _ or ^ then you can set them to _ and
@@ -4434,6 +4437,7 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
     g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics plus _ for
     _{} and ^ for ^{}.</div></p> 
 
+
 <a name="atp-maps-log"></a> 
 <h3>Log File Maps</h3>
     <p>This are available maps in the log file, when it was opened with
@@ -4452,8 +4456,9 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
 	You can use |n| and |N| Vim normal commands to repeat previous search [count] times.</p>
 
 
+
 <a name="atp-abbreviations"></a>
-<h2>ABBREVIATIONS</h2>
+<h2>Abbreviations</h2>
 
 <p>The following abbreviations are defined:
 <pre>
@@ -4499,7 +4504,7 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
     =lemma=, etc.</p> 
 
 <a name="atp-errors"></a>
-<h2>DEBUGGING ATP</h2>
+<h2>Debugging ATP</h2>
     <p>This section describes some limitation of ATP (as you see, this section is
     not written, but the aim is to make it disappear anyway ;).</p>
 
@@ -4519,7 +4524,7 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
     count.)</p>
 
 <a name="atp-editing"></a>
-<h2>EDITING TOOLS</h2>
+<h2>Editing Tools</h2>
 	<a name="atp-visual"></a>
 	<p>visual mode: ie, iE, ae, im, am, ip, ap, iS, aS, &ltLocalLeader&gtsc normal
 	and mode: &ltLocalLeader&gtsc.</p> 
@@ -4584,36 +4589,12 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
 
 	
 <a name="atp-requirements"></a>
-<h2>REQUIREMENTS</h2>
+<h2>Requirements</h2>
 
-<p>This plugin requires Vim version 7.3.  Several tools uses syntax, so even if
-you do not like colours on the screen you should set "syntax on". For example,
-the recognition of math mode used by |atp-completion|, and |atp-:TexAlign|
-command (but also some other things, and some maps!).</p>
-
-<a name="atp-requirements-python"></a>
-<p>ATP uses python 2.7 (also works with python 3). You need psutil library which
-you can get from <a href="http://code.google.com/p/psutil/">here</a>.
-    
-<p>Other libraries are standard ones so they should be available. If you have
-a problem you can try to set g:atp_debugPythonCompiler=1 and then look at the
-file PythonCompiler.log under <a href="#g:atp_TempDir">g:atp_TempDir</a> it
-will contain python errors.</p>
-
-<p>It is nice to have 'texdoc' program. This plugin maps <F1> to a function which
-calls it. This allows to speed up searches for documentation. Also the option
-'keywordprg' has the value "texdoc -m", thus pressing 'K' (see |K|) over a tex
-package should open you the package documentation. The same applies to this
-help file.</p>
-
-<p>Another good programs are: texloganalyzer (which is now not used by ATP) and pdffonts
-There is a map to use pdffonts, see: <a href="#pdffonts">pdffonts</a>.</p>
-
-<p>The command <a href="#atp-:WordCount">atp-:WordCount</a> is using detex program. It is included in TexLive
-tex distrubution.</p>
+See <a href="requirements.html">this web page</a>.
 
 <a name="atp-Viewers"></a>
-<h2>NOTES ON VIEWERS</h2>
+<h2>Notes on Viewers</h2>
 
 <p>See the section <a href="#atp-Viewers_Options">atp-Viewers_Options</a> how to set options for viewer programs.</p>
 <a name="atp-Viewers-Xpdf"></a>
@@ -4747,7 +4728,7 @@ tex distrubution.</p>
 	on one screen.</div></p>
 
 <a name="atp-tips"></a>
-<h2>TIPS</h2>
+<h2>Tips</h2>
 
 <p>If you have any nice tip on editing (La)TeX with Vim or ATP :) you can share it
 here (my email you'll find on top of the help file), or put them on the script
@@ -4812,7 +4793,7 @@ end wrapper.</p>
 <p>suggestions. Another version is to use ]S and [S instead of ]s and [s.</p>
 				
 <a name="atp-highlight"></a>
-<h2>COLOUR HIGHLIGHTING AND SYNTAX GROUPS</h2>
+<h2>Colour Highlighting and Syntax Groups</h2>
 
 <p>When the cursor is positioned on \begin{envname} or \end{envname} both
 corresponding \begin:\end get highlighted with syntax group MatchParen. 
@@ -4904,7 +4885,7 @@ links:
 	<div class=variable>set statusline=%!g:atp_StatusLine</div></p>
 
 <a name="atp-remarks"></a>
-<h2>FINAL REMARKS</h2>
+<h2>Final Remarks</h2>
 	
 <p>To see some messages that are issued you can use the |:mes| command.</p>
 
@@ -4917,7 +4898,7 @@ SourceForge: <a href="#atp-sourceforge">atp-sourceforge</a>.</p>
 <div class=indented>Marcin Szamotulski</div>
 	
 <a name="atp-copy-rights"></a>	
-<h2>COPY RIGHTS</h2>
+<h2>Copy Rights</h2>
 
 
     <p>Copyright (C) 2010 Marcin Szamotulski Permission is hereby granted to use

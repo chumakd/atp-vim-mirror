@@ -471,7 +471,7 @@ function! <SID>Dsearch(bang,...)
 	endif
 	setl syntax=tex
 	setl readonly
-	map <buffer> q	:bd<CR>
+	map <buffer> <silent> q	:bd<CR>
     else
 	redraw
 	echohl ErrorMsg

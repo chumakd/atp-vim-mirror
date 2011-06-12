@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Jun 11 08:00  2011 W
+" Last Change: Sun Jun 12 04:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -835,6 +835,8 @@ if !exists("g:atp_imap_math_misc") || g:atp_reload_variables
 	let g:atp_infty_leader = (g:atp_imap_first_leader == '#' ? '`' : g:atp_imap_first_leader ) 
     endif
 let g:atp_imap_math_misc = [
+\ [ 'inoremap', '<silent> <buffer>', '+',		      '+', s:backslash.'sum',
+	\ "g:atp_imap_define_math_misc", '\sum' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_infty_leader,      '8', s:backslash.'infty', 	
 	\ "g:atp_imap_define_math_misc", '\infty' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_infty_leader,      '6', s:backslash.'partial',	

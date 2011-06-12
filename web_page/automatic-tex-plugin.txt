@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 11 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 12 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.1)
 			by Marcin Szamotulski
@@ -152,6 +152,26 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 9.6.1
+<
+  The main work was to make ATP web page: http://atp-vim.sf.net with proper
+  html version of documentation at http://atp-vim.sf.net/help.html.
+
+  New imaps added: see |atp-imap-diacritics|. Read also paragraph before
+  |atp-imap-math|. The command atp-:ToggleMathIMaps is now called
+  |atp-:ToggleIMaps| and also toggles |atp-imap-diacritics|.
+
+  I added to doc section about latexmk interface: |atp-:Latexmk|,
+  |atp-:LatexmkStatus|, |atp-:LatexmkClear|, |atp-:LatexmkStop|. The LatexBox
+  commands :LatexmkForce, :LatexmkStatusDetailed and :LatexmkClearAll are
+  simulated with bang.
+
+  imap ++ \sum	(which can be turned off with :ToggleIMaps or '<Tab> imap and
+  nmap)
+
+  Several small fixes (thanks to user reports on the |atp-mailing-list|!)
 >
  ======================
  Changes in version 9.6
@@ -4100,52 +4120,6 @@ first two are defined only in math environment, while the last only in non
 math environment. In this way `' in math environment will produce \acute{}
 while in non math \'{}. 
 
- 							*atp-imap-math*
-							*g:atp_imap_math*
-MATH IMAPS						*g:atp_imap_define_math*
-
-    These imaps are defined in |g:atp_imap_math| variable (except ]m and ]M
-    imaps). They might be turned off usgin |atp-:ToggleIMaps| commands or
-    |g:atp_imap_define_math| variable (be setting it to 0, works on the fly).
-
-    For convienience, there are:
-imap ~~		\tilde{}	
-imap ~^		\hat{}		[^^ is used for ^{}]		
-    							*g:atp_imap_wide*
-    If |g:atp_imap_wide| is set to 1 (default is 0) the above imaps to
-    \widetilde{} and \widehat{}.
-
-    The last two maps and the following maps work around |'timeout'| vim
-    setting (behave like |'notimeout'| was set):
-
-imap ==		&=
-imap =~		\cong
-imap ~~		\approx
-
-imap o+		\oplus
-imap O+		\bigoplus
-imap o-		\ominus
-imap o.		\odot
-imap O.		\bigodot
-imap o*		\otimes
-imap O*		\bigotimes
-imap s+		\cup		[    set +]		/set = set theoretic/
-imap s-		\setminus	[    set -]
-imap S+		\bigcup		[big set +]
-imap s*		\cap		[    set *]
-imap S*		\bigcap		[big set *]
-imap c*		\prod		[    cat *]		/cat = categorical/
-imap c+		\coprod		[    cat +]
-imap <=		\leq
-imap >=		\geq
-imap t<		\triangleleft
-imap t>		\triangleright
-imap s<		\subseteq	[    set <]
-imap s>		\supseteq	[    set >]
-
-    If you want to write 'o*' you can wait until |'timeoutlen'| passes or
-    write 'o *' (TeX in math mode doesn't see spaces).
-
  							*atp-imap-math-misc*
 							*g:atp_imap_math_misc*
 MATH IMAPS MISC						*g:atp_imap_define_math_misc*
@@ -4205,6 +4179,51 @@ imap `v		\check{}
 imap `_		\bar{}
 imap `~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
 imap `^		\hat{}		[as above]
+
+
+ 							*atp-imap-math*
+							*g:atp_imap_math*
+MATH IMAPS						*g:atp_imap_define_math*
+
+    These imaps are defined in |g:atp_imap_math| variable (except ]m and ]M
+    imaps). They might be turned off usgin |atp-:ToggleIMaps| commands or
+    |g:atp_imap_define_math| variable (be setting it to 0, works on the fly).
+
+    For convienience, there are:
+imap ~~		\tilde{}	
+imap ~^		\hat{}		[^^ is used for ^{}]		
+
+    The last two maps and the following maps work around |'timeout'| vim
+    setting (behave like |'notimeout'| was set):
+
+imap ==		&=
+imap =~		\cong
+imap ~~		\approx
+
+imap ++		\sum
+imap o+		\oplus
+imap O+		\bigoplus
+imap o-		\ominus
+imap o.		\odot
+imap O.		\bigodot
+imap o*		\otimes
+imap O*		\bigotimes
+imap s+		\cup		[    set +]		/set = set theoretic/
+imap s-		\setminus	[    set -]
+imap S+		\bigcup		[big set +]
+imap s*		\cap		[    set *]
+imap S*		\bigcap		[big set *]
+imap c*		\prod		[    cat *]		/cat = categorical/
+imap c+		\coprod		[    cat +]
+imap <=		\leq
+imap >=		\geq
+imap t<		\triangleleft
+imap t>		\triangleright
+imap s<		\subseteq	[    set <]
+imap s>		\supseteq	[    set >]
+
+    If you want to write 'o*' you can wait until |'timeoutlen'| passes or
+    write 'o *' (TeX in math mode doesn't see spaces).
 
  						*atp-imap-diacritics*
 						*g:atp_imap_define_diacritics*

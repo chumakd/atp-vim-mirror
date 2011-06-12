@@ -168,6 +168,9 @@ NEWS							*atp-news*
   commands :LatexmkForce, :LatexmkStatusDetailed and :LatexmkClearAll are
   simulated with bang.
 
+  imap ++ \sum	(which can be turned off with :ToggleIMaps or '<Tab> imap and
+  nmap)
+
   Several small fixes (thanks to user reports on the |atp-mailing-list|!)
 >
  ======================
@@ -4197,6 +4200,7 @@ imap ==		&=
 imap =~		\cong
 imap ~~		\approx
 
+imap ++		\sum
 imap o+		\oplus
 imap O+		\bigoplus
 imap o-		\ominus

@@ -602,20 +602,20 @@ if it is running.</div></p>
 	made of letters:</div><p>
 
 <div class=indented>
-    <table border=0 vspace=0 cellspacing=20 >
-<tr><td valign=top>e</td><td>- include errors</td></tr>
-<tr><td valign=top>w</td><td>- include all warning messages</td></tr>
-<tr><td valign=top>r</td><td>- include all reference warnings</td></tr>
-<tr><td valign=top>c</td><td>- include all citations warnings</td></tr>
-<tr><td valign=top>f</td><td>- include all font warnings</td></tr>
-<tr><td valign=top>fi</td><td>- include font info massages</td></tr>
-<tr><td valign=top>F</td><td>- show files listed in the log<br>
-(messages which start with 'File: ') shows the files loaded by tex for example fd files that LaTeX is using</td></tr>
-<tr><td valign=top>p</td><td>- show packages loaded by tex<br>
-			    (messages which start with 'Package: ')</td></tr>
-<tr><td valign=top>all</td><td>- show all above,</td></tr>
-<tr><td valign=top>All</td><td>- show All the log file,</td></tr>
-<tr><td valign=top>o</td><td>- open the log file in a new buffer (split).</td></tr>
+    <table border=0 vspace=0 cellspacing=0 >
+	<tr><td valign=top><div class=command>e</div></div></td><td>- include errors</td></tr>
+	<tr><td valign=top><div class=command>w</div></td><td>- include all warning messages</td></tr>
+	<tr><td valign=top><div class=command>r</div></td><td>- include all reference warnings</td></tr>
+	<tr><td valign=top><div class=command>c</div></td><td>- include all citations warnings</td></tr>
+	<tr><td valign=top><div class=command>f</div></td><td>- include all font warnings</td></tr>
+	<tr><td valign=top><div class=command>fi</div></td><td>- include font info massages</td></tr>
+	<tr><td valign=top><div class=command>F</div></td><td>- show files listed in the log<br>
+	(messages which start with 'File: ') shows the files loaded by tex for example fd files that LaTeX is using</td></tr>
+	<tr><td valign=top><div class=command>p</div></td><td>- show packages loaded by tex<br>
+				    (messages which start with 'Package: ')</td></tr>
+	<tr><td valign=top><div class=command>all</div></td><td>- show all above,</td></tr>
+	<tr><td valign=top><div class=command>All</div></td><td>- show All the log file,</td></tr>
+	    <tr><td valign=top><div class=command>o</div></td><td>- open the log file in a new buffer (split).</td></tr>
     </table>
 </div>
 <p>If none flag is given <a
@@ -839,10 +839,11 @@ copied to the register g:atp_bibrefRegister (the default is "0" so you can
 paste it using Vim command 'p'). In addition, it is stored in the variable
 g:atp_bibref.</p></div></p>
 
-<a name=":BibChoose"></a>
+<a name="atp-:BibChoose"></a>
 <p><div class=command>:BibChoose</div>						
 <div class=map>map c, map y, map p</div>
-<div align=right>See <a href="#atp-:BibChoose">atp-:BibChoose</a></div>
+<div class=indented align=left>See also <a
+	href="atp-bibsearch.html#atp-:BibChoose">atp-:BibChoose</a>.</div>
 <div class=indented>This function is defined in the buffer with results of BibSearch command. It
 is mapped to 'y', 'c' and 'p' and let you copy the bib entry key to a register
 (see |atp-:BibChoose|) or directly to last opened buffer (after the last cursor
@@ -1006,7 +1007,7 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	line are split), this is useful for putting text into and environment
 	\begin{}:\end{}.
 
-	<p>See |<f-args>| to know how to pass arguments. (They are separated with
+	<p>See |&ltf-args&gt| to know how to pass arguments. (They are separated with
 	spaces, white spaces in arguments should be escaped with backslash
 	'\'.)</p>
 
