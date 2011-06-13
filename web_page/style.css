@@ -28,6 +28,20 @@ a:visited
     { 
 	color: #DE0055
     }
+
+div.rsstitle
+    {
+	padding: 5px 0px;
+	font-family: palatino;
+	font-size: 20px;
+	font-weight: bold;
+	color: #4E03C7;
+    }
+div.rsstitle2
+    {
+	font-family: palatino;
+	font-weight: bold;
+    }
 div.indented
    {
        padding-left: 50pt;
@@ -46,8 +60,8 @@ div.triple_indent
 td.mainpanel
    {
        font-size: 12pt;
-       padding-left: 50pt;
-       padding-right: 50pt;
+       padding-left: 20pt;
+       padding-right: 10pt;
        text-align: left;
        font-family: palatino, times, times new roman ;
    }
@@ -62,3 +76,7 @@ div.example
    {
        color: #940000;
    }
+img
+    {
+	border-style: none;
+    }

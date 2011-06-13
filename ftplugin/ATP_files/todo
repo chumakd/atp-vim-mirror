@@ -349,3 +349,4 @@ ToDo: docs doesn't contain latexmk info. LatexBox docs should be included.
 ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
 ToDo: \nu<Tab> completes to sth. (add greek letters to completion)
 ToDo: \partial \overlline \overline{
+ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).

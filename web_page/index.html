@@ -1,44 +1,33 @@
+<!DOCTYPE html>
 <html lang="en">
     <head>
 	<title >Automatic LaTeX Plugin for Vim</title>
 	<link rel="stylesheet" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
-	<script type="text/javascript">
-
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-22947515-2']);
-	  _gaq.push(['_trackPageview']);
-
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-
-	</script>
+	<script language="javascript" src="rssreader.js"></script>
     </head>
-<body bgcolor="#ffffff">
+<body onload="RSSRequest();" bgcolor="#ffffff" >
 <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
 
-<table width=95% cellpadding="0" cellspacing="0" border="0" class="head"> 
+<table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
 		<a
 		    href="http://www.vim.org/scripts/script.php?script_id=2945"><img
 		    border=0 align=left src="vim-logo-128.png" width=90></a>
-				<br><br><br><br><br><br>
-		<a href="http://sourceforge.net/projects/atp-vim/files/">Downloads</a><br>
-		<a href="features.html">Feature List</a><br>
-		<a href="requirements.html">Requirements</a><br>
-		<a href="plugins.html">Vim&nbspPlugins</a><br><br>
-		<a href="help.html">Help</a><br><br>
+		<br><br><br><br><br>
 		<a
-		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list">Mailing
-		    List</a><br>
-		<a href="https://sourceforge.net/news/?group_id=513143">News</a><br><br>
+		    href="http://sourceforge.net/projects/atp-vim/files/"><b>Downloads</b></a><br><br>
+		<a href="features.html"><b>Feature List</b></a><br>
+		<a href="requirements.html"><b>Requirements</b></a><br>
+		<a href="plugins.html"><b>Vim Plugins</b></a><br><br>
+		<a href="help.html"><b>Help</b></a><br><br>
 		<a
-		    href="https://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload">SF
-		    Statistics</a><br><br>
+		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b>Mailing
+			List</b></a><br>
+		<a
+		    href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a><br><br>
+		<a href="stats.html"><b>Statistics</b></a><br><br>
 		<a href="http://sourceforge.net/projects/atp-vim"><img
 		    src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
 		width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
@@ -48,7 +37,6 @@
 		    href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
 		    width=80px
 		    src="facebook_logo.jpg"></a></br>
-
 	    </td>
 	    <td class=mainpanel>
 		<h2>Intro</h2>
@@ -73,7 +61,11 @@
 		    completes labels by numbers (as seen in your output
 		    file)</i>.<br> Instead of <i>folding</i> ATP provides
 		<b>Table of Contents</b>, which also can be used to copy
-		(yank), move, paste sections.<br><br>
+		(yank), move, paste sections.
+		<br><br>
+		<b>ATP</b> is programmed with <i>vim scripting language</i> and <i>python</i> (and is compatible with
+		both <i>python 2.7</i> and <i>3.1</i>). This makes searching tools very fast.
+		<br><br>
 		<b>ATP</b> contains <a
 		    href="http://www.vim.org/scripts/script.php?script_id=3109">LaTeX
 		    Box</a> plugin, which is developed <a
@@ -158,11 +150,8 @@
 		    atp-vim</code>
 	    </td>
 	    <td valign=top>
-		<iframe
-		src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FAutomatic-TeX-Plugin-for-Vim%2F121534677930695&amp;width=292&amp;colorscheme=light&amp;show_faces=false&amp;border_color=white&amp;stream=true&amp;header=false&amp;height=395"
-		scrolling="no" frameborder="0" style="border:none;
-		overflow:hidden; width:292px; height:395px;"
-		allowTransparency="true"></iframe>
+		<div id="status" style="display:none"></div>
+		<div id="ajaxreader"></div>
 	    </td>
 	</tr>
     </table>
