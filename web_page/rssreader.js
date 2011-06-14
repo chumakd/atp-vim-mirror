@@ -1,8 +1,5 @@
 var RSSRequestObject = false; // XMLHttpRequest Object
 var Backend = 'http://sourceforge.net/export/rss2_projnews.php?group_id=513143'; // Backend url
-/*
-*var Backend = 'http://www.phpmagazine.net/18_ajax/feeds/rss20'; // Backend url
-*/
 window.setInterval("update_timer()", 1200000); // update the data every 20 mins
 
 
@@ -34,7 +31,7 @@ function ReqChange() {
 			var link = channel.getElementsByTagName('link').item(0).firstChild.data;
 			
 			// content = '<div class="channeltitle"><a href="'+link+'">'+title+'</a></div><ul>';
-			content = '<table class=rsstable><tr><td><div class=rsstitle>Latest News</div><a href="http://sourceforge.net/news/?group_id=513143">get more news</a><ul>';
+			content = '<table class=rsstable><tr><td><div class=rsstitle><a style="color:#2E006C; text-decoration:none;" href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a></div><ul>';
 		
 			// Browse items
 			var items = channel.getElementsByTagName('item');

@@ -8,9 +8,18 @@
 <br>
     <a style="color:#2E006C; text-decoration:none;"
 	href="http://sourceforge.net/projects/atp-vim/files/"><b>Downloads</b></a>
-<br>
+<hr class="leftpanel">
     <a style="color:#2E006C; text-decoration:none;" 
 	href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a>
+    <div style="color:black">
+	<h4><small>RSS feeds</small></h4>
+	<small>
+	    <a href="javascript:(function(){var a=window,b=document,c=encodeURIComponent,d=a.open('http://www.seocentro.com/cgi-bin/promotion/bookmark-rss/rss.pl?u='+c( 'http://sourceforge.net/export/rss2_projnews.php?group_id=513143'),'bookmark_popup','left='+((a.screenX||a.screenLeft)+10)+',top='+((a.screenY||a.screenTop)+10)+',height=480px,width=720px,scrollbars=1,resizable=1,alwaysRaised=1');a.setTimeout(function(){ d.focus()},300)})();" title="Social Bookmark"><img src="http://www.seocentro.com/bookmark-rss/images/rss_button01.gif" alt="RSS Feed Readers" border="0" title="RSS Feed Readers"></a>&nbsp<i>News</i><br>
+	    <a href="javascript:(function(){var a=window,b=document,c=encodeURIComponent,d=a.open('http://www.seocentro.com/cgi-bin/promotion/bookmark-rss/rss.pl?u='+c( 'http://sourceforge.net/export/rss2_keepsake.php?group_id=513143'),'bookmark_popup','left='+((a.screenX||a.screenLeft)+10)+',top='+((a.screenY||a.screenTop)+10)+',height=480px,width=720px,scrollbars=1,resizable=1,alwaysRaised=1');a.setTimeout(function(){ d.focus()},300)})();" title="Social Bookmark"><img src="http://www.seocentro.com/bookmark-rss/images/rss_button01.gif" alt="RSS Feed Readers" border="0" title="RSS Feed Readers"></a>&nbsp<i>Activity</i><br>
+	    <a href="javascript:(function(){var a=window,b=document,c=encodeURIComponent,d=a.open('http://www.seocentro.com/cgi-bin/promotion/bookmark-rss/rss.pl?u='+c( 'https://sourceforge.net/api/file/index/project-id/513143/mtime/desc/limit/20/rss'),'bookmark_popup','left='+((a.screenX||a.screenLeft)+10)+',top='+((a.screenY||a.screenTop)+10)+',height=480px,width=720px,scrollbars=1,resizable=1,alwaysRaised=1');a.setTimeout(function(){ d.focus()},300)})();" title="Social Bookmark"><img src="http://www.seocentro.com/bookmark-rss/images/rss_button01.gif" alt="RSS Feed Readers" border="0" title="RSS Feed Readers"></a>&nbsp<i>File&nbspReleases</i><br>
+	</small>
+    </div>
+
 <hr class="leftpanel">
     <a style="color:#2E006C; text-decoration:none;" href="features.shtml"><b>Feature List</b></a>
 <br>
@@ -27,10 +36,17 @@
     <a style="color:#2E006C; text-decoration:none;" href="stats.shtml"><b>Statistics</b></a>
 <hr class="leftpanel">
     <a href="http://sourceforge.net/projects/atp-vim"><img
+	src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=13"
+	width="120" height="30" alt="Get Automatic LaTex Plugin for Vim at
+	SourceForge.net. Fast, secure and Free Open Source software downloads"
+	/></a>
+    <!--
+    <a href="http://sourceforge.net/projects/atp-vim"><img
 	src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
     width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
     at SourceForge.net. Fast, secure and Free Open Source software
     downloads" /></a>
+    -->
 <br>
     <a 
 	href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img

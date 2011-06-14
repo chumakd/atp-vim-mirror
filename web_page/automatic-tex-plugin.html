@@ -460,7 +460,7 @@ Neccessary vim settings:<br>
 colours (you should make a simple function which clears all the highlight
 groups, because ':hi clear' will not give you what you want).</p>
 
-<p>See this <a href="requirements.html">link</a> for other ATP requirements.</p> 
+<p>See this <a href="requirements.shtml">link</a> for other ATP requirements.</p> 
 
 <h2>Get ATP Updates</h2>
 <p>To get updates it is enought to use this command:</p>
@@ -3696,12 +3696,13 @@ will turn it off for all files.</div></p>
 <a name="g:atp_ProjectLocalVariables"></a>
 <p><pre><div class=variable>let g:atp_ProjectLocalVariables = [
 		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
-		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
-		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
-		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
-		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
-		\ "b:atp_StarMathEnvDefault", "b:atp_updatetime_insert", "b:atp_updatetime_normal"
+		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 	
+		\ "b:atp_OutDir", 	"b:atp_auruns", 	"b:atp_ReloadOnErr", 	
+		\ "b:atp_OpenViewer", 	"b:atp_XpdfServer",	"b:atp_ProjectDir", 	
+		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles", 	
+		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler", 
+		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault", 
+		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal"
 		\ ] 
     </div></pre>
 	<div class=indented>If your vim doesn't have python support |+python| three more

@@ -157,6 +157,9 @@ NEWS							*atp-news*
  Changes in version 9.6.2
 <
   See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
+
+  The variables |b:atp_TexOptions|, |b:atp_StarEnvDefault|,
+  |b:atp_StarMathEnvDefault| are added to |g:atp_ProjectLocalVariables|.
 >
  ======================
  Changes in version 9.6.1
@@ -3604,12 +3607,13 @@ PROJECT SCRIPT						*atp-ProjectScript*
 >
     let g:atp_ProjectLocalVariables = [
 		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
-		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
-		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
-		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
-		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
-		\ "b:atp_StarMathEnvDefault", "b:atp_updatetime_insert", "b:atp_updatetime_normal"
+		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 	
+		\ "b:atp_OutDir", 	"b:atp_auruns", 	"b:atp_ReloadOnErr", 	
+		\ "b:atp_OpenViewer", 	"b:atp_XpdfServer",	"b:atp_ProjectDir", 	
+		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles", 	
+		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler", 
+		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault", 
+		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal"
 		\ ] 
 <	If your vim doesn't have python support |+python| three more variables
 	are stored: |b:atp_LocalEnvironments| |b:atp_LocalCommands|, and

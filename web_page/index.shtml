@@ -133,9 +133,10 @@
 			<a href="why_donate.shtml"><i>Why to donate?</i></a>
 		    </td></tr>
 		</table>
-		<br>
+	    <br>
 		<div id="status" style="display:none"></div>
 		<div id="ajaxreader"></div>
+	    <br>
 	    </td>
 	</tr>
     </table>
