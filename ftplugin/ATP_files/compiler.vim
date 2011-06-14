@@ -606,13 +606,16 @@ endfunction
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
 
     " Kill comiple.py scripts if there are too many of them.
-    if len(b:atp_PythonPIDs) >= b:atp_MaxPythonPIDs && b:atp_MaxLatexPIDs
+    if len(b:atp_PythonPIDs) >= b:atp_MaxProcesses && b:atp_MaxLatexPIDs
 	let a=copy(b:atp_LatexPIDs)
 	try
-	    " Remove the newest PIDs (the last in the b:atp_PythonPIDs)
-" 	    let pids=remove(b:atp_LatexPIDs, b:atp_MaxPythonPIDs-1, -1) 
-	    " Remove the oldest PIDs (the first in the b:atp_PythonPIDs) /works nicely/
-	    let pids=remove(b:atp_LatexPIDs, 0, max([len(b:atp_PythonPIDs)-b:atp_MaxLatexPIDs-1,0]))
+	    if b:atp_KillYoungest
+		" Remove the newest PIDs (the last in the b:atp_PythonPIDs)
+		let pids=remove(b:atp_LatexPIDs, b:atp_MaxProcesses, -1) 
+	    else
+		" Remove the oldest PIDs (the first in the b:atp_PythonPIDs) /works nicely/
+		let pids=remove(b:atp_LatexPIDs, 0, max([len(b:atp_PythonPIDs)-b:atp_MaxProcesses-1,0]))
+	    endif
 	    echomsg string(a)." ".string(pids)." ".string(b:atp_LatexPIDs)
 	    call atplib#KillPIDs(pids)
 	catch E684:

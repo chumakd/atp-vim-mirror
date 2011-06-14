@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 12 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 14 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.1)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.2)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -152,6 +152,11 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 9.6.2
+<
+  See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
 >
  ======================
  Changes in version 9.6.1
@@ -515,7 +520,7 @@ note on using CTRL-C (|i_CTRL-C|) in Vim:
 							*b:atp_updatetime_insert*
 							*b:atp_updatetime_normal*
 >
- b:atp_updatetime_insert = 4000							
+ b:atp_updatetime_insert = 4000	
  b:atp_updatetime_normal = 2000
 < - These variables sets the value of |'updatetime'| vim option.
     Separate settings are for normal and insert mode. You can make
@@ -531,6 +536,24 @@ note on using CTRL-C (|i_CTRL-C|) in Vim:
     If you set |b:atp_updatetime_normal|=0 the TeX compiler will not be called
     while Vim is in the normal mode.
 
+							*b:atp_MaxProcesses*
+>
+ b:atp_MaxProcesses = 3
+<
+    When |g:atp_Compiler|="python" this variable will control the maximal
+    number of symultanous LaTeX processes in the background. If new process
+    comes old and the number of processes is |b:atp_MaxProcesses| or bigger
+    one appropriate number of processes is killed to have not more than
+    |b:atp_MaxProcesses|. If you set it to 0 ATP will not control the number
+    of running instances of LaTeX compiler. There is one more variable:
+
+    							*b:atp_KillYoungest*
+>
+ b:atp_KillYoungest = 0
+<
+    When set to 0 (the default) oldest processes are killed, when set to
+    1 youngest ones. If your file is big it might be better to kill youngest
+    processes.
 
 Coming back to compilation ... ~
 

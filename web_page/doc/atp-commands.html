@@ -152,6 +152,23 @@ the TeX compiler will not be called while Vim is in the insert mode.</p>
 the TeX compiler will not be called while Vim is in the normal
 mode.</p></div></p>
 
+<a name="b:atp_MaxProcesses"></a>
+<p><div class=variable>b:atp_MaxProcesses = 3</div>
+<div class=indented>When <a href="#g:atp_Compiler">g:atp_Compiler</a>="python"
+    this variable will control the maximal number of symultanous LaTeX
+    processes in the background. If new process comes old and the number of
+    processes is <a href="#b:atp_MaxProcesses">b:atp_MaxProcesses</a> or
+    bigger one appropriate number of processes is killed to have not more than
+    <a href="#b:atp_MaxProcesses">b:atp_MaxProcesses</a>. If you set it to
+    0 ATP will not control the number of running instances of LaTeX compiler.
+    There is one more variable:</div>
+
+<a name="b:atp_KillYoungest">b:atp_KillYoungest</a>
+<div class=variable>b:atp_KillYoungest = 0</div>
+<div class=indented>When set to 0 (the default) oldest processes are killed, when set to
+    1 youngest ones. If your file is big it might be better to kill youngest
+    processes.</div></p>
+
 
 <h4>Coming back to compilation ...</h4>
 

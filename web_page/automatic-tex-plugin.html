@@ -140,7 +140,7 @@
 	    <div class=triple_indent><a href="#atp-:S">atp-:S</a> /search in projects/</div>
 
     <div ><a href="#atp-toc-window">Commands/Maps in ToC window and Labels window.</a></div>
-    <div><a href="bibtex_atp.html">Bibtex filetype plugin</a> </div>
+    <div><a href="doc/bibtex_atp.html">Bibtex filetype plugin</a> </div>
     <div><a href="#atp-bibsearch">Searching in bib files</a> </div>
     <div class=indented><a href="#atp-variables-bib">BibSearch Variables</a></div>
     <div><a href="#atp-completion">Tab Completion</a> </div>
@@ -460,7 +460,7 @@ Neccessary vim settings:<br>
 colours (you should make a simple function which clears all the highlight
 groups, because ':hi clear' will not give you what you want).</p>
 
-<p>See this <a href="../requirements.html">link</a> for other ATP requirements.</p> 
+<p>See this <a href="requirements.html">link</a> for other ATP requirements.</p> 
 
 <h2>Get ATP Updates</h2>
 <p>To get updates it is enought to use this command:</p>
@@ -489,7 +489,7 @@ groups, because ':hi clear' will not give you what you want).</p>
 <a name="atp-compilation"></a>
 <p>The main function is not seen by the user (it is called s:compiler, for
 those who want to read the plugin). It executes tex compiler specified by the
-variable <a href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>. It is executed as
+variable <a href="#b:atp_TexCompiler">b:atp_TexCompiler</a>. It is executed as
 an autocommand by the line:
 <div class=aucommand>au! CursorHold $HOME*.tex silent call 's:auTeX()'</div>
 <p>where s:auTeX() is a simple function which calls s:compiler if the file
@@ -554,13 +554,30 @@ the TeX compiler will not be called while Vim is in the insert mode.</p>
 the TeX compiler will not be called while Vim is in the normal
 mode.</p></div></p>
 
+<a name="b:atp_MaxProcesses"></a>
+<p><div class=variable>b:atp_MaxProcesses = 3</div>
+<div class=indented>When <a href="#g:atp_Compiler">g:atp_Compiler</a>="python"
+    this variable will control the maximal number of symultanous LaTeX
+    processes in the background. If new process comes old and the number of
+    processes is <a href="#b:atp_MaxProcesses">b:atp_MaxProcesses</a> or
+    bigger one appropriate number of processes is killed to have not more than
+    <a href="#b:atp_MaxProcesses">b:atp_MaxProcesses</a>. If you set it to
+    0 ATP will not control the number of running instances of LaTeX compiler.
+    There is one more variable:</div>
+
+<a name="b:atp_KillYoungest">b:atp_KillYoungest</a>
+<div class=variable>b:atp_KillYoungest = 0</div>
+<div class=indented>When set to 0 (the default) oldest processes are killed, when set to
+    1 youngest ones. If your file is big it might be better to kill youngest
+    processes.</div></p>
+
 
 <h4>Coming back to compilation ...</h4>
 
 <p>Tex compiler is run with one options:
 <div class=indented>-output-directory </div>
 which points to a unique temporary file in a temporary directory <a
-    href="atp-configure.html#b:atp_TempDir">b:atp_TempDir</a> </p>
+    href="#b:atp_TempDir">b:atp_TempDir</a> </p>
 
 <a name="atp-:ToggleAuTeX"></a> <a name="b:atp_autex"></a>
 <p><div class=command>:ToggleAuTeX</div>
@@ -578,22 +595,22 @@ files located under your local texmf tree will have b:atp_autex=0. Also for
 files with other extension than the standard "tex" it will be set to 0.</div></p>
 
 <p>The second important variable <a
-    href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>
+    href="#b:atp_TexCompiler">b:atp_TexCompiler</a>
 configures if you use TeX, PdfTeX, LaTeX, PdfLaTeX and it should point to the
 program name so please do not use capital letters.</p>
 
-<p>Next variable to set is <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a>. It
+<p>Next variable to set is <a href="#b:atp_OutDir">b:atp_OutDir</a>. It
 configures where TeX will put the output and where viewer and log analysing
 tools can find appropriate files.</p> 
 
 <p>The last top most important variable is <a
-    href="atp-configure#g:atp_keep">g:atp_keep</a> which is a list of extensions,
+    href="#g:atp_keep">g:atp_keep</a> which is a list of extensions,
 by default it is
 <div class=variable>let g:atp_keep = [ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]</div>
-<div class=indented>Files with this extension will be copied from <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> to the temporary
+<div class=indented>Files with this extension will be copied from <a href="#b:atp_OutDir">b:atp_OutDir</a> to the temporary
 directory with appropriate name to be used when (La)TeX is compiling. (log file
 will be only copied after it is created, other files will be copied back and
-forth between you <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> and the temporary
+forth between you <a href="#b:atp_OutDir">b:atp_OutDir</a> and the temporary
 directory)</div></p>
 
 <a name="atp-compile.py"></a>
@@ -602,7 +619,7 @@ python (for portability reasons) and old one in bash. They work almost the
 same with one small difference. The python code has some vim enhancments (for
 example the progres bar).</p>
 
-<p>The python code has a debug file compile.log under <a href="atp-configure.html#g:atp_TempDir">g:atp_TempDir</a> will
+<p>The python code has a debug file compile.log under <a href="#g:atp_TempDir">g:atp_TempDir</a> will
 contain all the errors issued by python, and 'compile.py.debug'
 - debugging info printed by the <a href="#atp-compile.py">compile.py</a> script.</p>
 
@@ -622,7 +639,7 @@ latex processes to vim variable <a href="#b:atp_LatexPIDs">b:atp_LatexPIDs</a>.
 Then the function which makes the status line for ATP has a python code to
 check if the latex PIDs are still valid processes.  This is more accurate than
 the method used with bash compiler (before running latex increase variable <a
-    href="atp-configure.html#b:atp_running">b:atp_running</a> and decrease
+    href="#b:atp_running">b:atp_running</a> and decrease
 after getting signal that latex has ended). In many situations this was
 failing.  The new method works better, however it shows that latex is running
 after slightly longer period of time (not that first python must run the script
@@ -633,7 +650,7 @@ and then run latex).</p>
 <div class=indented>The variable  stores
 the return code of compilation.</div></p>
 
-<p>See <a href="atp-requirements.html#atp-requirements-python">atp-requirements-python</a> for
+<p>See <a href="#atp-requirements-python">atp-requirements-python</a> for
 nonstandard python libraries that are used by ATP.</p>
 
 <a name="atp-callback"></a>
@@ -726,7 +743,7 @@ If by some reason, you want to switch this off, set g:atp_ProgressBar to 0 (use
 |let|).</p>
 
 <p>You need <a href="#g:atp_statusNotif">g:atp_statusNotif</a>=1 and 
-    <a href="atp-highlight.html#g:atp_StatusLine">g:atp_StatusLine</a>=1 for this feature to work
+    <a href="#g:atp_StatusLine">g:atp_StatusLine</a>=1 for this feature to work
 (see also |laststatus| on how to activate status line in Vim).</p>
 
 <p>If there are many background processes the number which is shown belongs to
@@ -898,7 +915,7 @@ your tex compiler, see |g:atp_TexCommand|.</p>
 <p><div class=command>:Bibtex[!] [debug_mode]</div>
 <div class=map>map \b</div>
 <div class=indented>With BANG "!": This function will call bibtex to produce the bibliography
-file (.bbl). If in <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> there is no 'aux'
+file (.bbl). If in <a href="#b:atp_OutDir">b:atp_OutDir</a> there is no 'aux'
 file it first calls tex compiler. After the 'bbl' file is produced two
 consecutive runs of tex compiler are called to make the bibliography.
 
@@ -953,17 +970,17 @@ tex`.</div></p>
 <a name="atp-:PID"></a>
 <p><div class=command>:PID</div>
 <div class=indented>Prints PIDs of all running instances of <a
-    href="atp-configure.html#b:atp_TexComopiler">b:atp_TexComopiler</a>.</div></p>
+    href="#b:atp_TexComopiler">b:atp_TexComopiler</a>.</div></p>
 
 <a name="atp-:Compiler"></a>
 <p><div class=command>:Compiler {compiler-program}</div>
-<div class=indented>Command which help to set <a href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>
+<div class=indented>Command which help to set <a href="#b:atp_TexCompiler">b:atp_TexCompiler</a>
 variable (with completion).</div></p>
 
 <a name="atp-:SetOutDir"></a>
 <p><div class=command>:SetOutDir</div>
-<div class=indented>This is a command which sets the <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable and the
-|'errorfile'| option.  See <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> for the default value.</div></p>
+<div class=indented>This is a command which sets the <a href="#b:atp_OutDir">b:atp_OutDir</a> variable and the
+|'errorfile'| option.  See <a href="#b:atp_OutDir">b:atp_OutDir</a> for the default value.</div></p>
 
 <a name="latexmk"></a>
 <h3>Latexmk Interface</h3>
@@ -1085,7 +1102,7 @@ Note: this command works in quickfix window.</p></div></p>
 
 <a name="atp-:SetErrorFile"></a>
 <p><div class=command>:SetErrorFile</div>
-<div class=indented>If you change <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable and you want
+<div class=indented>If you change <a href="#b:atp_OutDir">b:atp_OutDir</a> variable and you want
 to update the |'errorfile'| option use this command. It will show you the value
 to which |'errorfile'| was set.</div></p> 
 
@@ -1147,11 +1164,11 @@ autocommand group |CursorMoved|). You can also use the command
 <div class=map>map \v,map F3, imap F3</div>
 <div class=indented>You would like to see what you are editing use this function. It will use
 the program defined in the variable b:atp_Viewer. See <a
-    href="atp-configure.html#b:atp_Viewer">b:atp_Viewer</a>, <a
-    href="atp-configure.html#g:atp_XpdfServer">g:atp_XpdfServer</a>, <a
-    href="atp-configure.html#b:xpdfOptions">b:xpdfOptions</a>. When there is no output file
+    href="#b:atp_Viewer">b:atp_Viewer</a>, <a
+    href="#g:atp_XpdfServer">g:atp_XpdfServer</a>, <a
+    href="#b:xpdfOptions">b:xpdfOptions</a>. When there is no output file
 it will run TeX and open the file. Read more about particular viewers
-(inverse/reverse searching) in <a href="atp-viewers.html#atp-Viewers">atp-viewers</a>.</div></p> 
+(inverse/reverse searching) in <a href="#atp-Viewers">atp-viewers</a>.</div></p> 
 
 <a name="atp-:SyncTex"></a>
 <p><div class=command>:SyncTex[!]</div>
@@ -1160,8 +1177,8 @@ it will run TeX and open the file. Read more about particular viewers
 Xpdf and Xdvi with this feature (Evince is not yet supported).
 
 <p>Note: you can also set reverse search for Okular and Xdvi, see <a
-    href="atp-viewers.html#atp-Viewers-Okular">atp-Viewers-Okular</a> and 
-    <a href="atp-viewers.html#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a> for an instruction how to do
+    href="#atp-Viewers-Okular">atp-Viewers-Okular</a> and 
+    <a href="#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a> for an instruction how to do
     that. Xpdf doesn't support reverse searching.</p>
 
 <p><a name="atp-:SyncTex_Xpdf-hack"></a>
@@ -1178,7 +1195,7 @@ opened.</p>
 <p>Note: with bang <a href="#atp-:SyncTex">atp-:SyncTex</a> will not check if
 viewer is running.</p>
 
-<p>Read <a href="atp-viewers.html#atp-:SyncTex_with_Okular">atp-:SyncTex_with_Okular</a> if you
+<p>Read <a href="#atp-:SyncTex_with_Okular">atp-:SyncTex_with_Okular</a> if you
 use Okular.</p></div></p>
 <a name="atp-:Viewer"></a>
 <p><div class=command>:Viewer {viewer-program}</div>
@@ -1198,21 +1215,21 @@ reverse searching. You can use the command <a
 For inverse searching hold CTRL and click left mouse button on the text in xdvi
 viewer. It sets:
     <div class=variable>let b:atp_TexOptions="-src-specials"</div>
-and also other variable to enable reverse searching (Xdvi->Vim) see more
-<a href="atp-viewers.html#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a>.</div></p>
+and also other variable to enable reverse searching (Xdvi-&gtVim) see more
+<a href="#atp-Viewers-Xdvi">atp-Viewers-Xdvi</a>.</div></p>
 
 <a name="atp-:SetXpdf"></a> <a name="atp-SetOkular"></a>
 <p><div class=command>:SetXpdf</div>
 <div class=command>:SetOkular</div>				
 	<div class=indented>This command sets options for Xpdf viewer. Xpdf supports forward
-	searching (vim->Xpdf) with command: <a href="#atp-:SyncTex">atp-:SyncTex</a>. It sets
+	searching (vim-&gtXpdf) with command: <a href="#atp-:SyncTex">atp-:SyncTex</a>. It sets
 	    <div class=variable>let b:atp_TexOptions="-synctex=1"</div>
  	Thus it enables the forward searching (the above is the default 
 	value for ATP, but it will change when you use |atp-:SetXdvi| which
 	uses "-src-specials".
 
 	<p>It reads the Xpdf viewer options from the variables
-	<a href="atp-configure.html#b:atp_xpdfOptions">b:atp_xpdfOptions</a> and g:atp_xpdfOptions. Similarly for Okular.</div></p>
+	<a href="#b:atp_xpdfOptions">b:atp_xpdfOptions</a> and g:atp_xpdfOptions. Similarly for Okular.</div></p>
 						
 <a name="bib_commands"></a>
 <h2>Bib Commands</h2> 
@@ -1222,7 +1239,7 @@ and also other variable to enable reverse searching (Xdvi->Vim) see more
 and in the variable b:atp_BibFiles (see <a
     href="#b:atp_BibFiles">b:atp_BibFiles</a>), which match the
 [pattern] (a Vim regular expression). The output is configurable by the
-[flag] argument, see <a href="atp-bibsearch.html#atp-bibflags">atp-bibflags</a>. By
+[flag] argument, see <a href="#atp-bibflags">atp-bibflags</a>. By
 default the pattern is case insensitive.</p></div></p>
 
 <a name="atp-:AMSRef"></a>
@@ -1254,7 +1271,7 @@ position). When you choose to paste, it will close the BibSearch window.</div></
 <p><div class=command>:FindBibFiles</div>
 <div class=indented>This updates the variables s:bibfiles, s:allbibfiles, s:notreadablebibfiles.
 Finds all bib files defined in all '\bibliography' commands. For more about the
-above variables read <a href="atp-bibsearch.html#atp-variables-bib">atp-variables-bib</a>. This
+above variables read <a href="#atp-variables-bib">atp-variables-bib</a>. This
 function is called internally be the script functions BibSearch/BibChoose.  The
 command :FindBibFiles finds bib files in the current buffer.
 
@@ -1295,8 +1312,8 @@ in files with input lines), without it uses cached values (if they exist).</p>
 <a name="atp-:InputFiles"></a>
 <p><div class=command>:InputFiles</div>
 <div class=indented>List input files of the current project. It also updates the <a
-    href="atp-ProjectFiles.html#b:ListOfFiles">b:ListOfFiles</a> and <a
-    href="atp-ProjectFiles.html#b:TreeOfFiles">b:TreeOfFiles</a> variables to the current
+    href="#b:ListOfFiles">b:ListOfFiles</a> and <a
+    href="#b:TreeOfFiles">b:TreeOfFiles</a> variables to the current
 values.
 
 <p>The variable <a name="g:atp_inputfile_pattern">g:atp_inputfile_pattern</a>
@@ -1334,13 +1351,13 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	will be stored. This variable is restored by the global project script.
 	You can use {bang} "!" to regenerate the library if it has changed.
 	This is particularly useful as by default ATP remembers g:atp_Library in
-	the common project script (see <a href="atp-ProjectFiles.html#atp-ProjectScript">atp-ProjectScript</a>).</p></div></p>
+	the common project script (see <a href="#atp-ProjectScript">atp-ProjectScript</a>).</p></div></p>
 
 <a name="atp-:Delete"></a>
 <p><div class=command>:Delete[!]</div>
 <div class=map>map <F6>d</div>
 	<div class=indented>Deletes all files which extension belongs to g:atp_tex_extensions in
-	the directory <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a>. By default |g:atp_tex_extensions| does
+	the directory <a href="#b:atp_OutDir">b:atp_OutDir</a>. By default |g:atp_tex_extensions| does
 	not contain 'tex', 'pdf', 'dvi' so none of your important files will
 	be deleted. When the command is used without bang the the extensions
 	from |g:atp_DeleteWithBang| are removed from |g:atp_tex_extensions|.
@@ -1364,7 +1381,7 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	<div class=indented>It will run 'lpr' command and append to it the options defined in
 	the variable 'g:printeroptions' + options given in the second argument.
 	It prints the pdf or dvi depending on the value of <a
-	    href="atp-configure.html#b:atp_TexCompiler">b:atp_TexCompiler</a>.
+	    href="#b:atp_TexCompiler">b:atp_TexCompiler</a>.
 	<a name="g:atp_ssh"></a>
 	<div class=variable>g:atp_ssh</div>
 	<p>If you specify the variable 'g:atp_ssh=<user>@<host>' it will print
@@ -1565,7 +1582,7 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 	base (unless if it doesn't exist), :TOC command regenerate the
 	data base, :TOC! not.</p>
 
-	<p>See <a href="atp-toc-window.html#atp-toc-window">atp-toc-window</a> for commands and maps defined in the toc window.</p>
+	<p>See <a href="#atp-toc-window">atp-toc-window</a> for commands and maps defined in the toc window.</p>
 
 	<p>TOC() supports many edited files. For example if you have in your
 	buffer list two files a.tex and b.tex this command will produce table
@@ -1592,7 +1609,7 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 <p><div class=command>:Labels[!]</div>
 <div class=map>map \L</div> 
 	<div class=indented>Shows labels defined in your file. You can also use the commands and
-	mappings described in <a href="atp-toc-window.html#atp-toc-window">atp-toc-window</a>.
+	mappings described in <a href="#atp-toc-window">atp-toc-window</a>.
 
 	<p>If you forget what are these mappings, write ':map <buffer>' in the
 	TOC or LABELS window, or move to the end of the LABELS window to see
@@ -1662,8 +1679,8 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: }m and }M respectively.</p>
 
-	<p>If <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
-	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p></div></p>
+	<p>If <a href="#g:atp_mapNn">g:atp_mapNn</a> is set to one (see <a href="#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
+	is using <a href="#atp-:S">atp-:S</a>.</p></div></p>
 
 <a name="atp-:PEnv"></a> <a name="atp-&lte"></a> <a name="atp-&ltC-B&gt"></a>
 <p><div class=command>:PEnv {environment}</div>
@@ -1678,8 +1695,8 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 	<p>{environment} can be also math or displayedmath. For convenience
 	there are maps: {m and {M respectively.</p>
 
-	<p>If g:atp_mapNn is set to one (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
-	is using <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>.</p></div></p>
+	<p>If g:atp_mapNn is set to one (see <a href="#atp-:ToggleNn">atp-:ToggleNn</a>) then this command
+	is using <a href="#atp-:S">atp-:S</a>.</p></div></p>
 
 <a name="atp-:NextSection"></a> <a name="atp-:NPart"></a>	<a
     name="atp-&gtp"></a> <a name="atp-:NChap"></a>	<a
@@ -1730,13 +1747,13 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 	should start with '.*' when you want to match somewhere in a middle of
 	the title. </p>
 	
-	<p>These commands (and maps) use Vim |search()| function or <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a>
+	<p>These commands (and maps) use Vim |search()| function or <a href="#atp-:S">atp-:S</a>
 	command depending on the value of <a
-	    href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> (see <a
-	    href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>, when g:atp_mapNn=1 the 
-	    <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command is used). You can set the value
-	of <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> using the command <a
-	    href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>. If 'wrapscan' is set and
+	    href="#g:atp_mapNn">g:atp_mapNn</a> (see <a
+	    href="#atp-:ToggleNn">atp-:ToggleNn</a>, when g:atp_mapNn=1 the 
+	    <a href="#atp-:S">atp-:S</a> command is used). You can set the value
+	of <a href="#g:atp_mapNn">g:atp_mapNn</a> using the command <a
+	    href="#atp-:ToggleNn">atp-:ToggleNn</a>. If 'wrapscan' is set and
 	g:atp_mapNn=1 the search will wrap around the end of the project (not
 	the end of the current buffer).</p>
 
@@ -1778,10 +1795,10 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
     </table>
 
     <p>These commands (and maps) use Vim |search()| function or <a
-	href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command depending on the value of
-    <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a> (see <a href="atp-ProjectFiles.html#atp-:ToggleNn">atp-:ToggleNn</a>, when
-    g:atp_mapNn<a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a>=1 the <a href="atp-ProjectFiles.html#atp-:S">atp-:S</a> command is used). If
-    'wrapscan' is set and <a href="atp-ProjectFiles.html#g:atp_mapNn">g:atp_mapNn</a>=1 the search will wrap around the
+	href="#atp-:S">atp-:S</a> command depending on the value of
+    <a href="#g:atp_mapNn">g:atp_mapNn</a> (see <a href="#atp-:ToggleNn">atp-:ToggleNn</a>, when
+    g:atp_mapNn<a href="#g:atp_mapNn">g:atp_mapNn</a>=1 the <a href="#atp-:S">atp-:S</a> command is used). If
+    'wrapscan' is set and <a href="#g:atp_mapNn">g:atp_mapNn</a>=1 the search will wrap around the
     beginning of the project (not the beginning of the current buffer).</p>
 
 	<p>You can unmap these keys and use &ltPlug&gtGotoPreviousSubSection,
@@ -1790,7 +1807,7 @@ searchpair() function, the g:atp_completion_limits[2] applies.</div></p>
 
 
 	<p>Note: If you leave the default value of <a
-	    href="atp-mappings.html#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>r
+	    href="#g:atp_map_forward_motion_leade">g:atp_map_forward_motion_leader</a>r
 	then ATP remaps |&lt&lt| to &lt&lt and also |v_&lt| to &lt&lt. |&lt| is
 	working and is not touched by ATP. If you have |'timeout'| set then the
 	map is executed faster, if you use |'notimeout'| this workaround it
@@ -1842,8 +1859,8 @@ counted from first one.</p>
 	<div class=indented>Add/removs a star from the current environment (if it is not one
 	belonging to the list:
 	<div class=variable>g:atp_no_star_environments</div>
-	See <a href="atp-mappings.html#b:atp_StarEnvDefault">b:atp_StarEnvDefault</a> and <a
-	    href="atp-mappings.html#b:atp_StarMathEnvDefault">b:atp_StarMathEnvDefault</a>.</div></p>
+	See <a href="#b:atp_StarEnvDefault">b:atp_StarEnvDefault</a> and <a
+	    href="#b:atp_StarMathEnvDefault">b:atp_StarMathEnvDefault</a>.</div></p>
 
 <a name="atp-:ToggleEnv"></a>
 <p><div class=command>:ToggleEnv</div>
@@ -2023,12 +2040,12 @@ to use the font :).</p></div></p>
 <p><div class=command>:Status[!]</div>
 <div class=command>:ATPStatus[!]</div>
 	<div class=indented>This comman sets the status line, which include: the name of currently
-	edited chapter (or section) the value of <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> (unless used
-	with bang!) and it will warn you if <a href="atp-configure.html#b:atp_OutDir">b:atp_OutDir</a> variable is not
+	edited chapter (or section) the value of <a href="#b:atp_OutDir">b:atp_OutDir</a> (unless used
+	with bang!) and it will warn you if <a href="#b:atp_OutDir">b:atp_OutDir</a> variable is not
 	set. The status line will also contain the information about
 	processing compelation: see |atp-status-line-notification|,
 	<a href="#g:atp_ProgressBar">g:atp_ProgressBar</a>. This function is called at startup unless the
-	variable '<a href="atp-highlight.html#g:atp_StatusLine">g:atp_StatusLine</a>=0' is set. The status is set by the
+	variable '<a href="#g:atp_StatusLine">g:atp_StatusLine</a>=0' is set. The status is set by the
 	autocommand:
 		<div class=aucommand>au BufWinEnter *.tex :call Status()</div>
 	In this way every opened window with a '*.tex' file will get the correct
@@ -2067,7 +2084,7 @@ to use the font :).</p></div></p>
 <a name="atp-:Babel"></a>
 <p><div class=command>:Babel</div>
 	<div class=indented>If g:atp_babel variable is set on start up to 1 (however, the default
-	value is 0, you can use |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file to switch it on) then
+	value is 0, you can use |vimrc| or <a href="#atprc">atprc</a> file to switch it on) then
 	ATP will set the |'keymap'| option according to the default babel
 	language (which is the last language passed to babel as optional
 	argument [lang_list] in \usepackage[lang_list]{babel}).
@@ -2095,7 +2112,7 @@ to 'keymap' value. The default is something like:
 <p>When the value is <ignore> then the function <SID>Babel() (or the
 command <a href="#atp-:Babel">atp-:Babel</a>) will ignore setting keymap option for this
 language. Using the above syntax you can set this variable in |vimrc|
-or <a href="atp-configure.html#atprc">atprc</a> file.</p>
+or <a href="#atprc">atprc</a> file.</p>
 
 <p>This is useful if you in day to day work use one language, but some
 times you write a tex file in some other language.</p></div></p>
@@ -3200,7 +3217,7 @@ file. The default values are given below (except the completion setup and
 bibtex documented above). Note: not all variables are listed below.</p>
 
 <p>All the values of important variables with their values can be shown
-(grepped) by <a href="atp-commands.html#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
+(grepped) by <a href="#atp-:ShowOptions">atp-:ShowOptions</a> command.</p>
 
 <a name="atprc"></a>
 <p>$HOME/.atprc.vim (only on Unix and GNU/Linux) or<br> 
@@ -3208,7 +3225,7 @@ $VIMRUNTIME/ftplugin/ATP_files/atprc.vim
 <div class=indented>A configuration file for ATP. You do not have to use autocommands to set
 local-buffer variables, just place them here. The settings in <a
     href="#atprc">atprc</a> file override the values in the project script (<a
-    href="atp-ProjectFiles.html#atp-ProjectScript">atp-ProjectScript</a>). You can also overwrite
+    href="#atp-ProjectScript">atp-ProjectScript</a>). You can also overwrite
 the plugin maps there it you want to have different behaviour on the key map
 used by ATP.</div></p>
 
@@ -3230,7 +3247,7 @@ put them in your <a href="#atprc">atprc</a> it is enough to use the standard "le
 	lilypond as well. </p> 
 
 	<p>There is a command to set this variable with nice completion, see
-	<a href="atp-commands.html#atp-:Compiler">atp-:Compiler.</a></p></div></p> 
+	<a href="#atp-:Compiler">atp-:Compiler.</a></p></div></p> 
 
 <a name="b:atp_TexCompilerVariable"></a>
 <p><div class=variable>let b:atp_TexCompilerVariable = "max_print_line=2000"</div> 		
@@ -3248,9 +3265,9 @@ be used, for example biber and pybib (not tested with ATP).</p>
 <p>The default value will be "biber" if the preamule contains
 \usepackge[backend=biber]{biblatex}. If it is set to "biber" ATP will adjust
 <a href="#g:atp_keep">g:atp_keep</a> variable (add run.xml, bcf extensions)
-when you use <a href="atp-commands.html#atp-:TEX">atp-:TEX,</a> <a
-    href="atp-commands.html#atp-:Bibtex">atp-:Bibtex,</a> or <a
-    href="atp-commands.html#atp-:MakeLatex">atp-:MakeLatex</a> commands.</p></div></p>
+when you use <a href="#atp-:TEX">atp-:TEX,</a> <a
+    href="#atp-:Bibtex">atp-:Bibtex,</a> or <a
+    href="#atp-:MakeLatex">atp-:MakeLatex</a> commands.</p></div></p>
 
 
 <a name="b:atp_TexFlavor"></a>
@@ -3286,14 +3303,14 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 	short notation) to see it whole type:
 	<div class=example>:echo b:atp_OutDir</div>
 	or use the <a
-	    href="atp-commands.html#atp-:ShowOptions">apt-:ShowOptions</a>
+	    href="#atp-:ShowOptions">apt-:ShowOptions</a>
 	command.</p>
 
 	<p>If in your environment the variable $TEXMFOUTDIR is set the value of
 	b:atp_OutDir will be set to its value.</p>
 
 	<p>See <a
-	    href="atp-ProjectFiles#b:atp_MainFile">b:atp_MainFile</a>.</p></div></p>
+	    href="#b:atp_MainFile">b:atp_MainFile</a>.</p></div></p>
 
 <a name="b:atp_auruns"></a>
 <p><div class=variable>let b:atp_auruns	= 1</div>
@@ -3335,7 +3352,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 <a name="g:texmf"></a>
 <p><div class=variable>let g:texmf	= $HOME/texmf</div>
 	<div class=indented>This variable configures where input files are placed. See
-	<a href="atp-commands.html#atp-:EditInputFile">atp-:EditInputFile</a>.</div></p>
+	<a href="#atp-:EditInputFile">atp-:EditInputFile</a>.</div></p>
 
 <a name="g:askforoutdir"></a>
 <p><div class=variable>let g:askforoutdir	= 0</div>
@@ -3399,7 +3416,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 
 <a name="g:atp_tex_extensions"></a>	
 <p><div class=variable> let g:atp_tex_extensions=["aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "maf", "blg", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync" , "ind"]</div>	
-	<div class=indented>This list is used by the <a href="atp-commands.html#atp-:Delete">atp-:Delete</a> command which deletes all the
+	<div class=indented>This list is used by the <a href="#atp-:Delete">atp-:Delete</a> command which deletes all the
 	 files with the specified extension in the directory <a
 	     href="#b:atp_OutDir">b:atp_OutDir</a>.</div></p>
 
@@ -3467,18 +3484,18 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 	is used.</div></p>
 
 <p><div class=variable>g:defaultbibflags</div>		
-<div class=indented>see <a href="atp-bibsearch.html#atp-bibflags:default">atp-bibflags:default</a></div>
+<div class=indented>see <a href="#atp-bibflags:default">atp-bibflags:default</a></div>
 <div class=variable>g:defaultallbibflags</div>		
-<div class=indented>see <a href="atp-bibsearch.html#atp-bibflags:all">atp-bibflags:all</a></div>
+<div class=indented>see <a href="#atp-bibflags:all">atp-bibflags:all</a></div>
 <div class=variable>b:atp_LastBibFlags</div>		
-<div class=indented>see <a href="atp-bibsearch.html#atp-bibflags:last">atp-bibflags:last</a></div>
+<div class=indented>see <a href="#atp-bibflags:last">atp-bibflags:last</a></div>
 
 <div class=variable>b:bibfiles</div>				
-<div class=indented>see <a href="atp-bibsearch.html#atp-variables-bib">atp-variables-bib</a></div>
+<div class=indented>see <a href="#atp-variables-bib">atp-variables-bib</a></div>
 <div class=variable>s:bibfiles</div>
 <div class=variable>s:allbibfiles</div>
 <div class=variable>s:notreadablebibfiles</div>
-    <div class=indented>For more on bib flags see <a href="atp-bibsearch.html#atp-bibflags">atp-bibflags</a>.</div></p>
+    <div class=indented>For more on bib flags see <a href="#atp-bibflags">atp-bibflags</a>.</div></p>
 
 <p><div class=variable>let t:toc_window_width=g:atp_toc_window_width</div>
 	<div class=indented>t:toc_window with is set to g:atp_toc_window_width (by default is 30)
@@ -3494,7 +3511,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 	<div class=indented>by default it is not set, put the line</p>
 	<div class=variable>let g:atp_statusline=0</div>
 	<p>in your |vimrc| or <a href="#atprc">atprc</a> file if you do not want the status line provided by this
-	plugin. (See <a href="atp-commands.html#atp-:Status">atp-:Status</a>).</div></p>
+	plugin. (See <a href="#atp-:Status">atp-:Status</a>).</div></p>
 
 <p><div class=variable>let b:atp_TruncateStatuSection=40</div>
 	<div class=indented>This variable sets how many characters of the section/subsection title
@@ -3520,7 +3537,7 @@ note that '-output-directory' and '-interaction' are set by ATP. </div></p>
 <p><div class=variable>let b:atp_MainFile	= expand("%:p")</div>
 <div class=indented>This variable points to the main file of the project, it is set on the
 start up to the file you open. If you edit project file (for the first time),
-start with the main file and use gf (see <a href="atp-commands.html#atp-:GotoFile">atp-gf</a>) to go
+start with the main file and use gf (see <a href="#atp-:GotoFile">atp-gf</a>) to go
 to the project file you want to edit. In this way all the project files will
 have correctly set this variable. The value of this variable is used by
 compilation functions. This variable is written in the project script (see <a
@@ -3573,7 +3590,7 @@ a symbolic link it will hint to the resolved path). The <a
 particularly useful if you want to share the project file.
 	 
 <p>If you run into problems with <a href="#atp-:S">atp-:S</a> you can set this variable to
-0 and use <a href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> to regenerate the variables - they will
+0 and use <a href="#atp-:InputFiles">atp-:InputFiles</a> to regenerate the variables - they will
 now store the full path (the other way around also works).</p></div></p>
 
 <a name="atp-:ToggleNn"></a>
@@ -3588,17 +3605,17 @@ value of <a href="#g:atp_mapNn">g:atp_mapNn,</a> "on" sets g:atp_mapNn to
 <p><div class=variable>g:atp_mapNn = 0</div>
 <div class=indented>If it is set to 1 then several tools use <a href="#atp-:S">atp-:S</a> command instead of Vim
 |search()| function (which looks only in the current buffer).  These are: <a
-    href="atp-commands.html#atp-:NPart">atp-:NPart</a>, <a href="atp-commands.html#atp-:NChap">atp-:NChap</a>,
-<a href="atp-commands.html#atp-:NSec">atp-:NSec</a>, <a href="atp-commands.html#atp-:NSSec">atp-:NSSec</a>, <a
-    href="atp-commands.html#atp-:NSSSec">atp-:NSSSec</a>, <a href="atp-commands.html#atp-:PPart">atp-:PPart</a>,
-<a href="atp-commands.html#atp-:PChap">atp-:PChap</a>, <a href="atp-commands.html#atp-:PSec">atp-:PSec</a>, <a
-    href="atp-commands.html#atp-:PSSec">atp-:PSSec</a>, <a href="atp-commands.html#atp-:PSSSec">atp-:PSSSec</a>,
-<a href="atp-commands.html#atp-:NEnv">atp-:NEnv</a>, <a href="atp-commands.html#atp-:PEnv">atp-:PEnv</a>.
+    href="#atp-:NPart">atp-:NPart</a>, <a href="#atp-:NChap">atp-:NChap</a>,
+<a href="#atp-:NSec">atp-:NSec</a>, <a href="#atp-:NSSec">atp-:NSSec</a>, <a
+    href="#atp-:NSSSec">atp-:NSSSec</a>, <a href="#atp-:PPart">atp-:PPart</a>,
+<a href="#atp-:PChap">atp-:PChap</a>, <a href="#atp-:PSec">atp-:PSec</a>, <a
+    href="#atp-:PSSec">atp-:PSSec</a>, <a href="#atp-:PSSSec">atp-:PSSSec</a>,
+<a href="#atp-:NEnv">atp-:NEnv</a>, <a href="#atp-:PEnv">atp-:PEnv</a>.
 
 <p>The default value of <a href="#g:atp_mapNn">g:atp_mapNn</a>is 0.</p>
 
 <p>The variable g:atp_mapNn should be always set as follows (in
-<a href="atp-configure.html#atprc">atprc</a> or |vimrc| file):<pre>
+<a href="#atprc">atprc</a> or |vimrc| file):<pre>
 	if !exists("g:atp_mapNn")	
 	    let g:atp_mapNn = 1
 	endif
@@ -3608,8 +3625,8 @@ Then the value will be preserved when atp opens new buffer when using
 setting use <a href="#atp-ProjectScript">atp-ProjectScript</a>.</p></div></p>
 
 <p>Another good tip for LaTeX project files is to set <a
-    href="atp-configure.htm#b:atp_TexFlavor">b:atp_TexFlavor</a>
-variable to 'tex' (in your |vimrc| or <a href="atp-configure.html#atprc">atprc</a> file). This will prevent
+    href="#b:atp_TexFlavor">b:atp_TexFlavor</a>
+variable to 'tex' (in your |vimrc| or <a href="#atprc">atprc</a> file). This will prevent
 from situations that Vim recognizes input file as a plain TeX while it
 is an input file into a LaTeX project. 
 Another way is add options to 'viewoptions' (see |'viewoptions'|). And
@@ -3623,7 +3640,7 @@ behave in a different way in plaintex files. For example TreeOfFiles function
     href="#b:TypeDict">b:TypeDict</a>, <a
     href="#b:LevelDict">b:LevelDict</a>). It is recursive in LaTeX files but
 not in plain TeX files). On this function is based the command <a
-    href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> which makes list of
+    href="#atp-:LocalCommands">atp-:LocalCommands</a> which makes list of
 commands, environments and colours for Tab Completion and also <a
     href="#atp-:S">atp-:S</a> command. It is done so, because in plain tex
 there is no way to distinguish input files from input packages which we do not
@@ -3649,15 +3666,15 @@ generated and written.</p>
        in a revision system (bzr, svn, etc.) and share it with collaborators.</p>
 
        <p>The global project script (which, by default, stores global variables:
-       <a href="atp-completion.html#g:atp_LatexPackages">g:atp_LatexPackages</a>, <a
-	   href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>, <a
-	   href="atp-commands.html#g:atp_Library">g:atp_Library</a>) is now
+       <a href="#g:atp_LatexPackages">g:atp_LatexPackages</a>, <a
+	   href="#g:atp_LatexClasses">g:atp_LatexClasses</a>, <a
+	   href="#g:atp_Library">g:atp_Library</a>) is now
        '~/.vim/ftplugin/ATP_files/common_var.vim'.</p>
 
-       <p><a href="atp-configure.html#atprc">atprc</a> file is executed before project script file (with local
+       <p><a href="#atprc">atprc</a> file is executed before project script file (with local
        variables) and common_var.vim (with global variables) files are
        sourced. Thus this files will override the settings in |vimrc|
-       and <a href="atp-configure.html#atprc">atprc</a> files.</p> 
+       and <a href="#atprc">atprc</a> files.</p> 
 
 <a name="b:atp_ProjectScript"></a> <a name="g:atp_ProjectScript"></a>
 <p><div class=variable>b:atp_ProjectScript = 1</div>
@@ -3693,7 +3710,7 @@ will turn it off for all files.</div></p>
 	    href="#b:atp_LocalCommands">b:atp_LocalCommands</a>, and <a
 	    href="#b:atp_LocalColors">b:atp_LocalColors</a>. With |+python|
 	this is not needed since <a
-	    href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> is then very
+	    href="#atp-:LocalCommands">atp-:LocalCommands</a> is then very
 	fast and is run on |BufEnter|.</div></p>
 
 <p>Each file has separate project scrips which stores the values
@@ -3720,7 +3737,7 @@ Ef these variables. It's name is stored in <a
 	Hint: (if you want to disable loading project script for one file): 
 	    In your .vimrc file you can set the local variable via
 	    autocommand group BufEnter or you can put an if statement in your
-	    <a href="atp-configure.html#atprc">atprc</a> file:<pre><div class=variable> 
+	    <a href="#atprc">atprc</a> file:<pre><div class=variable> 
 		if expand("%:p") == <path_to_file>
 		    let b:atp_ProjectScript = 0
 		endif
@@ -3781,8 +3798,8 @@ Ef these variables. It's name is stored in <a
 	directory or not.</p>
 
 	<p>Note: If you use this feature, you might need to use the commands:
-	<a href="atp-completion.html#atp-:LocalCommands">atp-:LocalCommands</a> and <a
-	    href="atp-commands.html#atp-:InputFiles">atp-:InputFiles</a> which will update
+	<a href="#atp-:LocalCommands">atp-:LocalCommands</a> and <a
+	    href="#atp-:InputFiles">atp-:InputFiles</a> which will update
 	b:atp_LocalCommands, b:atp_LocalColors, b:atp_LocalEnvironments and <a
 	    href="#b:TreeOfFiles">b:TreeOfFiles</a>, <a
 	    href="#b:ListOfFiles">b:ListOfFiles</a>, <a
@@ -3790,7 +3807,7 @@ Ef these variables. It's name is stored in <a
 	    href="#b:LevelDict">b:LevelDict</a>. Use these commands with
 	a bang "!". The second set of variables is also updated by <a
 	    href="#atp-:S">atp-:S</a> (also with "!") and and <a
-	    href="atp-commands.html#atp-:GotoFile">atp-:GotoFile</a> (with "!" as well).</p>
+	    href="#atp-:GotoFile">atp-:GotoFile</a> (with "!" as well).</p>
 
 	<p>Note: Also when you add a package to tex you should remove the common
 	project scrip, so that the new packages will be added to completion
@@ -3897,25 +3914,25 @@ using the variables:</p>
 	    <div class=variable>g:atp_imap_fourth_leader == "["</div>
 	    <div class=indented>for extra environments in the old layout (this will be removed).</div></p>
 <p><div class=variable><a
-	href="atp-commands.html#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
+	href="#g:atp_map_forward_motion_leader">g:atp_map_forward_motion_leader</a>
  == "&lt"</div>
-	    <div class=indented>for maps to <a href="atp-ProjectFiles.html#atp-:NInput">atp-:NInput</a>, <a
-		href="atp-commands.html#atp-:NSec">atp-:NSec</a>, .... , <a
-		href="atp-commands.html#atp-&gtE">atp-&gtE</a>, <a href="atp-commands.html#atp-&gte">atp-&gte</a>.</div></p>
+	    <div class=indented>for maps to <a href="#atp-:NInput">atp-:NInput</a>, <a
+		href="#atp-:NSec">atp-:NSec</a>, .... , <a
+		href="#atp-&gtE">atp-&gtE</a>, <a href="#atp-&gte">atp-&gte</a>.</div></p>
 	<p><div class=variable><a
-		href="atp-commands.html#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a>
+		href="#g:atp_map_backward_motion_leader">g:atp_map_backward_motion_leader</a>
 	== "&gt"</div>
-	    <div class=indented>for maps to <a href="atp-ProjectFiles.html#atp-:PInput">atp-:PInput</a>, <a
-		href="atp-commands.html#atp-:NSec">atp-:PSec</a>, .... , <a
-		href="atp-commands.html#atp-&ltE">atp-&ltE</a>, <a
-		href="atp-commands.html#atp-&lte">atp-&lte</a>.</div></p>
+	    <div class=indented>for maps to <a href="#atp-:PInput">atp-:PInput</a>, <a
+		href="#atp-:NSec">atp-:PSec</a>, .... , <a
+		href="#atp-&ltE">atp-&ltE</a>, <a
+		href="#atp-&lte">atp-&lte</a>.</div></p>
 
 <p>Note: the best way to list mappings with leader '#' in insert mode is to use
       <div class=map>':imap #&ltCR&gt'.</div></p>
 
 <p>You can list imaps with <a
-    href="atp-commands.html#atp-:HelpMathIMaps">atp-:HelpMathIMaps</a> and <a
-    href="atp-commands.html#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a> but the best way is to use
+    href="#atp-:HelpMathIMaps">atp-:HelpMathIMaps</a> and <a
+    href="#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a> but the best way is to use
 |imap| directly.</p>
 
 <p>All other mappings (|map|, |vmap|, |nmap|, ...) are using |<LocalLeader>| which can be
@@ -3975,7 +3992,7 @@ which help to navigate thought brackets (but not only) in insert mode.</p>
 <p><div class=command>:Bibtex[!]</div>	
 <div class=map>map \b</div>
 <div class=indented>run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX if you use <a
-    href="atp-commands.html#g:atp_Compiler">g:atp_Compiler</a>='python' and BibTeX returned
+    href="#g:atp_Compiler">g:atp_Compiler</a>='python' and BibTeX returned
 with errors the compilation will stop. In the debug mode you will also get
 BibTeX output. It is stored in <a
     href="#b:atp_BibtexOutput">b:atp_BibtexOutput</a>, BibTeX return code is
@@ -3987,16 +4004,16 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 
 <p><div class=command>:Delete[!]</div>
 <div class=map>map &ltF6&gtd</div>
-<div class=indented>See <a href="atp-commands.html#atp-:Delete">atp-:Delete</a>.</div></p>
+<div class=indented>See <a href="#atp-:Delete">atp-:Delete</a>.</div></p>
 
 <p><div class=command>:TOC[!]</div>
 <div class=map>map \t</div>
-<div class=indented>This is a mapping to the command <a href="atp-commands.html#atp-:TOC">atp-:TOC</a></div></p>
+<div class=indented>This is a mapping to the command <a href="#atp-:TOC">atp-:TOC</a></div></p>
 
 
 <p><div class=command>:Labels[!]</div>
 <div class=map>map \L</div>
-<div class=indented>This is a mapping to the command <a href="atp-commands.html#atp-:Labels">atp-:Labels</a></div></p>
+<div class=indented>This is a mapping to the command <a href="#atp-:Labels">atp-:Labels</a></div></p>
 
 <p><div class=command>:GotoFile</div>
 <div class=command>:EditInputFile</div>
@@ -4028,11 +4045,11 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 <div class=map>nmap [], vmap []</div>
 	<div class=indented>Goto previous \end{</div></p>
 
-<p><a href="atp-commands.html#atp-gc"></a>
+<p><a href="#atp-gc"></a>
 <div class=map>nmap gcl, vmap gc</div> 
 	<div class=indented>Goto end of comment group (current or next if not in comment).</div></p>
 
-<p><a href="atp-commands.html#atp-gC"></a>
+<p><a href="#atp-gC"></a>
 <div class=map>nmap gC, vmap gC</div>
 	<div class=indented>Goto begin of comment group (current or previous if not in comment).</div></p>
 	    
@@ -4072,14 +4089,14 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 	<p>Comment leader can be set with the variable g:atp_CommentLeader (by
 	default it is '% '). If you do not want this maps or you want to remap
 	them to something else you can set <a
-	    href="atp-mappings.html#g:atp_MapCommentLines">g:atp_MapCommentLines</a>=0 in your
-	|vimrc| or <a href="atp-configure.html#atprc">atprc</a> file and use
+	    href="#g:atp_MapCommentLines">g:atp_MapCommentLines</a>=0 in your
+	|vimrc| or <a href="#atprc">atprc</a> file and use
 	&ltPlug&gtCommentLines, &ltPlug&gtUnCommentLines (these are normal
 	maps), for example:
 	<div class=map>nmap &ltLocalLeader&gtC 	&ltPlug&gtUnCommentLines</div>
 	<div class=map>vmap &ltLocalLeader&gtC 	&ltPlug&gtUnCommentLines</div>
-	A usefull map for uncommenting <a href="atp-editing.html#atp-_c">atp-_c</a> (i.e. <a
-	    href="atp-editing.html#atp-select-comments">atp-select-comments</a>).</p></div></p>
+	A usefull map for uncommenting <a href="#atp-_c">atp-_c</a> (i.e. <a
+	    href="#atp-select-comments">atp-select-comments</a>).</p></div></p>
 
 <a name="atp-space"></a>
 <p><div class=map>cmap &ltbuffer&gt &ltC-Space&gt 	\_s\+</div>
@@ -4100,7 +4117,7 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 	If you want Q/ and Q? enter insert mode as well you can set: &gt
 	    <div class=map>nmap Q/		q/:call ATP_CmdwinToggleSpace('on')&ltCR&gti</div>
 	    <div class=map>nmap Q?		q?:call ATP_CmdwinToggleSpace('on')&ltCR&gti</div>
-	in your <a href="atp-configure.html#atprc">atprc</a> or |vimrc| file.</p></div></p>
+	in your <a href="#atprc">atprc</a> or |vimrc| file.</p></div></p>
 
 <a name="atp-imap-fonts"></a>
 <h3>Font Commands</h3>
@@ -4183,8 +4200,8 @@ mode was inside mathematics.</p>
     defined when you use short imaps.</div></p>
 
 <p>Note: you can list this mappings using the command <a
-    href="atp-commands.html#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a>.<br>
-Note: This can be effectivly set only in <a href="atp-configure.html#atprc">atprc</a> or |vimrc| files.</p>
+    href="#atp-:HelpEnvIMaps">atp-:HelpEnvIMaps</a>.<br>
+Note: This can be effectivly set only in <a href="#atprc">atprc</a> or |vimrc| files.</p>
 
 <p>These maps are fully customizable: both sides: the lhs and rhs side ! Here
 is how you can set the rhs:</p>
@@ -4203,7 +4220,7 @@ is how you can set the rhs:</p>
     star is added to theorem like environment imaps (<a
 	href="#atp-imap-environments">atp-imap-environments</a>).  By default
     it will be restored by the project script. See <a
-	href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
+	href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
 
 <p><a name="b:atp_StarMathEnvDefault"></a>	
 <div class=map>b:atpStarMathEnvDefault</div>
@@ -4211,7 +4228,7 @@ is how you can set the rhs:</p>
      equation imaps (<a
 	 href="#atp-imap-environments">atp-imap-environments</a>).  By default
      it will be restored by the project script. See <a
-	 href="atp-ProjectFiles.html#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
+	 href="#g:atp_ProjectLocalVariables">g:atp_ProjectLocalVariables</a>.</div></p>
 
 <table border=0 vspace=0 cellspacing=1 >
     <tr><td><div class=map>imap ]b</div></td><td><div class=map>]beg</div></td><td> \begin{}&ltLeft&gt</td></tr>
@@ -4441,7 +4458,7 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
 <a name="atp-maps-log"></a> 
 <h3>Log File Maps</h3>
     <p>This are available maps in the log file, when it was opened with
-    <a href="atp-commands.html#atp-:OpenLog">atp-:OpenLog</a> command 
+    <a href="#atp-:OpenLog">atp-:OpenLog</a> command 
     <table border=0 vspace=0 cellspacing=1 >
 	<tr><td><div class=map>	]e,</div></td><td><div class=map> [e</div></td><td>- go to next/previous error message in log file</td></tr>
 	<tr><td><div class=map>]w,</div></td><td><div class=map> [w</div></td><td>- go to next/previous warning message in log file</td></tr>
