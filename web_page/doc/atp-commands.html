@@ -116,39 +116,39 @@ insert mode the file won't be compiled (and that's all right as you can be in th
 middle of your very long formula). The value of 'updatetime' which works
 fine is around 1000ms ('updatetime' is set in milliseconds). Instead of
 setting 'updatetime' options directly you should set the variables
-<a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a> and <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>. Here's an important
+<a href="#b:atp_updatetime_insert">b:atp_updatetime_insert</a> and <a href="#b:atp_updatetime_normal">b:atp_updatetime_normal</a>. Here's an important
 note on using CTRL-C (i_CTRL-C) in Vim:</p>
 
 <a name="g:atp_IMapCC"></a>
 <p>In vim the key combination CTRL-C (|i_CTRL-C|) in insert mode exists to
 normal without triggering the InsertLeave autocommands. In this way it doesn't
-changes the 'updatetime' from |g:atp_updatetime_insert| to <a
-    href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>. If <a
+changes the 'updatetime' from |b:atp_updatetime_insert| to <a
+    href="#b:atp_updatetime_normal">b:atp_updatetime_normal</a>. If <a
     href="#g:atp_IMapCC">g:atp_IMapCC</a>=1 then _CTRL-C is mapped to i_CTRL-[
 so the InsertLeave autocommands are parsed. However, it is a good habit to use
 i_CTRL-C while you are writting/editing and i_CTRL-[ or i_ESC when you whish to
 see what you wrote (then TeX will be run quicker). If you follow this you can
-even set <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>=1 (if
+even set <a href="#b:atp_updatetime_normal">b:atp_updatetime_normal</a>=1 (if
 you set it to 0 then the file will not be processed while Vim is in normal
 mode).</p>
 
-<a name="g:atp_updatetime_insert"></a>
-<a name="g:atp_updatetime_normal"></a>
+<a name="b:atp_updatetime_insert"></a>
+<a name="b:atp_updatetime_normal"></a>
 <p>
-<div class=variable>g:atp_updatetime_insert = 2000</div>
-<div class=variable>g:atp_updatetime_normal = 1000</div>
+<div class=variable>b:atp_updatetime_insert = 4000</div>
+<div class=variable>b:atp_updatetime_normal = 2000</div>
 <div class=indented>These variables sets the value of 'updatetime' vim option.  Separate settings
 are for normal and insert mode. You can make <a
-    href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a> even smaller so
+    href="#b:atp_updatetime_normal">b:atp_updatetime_normal</a> even smaller so
 that the file is processed whenever you go out from insert mode to normal mode.
 These values will overwrite the original value of 'updatetime' (unless you set
 both variables to 0)  so you should adjust them in order for the change to have
 an effect.
 
-<p>If you set <a href="#g:atp_updatetime_insert">g:atp_updatetime_insert</a>=0
+<p>If you set <a href="#b:atp_updatetime_insert">b:atp_updatetime_insert</a>=0
 the TeX compiler will not be called while Vim is in the insert mode.</p> 
 
-<p>If you set <a href="#g:atp_updatetime_normal">g:atp_updatetime_normal</a>=0
+<p>If you set <a href="#b:atp_updatetime_normal">b:atp_updatetime_normal</a>=0
 the TeX compiler will not be called while Vim is in the normal
 mode.</p></div></p>
 

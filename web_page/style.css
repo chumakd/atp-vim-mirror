@@ -29,19 +29,6 @@ a:visited
 	color: #DE0055
     }
 
-div.rsstitle
-    {
-	padding: 5px 0px;
-	font-family: palatino;
-	font-size: 20px;
-	font-weight: bold;
-	color: #4E03C7;
-    }
-div.rsstitle2
-    {
-	font-family: palatino;
-	font-weight: bold;
-    }
 div.indented
    {
        padding-left: 50pt;
@@ -67,7 +54,9 @@ td.mainpanel
    }
 td.leftpanel
    {
+       width: 100px;
        color: red ;
+       padding-left: 5pt;
        font-size: 12pt;
        text-align: left;
        font-family: palatino, times, times new roman ;
@@ -79,4 +68,29 @@ div.example
 img
     {
 	border-style: none;
+    }
+div.rsstitle
+    {
+	padding: 5px 0px;
+	font-family: palatino;
+	font-size: 20px;
+	font-weight: bold;
+	color: #4E03C7;
+    }
+div.rsstitle2
+    {
+	font-family: palatino;
+	font-weight: bold;
+    }
+table.rsstable
+    {
+	border: 1px solid #B0A1DB; 
+    }
+hr.leftpanel
+    {
+	border: 0px none;
+	color: #2E006C;
+	height: 1px;
+	background: #2E006C;
+	text-align: center;
     }

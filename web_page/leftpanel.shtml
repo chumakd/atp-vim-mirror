@@ -1,0 +1,38 @@
+<!-- Left Panel-->
+<font size="4">
+    <a href="http://www.vim.org/scripts/script.php?script_id=2945"><img border=0
+	align=left src="vim-logo-128.png" width=90></a>
+<br><br><br><br>
+<hr class="leftpanel">
+    <a style="color:#2E006C; text-decoration:none;" href="index.shtml"><b>Main Page</b></a>
+<br>
+    <a style="color:#2E006C; text-decoration:none;"
+	href="http://sourceforge.net/projects/atp-vim/files/"><b>Downloads</b></a>
+<br>
+    <a style="color:#2E006C; text-decoration:none;" 
+	href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a>
+<hr class="leftpanel">
+    <a style="color:#2E006C; text-decoration:none;" href="features.shtml"><b>Feature List</b></a>
+<br>
+    <a style="color:#2E006C; text-decoration:none;" href="requirements.shtml"><b>Requirements</b></a>
+<br>
+    <a style="color:#2E006C; text-decoration:none;" href="plugins.shtml"><b>Vim Plugins</b></a>
+<hr class="leftpanel">
+    <a style="color:#2E006C; text-decoration:none;" href="help.shtml"><b>Help</b></a>
+<br>
+    <a style="color:#2E006C; text-decoration:none;" 
+	href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b>Mailing
+    List</b></a>
+<hr class="leftpanel">
+    <a style="color:#2E006C; text-decoration:none;" href="stats.shtml"><b>Statistics</b></a>
+<hr class="leftpanel">
+    <a href="http://sourceforge.net/projects/atp-vim"><img
+	src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
+    width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
+    at SourceForge.net. Fast, secure and Free Open Source software
+    downloads" /></a>
+<br>
+    <a 
+	href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
+    width=40px src="facebook_logo.png"></a>
+</font>

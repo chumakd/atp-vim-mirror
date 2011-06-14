@@ -6,38 +6,15 @@
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
 	<script language="javascript" src="rssreader.js"></script>
     </head>
+
 <body onload="RSSRequest();" bgcolor="#ffffff" >
 <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
-
 <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
-		<a
-		    href="http://www.vim.org/scripts/script.php?script_id=2945"><img
-		    border=0 align=left src="vim-logo-128.png" width=90></a>
-		<br><br><br><br><br>
-		<a
-		    href="http://sourceforge.net/projects/atp-vim/files/"><b>Downloads</b></a><br><br>
-		<a href="features.html"><b>Feature List</b></a><br>
-		<a href="requirements.html"><b>Requirements</b></a><br>
-		<a href="plugins.html"><b>Vim Plugins</b></a><br><br>
-		<a href="help.html"><b>Help</b></a><br><br>
-		<a
-		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b>Mailing
-			List</b></a><br>
-		<a
-		    href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a><br><br>
-		<a href="stats.html"><b>Statistics</b></a><br><br>
-		<a href="http://sourceforge.net/projects/atp-vim"><img
-		    src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
-		width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
-	    at SourceForge.net. Fast, secure and Free Open Source software
-	    downloads" /></a><br>
-		<a
-		    href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
-		    width=80px
-		    src="facebook_logo.jpg"></a></br>
+		<!--#include virtual="leftpanel.shtml"-->
 	    </td>
+
 	    <td class=mainpanel>
 		<h2>Intro</h2>
 		<b>Automatic LaTeX Plugin</b> (<b>ATP</b>) provides
@@ -83,24 +60,6 @@
 		    href="http://packages.gentoo.org/package/dev-tex/latexmk?arches=all&full_cat">gentoo</a>,
 		<a
 		    href="http://rpm.pbone.net/index.php3/stat/4/idpl/15745308/dir/rawhide/com/latexmk-4.23a-1.fc16.noarch.rpm.html">fedora</a>.
-		<h2>Support</h2>
-		If you would like to <b>support</b> development you can donate
-		(using <b>PayPal</b> or credit card).
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-		    <input type="hidden" name="cmd" value="_s-xclick">
-		    <input type="hidden" name="hosted_button_id" value="B3R4JZSQMKCMW">
-		    <input type="image"
-		    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
-		    border="0" name="submit" alt="PayPal - The safer,
-		    easier way to pay online!">
-		    <img alt="" border="0"
-		    src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif"
-		    width="1" height="1">
-		</form>
-		You can also <b>vote</b> on the <i>ATP Vim <a
-		    href="http://www.vim.org/scripts/script.php?script_id=2945">web
-		    page</a></i>.
-		<a href="why_donate.html"><i>Why to donate?</i></a>
 		<h2>Download/Installation</h2>
 		You can <em>download</em> one of the <a
 		    href="https://sourceforge.net/projects/atp-vim/files/releases"><i>stable
@@ -149,7 +108,32 @@
 			https://atp-vim.svn.sourceforge.net/svnroot/atp-vim
 		    atp-vim</code>
 	    </td>
-	    <td valign=top>
+	    <td valign=top width=30%>
+		<table class=rsstable style="table-layout: fixed; width=400">
+		    <tr><td>
+			<h2>Support Project</h2>
+			If you would like to <b>support</b> development you can donate
+			(using <b>PayPal</b> or credit card).
+			<form align=center action="https://www.paypal.com/cgi-bin/webscr" method="post">
+			    <input type="hidden" name="cmd" value="_s-xclick">
+			    <input type="hidden" name="hosted_button_id" value="B3R4JZSQMKCMW">
+			    <input type="image"
+			    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
+			    border="0" name="submit" alt="PayPal - The safer,
+			    easier way to pay online!">
+			    <img alt="" border="0"
+			    src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif"
+			    width="1" height="1">
+			</form>
+		    </td></tr>
+		    <tr><td>
+			You can also <b>vote</b> on the <i>ATP Vim <a
+			    href="http://www.vim.org/scripts/script.php?script_id=2945">web
+			    page</a></i>.
+			<a href="why_donate.shtml"><i>Why to donate?</i></a>
+		    </td></tr>
+		</table>
+		<br>
 		<div id="status" style="display:none"></div>
 		<div id="ajaxreader"></div>
 	    </td>

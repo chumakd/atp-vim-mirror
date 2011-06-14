@@ -34,7 +34,7 @@ function ReqChange() {
 			var link = channel.getElementsByTagName('link').item(0).firstChild.data;
 			
 			// content = '<div class="channeltitle"><a href="'+link+'">'+title+'</a></div><ul>';
-			content = '<div class=rsstitle>Latest News</div><a href="http://sourceforge.net/news/?group_id=513143">get more news</a><ul>';
+			content = '<table class=rsstable><tr><td><div class=rsstitle>Latest News</div><a href="http://sourceforge.net/news/?group_id=513143">get more news</a><ul>';
 		
 			// Browse items
 			var items = channel.getElementsByTagName('item');
@@ -53,11 +53,11 @@ function ReqChange() {
 				}
 				
 			
-				content += '<li style="padding: 5px 0px" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>'+description+'</li>';
+				content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>'+description+'</li>';
 			}
 			
 			
-			content += '</ul>';
+			content += '</ul></td></tr></table>';
 			// Display the result
 			document.getElementById("ajaxreader").innerHTML = content;
 
@@ -82,7 +82,7 @@ function RSSRequest() {
 
 	// change the status to requesting data
 	HideShow('status');
-	document.getElementById("status").innerHTML = "<table width=\"200\"><td align=left width=\"200\">Fetching&nbspRSS&nbspfead&nbsp...</td></table>"; 
+	document.getElementById("status").innerHTML = '<table><td align=center><b>Fetching&nbspRSS&nbspfeed&nbsp...</b></td></table>'; 
 	// Prepare the request
 	RSSRequestObject.open("GET", Backend , true);
 	// Set the onreadystatechange function

@@ -24,32 +24,7 @@
 <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
-		<a
-		    href="http://www.vim.org/scripts/script.php?script_id=2945"><img
-		    border=0 align=left src="vim-logo-128.png" width=90></a>
-		<br><br><br><br><br>
-		<a href="index.html"><b>Main Page</b></a><br><br>
-		<a
-		    href="http://sourceforge.net/projects/atp-vim/files/"><b>Downloads</b></a><br><br>
-		<a href="features.html"><b>Feature List</b></a><br>
-		<a href="requirements.html"><b>Requirements</b></a><br>
-		<a href="plugins.html"><b>Vim&nbspPlugins</b></a><br><br>
-		<a href="help.html"><b>Help</b></a><br><br>
-		<a
-		    href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b>Mailing
-			List</b></a><br>
-		<a
-		    href="https://sourceforge.net/news/?group_id=513143"><b>News</b></a><br><br>
-		<a href="stats.html"><b>Statistics</b></a><br><br>
-		<a href="http://sourceforge.net/projects/atp-vim"><img
-		    src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10"
-		width="80" height="15" alt="Get Automatic LaTex Plugin for Vim
-	    at SourceForge.net. Fast, secure and Free Open Source software
-	    downloads" /></a><br>
-		<a
-		    href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
-		    width=80px
-		    src="facebook_logo.jpg"></a></br>
+		<!--#include virtual="leftpanel.shtml"-->
 	    </td>
 
 	    <td class=mainpanel>
