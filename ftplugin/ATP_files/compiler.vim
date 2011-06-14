@@ -605,6 +605,21 @@ endfunction
 " {{{ s:PythonCompiler
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
 
+    " Kill comiple.py scripts if there are too many of them.
+    if len(b:atp_PythonPIDs) >= b:atp_MaxPythonPIDs && b:atp_MaxLatexPIDs
+	let a=copy(b:atp_LatexPIDs)
+	try
+	    " Remove the newest PIDs (the last in the b:atp_PythonPIDs)
+" 	    let pids=remove(b:atp_LatexPIDs, b:atp_MaxPythonPIDs-1, -1) 
+	    " Remove the oldest PIDs (the first in the b:atp_PythonPIDs) /works nicely/
+	    let pids=remove(b:atp_LatexPIDs, 0, max([len(b:atp_PythonPIDs)-b:atp_MaxLatexPIDs-1,0]))
+	    echomsg string(a)." ".string(pids)." ".string(b:atp_LatexPIDs)
+	    call atplib#KillPIDs(pids)
+	catch E684:
+	endtry
+	echomsg string(b:atp_LatexPIDs)
+    endif
+
     " Set biber setting on the fly
     call <SID>SetBiberSettings()
 
@@ -1077,8 +1092,8 @@ function! <SID>auTeX(...)
 	echomsg "b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick
     endif
 
-    if mode() == 'i' && g:atp_updatetime_insert == 0 ||
-		\ mode()=='n' && g:atp_updatetime_normal == 0
+    if mode() == 'i' && b:atp_updatetime_insert == 0 ||
+		\ mode()=='n' && b:atp_updatetime_normal == 0
 	if g:atp_debugauTeX
 	    echomsg "autex is off for the mode: ".mode()
 	endif
@@ -1160,6 +1175,7 @@ function! <SID>auTeX(...)
 	    
 "
 " 	if <SID>NewCompare()
+	let g:debug=0
 	    if g:atp_Compiler == 'python'
 		call <SID>PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
 	    else

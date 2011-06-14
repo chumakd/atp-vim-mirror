@@ -321,7 +321,7 @@ http://www.vim.org/scripts/script.php?script_id=3583
 
 ToDo: Recover plugin which I use breaks auTeX.
 
-ToDo: g:atp_updatetime_insert, g:atp_updatetime_normal should be buffer local. Maybe for long files they should have different setting.
+ToDo: b:atp_updatetime_insert, b:atp_updatetime_normal should be buffer local. Maybe for long files they should have different setting.
 
 Bug: Error while opening plain tex files (%&tex)
 Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.
@@ -350,3 +350,11 @@ ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
 ToDo: \nu<Tab> completes to sth. (add greek letters to completion)
 ToDo: \partial \overlline \overline{
 ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).
+ToDo: test b:atp_updatetime_ variables when they are set to 0, test &l:updatetime setting in options.vim (line 920).
+ToDo: use Kill command to Kill python scripts before running. We can make it
+so that never runs more than 2 or 3 script at a time. Kill the latets or the oldest one. This is very easy to implement.
+ToDo: Make python script which looks at vim page with recent script updates to look if the sctip that I listed at atp web page (plugins.shtml) and list the changes. This can be fetched and taken with a python script.
+ToDo: :WrapSelection if without arguments should assume :WrapSelection {
+ToDo: Wizard for inputing graphics, show window with file to choose, ... (with browse())
+	But maybe its better to use vim file searching capabilities ...
+ToDo: Tikz Completion for -> <-, etc.

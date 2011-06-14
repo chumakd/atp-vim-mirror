@@ -18,12 +18,8 @@ pids=vim.eval("a:pids")
 for pid in pids:
     try:
 	os.kill(int(pid),SIGKILL)
-    except OSError, e:
-	if e.errno == 3:
-             # No such process error.
-             pass
-        else:
-             raise
+    except OSError:
+        pass
 END
 endfunction " }}}
 " Write:

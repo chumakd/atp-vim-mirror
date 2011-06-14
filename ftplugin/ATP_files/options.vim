@@ -258,7 +258,7 @@ function! <SID>TexCompiler()
 	if line =~ '^%&\w*tex\>'
 	    return matchstr(line, '^%&\zs\w\+')
 	endif
-    else
+    elseif filereadable(atplib#FullPath(b:atp_MainFile))
 	let line = get(readfile(atplib#FullPath(b:atp_MainFile)), 0, "")
 	if line =~ '^%&\w*tex\>'
 	    return matchstr(line, '^%&\zs\w\+')
@@ -274,6 +274,9 @@ let s:optionsDict= {
 		\ "atp_OpenViewer" 		: "1", 		
 		\ "atp_autex" 			: !&l:diff && expand("%:e") == 'tex', 
 		\ "atp_autex_wait"		: 0,
+		\ "atp_updatetime_insert"	: 4000,
+		\ "atp_updatetime_normal"	: 2000,
+		\ "atp_MaxLatexPIDs"		: 3,
 		\ "atp_ProjectScript"		: "1",
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
@@ -634,12 +637,12 @@ endif
 if !exists("g:atp_MapSelectComment") || g:atp_reload_variables
     let g:atp_MapSelectComment = "_c"
 endif
-if exists("g:atp_latexpackages") || g:atp_reload_variables
+if exists("g:atp_latexpackages")
     " Transition to nicer name:
     let g:atp_LatexPackages = g:atp_latexpackages
     unlet g:atp_latexpackages
 endif
-if exists("g:atp_latexclasses") || g:atp_reload_variables
+if exists("g:atp_latexclasses")
     " Transition to nicer name:
     let g:atp_LatexClasses = g:atp_latexclasses
     unlet g:atp_latexclasses
@@ -914,14 +917,8 @@ if !exists("g:ViewerMsg_Dict") || g:atp_reload_variables
 		\ 'acroread'		: 'AcroRead',
 		\ 'epdfview'		: 'epdfView' }
 endif
-if !exists("g:atp_updatetime_insert") || g:atp_reload_variables
-    let g:atp_updatetime_insert = 2000
-endif
-if !exists("g:atp_updatetime_normal") || g:atp_reload_variables
-    let g:atp_updatetime_normal = 1000
-endif
-if g:atp_updatetime_normal
-    let &l:updatetime=g:atp_updatetime_normal
+if b:atp_updatetime_normal
+    let &l:updatetime=b:atp_updatetime_normal
 endif
 if !exists("g:atp_DefaultDebugMode") || g:atp_reload_variables
     " recognised values: silent, debug.
@@ -1132,7 +1129,7 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload_variables
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
 		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
-		\ "b:atp_StarMathEnvDefault"
+		\ "b:atp_StarMathEnvDefault", "b:atp_updatetime_insert", "b:atp_updatetime_normal"
 		\ ] 
     if !has("python")
 	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])
@@ -2044,6 +2041,7 @@ endif
 	\ "\\ldots", "\\cdot", "\\cdots", "\\vdots", "\\ddots", "\\circ", 
 	\ "\\thickapprox", "\\cong", "\\bullet",
 	\ "\\lhd", "\\unlhd", "\\rhd", "\\unrhd", "\\dagger", "\\ddager", "\\dag", "\\ddag", 
+	\ "\\varinjlim", "\\varprojlim",
 	\ "\\vartriangleright", "\\vartriangleleft", 
 	\ "\\triangle", "\\triangledown", "\\trianglerighteq", "\\trianglelefteq",
 	\ "\\copyright", "\\textregistered", "\\puonds",
@@ -2489,10 +2487,10 @@ endfunction
     augroup END
 
     function! <SID>UpdateTime(enter)
-	if a:enter	== "Enter" && g:atp_updatetime_insert != 0
-	    let &l:updatetime	= g:atp_updatetime_insert
-	elseif a:enter 	== "Leave" && g:atp_updatetime_normal != 0
-	    let &l:updatetime	= g:atp_updatetime_normal
+	if a:enter	== "Enter" && b:atp_updatetime_insert != 0
+	    let &l:updatetime	= b:atp_updatetime_insert
+	elseif a:enter 	== "Leave" && b:atp_updatetime_normal != 0
+	    let &l:updatetime	= b:atp_updatetime_normal
 	endif
     endfunction
 

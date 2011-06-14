@@ -77,7 +77,7 @@ let g:atp_ProjectGlobalVariables = ['g:atp_LatexPackages', 'g:atp_LatexClasses',
 " Autocommands:
 augroup ATP_ProjectFile
     au!
-    au BufWritePre *.tex.project.vim if has("persistent_undo") | setlocal noundofile | endif
+    au BufEnter *.tex.project.vim if has("persistent_undo") | setlocal noundofile | endif
 augroup END
 
 " Functions: (soure once)
@@ -143,7 +143,7 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
     let cond_B	= get(get(s:project_Load, expand("%:p"), []), a:type, 0)
     if empty(expand("%:p"))
 	echohl ErrorMsg
-	echomsg "[ATP LoadScript:] Error : File name is empty. Not loading project script."
+	echomsg "[ATP LoadProjectScript:] Error : File name is empty. Not loading project script."
 	echohl Normal
 	if g:atp_debugProject
 	    redir END
@@ -664,8 +664,8 @@ endfunction
 augroup ATP_WriteProjectScript 
     au!
     " Before it was VimLeave, write silently.
-    au BufWrite *.tex call s:WriteProjectScript("", b:atp_ProjectScriptFile, g:atp_ProjectLocalVariables, 'local', 1)
-    au BufWrite *.tex call s:WriteProjectScript("", s:common_project_script, g:atp_ProjectGlobalVariables, 'global', 1)
+    au BufUnload *.tex call s:WriteProjectScript("", b:atp_ProjectScriptFile, g:atp_ProjectLocalVariables, 'local', 1)
+    au BufUnload *.tex call s:WriteProjectScript("", s:common_project_script, g:atp_ProjectGlobalVariables, 'global', 1)
 augroup END 
 "}}}
 "}}}

@@ -319,7 +319,7 @@ NEW MOTIONS ~
 
 
 UPDATETIME ~
-    |g:atp_updatetime_insert| can be changed on the fly to 0 (previously it
+    |b:atp_updatetime_insert| can be changed on the fly to 0 (previously it
     requires to quitting vim and making changes in |vimrc|/|atprc| files. 
  
 MAKE LATEX ~
@@ -497,38 +497,38 @@ insert mode the file won't be compiled (and that's all right as you can be in th
 middle of your very long formula). The value of |'updatetime'| which works
 fine is around 1000ms (|'updatetime'| is set in milliseconds). Instead of
 setting |'updatetime'| options directly you should set the variables
-|g:atp_updatetime_insert| and |g:atp_updatetime_normal|. Here's an important
+|b:atp_updatetime_insert| and |b:atp_updatetime_normal|. Here's an important
 note on using CTRL-C (|i_CTRL-C|) in Vim:
 
 							*g:atp_IMapCC*
     In vim the key combination CTRL-C (|i_CTRL-C|) in insert mode exists to
     normal without triggering the InsertLeave autocommands. In this way it
-    doesn't changes the |'updatetime'| from |g:atp_updatetime_insert| to
-    |g:atp_updatetime_normal|. If |g:atp_IMapCC|=1 then |_CTRL-C| is mapped to
+    doesn't changes the |'updatetime'| from |b:atp_updatetime_insert| to
+    |b:atp_updatetime_normal|. If |g:atp_IMapCC|=1 then |_CTRL-C| is mapped to
     |i_CTRL-[| so the InsertLeave autocommands are parsed. However, it is
     a good habit to use |i_CTRL-C| while you are writting/editing and |i_CTRL-[| or
     |i_ESC| when you whish to see what you wrote (then TeX will be run
     quicker). If you follow this you can even set
-    |g:atp_updatetime_normal|=1 (if you set it to 0 then the file will not
+    |b:atp_updatetime_normal|=1 (if you set it to 0 then the file will not
     be processed while Vim is in normal mode).
 
-							*g:atp_updatetime_insert*
-							*g:atp_updatetime_normal*
+							*b:atp_updatetime_insert*
+							*b:atp_updatetime_normal*
 >
- g:atp_updatetime_insert = 2000							
- g:atp_updatetime_normal = 1000
+ b:atp_updatetime_insert = 4000	
+ b:atp_updatetime_normal = 2000
 < - These variables sets the value of |'updatetime'| vim option.
     Separate settings are for normal and insert mode. You can make
-    |g:atp_updatetime_normal| even smaller so that the file is processed
+    |b:atp_updatetime_normal| even smaller so that the file is processed
     whenever you go out from insert mode to normal mode. These values will
     overwrite the original value of |'updatetime'| (unless you set both
     variables to 0)  so you should adjust them in order for the change to have
     an effect.
 
-    If you set |g:atp_updatetime_insert|=0 the TeX compiler will not be called
+    If you set |b:atp_updatetime_insert|=0 the TeX compiler will not be called
     while Vim is in the insert mode. 
 
-    If you set |g:atp_updatetime_normal|=0 the TeX compiler will not be called
+    If you set |b:atp_updatetime_normal|=0 the TeX compiler will not be called
     while Vim is in the normal mode.
 
 
@@ -3586,7 +3586,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
 		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
 		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
-		\ "b:atp_StarMathEnvDefault"
+		\ "b:atp_StarMathEnvDefault", "b:atp_updatetime_insert", "b:atp_updatetime_normal"
 		\ ] 
 <	If your vim doesn't have python support |+python| three more variables
 	are stored: |b:atp_LocalEnvironments| |b:atp_LocalCommands|, and
