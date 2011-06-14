@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Jun 12 04:00  2011 W
+" Last Change: Tue Jun 14 09:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -275,8 +275,9 @@ if !exists("g:atp_no_tab_map") || g:atp_no_tab_map == 0
     if !hasmapto("atplib#TabCompletion(0,1)<CR>", 'i')
 	nnoremap <silent> <buffer> <S-Tab>	:call atplib#TabCompletion(0,1)<CR> 
     endif
-    if !hasmapto(":WrapSelection \{ } begin<CR>", 'v')
-	vnoremap <buffer> <silent> <F7> 	:WrapSelection \{ } begin<CR>
+    if !hasmapto(":WrapSelection { } begin<CR>", 'v')
+	vnoremap <buffer> <silent> <F7> 	:WrapSelection { } begin<CR>
+	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
     endif
 else 
     "Non Default Completion Maps:
@@ -291,6 +292,9 @@ else
     endif
     if !hasmapto(" atplib#TabCompletion(0,1)<CR>", 'n')
 	nnoremap <silent> <buffer> <S-F7>	:call atplib#TabCompletion(0,1)<CR> 
+    endif
+    if !hasmapto(":WrapSelection { } begin<cr>", 'v')
+	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
     endif
 endif
 
@@ -380,37 +384,37 @@ if !hasmapto(':<C-U>WrapSelection '.s:backslash.'[ '.s:backslash.']<CR>', 'v')
 endif
 
     " Brackets:
-if !hasmapto(":WrapSelection ( ) ", 'v')
+if !hasmapto(":WrapSelection ( ) begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."( 	:WrapSelection ( ) begin<CR>"
 endif
-if !hasmapto(":WrapSelection [ ] ", 'v')
+if !hasmapto(":WrapSelection ( ) end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.") 	:WrapSelection ( ) end<CR>"
+endif
+if !hasmapto(":WrapSelection [ ] begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."[ 	:WrapSelection [ ] begin<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."{ ".s:backslash."} begin<CR>", 'v')
+if !hasmapto(":WrapSelection [ ] end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."] 	:WrapSelection [ ] end<CR>"
+endif
+if !hasmapto(":WrapSelection ".s:backslash."{ ".s:backslash."} begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."{	:WrapSelection ".s:backslash."{ ".s:backslash."} begin<CR>"
 endif
-if !hasmapto(":WrapSelection { } ", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+if !hasmapto(":WrapSelection ".s:backslash."} ".s:backslash."} end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."}	:WrapSelection ".s:backslash."{ ".s:backslash."} end<CR>"
 endif
-if !hasmapto(":WrapSelection < > ", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."< 	:WrapSelection < > begin<CR>"
-endif
-if !hasmapto(":WrapSelection ( ) ", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.")	:WrapSelection ( ) end<CR>"
-endif
-if !hasmapto(":WrapSelection [ ] ", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."]	:WrapSelection [ ] end<CR>"
-endif
-if !hasmapto(":WrapSelection ".s:backslash."{ ".s:backslash."}", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."} :WrapSelection ".s:backslash."{ ".s:backslash."} end<CR>"
-endif
-if !hasmapto(":WrapSelection { } ", 'v')
+" This is defined before (together with <F7> map.
+" if !hasmapto(":WrapSelection { } begin<cr>", 'v')
+"     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+" endif
+if !hasmapto(":WrapSelection { } end<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."}	:WrapSelection { } end<CR>"
 endif
-if !hasmapto(":WrapSelection < > ", 'v')
+if !hasmapto(":WrapSelection < > begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."< 	:WrapSelection < > begin<CR>"
+endif
+if !hasmapto(":WrapSelection < > end<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."> 	:WrapSelection < > end<CR>"
 endif
-
 if !hasmapto(":WrapSelection ".s:backslash."left( ".s:backslash."right) begin<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."(	:WrapSelection ".s:backslash."left( ".s:backslash."right) begin<CR>"
 endif

@@ -5,7 +5,7 @@
 " Time Stamp: 14-06-11_09-41
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Mon Jun 06 10:00  2011 W
+" Last Change: Tue Jun 14 01:00  2011 W
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -167,4 +167,5 @@ command! SourceTime echo g:source_time_project." project\n".
 	    \ str2float(g:source_time_maps)+str2float(g:source_time_motion)+str2float(g:source_time_LatexBox)+
 	    \ str2float(g:source_time_compiler)+str2float(g:source_time_options)+str2float(g:source_time_atprc_begin)+str2float(g:source_time_project))." sum\n".
 	    \ g:source_time." overall time"
+
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

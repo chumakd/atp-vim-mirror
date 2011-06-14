@@ -253,7 +253,9 @@ let b:atp_running	= 0
 
 " these are all buffer related variables:
 function! <SID>TexCompiler()
-    if buflisted(atplib#FullPath(b:atp_MainFile))
+    if exists("b:atp_TexCompiler")
+	return b:atp_TexCompiler
+    elseif buflisted(atplib#FullPath(b:atp_MainFile))
 	let line = get(getbufline(atplib#FullPath(b:atp_MainFile), 1), 0, "")
 	if line =~ '^%&\w*tex\>'
 	    return matchstr(line, '^%&\zs\w\+')
@@ -1125,12 +1127,13 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload_variables
     " This is a list of variable names which will be preserved in project files
     let g:atp_ProjectLocalVariables = [
 		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
-		\ "b:atp_TexCompiler", 	"b:atp_TexFlavor", 	"b:atp_OutDir" , 
-		\ "b:atp_auruns", 	"b:atp_ReloadOnErr", 	"b:atp_OpenViewer", 
-		\ "b:atp_XpdfServer",	"b:atp_ProjectDir", 	"b:atp_Viewer",
-		\ "b:TreeOfFiles",	"b:ListOfFiles", 	"b:TypeDict",
-		\ "b:LevelDict", 	"b:atp_BibCompiler",	"b:atp_StarEnvDefault",
-		\ "b:atp_StarMathEnvDefault", "b:atp_updatetime_insert", "b:atp_updatetime_normal"
+		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 	
+		\ "b:atp_OutDir", 	"b:atp_auruns", 	"b:atp_ReloadOnError", 	
+		\ "b:atp_OpenViewer", 	"b:atp_XpdfServer",	"b:atp_ProjectDir", 	
+		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles", 	
+		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler", 
+		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault", 
+		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal"
 		\ ] 
     if !has("python")
 	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])

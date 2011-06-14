@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Jun 13 01:00  2011 W
+" Last Change: Tue Jun 14 08:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -10,15 +10,16 @@ let s:sourced 	= exists("s:sourced") ? 1 : 0
 if !s:sourced || g:atp_reload_functions "{{{
 " This is the wrap selection function.
 " {{{ WrapSelection
-function! s:WrapSelection(wrapper,...)
+function! s:WrapSelection(...)
 
-    let l:end_wrapper 	= ( a:0 >= 1 ? a:1 : '}' )
-    let l:cursor_pos	= ( a:0 >= 2 ? a:2 : 'end' )
-    let l:new_line	= ( a:0 >= 3 ? a:3 : 0 )
+    let wrapper		= ( a:0 >= 1 ? a:1 : '{' )
+    let end_wrapper 	= ( a:0 >= 2 ? a:2 : '}' )
+    let cursor_pos	= ( a:0 >= 3 ? a:3 : 'end' )
+    let new_line	= ( a:0 >= 4 ? a:4 : 0 )
 
-"     let b:new_line=l:new_line
-"     let b:cursor_pos=l:cursor_pos
-"     let b:end_wrapper=l:end_wrapper
+"     let b:new_line=new_line
+"     let b:cursor_pos=cursor_pos
+"     let b:end_wrapper=end_wrapper
 
     let l:begin=getpos("'<")
     " todo: if and on 'ą' we should go one character further! (this is
@@ -54,14 +55,14 @@ function! s:WrapSelection(wrapper,...)
 	let l:bend_line=strpart(l:end_line,0,l:end[2])
 	let l:eend_line=strpart(l:end_line,l:end[2])
 
-	if l:new_line == 0
+	if new_line == 0
 	    " inline
 " 	    let b:debug=0
-	    let l:begin_line=l:bbegin_line.a:wrapper.l:ebegin_line
-	    let l:end_line=l:bend_line.l:end_wrapper.l:eend_line
+	    let l:begin_line=l:bbegin_line.wrapper.l:ebegin_line
+	    let l:end_line=l:bend_line.end_wrapper.l:eend_line
 	    call setline(l:begin[1],l:begin_line)
 	    call setline(l:end[1],l:end_line)
-	    let l:end[2]+=len(l:end_wrapper)
+	    let l:end[2]+=len(end_wrapper)
 	else
 " 	    let b:debug=1
 	    " in seprate lines
@@ -69,27 +70,27 @@ function! s:WrapSelection(wrapper,...)
 	    if l:bbegin_line !~ '^\s*$'
 		let l:begin_choice=1
 		call setline(l:begin[1],l:bbegin_line)
-		call append(l:begin[1],l:indent.a:wrapper) " THERE IS AN ISSUE HERE!
+		call append(l:begin[1],l:indent.wrapper) " THERE IS AN ISSUE HERE!
 		call append(copy(l:begin[1])+1,l:indent.substitute(l:ebegin_line,'^\s*','',''))
 		let l:end[1]+=2
 	    elseif l:bbegin_line =~ '^\s\+$'
 		let l:begin_choice=2
-		call append(l:begin[1]-1,l:indent.a:wrapper)
+		call append(l:begin[1]-1,l:indent.wrapper)
 		call append(l:begin[1],l:begin_line.l:ebegin_line)
 		let l:end[1]+=2
 	    else
 		let l:begin_choice=3
-		call append(copy(l:begin[1])-1,l:indent.a:wrapper)
+		call append(copy(l:begin[1])-1,l:indent.wrapper)
 		let l:end[1]+=1
 	    endif
 	    if l:eend_line !~ '^\s*$'
 		let l:end_choice=4
 		call setline(l:end[1],l:bend_line)
-		call append(l:end[1],l:indent.l:end_wrapper)
+		call append(l:end[1],l:indent.end_wrapper)
 		call append(copy(l:end[1])+1,l:indent.substitute(l:eend_line,'^\s*','',''))
 	    else
 		let l:end_choice=5
-		call append(l:end[1],l:indent.l:end_wrapper)
+		call append(l:end[1],l:indent.end_wrapper)
 	    endif
 	    if (l:end[1] - l:begin[1]) >= 0
 		if l:begin_choice == 1
@@ -118,11 +119,11 @@ function! s:WrapSelection(wrapper,...)
 	let l:begin_l=strpart(l:begin_line,0,l:begin[2]-1)
 	let l:middle_l=strpart(l:begin_line,l:begin[2]-1,l:end[2]-l:begin[2]+1)
 	let l:end_l=strpart(l:begin_line,l:end[2])
-	if l:new_line == 0
+	if new_line == 0
 	    " inline
-	    let l:line=l:begin_l.a:wrapper.l:middle_l.l:end_wrapper.l:end_l
+	    let l:line=l:begin_l.wrapper.l:middle_l.end_wrapper.l:end_l
 	    call setline(l:begin[1],l:line)
-	    let l:end[2]+=len(a:wrapper)+1
+	    let l:end[2]+=len(wrapper)+1
 	else
 	    " in seprate lines
 	    let b:begin_l=l:begin_l
@@ -133,33 +134,33 @@ function! s:WrapSelection(wrapper,...)
 
 	    if l:begin_l =~ '\S' 
 		call setline(l:begin[1],l:begin_l)
-		call append(copy(l:begin[1]),l:indent.a:wrapper)
+		call append(copy(l:begin[1]),l:indent.wrapper)
 		call append(copy(l:begin[1])+1,l:indent.l:add_indent.l:middle_l)
-		call append(copy(l:begin[1])+2,l:indent.l:end_wrapper)
+		call append(copy(l:begin[1])+2,l:indent.end_wrapper)
 		if substitute(l:end_l,'^\s*','','') =~ '\S'
 		    call append(copy(l:begin[1])+3,l:indent.substitute(l:end_l,'^\s*','',''))
 		endif
 	    else
-		call setline(copy(l:begin[1]),l:indent.a:wrapper)
+		call setline(copy(l:begin[1]),l:indent.wrapper)
 		call append(copy(l:begin[1]),l:indent.l:add_indent.l:middle_l)
-		call append(copy(l:begin[1])+1,l:indent.l:end_wrapper)
+		call append(copy(l:begin[1])+1,l:indent.end_wrapper)
 		if substitute(l:end_l,'^\s*','','') =~ '\S'
 		    call append(copy(l:begin[1])+2,l:indent.substitute(l:end_l,'^\s*','',''))
 		endif
 	    endif
 	endif
     endif
-    if l:cursor_pos == "end"
-	let l:end[2]+=len(l:end_wrapper)-1
+    if cursor_pos == "end"
+	let l:end[2]+=len(end_wrapper)-1
 	call setpos(".",l:end)
-    elseif l:cursor_pos =~ '\d\+'
+    elseif cursor_pos =~ '\d\+'
 	let l:pos=l:begin
-	let l:pos[2]+=l:cursor_pos
+	let l:pos[2]+=cursor_pos
 	call setpos(".",l:pos)
-    elseif l:cursor_pos == "current"
+    elseif cursor_pos == "current"
 	keepjumps call setpos(".",l:pos_save)
-    elseif l:cursor_pos == "begin"
-	let l:begin[2]+=len(a:wrapper)-1
+    elseif cursor_pos == "begin"
+	let l:begin[2]+=len(wrapper)-1
 	keepjumps call setpos(".",l:begin)
     endif
 endfunction
