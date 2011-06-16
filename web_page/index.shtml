@@ -4,12 +4,18 @@
 	<title >Automatic LaTeX Plugin for Vim</title>
 	<link rel="stylesheet" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script tape="text/javascript">
+	    <!--//
+	    number_of_msgs = 5;
+	    //-->
+	</script>
 	<script language="javascript" src="rssreader.js"></script>
+	<!--#include virtual="google_tracking_code.shtml"-->
     </head>
 
 <body onload="RSSRequest();" bgcolor="#ffffff" >
 <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
-<table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
+    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
 		<!--#include virtual="leftpanel.shtml"-->
@@ -82,6 +88,9 @@
 		    plugin on</code> in your vimrc file for <b>ATP</b> to work.
 		If you want to have indentation you should also add
 		<code>:filetype indent on</code>.</p>
+		<p>On <a href="www.gentoo.org">Gentoo</a> you can
+		<code>emerge</code> <b>ATP</b>. Thanks to <i>Tim Harder</i> for
+		the ebuild.</p>
 		<h2>Updates</h2>
 		If you have <b>ATP</b> you can use <a
 		    href="doc/atp-installation.html#atp-:UpdateATP"><code>:UpdateATP[!]</code></a>
@@ -107,7 +116,57 @@
 		    <code>svn co
 			https://atp-vim.svn.sourceforge.net/svnroot/atp-vim
 		    atp-vim</code>
+		<!-- LEAVE A COMMENT -->
+		<a name="leave_a_comment"></a>
+		<!-- customize labels of htmlcommentbox.com -->
+		<script>
+		// This code goes ABOVE the main HTML Comment Box code!
+		// replace the text in the single quotes below to customize labels.
+		hcb_user = {
+		  //L10N
+		  comments_header : '<h2>Comments</h2>',
+		  name_label : 'name',
+		  content_label: 'enter your comment here',
+		  submit : 'comment',
+		  logout_link : '<img src="http://www.htmlcommentbox.com/static/images/door_out.png" alt="[logout]" class="hcb-icon"/>',
+		  admin_link : '<img src="http://www.htmlcommentbox.com/static/images/door_in.png" alt="[login]" class="hcb-icon"/>',
+		  no_comments_msg: '<p>No one has commented yet. Be the first!</p>',
+		  add: '(+) Add your comment',
+		  rss: '<img src="http://www.htmlcommentbox.com/static/images/feed.png" class="hcb-icon" alt="rss"/> ',
+		  said: 'said:',
+		  prev_page:'<img src="http://www.htmlcommentbox.com/static/images/arrow_left.png" class="hcb-icon" alt="[prev]"/>',
+		  next_page:'<img src="http://www.htmlcommentbox.com/static/images/arrow_right.png" class="hcb-icon" alt="[next]"/>',
+		  showing:'showing',
+		  to:'to',
+		  website_label:'website (optional)',
+		  email_label:'email',
+		  anonymous:'Anonymous',
+		  mod_label:'(mod)',
+		  subscribe:'email me replies',
+		  
+		  msg_thankyou:'<b>Thank you for commenting!</b>',
+		  msg_approval:'(this comment is not published until you approve it)',
+		  msg_approval_required:'<b>Thank you for commenting! Your comment will appear once approved by a moderator.</b>',
+		  
+		  err_bad_html:'Your comment contained bad html.',
+		  err_bad_email:'Please enter a valid email address.',
+		  err_too_frequent:'You must wait a few seconds between posting comments.',
+		  err_comment_empty:'Your comment was not posted because it was empty!',
+		  
+		  //SETTINGS
+		  MAX_CHARS: 2048,
+		  PAGE:'', // ID of the webpage to show comments for. defaults to the webpage the user is currently visiting.
+		  RELATIVE_DATES:true // show dates in the form "X hours ago." etc.
+		};
+		</script>
+		<!-- done customizing labels of htmlcommentbox.com -->
+		<!-- begin htmlcommentbox.com -->
+		 <div id="HCB_comment_box"><a href="http://www.htmlcommentbox.com">HTML Comment Box</a> is loading comments...</div>
+		 <link rel="stylesheet" type="text/css" href="skin.css" />
+		 <script type="text/javascript" language="javascript" id="hcb"> /*<!--*/ if(!window.hcb_user){hcb_user={  };} hcb_user.PAGE="http://atp-vim.sourceforge.net";(function(){s=document.createElement("script");s.setAttribute("type","text/javascript");s.setAttribute("src", "http://www.htmlcommentbox.com/jread?page="+escape((window.hcb_user && hcb_user.PAGE)||(""+window.location)).replace("+","%2B")+"&mod=%241%24wq1rdBcg%24kcfq6bTfp5NPcpVy3ZWxE."+"&opts=16670&num=10");if (typeof s!="undefined") document.getElementsByTagName("head")[0].appendChild(s);})(); /*-->*/ </script>
+		<!-- end htmlcommentbox.com -->
 	    </td>
+
 	    <td valign=top width=30%>
 		<table class=rsstable style="table-layout: fixed; width=400">
 		    <tr><td>

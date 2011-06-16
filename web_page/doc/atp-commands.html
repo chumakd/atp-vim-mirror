@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+	<title>Documentation of Automatic LaTeX Plugin for Vim</title>
 	<link rel="stylesheet" href="../doc_style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
 	<script type="text/javascript">
@@ -16,12 +17,13 @@
 	  })();
 
 	</script>
+	<!--#include virtual="google_tracking_code.shtml"-->
     </head>
 <body bgcolor="#ffffff">
 <a name="atp-commands"></a> <a name="atp-:"></a>
 <h1>Commands</h1>
 <hr>
-<div>
+<div width=100% >
     <p class="alignleft"><a href="atp-installation.html"><b>Previous:</b></a><b> Installation</b></p>
     <p class="aligncenter"><a href="index.html"><b>Table of Contents</b></a></p>
     <p class="alignright"><a href="atp-toc-window.html"><b>Next:</b></a><b> ToC Window</b></p>
@@ -49,35 +51,39 @@
 	    Preview</a></div>
     <div class=indented><a href="#various">Various Commands</a></div></p>
     <h2>Index of Commands</h2>
+    <p>Note that this is index of commands only in this html file, there are other
+    commands as well, future online documentation version will contain a proper
+    index. The list is ordered from left to right, then from up to down (not as
+    usual indexes, this also should be changed in the future.</p>
     <div class=indented>
 	<table border=0 vspace=0 cellspacing=0 width=600>
-	    <tr><td><div><a href="#atp-:ToggleAuTeX">atp-:ToggleAuTeX</a></div> <td><div><a href="#atp-:DebugMode">atp-:DebugMode</a></div></td><td><div><a href="#atp-:copen">atp-:copen</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:TEX">atp-:TEX</a></div></td><td><div><a href="#atp-:DTEX">atp-:DTEX</a></div><td><div><a href="#atp-:MakeLatex">atp-:MakeLatex</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Latexmk">atp-:Latexmk</a></div></td><td><div><a href="#atp-:LatexmkClean">atp-:LatexmkClean</a></div></td><td><div><a href="#atp-:LatexmkStop">atp-:LatexmkStop</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:LatexmkStatus">atp-:LatexmkStatus</a></div></td><td><div><a href="#atp-:ShowErrors">atp-:ShowErrors</a></div></td><td><div><a href="#atp-:ErrorFormat">atp-:ErrorFormat</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Compiler">atp-:Compiler</a></div></td><td><div><a href="#atp-:Bibtex">atp-:Bibtex</a></div></td><td><div><a href="#atp-:ViewOutput">atp-:ViewOutput</a></td></tr>
-	    <tr><td><div><a href="#atp-:SyncTex">atp-:SyncTex</a></div></td><td><div><a href="#atp-:Viewer">atp-:Viewer</a></div></td><td><div><a href="#atp-:SetXdvi">atp-:SetXdvi</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:SetXpdf">atp-:SetXpdf</a></div></td><td><div><a href="#atp-:AMSRef">atp-:AMSRef</a></div></td><td><div><a href="#atp-:FindBibFiles">atp-:FindBibFiles</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:GotoFile">atp-:GotoFile</a></td><td> or <a href="#atp-:EditInputFile">atp-:EditInputFile</a></div></td><td><div><a href="#atp-:InputFiles">atp-:InputFiles</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Open">atp-:Open</a></div></td> <td><div><a href="#atp-:OpenLog">atp-:OpenLog</a></div></td> <td><div><a href="#atp-:SyncTex-(log_file)">atp-:SyncTex-(log_file)</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:LogSync">atp-:LogSync</a></div></td> <td><div><a href="#atp-:SyncXpdf">atp-:SyncXpdf</a></div></td> <td><div><a href="#atp-:Delete">atp-:Delete</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:WordCount">atp-:WordCount</a></div></td> <td><div><a href="#atp-:SshPrint">atp-:SshPrint</a></div></td> <td><div><a href="#atp-:Lpr">atp-:Lpr</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Lpstat">atp-:Lpstat</a></div></td> <td><div><a href="#atp-:ListPrinters">atp-:ListPrinters</a></div></td> <td><div><a href="#atp-:Babel">atp-:Babel</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:ShowOptions">atp-:ShowOptions</a></div></td> <td><div><a href="#atp-:WrapSelection">atp-:WrapSelection</a></div></td> <td><div><a href="#atp-:InteligentWrapSelection">atp-:InteligentWrapSelection</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:TexAlign">atp-:TexAlign</a></div></td> <td><div><a href="#atp-:LatexTags">atp-:LatexTags</a> or <a href="#atp-:Tags">atp-:Tags</a></div></td> <td><div><a href="#atp-:TOC">atp-:TOC</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:CTOC">atp-:CTOC</a></div></td> <td><div><a href="#atp-:Labels">atp-:Labels</a></div></td> <td><div><a href="#atp-:GotoLabel">atp-:GotoLabel</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:GotoNamedDest">atp-:GotoNamedDest</a></div></td> <td><div><a href="#atp-:F">atp-:F</a></div></td> <td><div><a href="#atp-:B">atp-:B</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:NEnv">atp-:NEnv</a></div></td> <td><div><a href="#atp-:PEnv">atp-:PEnv</a></div></td> <td><div><a href="#atp-:NPart">atp-:NPart</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:NChap">atp-:NChap</a></div></td> <td><div><a href="#atp-:NSec">atp-:NSec</a></div></td> <td><div><a href="#atp-:NSSec">atp-:NSSec</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:NSSSec">atp-:NSSSec</a></div></td> <td><div><a href="#atp-:PPart">atp-:PPart</a></div></td> <td><div><a href="#atp-:PChap">atp-:PChap</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:PSec">atp-:PSec</a></div></td> <td><div><a href="#atp-:PSSec">atp-:PSSec</a></div></td> <td><div><a href="#atp-:PSSSec">atp-:PSSSec</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Part">atp-:Part</a></div></td> <td><div><a href="#atp-:SkipCommentForward">atp-:SkipCommentForward</a></div></td> <td><div><a href="#atp-:SkipCommentBackward">atp-:SkipCommentBackward</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:Note">atp-:Note</a></div></td> <td><div><a href="#atp-:ToggleStar">atp-:ToggleStar</a></div></td> <td><div><a href="#atp-:ToggleEnv">atp-:ToggleEnv</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:ChangeEnv">atp-:ChangeEnv</a></div></td> <td><div><a href="#atp-:WrapEnvironment">atp-:WrapEnvironment</a></div></td> <td><div><a href="#atp-:SetOutDir">atp-:SetOutDir</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:SetErrorFile">atp-:SetErrorFile</a></div></td> <td><div><a href="#atp-:Wdiff">atp-:Wdiff</a></div></td> <td><div><a href="#atp-:NiceDiff">atp-:NiceDiff</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:ATPStatus">atp-:ATPStatus</a></div></td> <td><div><a href="#atp-:Dsearch">atp-:Dsearch</a></div></td> <td><div><a href="#atp-:FontSearch">atp-:FontSearch</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:FontPreview">atp-:FontPreview</a></div></td> <td><div><a href="#atp-:HelpVMaps">atp-:HelpVMaps</a></div></td> <td><div><a href="#atp-:PID">atp-:PID</a></div></td></tr>
-	    <tr><td><div><a href="#atp-:ShowPackages">atp-:ShowPackages</a></div></td> <td><div><a href="#atp-:Preamble">atp-:Preamble</a></div></td> <td><div><a href="#atp-:ReloadATP">atp-:ReloadATP</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:AMSRef">atp-:AMSRef</a></div></td> <td><div><a href="#atp-:ATPStatus">atp-:ATPStatus</a></div></td> <td><div><a href="#atp-:B">atp-:B</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:Babel">atp-:Babel</a></div></td> <td><div><a href="#atp-:Bibtex">atp-:Bibtex</a></div></td> <td><div><a href="#atp-:CTOC">atp-:CTOC</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:ChangeEnv">atp-:ChangeEnv</a></div></td> <td><div><a href="#atp-:Compiler">atp-:Compiler</a></div></td> <td><div><a href="#atp-:DTEX">atp-:DTEX</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:DebugMode">atp-:DebugMode</a></div></td> <td><div><a href="#atp-:Delete">atp-:Delete</a></div></td> <td><div><a href="#atp-:Dsearch">atp-:Dsearch</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:EditInputFile">atp-:EditInputFile</a></div></td> <td><div><a href="#atp-:ErrorFormat">atp-:ErrorFormat</a></div></td> <td><div><a href="#atp-:F">atp-:F</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:FindBibFiles">atp-:FindBibFiles</a></div></td> <td><div><a href="#atp-:FontPreview">atp-:FontPreview</a></div></td> <td><div><a href="#atp-:FontSearch">atp-:FontSearch</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:GotoFile">atp-:GotoFile</a></td> <td><div><a href="#atp-:GotoLabel">atp-:GotoLabel</a></div></td> <td><div><a href="#atp-:GotoNamedDest">atp-:GotoNamedDest</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:HelpVMaps">atp-:HelpVMaps</a></div></td> <td><div><a href="#atp-:InputFiles">atp-:InputFiles</a></div></td> <td><div><a href="#atp-:InteligentWrapSelection">atp-:InteligentWrapSelection</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:Labels">atp-:Labels</a></div></td> <td><div><a href="#atp-:LatexTags">atp-:LatexTags</a> or <a href="#atp-:Tags">atp-:Tags</a></div></td> <td><div><a href="#atp-:Latexmk">atp-:Latexmk</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:LatexmkClean">atp-:LatexmkClean</a></div></td> <td><div><a href="#atp-:LatexmkStatus">atp-:LatexmkStatus</a></div></td> <td><div><a href="#atp-:LatexmkStop">atp-:LatexmkStop</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:ListPrinters">atp-:ListPrinters</a></div></td> <td><div><a href="#atp-:LogSync">atp-:LogSync</a></div></td> <td><div><a href="#atp-:Lpr">atp-:Lpr</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:Lpstat">atp-:Lpstat</a></div></td> <td><div><a href="#atp-:MakeLatex">atp-:MakeLatex</a></div></td> <td><div><a href="#atp-:NChap">atp-:NChap</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:NEnv">atp-:NEnv</a></div></td> <td><div><a href="#atp-:NPart">atp-:NPart</a></div></td> <td><div><a href="#atp-:NSSSec">atp-:NSSSec</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:NSSec">atp-:NSSec</a></div></td> <td><div><a href="#atp-:NSec">atp-:NSec</a></div></td> <td><div><a href="#atp-:NiceDiff">atp-:NiceDiff</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:Note">atp-:Note</a></div></td> <td><div><a href="#atp-:Open">atp-:Open</a></div></td> <td><div><a href="#atp-:OpenLog">atp-:OpenLog</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:PChap">atp-:PChap</a></div></td> <td><div><a href="#atp-:PEnv">atp-:PEnv</a></div></td> <td><div><a href="#atp-:PID">atp-:PID</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:PPart">atp-:PPart</a></div></td> <td><div><a href="#atp-:PSSSec">atp-:PSSSec</a></div></td> <td><div><a href="#atp-:PSSec">atp-:PSSec</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:PSec">atp-:PSec</a></div></td> <td><div><a href="#atp-:Part">atp-:Part</a></div></td> <td><div><a href="#atp-:Preamble">atp-:Preamble</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:ReloadATP">atp-:ReloadATP</a></div></td> <td><div><a href="#atp-:SetErrorFile">atp-:SetErrorFile</a></div></td> <td><div><a href="#atp-:SetOutDir">atp-:SetOutDir</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:SetXdvi">atp-:SetXdvi</a></div></td> <td><div><a href="#atp-:SetXpdf">atp-:SetXpdf</a></div></td> <td><div><a href="#atp-:ShowErrors">atp-:ShowErrors</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:ShowOptions">atp-:ShowOptions</a></div></td> <td><div><a href="#atp-:ShowPackages">atp-:ShowPackages</a></div></td> <td><div><a href="#atp-:SkipCommentBackward">atp-:SkipCommentBackward</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:SkipCommentForward">atp-:SkipCommentForward</a></div></td> <td><div><a href="#atp-:SshPrint">atp-:SshPrint</a></div></td> <td><div><a href="#atp-:SyncTex">atp-:SyncTex</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:SyncTex-(log_file)">atp-:SyncTex-(log_file)</a></div></td> <td><div><a href="#atp-:SyncXpdf">atp-:SyncXpdf</a></div></td> <td><div><a href="#atp-:TEX">atp-:TEX</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:TOC">atp-:TOC</a></div></td> <td><div><a href="#atp-:TexAlign">atp-:TexAlign</a></div></td> <td><div><a href="#atp-:ToggleAuTeX">atp-:ToggleAuTeX</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:ToggleEnv">atp-:ToggleEnv</a></div></td> <td><div><a href="#atp-:ToggleStar">atp-:ToggleStar</a></div></td> <td><div><a href="#atp-:ViewOutput">atp-:ViewOutput</a></td></tr>
+	    <tr><td><div><a href="#atp-:Viewer">atp-:Viewer</a></div></td> <td><div><a href="#atp-:Wdiff">atp-:Wdiff</a></div></td> <td><div><a href="#atp-:WordCount">atp-:WordCount</a></div></td></tr>
+	    <tr><td><div><a href="#atp-:WrapEnvironment">atp-:WrapEnvironment</a></div></td> <td><div><a href="#atp-:WrapSelection">atp-:WrapSelection</a></div></td> <td><div><a href="#atp-:copen">atp-:copen</a></div></td></tr>
 	</table>
     </div>
 </div>
@@ -488,7 +494,7 @@ your tex compiler, see |g:atp_TexCommand|.</p>
 <div class=map>map \d</div>
     <div class=indented>This is equivalent to ':TEX debug'.</div></p>
 
-<a name="atp-:MakeLatex"></a><br>
+<a name="atp-:MakeLatex"></a>
 <p><div class=command>:MakeLatex[!]</div>
     <div class=indented>With one command you can make your whole document: cross references,
 	bibliography (with or without bibtex), index, table of contents, table
@@ -943,7 +949,7 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	or one of 'tabe', 'split', 'edit', (if 'vim' is specified, then 'tabe'
 	will be used). The cat program is also supported.
 
-	<a name="g:atp_Library"><\a>
+	<a name="g:atp_Library"></a>
 	<p>Found files (all not just matching ones) are stored in the variable
 	g:atp_Library. It is set by |globpath()| on g:atp_LibraryPath and then
 	filtered, only files which extensions are given in g:atp_OpenTypeDict

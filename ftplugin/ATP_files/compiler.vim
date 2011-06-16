@@ -606,7 +606,7 @@ endfunction
 function! <SID>PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
 
     " Kill comiple.py scripts if there are too many of them.
-    if len(b:atp_PythonPIDs) >= b:atp_MaxProcesses && b:atp_MaxLatexPIDs
+    if len(b:atp_PythonPIDs) >= b:atp_MaxProcesses && b:atp_MaxProcesses
 	let a=copy(b:atp_LatexPIDs)
 	try
 	    if b:atp_KillYoungest
@@ -1102,6 +1102,11 @@ function! <SID>auTeX(...)
 	endif
 	return "autex is off for the mode: ".mode()." (see :help mode())"
     endif
+
+    if mode() == 'i' && g:atp_noautex_in_math && atplib#IsInMath()
+	return "noautex in math mode"
+    endif
+
 
     " Wait if the compiler is running. The problem is that CursorHoldI autocommands
     " are not triggered more than once after 'updatetime'.

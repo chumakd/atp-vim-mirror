@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 14 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.2)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.3)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -660,14 +660,14 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	  debug modes).
 							*t:atp_DebugMode*	
 							*atp-debug-mode-silent*
-							*'silent'*
+							*atp-silent*
 	* if |t:atp_DebugMode| 	= 'silent'
 	  :DebugMode silent
 	  nmap <LocalLeader><LocalLeader>s
 	       You will not get any message from compilation. 
 
 							*atp-debug-mode-debug*
-							*'debug'*
+							*atp-debug*
 	* if |t:atp_DebugMode| 	= 'debug'
 	  :DebugMode debug
 	  nmap <LocalLeader><LocalLeader>d
@@ -688,7 +688,7 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 		    mode).
 
 							*atp-debug-mode-Debug*
-							*'Debug'*
+							*atp-Debug*
 	* if |t:atp_DebugMode| 	= 'Debug'
 	  :DebugMode Debug
 	  nmap <LocalLeader><LocalLeader>D
@@ -696,7 +696,7 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	       to first error.	
 
 							*atp-debug-mode-verbose*
-							*'verbose'*
+							*atp-verbose*
 							*b:atp_VerboseLatexInteractionMode*
 	* if |t:atp_DebugMode| 	= 'verbose'
 	       Every compilation which is invoked by the user will be run in
@@ -1162,6 +1162,11 @@ map t, map <S-LeftMouse>
 	It reads the Xpdf viewer options from the variables
 	|b:atp_xpdfOptions| and g:atp_xpdfOptions. Similarly for Okular.
 						
+							*atp-:PdfFonts*
+:PdfFonts
+nmap <F6>g
+	Runs external program pdffonts on pdf output file.
+
 :BibSearch /{pattern}/ [flag]				see |atp-:BibSearch|
 	This function finds bib entries in bib files defined in your tex file
 	and in the variable b:atp_BibFiles (see |b:atp_BibFiles|), which match the
@@ -1233,6 +1238,20 @@ nmap gf
 	values (if they exist).
 
 	The current file is now shown with highlight group: |hl-WarningMsg|. 
+
+							*atp-:TexDoc*
+TexDoc:
+map <F1>, imap <F1>
+	Then you have to type what you are looking for and press enter. The
+	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
+	over a package name and you press 'K' key then you should see the
+	package document file (if it is named after the package).
+
+	Without any argument it will open "g:atp_TeXdocDefault", by default it
+	is eqaul to "-a lshort", i.e. "The not so short introduction to LaTeX
+	2e" by Tobias Oetiker. You can change the default for something that
+	you use more often, for example you can set it to "-a faq", i.e. 'The
+	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :). 
 
 							*atp-:InputFiles*
 :InputFiles				
@@ -1365,69 +1384,7 @@ map <F6>d
 	For the predefined maps which use |atp-:WrapSelection| see below
 	|atp-maps-InteligentWrapSelection| or use |atp-:HelpVMaps|.
 
-							*atp-maps-WrapSelection*
-							*atp-maps-InteligentWrapSelection*
-	These are the provided maps in visual mode: >
-	    vmap <buffer> \rm	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\mathrm{']<CR>
-	    vmap <buffer> \em	:<C-U>InteligentWrapSelection ['\\emph{'],	['\\mathit{']<CR>
-	    vmap <buffer> \it	:<C-U>InteligentWrapSelection ['\\textit{'],	['\\mathit{']<CR>
-	    vmap <buffer> \sf	:<C-U>InteligentWrapSelection ['\\textsf{'],	['\\mathsf{']<CR>
-	    vmap <buffer> \tt	:<C-U>InteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']<CR>
-	    vmap <buffer> \bf	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbf{']<CR>
-	    vmap <buffer> \bb	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbb{']<CR>
-	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\text{']<CR>
-	    vmap <buffer> \sl	:<C-U>WrapSelection \\textsl{<CR>
-	    vmap <buffer> \sc	:<C-U>WrapSelection \\textsc{<CR>
-	    vmap <buffer> \up	:<C-U>WrapSelection \\textup{<CR>
-	    vmap <buffer> \md	:<C-U>WrapSelection \\textmd{<CR>
-	    vmap <buffer> \un	:<C-U>WrapSelection \\underline{<CR>
-	    vmap <buffer> \ov	:<C-U>WrapSelection \\overline{<CR>
-	    vmap <buffer> \n	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>
-	    vmap <buffer> \cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>
-
-	    vmap <LocalLeader>mb :WrapSelection \\mbox{ } begin<CR>
-<   	Suggested maps: >
-	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection [''],['\\text{']<CR>
-	    vmap <buffer> \in	:<C-U>InteligentWrapSelection [''],['\\intertext{']<CR>"
-<	The leader '\' in above commands is configurable: the value of
-	g:atp_vmap_text_font_leader is used (the default value is <LocalLeader>).
-
-	Another provided font wrapper: >
-	    vmap <LocalLeader>f	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
-<	Where the variable: 				*g:atp_font_encoding*
->
-	    g:atp_font_encoding
-<	stores the default encoding which is 'OT1', unless you use fontenc
-	package, then the default for fontenc is used (the last defined in
-	\usepackage[...]{fontenc} see the 'Latex2e font selection'
-	/font user guide/ available on CTAN).
-
-	Other wrappers: >
-	    vmap m			:WrapSelection \( \)<CR>
-	    vmap M			:WrapSelection \[ \]<CR>
-	    vmap <LocalLeader>(		:WrapSelection ( ) begin<CR>
-	    vmap <LocalLeader>[		:WrapSelection [ ] begin<CR>
-	    vmap <LocalLeader>{		:WrapSelection { } begin<CR>
-	    vmap <LocalLeader>)		:WrapSelection ( ) end<CR>
-	    vmap <LocalLeader>]		:WrapSelection [ ] end<CR>
-	    vmap <LocalLeader>}		:WrapSelection { } end<CR>
-	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
-	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] begin<CR>
-	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
-	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] end<CR>
-	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
-	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
-< 	And the maps to put the selected text into an environment: >
-	    vmap <LocalLeader>A	:WrapSelection \begin{align} \end{align} 0 1<CR>
-	    vmap <LocalLeader>C	:WrapSelection \begin{center} \end{center} 0 1<CR>
-	    vmap <LocalLeader>E	:WrapSelection \begin{equation} \end{equation} 0 1<CR>
-	    vmap <LocalLeader>L	:WrapSelection \begin{flushleft} \end{flushleft} 0 1<CR>
-	    vmap <LocalLeader>R	:WrapSelection \begin{flushright} \end{flushright} 0 1<CR>
-
-<	The leader <LocalLeader> can be changes using the variable *g:atp_vmap_environment_leader* 
-	(its default value is <LocalLeader>).
-	Note: that the arguments for this command must be put in ':' or ":".
-   	the highlighted text will put inside \textbf{ }. 
+	See section |atp-vmap-WrapSelection| on predefined set of vmaps.
 
 	You can also use a wrapper which was yanked into register 'a': >
 		:WrapSelection @a
@@ -3865,58 +3822,12 @@ map <Ctrl-j>, map <Ctrl-k> 	- as above but in normal mode.
 	These motions emulate the behaviour of latex-suite place holder system <++>,
 	without putting the placeholder into tex file.
 
-:ShowOptions[!]
-
-:TEX[!]
-map \l,imap \l
-
-:VTEX[!]
-map <F5>,imap <F5>, :VTEX 
-
-:ViewOutput
-map \v,map <F3>, imap \v, imap <F3>  
-
-							*b:atp_BibtexOutput*
-							*b:atp_BibtexReturnCode*
-:Bibtex[!]	run only BibTeX, with bang [!] run LaTeX+BibTeX+LaTeX+LaTeX
-map \b		if you use |g:atp_Compiler|='python' and BibTeX returned with 
-		errors the compilation will stop. In the debug mode you will 
-		also get BibTeX output. It is stored in |b:atp_BibtexOutput|,
-		BibTeX return code is in |b:atp_BibtexReturnCode|.
-
-:OpenLog, :ShowErrors o
-map <F6>l, imap <F6>l
-
-:Delete[!]
-map <F6>d
-	See |atp-:Delete|.
-
-:TOC[!]
-map \t
-	This is a mapping to the command |atp-:TOC|
-
-
-:Labels[!]
-map \L
-	This is a mapping to the command |atp-:Labels|
-
-:GotoFile, :EditInputFile
-nmap gf
-
-							|atp->m|
-nmap >m, nmap >m 					|atp-<m|
-	Goto the beginning of next/previous math environment.
-
-							|atp-<M|
-nmap ]M, nmap [M 					|atp->M|
-	Goto the beginning of next/previous displayed math environment. 
-							
 							*atp-]]*
 nmap ]], vmap ]]
 	Goto next \begin{
 
 							*atp-[[*
-nmap ]], vmap ]]
+nmap [[, vmap [[
 	Goto previous \begin{
 
 							*atp-][*
@@ -3935,32 +3846,6 @@ nmap gcl, vmap gc
 nmap gC, vmap gC
 	Goto begin of comment group (current or previous if not in comment).
 	    
-								*atp-:TexDoc*
-TexDoc:
-map <F1>, imap <F1>
-	Then you have to type what you are looking for and press enter. The
-	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
-	over a package name and you press 'K' key then you should see the
-	package document file (if it is named after the package).
-
-	Without any argument it will open "g:atp_TeXdocDefault", by default it
-	is eqaul to "-a lshort", i.e. "The not so short introduction to LaTeX
-	2e" by Tobias Oetiker. You can change the default for something that
-	you use more often, for example you can set it to "-a faq", i.e. 'The
-	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :). 
-
-:NInput
-nmap ]gf
-	Goto next input file.
-:PInput
-nmap [gf
-	Goto previous input file.
-
-							*atp-:PdfFonts*
-:PdfFonts
-nmap <F6>g
-Runs pdffonts command on pdf output file.
-
 							*atp-comment-lines*
 							*atp-uncomment-lines*
 							*g:atp_MapCommentLines*
@@ -3998,16 +3883,28 @@ nmap Q/, nmap Q?, nmap <F2>
 <	in your |atprc| or |vimrc| file.
 
 FONT COMMANDS						*atp-imap-fonts*
-imap ##rm \textrm{}<Left>
-imap ##it \textit{}<Left>
-imap ##sl \textsl{}<Left>
-imap ##sf \textsf{}<Left>
-imap ##bf \textbf{}<Left>
+
+Below are listed font imaps. They work in text mode, or math mode, or if there
+is only one given in both. The map leader is defined by the variable
+|g:atp_imap_second_leader|, which by default is set to '##' (another good
+setting is '_')
+	  	in text			in math ~
+imap ##rm 	\textrm{}<Left>		\mathrm{}<Left>
+imap ##te 	\textrm{}<Left>
+imap ##up	\textup{}<Left>
+imap ##md	\textmd{}<Left>
+imap ##sl	\textsl{}<Left>
+imap ##sc	\textsc{}<Left>
+imap ##em	\emphp{}<Left>
+imap ##it 	\textit{}<Left>		\mathit{}<Left>
+imap ##sf 	\textsf{}<Left>		\mathsf{}<Left>
+imap ##bf 	\textbf{}<Left>		\mathbf{}<Left>
+imap ##bf 	\texttt{}<Left>		\mathtt{}<Left>
+imap ##no	\textnormal{}<Left>	\mathnormal{}<Left>
+imap ##bb				\mathbb{}<Left>
+imap ##cal				\mathcal{}<Left>
+
 	
-imap ##mit \mathit{}<Left>
-imap ##mrm \mathrm{}<Left>
-imap ##msf \mathsf{}<Left>
-imap ##mbf \mathbf{}<Left>
 
 							
 GREEK LETTERS						*atp-imap-greek-letters*
@@ -4294,6 +4191,87 @@ LOG FILE MAPS						*atp-maps-log*
 	%		- searchpair for (:).
 <	You can use |n| and |N| Vim normal commands to repeat previous search [count] times.
 
+
+							*atp-vmap-WrapSelection*
+WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
+	These are the provided maps in visual mode: >
+	    vmap <buffer> \rm	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\mathrm{']<CR>
+	    vmap <buffer> \em	:<C-U>InteligentWrapSelection ['\\emph{'],	['\\mathit{']<CR>
+	    vmap <buffer> \it	:<C-U>InteligentWrapSelection ['\\textit{'],	['\\mathit{']<CR>
+	    vmap <buffer> \sf	:<C-U>InteligentWrapSelection ['\\textsf{'],	['\\mathsf{']<CR>
+	    vmap <buffer> \tt	:<C-U>InteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']<CR>
+	    vmap <buffer> \bf	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbf{']<CR>
+	    vmap <buffer> \bb	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbb{']<CR>
+	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\text{']<CR>
+	    vmap <buffer> \sl	:<C-U>WrapSelection \\textsl{<CR>
+	    vmap <buffer> \sc	:<C-U>WrapSelection \\textsc{<CR>
+	    vmap <buffer> \up	:<C-U>WrapSelection \\textup{<CR>
+	    vmap <buffer> \md	:<C-U>WrapSelection \\textmd{<CR>
+	    vmap <buffer> \un	:<C-U>WrapSelection \\underline{<CR>
+	    vmap <buffer> \ov	:<C-U>WrapSelection \\overline{<CR>
+	    vmap <buffer> \n	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>
+	    vmap <buffer> \cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>
+
+	    vmap <LocalLeader>mb :WrapSelection \\mbox{ } begin<CR>
+<   	Suggested maps: >
+	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection [''],['\\text{']<CR>
+	    vmap <buffer> \in	:<C-U>InteligentWrapSelection [''],['\\intertext{']<CR>"
+<	The leader '\' in above commands is configurable: the value of
+	g:atp_vmap_text_font_leader is used (the default value is <LocalLeader>).
+
+	Another provided font wrapper: >
+	    vmap <LocalLeader>f	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
+<	Where the variable: 				*g:atp_font_encoding*
+>
+	    g:atp_font_encoding
+<	stores the default encoding which is 'OT1', unless you use fontenc
+	package, then the default for fontenc is used (the last defined in
+	\usepackage[...]{fontenc} see the 'Latex2e font selection'
+	/font user guide/ available on CTAN).
+
+	Other wrappers: >
+	    vmap m			:WrapSelection \( \)<CR>
+	    vmap M			:WrapSelection \[ \]<CR>
+	    vmap <LocalLeader>(		:WrapSelection ( ) begin<CR>
+	    vmap <LocalLeader>[		:WrapSelection [ ] begin<CR>
+	    vmap <LocalLeader>{		:WrapSelection { } begin<CR>
+	    vmap <LocalLeader>)		:WrapSelection ( ) end<CR>
+	    vmap <LocalLeader>]		:WrapSelection [ ] end<CR>
+	    vmap <LocalLeader>}		:WrapSelection { } end<CR>
+	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
+	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] begin<CR>
+	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
+	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] end<CR>
+	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
+	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
+< 	And the maps to put the selected text into an environment: >
+	    vmap <LocalLeader>A	:WrapSelection \begin{align} \end{align} 0 1<CR>
+	    vmap <LocalLeader>C	:WrapSelection \begin{center} \end{center} 0 1<CR>
+	    vmap <LocalLeader>E	:WrapSelection \begin{equation} \end{equation} 0 1<CR>
+	    vmap <LocalLeader>L	:WrapSelection \begin{flushleft} \end{flushleft} 0 1<CR>
+	    vmap <LocalLeader>R	:WrapSelection \begin{flushright} \end{flushright} 0 1<CR>
+<
+							*atp-vmap-WrapSelection-accents*
+							*atp-vmap-InteligentWrapSelection-accents*
+	Accent wrappers: *|g:atp_imap_over_leader| defines <LocalLeader> as
+	a map leader):
+>
+	    vmap <silent><buffer> `'	:<C-U>IngeligentWrapSelection ["\\'{"],["\\acute{"]<CR>
+	    vmap <silent><buffer> `"	:<C-U>WrapSelection \"{ } end<CR>
+	    vmap <silent><buffer> `^	:<C-U>WrapSelection \^{ } end<CR>
+	    vmap <silent><buffer> `v	:<C-U>InteligentWrapSelection ["\\v{"],["\\check{"]<CR>
+	    vmap <silent><buffer> ``	:<C-U>InteligentWrapSelection ["\\`{], ["\\grave{"]<CR>
+	    vmap <silent><buffer> `b	:<C-U>WrapSelection \b{ } end<CR>
+	    vmap <silent><buffer> `d	:<C-U>WrapSelection \d{ } end<CR>
+	    vmap <silent><buffer> `H	:<C-U>WrapSelection \H{ } end<CR>
+	    vmap <silent><buffer> `~	:<C-U>WrapSelection \~{ } end<CR>
+	    vmap <silent><buffer> `.	:<C-U>InteligentWrapSelection ["\\.{], ["\\dot{"]<CR>
+	    vmap <silent><buffer> `c	:<C-U>WrapSelection \c{ } end<CR>
+	    vmap <silent><buffer> `t	:<C-U>WrapSelection \t{ } end<CR>
+<	The leader <LocalLeader> can be changes using the variable *g:atp_vmap_environment_leader* 
+	(its default value is <LocalLeader>).
+	Note: that the arguments for this command must be put in ':' or ":".
+   	the highlighted text will put inside \textbf{ }. 
 ================================================================================
 ABBREVIATIONS						*atp-abbreviations*
 

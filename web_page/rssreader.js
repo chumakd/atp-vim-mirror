@@ -35,7 +35,7 @@ function ReqChange() {
 		
 			// Browse items
 			var items = channel.getElementsByTagName('item');
-			for (var n=0; n < 4; n++)
+			for (var n=0; n < number_of_msgs; n++)
 			{
 				var itemTitle = items[n].getElementsByTagName('title').item(0).firstChild.data;
 				var itemLink = items[n].getElementsByTagName('link').item(0).firstChild.data;
@@ -79,7 +79,7 @@ function RSSRequest() {
 
 	// change the status to requesting data
 	HideShow('status');
-	document.getElementById("status").innerHTML = '<table><td align=center><b>Fetching&nbspRSS&nbspfeed&nbsp...</b></td></table>'; 
+	document.getElementById("status").innerHTML = '<table><td align=center><b>Fetching RSS feed ...</b></td></table>'; 
 	// Prepare the request
 	RSSRequestObject.open("GET", Backend , true);
 	// Set the onreadystatechange function

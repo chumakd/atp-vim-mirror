@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Jun 14 09:00  2011 W
+" Last Change: Thu Jun 16 12:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -442,6 +442,44 @@ if !hasmapto(":WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.s:backslash."	:WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
 endif
 
+" Accents:
+if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."' 	:<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."\"{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."\"	:<C-U>WrapSelection ".s:backslash."\"{ } end<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."^{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."^		:<C-U>WrapSelection ".s:backslash."^{ } end<CR>"
+endif
+if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."v 	:<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>"
+endif
+if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."` 	:<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."b{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."b		:<C-U>WrapSelection ".s:backslash."b{ } end<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."d{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."d		:<C-U>WrapSelection ".s:backslash."d{ } end<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."H{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."H		:<C-U>WrapSelection ".s:backslash."H{ } end<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."~{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."~		:<C-U>WrapSelection ".s:backslash."~{ } end<CR>"
+endif
+if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader.". 	:<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."c{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."c		:<C-U>WrapSelection ".s:backslash."c{ } end<CR>"
+endif
+if !hasmapto(":<C-U>WrapSelection ".s:backslash."t{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."t		:<C-U>WrapSelection ".s:backslash."t{ } end<CR>"
+endif
+
 " Tex Align:
 if !hasmapto(":TexAlign<CR>", 'n')
     nmap <silent> <buffer> <Localleader>a	:TexAlign<CR>
@@ -709,6 +747,8 @@ if !exists("g:atp_imap_fonts") || g:atp_reload_variables
 let g:atp_imap_fonts = [
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'rm', 
 	\ '<Esc>:call Insert("'.s:bbackslash.'textrm{}", "'.s:bbackslash.'mathrm{}", 1)<CR>a', "g:atp_imap_define_fonts", 'rm font'],
+    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'te', 
+	\ s:backslash.'text{}<Left>', "g:atp_imap_define_fonts", '\text{} command'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'up', 
 	\ s:backslash.'textup{}<Left>', "g:atp_imap_define_fonts", 'up font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'md', 
@@ -733,6 +773,8 @@ let g:atp_imap_fonts = [
 	\ s:backslash.'mathbb{}<Left>', "g:atp_imap_define_fonts", 'mathbb font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'cal', 
 	\ s:backslash.'mathcal{}<Left>', "g:atp_imap_define_fonts", 'mathcal font'],
+    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_second_leader, 'uf',
+	\ s:backslash.'usefont{'.g:atp_font_encoding.'}{}{}{}<Left><Left><Left><Left><Left>', "g:atp_imap_define_fonts", 'usefont command']
 \ ]
 endif
     " Make Font Maps:

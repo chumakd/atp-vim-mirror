@@ -4570,6 +4570,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list = g:atp_BeamerFontThemes
     "{{{3 ------------ FONT FAMILY
     elseif completion_method == 'font family'
+	echo "[ATP:] searching through fd files ..."
+	let time=reltime()
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
 	let epos=searchpos('\\selectfont','nW',line("."))[1]-1
 	if epos == -1
@@ -4580,15 +4582,16 @@ function! atplib#TabCompletion(expert_mode,...)
 	if encoding == ""
 	    let encoding=g:atp_font_encoding
 	endif
-" 	    let g:encoding=encoding
+	    let g:encoding=encoding
 	let completion_list=[]
 	let fd_list=atplib#FdSearch('^'.encoding.begin)
-" 	    let g:fd_list=copy(fd_list)
-" 	    let g:begin = begin
+	    let g:fd_list=copy(fd_list)
 	for file in fd_list
-	    call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont\\s*{[^}]*}\\s*{\\zs[^}]*\\ze}")'))
+            call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont\\s*{[^}]*}\\s*{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
+	redraw
+	let g:time_font_family=reltimestr(reltime(time))
     "{{{3 ------------ FONT SERIES
     elseif completion_method == 'font series'
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
@@ -4604,6 +4607,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
 " 	    let g:encoding = encoding 
 	let font_family=matchstr(fline,'\\\%(usefont\s*{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\|fontfamily\)\s*{\zs[^}]*\ze}')
+	echo "[ATP:] searching through fd files ..."
 " 	    let g:font_family=font_family
 	let completion_list=[]
 	let fd_list=atplib#FdSearch(encoding.font_family)
@@ -4612,6 +4616,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{[^}]*}{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
+	redraw
     "{{{3 ------------ FONT SHAPE
     elseif completion_method == 'font shape'
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
@@ -4626,6 +4631,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
 	let font_family=matchstr(fline,'\\\%(usefont{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\|fontfamily\)\s*{\zs[^}]*\ze}')
 	let font_series=matchstr(fline,'\\\%(usefont\s*{[^}]*}\s*{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\s*{[^}]*}\|fontseries\)\s*{\zs[^}]*\ze}')
+	echo "[ATP:] searching through fd files ..."
 	let completion_list=[]
 	let fd_list=atplib#FdSearch('^'.encoding.font_family)
 
@@ -4633,6 +4639,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{'.font_family.'}{'.font_series.'}{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
+	redraw
     " {{{3 ------------ FONT ENCODING
     elseif completion_method == 'font encoding'
 	let bpos=searchpos('\\selectfon\zst','bnW',line("."))[1]
@@ -4643,8 +4650,10 @@ function! atplib#TabCompletion(expert_mode,...)
 	let fline=strpart(line,bpos,epos-bpos)
 	let font_family=matchstr(fline,'\\\%(usefont\s*{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\|fontfamily\)\s*{\zs[^}]*\ze}')
 	if font_family != ""
+	    echo "[ATP:] searching through fd files ..."
 	    let fd_list=atplib#FdSearch(font_family)
 	    let completion_list=map(copy(fd_list),'toupper(substitute(fnamemodify(v:val,":t"),"'.font_family.'.*$","",""))')
+	    redraw
 	else
 " 	    let completion_list=[]
 " 	    for fd_file in fd_list
@@ -4765,7 +4774,9 @@ function! atplib#TabCompletion(expert_mode,...)
             let completion_dict=[]
             let dict=atplib#SearchBibItems()
             for key in keys(dict)
-                call add(completion_dict, { "word" : key, "menu" : dict[key]['rest'], "abbrev" : dict[key]['label'] })
+		if a:expert_mode && key =~ '^'.begin || !a:expert_mode && key =~ begin
+		    call add(completion_dict, { "word" : key, "menu" : dict[key]['rest'], "abbrev" : dict[key]['label'] })
+		endif
             endfor
 	    let g:time_bibitems_SearchBibItems=reltimestr(reltime(time_bibitems_SearchBibItems))
 	endif
@@ -5060,7 +5071,7 @@ function! atplib#FdSearch(...)
     let path	= substitute(path,':\|\n',',','g')
     let fd 	= split(globpath(path,"**/*.fd"),'\n') 
 
-"     let g:fd	= copy(fd)
+    let g:fd	= copy(fd)
 
     " Match for l:pattern
     let fd_matches=[]
@@ -5420,7 +5431,7 @@ function! atplib#FontPreview(method, fd_file,...)
 endfunction
 "}}}2
 " {{{2 atplib#ShowFonts
-function! atplib#ShowFonts(fd_file)
+function! atplib#ShowFonts_vim(fd_file)
     let l:declare_command='\C\%(DeclareFontShape\%(WithSizes\)\?\|sauter@\%(tt\)\?family\|EC@\%(tt\)\?family\|krntstexmplfamily\|HFO@\%(tt\)\?family\)'
     
     let l:font_decl=[]
@@ -5436,6 +5447,36 @@ function! atplib#ShowFonts(fd_file)
 		    \ l:declare_command,'usefont',''))
     endfor
     return l:font_commands
+endfunction
+function! atplib#ShowFonts_py(fd_file)
+python << END
+import vim, re
+file=vim.eval("a:fd_file")
+try:
+    file_o=open(file, "r")
+    file_l=file_o.readlines()
+    declare_pat=re.compile('(?:DeclareFontShape(?:WithSizes)?|sauter@(?:tt)?family|EC@(?:tt)?family|krntstexmplfamily|HFO@(?:tt)?family)')
+    font_pat=re.compile('(\\\\(?:DeclareFontShape(?:WithSizes)?|sauter@(?:tt)?family|EC@(?:tt)?family|krntstexmplfamily|HFO@(?:tt)?family)\s*{[^#}]*}\s*{[^#}]*}\s*{[^#}]*}\s*{[^#}]*})')
+    font_commands=[]
+    for line in file_l:
+        if re.search(declare_pat, line):
+            font_cmd=re.search(font_pat, line)
+            if font_cmd:
+                font=font_cmd.group(0)
+                font=re.sub(declare_pat, 'usefont', font)
+                font_commands.append(font)
+        vim.command("let s:return_ShowFonts_py="+str(font_commands))
+except IOError:
+    vim.command("let s:return_ShowFonts_py=[]")
+END
+return map(s:return_ShowFonts_py, "substitute(v:val, '^\\', '', '')")
+endfunction
+function! atplib#ShowFonts(fd_file)
+    if has("python")
+        return atplib#ShowFonts_py(a:fd_file)
+    else
+        return atplib#ShowFonts(a:fd_file)
+    endif
 endfunction
 "}}}2
 " }}}1

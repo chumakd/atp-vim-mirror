@@ -373,6 +373,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_noautex_in_math") || g:atp_reload_variables
+    let g:atp_noautex_in_math 	= 1
+endif
 if !exists("g:atp_cmap_space") || g:atp_reload_variables
     let g:atp_cmap_space 	= 1
 endif
@@ -2022,7 +2025,7 @@ endif
 	" ToDo: end writting layout commands. 
 	" ToDo: MAKE COMMANDS FOR PREAMBULE.
 
-	let g:atp_math_commands=["\\forall", "\\exists", "\\emptyset", "\\aleph", "\\partial",
+	let g:atp_math_commands=["\\begin{", "\\end{", "\\forall", "\\exists", "\\emptyset", "\\aleph", "\\partial",
 	\ "\\nabla", "\\Box", "\\bot", "\\top", "\\flat", "\\natural",
 	\ "\\mathbf{", "\\mathsf{", "\\mathrm{", "\\mathit{", "\\mathtt{", "\\mathcal{", 
 	\ "\\mathop{", "\\mathversion", "\\limits", "\\text{", "\\leqslant", "\\leq", "\\geqslant", "\\geq",
