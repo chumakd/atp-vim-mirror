@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -4081,6 +4081,9 @@ imap #=		\equiv
 imap `8		\infty		[the default '#' is not working, ` is used intead, 
 				 but only if |g:atp_imap_first_leader|='#']
 imap `6		\partial	[as above, you can also use \p<Tab>]
+imap `D 	<Esc>vxa\frac{\partial}{\partial "}
+				[ let me explain the above map: you type x`D
+				and you get \frac{\partial}{\partial x} ]
 imap #@		\circ
 imap #=		\equiv
 imap #*		\bigcap

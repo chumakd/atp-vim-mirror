@@ -549,11 +549,11 @@ function! <SID>Kill(bang)
 	endif
 	return
     endif
-    if len(b:atp_PythonPIDs)
-	call atplib#KillPIDs(b:atp_PythonPIDs)
-    endif
     if len(b:atp_LatexPIDs)
 	call atplib#KillPIDs(b:atp_LatexPIDs)
+    endif
+    if len(b:atp_PythonPIDs)
+	call atplib#KillPIDs(b:atp_PythonPIDs)
     endif
 endfunction
 

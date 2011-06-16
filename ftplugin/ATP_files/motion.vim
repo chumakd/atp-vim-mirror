@@ -1705,6 +1705,21 @@ endfunction
 function! JMotion(flag)
 " 	Note: pattern to match only commands which do not have any arguments:
 " 	'\(\\\w\+\>\s*{\)\@!\\\w\+\>'
+    let line = getline(".")
+    if a:flag !~# 'b'
+	let pline = strpart(line, col(".")-1)
+	if pline =~ '[{]*}{'
+	    call search('{.', 'e')
+	    return
+	endif
+    else
+	let pline = strpart(line, 0, col("."))
+	if line =~ '}{'
+	    call search('}{', 'b')
+	    normal! h
+	    return
+	endif
+    endif
     if a:flag !~# 'b'
 	let pattern = '\%(\]\zs\|{\zs\|}\zs\|(\zs\|)\zs\|\[\zs\|\]\zs\|\$\zs\|^\zs\s*$\|\(\\\w\+\>\s*{\)\@!\\\w\+\>\zs\)'
     else

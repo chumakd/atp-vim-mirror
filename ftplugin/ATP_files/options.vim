@@ -373,6 +373,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_imap_diffop_move") || g:atp_reload_variables
+    let g:atp_imap_diffop_move 	= 0
+endif
 if !exists("g:atp_noautex_in_math") || g:atp_reload_variables
     let g:atp_noautex_in_math 	= 1
 endif

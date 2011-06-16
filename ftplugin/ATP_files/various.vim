@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Jun 14 08:00  2011 W
+" Last Change: Thu Jun 16 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -164,6 +164,55 @@ function! s:WrapSelection(...)
 	keepjumps call setpos(".",l:begin)
     endif
 endfunction
+function! WrapSelection_compl(ArgLead, CmdLine, CursorPos)
+    let variables = ["g:atp_Commands"]
+    if searchpair('\\begin\s*{picture}','','\\end\s*{picture}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
+	call add(variables, "g:atp_picture_commands")
+    endif
+    if atplib#SearchPackage('hyperref')
+	call add(variables, "g:atp_hyperref_commands")
+    endif
+    if atplib#IsInMath()
+	call add(variables, "g:atp_math_commands_PRE")
+	call add(variables, "g:atp_math_commands")
+	call add(variables, "g:atp_math_commands_non_expert_mode")
+	call add(variables, "g:atp_amsmath_commands")
+	call add(variables, "g:atp_amsmath_fonts")
+    endif
+    if atplib#SearchPackage("fancyhdr")
+	call add(variables, "g:atp_fancyhdr_commands")
+    endif
+    if atplib#SearchPackage("makeidx")
+	call add(variables, "g:atp_makeidx_commands")
+    endif
+"     Tikz dosn't have few such commands (in libraries)
+"     if atplib#SearchPackage(#\(tikz\|pgf\)')
+" 	let in_tikz=searchpair('\\begin\s*{tikzpicture}','','\\end\s*{tikzpicture}','bnW',"", max([1,(line(".")-g:atp_completion_limits[2])])) || atplib#CheckOpened('\\tikz{','}',line("."),g:atp_completion_limits[0])
+" 	    call add(variables, "g:atp_tikz_commands")
+" 	endif
+"     endif
+    if atplib#DocumentClass(b:atp_MainFile) == "beamer"
+	call add(variables, "g:atp_BeamerCommands")
+    endif
+    if atplib#SearchPackage("mathtools")
+	call add(variables, "g:atp_MathTools_commands")
+    endif
+    if atplib#SearchPackage("todonotes")
+	call add(variables, "g:atp_TodoNotes_commands")
+    endif
+    if !exists("b:atp_LocalCommands")
+	LocalCommands
+    endif
+    call add(variables, "b:atp_LocalCommands")
+
+    let wrap_commands=[]
+    for var in variables
+	call extend(wrap_commands, filter(copy({var}), "v:val =~ '{$'"))
+    endfor
+    call filter(wrap_commands, "count(wrap_commands, v:val) == 1")
+    call sort(wrap_commands)
+    return join(wrap_commands, "\n")
+endfunction
 "}}}
 "{{{ Inteligent Wrap Selection 
 " This function selects the correct font wrapper for math/text environment.
@@ -260,7 +309,7 @@ function! TexAlign()
     let balign=searchpair('\\begin\s*{\s*array\s*}', '', '\\end\s*{\s*array\s*}', 'bnW')
     let [bmatrix, bmatrix_col]=searchpairpos('\\matrix\s*\[[^]]*\]\s*\zs{', '', '}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
     if bmatrix
-	let bpat = '\\matrix\s*\[[^]]*\]\s*{'
+	let bpat = '\\matrix\s*\(\[[^]]*\]\)\?\s*{'
 	let bline = bmatrix+1 
 	let epat = '}'
 	let AlignCtr = 'jl+ &'
@@ -2327,7 +2376,7 @@ nnoremap <silent> <buffer> 	<Plug>ChangeEnv			:call <SID>ToggleEnvironment(1)<CR
 nnoremap <silent> <buffer> 	<Plug>TexDoc			:TexDoc 
 " Commands: "{{{1
 command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
-command! -buffer -nargs=* -range WrapSelection			:call <SID>WrapSelection(<f-args>)
+command! -buffer -nargs=* -complete=custom,WrapSelection_compl -range WrapSelection		:call <SID>WrapSelection(<f-args>)
 command! -buffer -nargs=? -complete=customlist,EnvCompletion -range WrapEnvironment		:call <SID>WrapEnvironment(<f-args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
 command! -buffer	TexAlign				:call TexAlign()

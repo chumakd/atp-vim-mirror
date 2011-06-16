@@ -381,7 +381,10 @@ ToDo:   Howto solve the problem \{:\. (it seems to be not solved) or mayby I jus
 ToDo:   \wedge map #& should be defined with a space after wedge, and some other maps as well \partial (`6)
 	Maybe make an option with list of commands to which TabCompletion will append a space.
 ToDo: (IDEA) make C_M inside align inteligent ( put & if first column is empty ) 
-ToDo:  j motion with {}{}{} should jump after next { (skipping the position before it!)
+Done:  j motion with {}{}{} should jump after next { (skipping the position before it!)
 ToDo:  write imap which makes \frac{\partial}{\partial x} where is an input data.
-ToDo:  prevent AuTeX running when we are in insert mode in math.
-ToDo?:	WrapSelection with completion of commands (this would be cool)
+Done:  prevent AuTeX running when we are in insert mode in math.
+Done:	WrapSelection with completion of commands (this would be cool)
+Done:  TexAlign is not working for matrix (inside tikz).
+ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
+ToDo:  gw joins \] with next line.

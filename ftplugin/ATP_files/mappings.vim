@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Jun 16 12:00  2011 W
+" Last Change: Thu Jun 16 09:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -887,6 +887,8 @@ let g:atp_imap_math_misc = [
 	\ "g:atp_imap_define_math_misc", '\infty' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_infty_leader,      '6', s:backslash.'partial',	
 	\ "g:atp_imap_define_math_misc", '\partial' ],
+\ [ 'inoremap', '<silent> <buffer>', '`',      		      'D', '<ESC>vxa'.s:backslash.'frac{'.s:backslash.'partial}{'.s:backslash.'partial "}'.(g:atp_imap_diffop_move?'<C-o>F}<space>':''),	
+	\ "g:atp_imap_define_math_misc", '\frac{\partial}{\partial x} - x comes from the letter wrote just before' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '&', s:backslash.'wedge', 	
 	\ "g:atp_imap_define_math_misc", '\wedge' ], 
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, 've', s:backslash.'vee', 	
@@ -950,6 +952,8 @@ endif
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '"', s:backslash.'"{}<Left>', 	
 		    \ "g:atp_imap_define_diacritics", '\"{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '2', s:backslash.'"{}<Left>', 	
+		    \ "g:atp_imap_define_diacritics", '\"{}' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '^', s:backslash.'^{}<Left>', 	
 		    \ "g:atp_imap_define_diacritics", '\^{}' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'v', s:backslash.'v{}<Left>', 	
@@ -1007,6 +1011,7 @@ if g:atp_no_env_maps != 1
     " Make Environment Maps:
     call atplib#MakeMaps(g:atp_imap_environments)
 endif
+
 
 " Mathematical Maps:
 if !exists("g:atp_imap_math") || g:atp_reload_variables

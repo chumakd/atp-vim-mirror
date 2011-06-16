@@ -100,9 +100,8 @@
 		    href="http://www.vim.org/scripts/script.php?script_id=3109">LaTeX
 		    Box Plugin</a> by <em>David Munger</em>: small nice plugin which
 		provides interface to latexmk (background compelation),
-		completion commands, and some other smart tools. (Its
-		developed version is
-		included in <b>ATP</b>).
+		completion commands, and some other smart tools. (Its extended
+		version is included in <b>ATP</b>).
 		<h4>TeX_9</h4>
 		<a
 		    href="http://www.vim.org/scripts/script.php?script_id=3508">TeX_9

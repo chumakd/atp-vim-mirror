@@ -4353,23 +4353,12 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
 	 
 	" Are we in the math mode?
-	let math_is_opened	= atplib#CheckSyntaxGroups(g:atp_MathZones) && !atplib#CheckSyntaxGroups(['texMathText'])
+	let math_is_opened	= atplib#IsInMath()
 
-   	"{{{4 -------------------- picture
-	if searchpair('\\begin\s*{picture}','','\\end\s*{picture}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
-	    call extend(completion_list,g:atp_picture_commands)
-	endif 
-   	"{{{4 -------------------- hyperref
-	if searchpair('\\\@<!{', '', '\\\@<!}', 'bnW', "", max([ 1, (line(".")-g:atp_completion_limits[0])]))
-	    call extend(completion_list, g:atp_Commands)
-	    if atplib#SearchPackage('herref')
-		call extend(completion_list, g:atp_hyperref_commands)
-	    endif
-	endif
 	" {{{4 -------------------- MATH commands: amsmath, amssymb, mathtools, nicefrac, SIunits, math non expert mode.
 	" if we are in math mode or if we do not check for it.
 	if g:atp_no_math_command_completion != 1 &&  ( !g:atp_MathOpened || math_is_opened )
-	    call extend(completion_list,g:atp_math_commands)
+	    call extend(completion_list, g:atp_math_commands)
 	    " amsmath && amssymb {{{5
 	    " if g:atp_amsmath is set or the document class is ams...
 	    if (g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams')
@@ -4427,31 +4416,33 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
 	" {{{4 -------------------- TIKZ commands
 	" if tikz is declared and we are in tikz environment.
-	let in_tikz=searchpair('\\begin\s*{tikzpicture}','','\\end\s*{tikzpicture}','bnW',"", max([1,(line(".")-g:atp_completion_limits[2])])) || atplib#CheckOpened('\\tikz{','}',line("."),g:atp_completion_limits[0])
+	if atplib#SearchPackage('\(tikz\|pgf\)')
+	    let in_tikz=searchpair('\\begin\s*{tikzpicture}','','\\end\s*{tikzpicture}','bnW',"", max([1,(line(".")-g:atp_completion_limits[2])])) || atplib#CheckOpened('\\tikz{','}',line("."),g:atp_completion_limits[0])
 
-	if in_tikz
-	    " find all tikz libraries at once:
-	    let tikz_libraries	= atplib#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
+	    if in_tikz
+		" find all tikz libraries at once:
+		let tikz_libraries	= atplib#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
 
-	    " add every set of library commands:
-	    for lib in tikz_libraries  
-		if exists("g:atp_tikz_library_".lib."_commands")
-		    call extend(completion_list, g:atp_tikz_library_{lib}_commands)
-		endif   
-	    endfor
+		" add every set of library commands:
+		for lib in tikz_libraries  
+		    if exists("g:atp_tikz_library_".lib."_commands")
+			call extend(completion_list, g:atp_tikz_library_{lib}_commands)
+		    endif   
+		endfor
 
-	    " add common tikz commands:
-	    call extend(completion_list, g:atp_tikz_commands)
+		" add common tikz commands:
+		call extend(completion_list, g:atp_tikz_commands)
 
-	    " if in text mode add normal commands:
-	    if searchpair('\\\@<!{', '', '\\\@<!}', 'bnW', "", max([ 1, (line(".")-g:atp_completion_limits[0])]))
-		call extend(completion_list, g:atp_Commands)
-	    endif
-	endif 
-	" {{{4 -------------------- COMMANDS
+		" if in text mode add normal commands:
+		if searchpair('\\\@<!{', '', '\\\@<!}', 'bnW', "", max([ 1, (line(".")-g:atp_completion_limits[0])]))
+		    call extend(completion_list, g:atp_Commands)
+		endif
+	    endif 
+	endif
+	" {{{4 -------------------- Commands
 "	if we are not in math mode or if we do not care about it or we are in non expert mode.
 	if (!g:atp_MathOpened || !math_is_opened ) || a:expert_mode == 0
-	    call extend(completion_list,g:atp_Commands)
+	    call extend(completion_list, g:atp_Commands)
 	    " FANCYHDR
 	    if atplib#SearchPackage('fancyhdr', stop_line)
 		call extend(completion_list, g:atp_fancyhdr_commands)
@@ -4469,6 +4460,14 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call extend(completion_list, g:atp_TodoNotes_commands)
 	endif
 	"}}}4 
+   	"{{{4 -------------------- picture
+	if searchpair('\\begin\s*{\s*picture\s*}','','\\end\s*{\s*picture\s*}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
+	    call extend(completion_list, g:atp_picture_commands)
+	endif 
+   	"{{{4 -------------------- hyperref
+	if atplib#SearchPackage('hyperref')
+	    call extend(completion_list, g:atp_hyperref_commands)
+	endif
 	" ToDo: add layout commands and many more packages. (COMMANDS FOR
 	" PREAMBULE)
 	"{{{4 -------------------- final stuff

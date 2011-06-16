@@ -83,7 +83,9 @@
 		    href="http://ftp.eq.uc.pt/software/TeX/support/latexmk/">ctan</a>). It is needed
 		for <a
 		    href="http://www.vim.org/scripts/script.php?script_id=3109">Latex
-		    Box</a> plugin included in <b>ATP</b>.
+		    Box</a> plugin included in <b>ATP</b>. However, <b>ATP</b>
+		has also other command to build your project, see <a
+		    href="doc/atp-commands.html#atp-:MakeLatex">:MakeLatex</a>.
 		<h3>detex</h3>
 		The detex program is used to make proper word count with
 		<a
