@@ -157,9 +157,9 @@ and <a href="atp-completion.html#g:atp_LatexClasses">g:atp_LatexClasses</a>.</p>
 				<div class=variable>b:atp_LocalColors</div>
 				<div class=variable>b:atp_LocalCommands</div>
 				<div class=variable>b:atp_LocalEnvironments</div>
-		If a command was declared with a arguments (i.e. using #1, or
-		#1#2, etc.) a single '{' is attached. It doesn't match for
-		definitions inside comments.</p>
+		If a command was declared with a arguments (i.e. using \def#1, or
+		\def#1#2, etc. or with \newcommand{...}[1]{...}) a single '{'
+		is attached. It doesn't match for definitions inside comments.</p>
 
 		<p>Note: the python version searches for commands, environments,
 		...  defined in the begining of line (with possible white

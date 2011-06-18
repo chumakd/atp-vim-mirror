@@ -462,8 +462,10 @@ your tex compiler, see |g:atp_TexCommand|.</p>
 	<p>Without "!" it copies the aux file only if there are no compilation
 	errors, with "!" it updates the aux file even if there were errors.
 	This is done to make the labels completion work better, when there are
-	errors they often affect the aux file in a way that interferes with
-	<a href="#atp-:Labels">atp-:Labels</a> command.</p>
+	errors they often affect the aux file in a way that interferes with <a
+	href="#atp-:Labels">atp-:Labels</a> command. However ATP also makes
+	a copy of aux file with extension ._aux - this is for <a
+	href="atp-compilation.html#atp-completion-label">label completion</a>.</p>
 
 	<p>If b:atp_OpenViewer=1 and there current viewer (b:Viewer) is not
 	running on the output file then this function will open a viewer. By
@@ -475,8 +477,8 @@ your tex compiler, see |g:atp_TexCommand|.</p>
 	package) of your article in pdf files, the tex file has to be
 	'sourced' twice. To make the bibliography you can use |atp-:Bibtex|.</p>
 
-	<p>If {runs} > 5 it will be reduced to 5, to avoid running tex for hundreds
-	(or event thousands) of times (what could happen otherwise by
+	<p>If {runs} &gt 5 it will be reduced to 5, to avoid running tex for
+	hundreds (or event thousands) of times (what could happen otherwise by
 	a mistake giving the range of the command to be the current line
 	number).</p>
 
@@ -835,6 +837,11 @@ and also other variable to enable reverse searching (Xdvi->Vim) see more
 	<p>It reads the Xpdf viewer options from the variables
 	<a href="atp-configure.html#b:atp_xpdfOptions">b:atp_xpdfOptions</a> and g:atp_xpdfOptions. Similarly for Okular.</div></p>
 						
+<a name="pdffonts"></a> <a name="atp-:PdfFonts"></a>
+<p><div class=command>:PdfFonts</div>
+<div class=map>&ltF6&gtg</div>
+<div class=indented>Runs pdffonts command on pdf output file.</div></p> 
+
 <a name="bib_commands"></a>
 <h2>Bib Commands</h2> 
 <p><div class=command>:BibSearch /{pattern}/ [flag]</div>				
@@ -913,6 +920,20 @@ files and document class files, but only when using 'gf' over \usepackage or
 in files with input lines), without it uses cached values (if they exist).</p>
 
 <p>The current file is now shown with highlight group: |hl-WarningMsg|.</p></div></p> 
+
+<a name="atp-:TexDoc"></a>
+<p><div class=command>TexDoc:</div>
+<div class=map>map &ltF1&gt, imap &ltF1&gt</div>
+	<div class=indented>Then you have to type what you are looking for and press enter. The
+	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
+	over a package name and you press 'K' key then you should see the
+	package document file (if it is named after the package).
+
+	<p>Without any argument it will open "g:atp_TeXdocDefault", by default it
+	is eqaul to "-a lshort", i.e. "The not so short introduction to LaTeX
+	2e" by Tobias Oetiker. You can change the default for something that
+	you use more often, for example you can set it to "-a faq", i.e. 'The
+	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :).</p></div></p> 
 
 <a name="atp-:InputFiles"></a>
 <p><div class=command>:InputFiles</div>
@@ -1057,67 +1078,8 @@ to put any pattern matching bibliographies (\addbibresource, \bibliography,
 	    href="#atp-maps-InteligentWrapSelection">atp-maps-InteligentWrapSelection</a>
 	or use <a href="#atp-:HelpVMaps">atp-:HelpVMaps</a>.</p>
 
-	<a name="atp-maps-WrapSelection"></a> <a name="atp-maps-InteligentWrapSelection"></a>
-	<p>These are the provided maps in visual mode:
-	    <div class=map>vmap &ltbuffer&gt \rm	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\mathrm{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&lt \em	:&ltC-U&gtInteligentWrapSelection ['\\emph{'],	['\\mathit{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \it	:&ltC-U&gtInteligentWrapSelection ['\\textit{'],	['\\mathit{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \sf	:&ltC-U&gtInteligentWrapSelection ['\\textsf{'],	['\\mathsf{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \tt	:&ltC-U&gtInteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \bf	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbf{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \bb	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbb{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\text{']&gtCR&lt</div>
-	    <div class=map>vmap &ltbuffer&gt \sl	:&ltC-U&gtWrapSelection \\textsl{&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \sc	:&ltC-U&gtWrapSelection \\textsc{&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \up	:&ltC-U&gtWrapSelection \\textup{&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \md	:&ltC-U&gtWrapSelection \\textmd{&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \un	:&ltC-U>WrapSelection \\underline{&ltCR&gt</div&gt
-	    <div class=map>vmap &ltbuffer&gt \ov	:&ltC-U&gtWrapSelection \\overline{&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \n	:&ltC-U&gtInteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \cal	:&ltC-U&gtInteligentWrapSelection [''],['\\mathcal{']&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtmb :WrapSelection \\mbox{ } begin&ltCR&gt</div>
-   	Suggested maps: 
-	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection [''],['\\text{']&ltCR&gt</div>
-	    <div class=map>vmap &ltbuffer&gt \in	:&ltC-U&gtInteligentWrapSelection [''],['\\intertext{']&ltCR&gt"</div>
-	The leader '\' in above commands is configurable: the value of
-	<div class=map>g:atp_vmap_text_font_leader is used (the default value is &ltLocalLeader&gt).</div></p>
-
-	<p>Another provided font wrapper: 
-	    <div class=map>vmap LocalLeaderf	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'&ltCR&gt'</div>
-	Where the variable:
-	<a name="g:atp_font_encoding"></a>
-	    <div class=variable>g:atp_font_encoding</div>
-	<p>stores the default encoding which is 'OT1', unless you use fontenc
-	package, then the default for fontenc is used (the last defined in
-	\usepackage[...]{fontenc} see the 'Latex2e font selection'
-	/font user guide/ available on CTAN).</p>
-
-	<p>Other wrappers: 
-	    <div class=map>vmap m			:WrapSelection \( \)&ltCR&gt</div>
-	    <div class=map>vmap M			:WrapSelection \[ \]&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt(		:WrapSelection ( ) begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt[		:WrapSelection [ ] begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt{		:WrapSelection { } begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt)		:WrapSelection ( ) end&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt]		:WrapSelection [ ] end&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gt}		:WrapSelection { } end&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] end&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
- 	And the maps to put the selected text into an environment:
-	    <div class=map>vmap &ltLocalLeader&gtA	:WrapSelection \begin{align} \end{align} 0 1&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtC	:WrapSelection \begin{center} \end{center} 0 1&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtE	:WrapSelection \begin{equation} \end{equation} 0 1&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtL	:WrapSelection \begin{flushleft} \end{flushleft} 0 1&ltCR&gt</div>
-	    <div class=map>vmap &ltLocalLeader&gtR	:WrapSelection \begin{flushright} \end{flushright} 0 1&ltCR&gt</div>
-
-	    The leader <LocalLeader> can be changes using the variable <a name="g:atp_vmap_environment_leader">g:atp_vmap_environment_leader</a> 
-	(its default value is &ltLocalLeader&gt).
-	Note: that the arguments for this command must be put in ':' or ":".
-   	the highlighted text will put inside \textbf{ }.</p>
+	<p>See <a href="atp-mappings.html#atp-vmap-WrapSelection">section</a> on predefined set of
+	vmaps.</p>
 
 	<p>You can also use a wrapper which was yanked into register 'a':
 	<div class=command>	:WrapSelection @a</div>
@@ -1665,18 +1627,19 @@ to use the font :).</p></div></p>
 
 <a name="atp-function-ToDo"></a> <a name="atp-:ToDo"></a> <a name="atp-:Note"></a>
 <p><div class=command>ToDo({keyword}, {stop}, [bufname])</div>
-<div class=command>:ToDo [bufname]</div>
-<div class=command>:Note [bufname]</div>
+<div class=command>:ToDo[!] [bufname]</div>
+<div class=command>:Note[!] [bufname]</div>
 	<div class=indented>The function list all the lines of the buffer [bufname] which match
-	for the pattern '%.*{keyword}'. The {stop} argument is the pattern to
+	for the pattern '^\s*%.*{keyword}'. The {stop} argument is the pattern to
 	before which to stop. The optional argument is the buffer name
 	(the buffer name completion is set on). If not given the current
 	buffer is assumed.  You can set highlighting for this command by:
 		<div class=map>highlight atp-Todo ctermfg=... 	guifg=...</div>
-	The command :ToDo sets keyword='\c\<todo\>' and
-	stop='\s*%.*\c\<note\>', and the command :Note sets
-	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
-	listing ToDo lines with Notes and vice versa. </div></p>
+	The command :ToDo sets keyword='^\s*%\s*$\|^\s*%\c.*\<note:\>' and
+	stop='^\s*%.*\c\<note\>', and the command :Note sets
+	keyword='^\s*%\c\<note\>' and stop='^\s*%\s*$\|^\s*%\c.*\<to\s*do:\>'. This prevent from
+	listing ToDo lines with Notes and vice versa. With bang "!" the '^\s*' is not
+	prepended to the patterns.</div></p>
 
 <a name="atp-:WordCount"></a>
 <p><div class=command>:WordCount[!]</div> 

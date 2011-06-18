@@ -170,11 +170,11 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 	<div class=indented>Goto next \begin{</div></p>
 
 <p><a name="atp-[["></a>
-<div class=map>nmap ]], vmap ]]</div>
+<div class=map>nmap [[, vmap [[</div>
 	<div class=indented>Goto previous \begin{</div></p>
 
 <p><a name="atp-]["></a>
-<div class=map>nmap ]], vmap ][</div>
+<div class=map>nmap ][, vmap ][</div>
 	<div class=indented>Goto next \end{</div></p>
 
 <p><a name="atp-[]"></a>
@@ -189,31 +189,12 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 <div class=map>nmap gC, vmap gC</div>
 	<div class=indented>Goto begin of comment group (current or previous if not in comment).</div></p>
 	    
-<a name="atp-:TexDoc"></a>
-<p><div class=command>TexDoc:</div>
-<div class=map>map &ltF1&gt, imap &ltF1&gt</div>
-	<div class=indented>Then you have to type what you are looking for and press enter. The
-	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
-	over a package name and you press 'K' key then you should see the
-	package document file (if it is named after the package).
-
-	<p>Without any argument it will open "g:atp_TeXdocDefault", by default it
-	is eqaul to "-a lshort", i.e. "The not so short introduction to LaTeX
-	2e" by Tobias Oetiker. You can change the default for something that
-	you use more often, for example you can set it to "-a faq", i.e. 'The
-	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :).</p></div></p> 
-
 <p><div class=command>:NInput</div>
 <div class=map>nmap ]gf</div>
 	<div class=indented>Goto next input file.</div></p>
 <p><div class=command>:PInput</div>
 <div class=map>nmap [gf</div>
     <div class=indented>Goto previous input file.</p></div></p>
-
-<a name="pdffonts"></a> <a name="atp-:PdfFonts"></a>
-<p><div class=command>:PdfFonts</div>
-<div class=map>&ltF6&gtg</div>
-<div class=indented>Runs pdffonts command on pdf output file.</div></p> 
 
 <a name="atp-comment-lines"></a> <a name="atp-uncomment-lines"></a> <a name="g:atp_MapCommentLines"></a>
 <p><div class=map>nmap \c, vmap \c</div>		
@@ -257,18 +238,27 @@ in <a href="#b:atp_BibtexReturnCode">b:atp_BibtexReturnCode</a>.</div></p>
 
 <a name="atp-imap-fonts"></a>
 <h3>Font Commands</h3>
-
+<p>Below are listed font imaps. They work in text mode, or math mode, or if there
+is only one given in both. The map leader is defined by the variable
+<a href="#g:atp_imap_second_leader">g:atp_imap_second_leader</a>, which by
+default is set to '##' (another good setting is '_').
 <table border=0 vspace=0 cellspacing=1 >
-    <tr><td><div class=map>imap ##rm</div></td><td> \textrm{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##it</div></td><td> \textit{}&ltLeft&gt</td></tr>
+    <tr><td></td><td><b>in text</b></td><td><b>in math</b></td></tr>
+    <tr><td><div class=map>imap ##rm</div></td><td> \textrm{}&ltLeft&gt</td><td>\mathrm{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##te</div></td><td> \textrm{}&ltLeft&gt</td><td>\text{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##up</div></td><td> \textup{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##md</div></td><td> \textmd{}&ltLeft&gt</td></tr>
     <tr><td><div class=map>imap ##sl</div></td><td> \textsl{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##sf</div></td><td> \textsf{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##bf</div></td><td> \textbf{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##mit</div></td><td> \mathit{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##mrm</div></td><td> \mathrm{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##msf</div></td><td> \mathsf{}&ltLeft&gt</td></tr>
-    <tr><td><div class=map>imap ##mbf</div></td><td> \mathbf{}&ltLeft&gt</td></tr>
-</table>
+    <tr><td><div class=map>imap ##sc</div></td><td> \textsc{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##em</div></td><td> \emph{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##it</div></td><td> \textit{}&ltLeft&gt</td><td>\mathit{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##sf</div></td><td> \textsf{}&ltLeft&gt</td><td>\mathsf{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##bf</div></td><td> \textbf{}&ltLeft&gt</td><td>\mathbf{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##tt</div></td><td> \texttt{}&ltLeft&gt</td><td>\mathtt{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##no</div></td><td> \textnormal{}&ltLeft&gt</td><td>\mathnormal{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##bb</div></td><td></td><td> \mathbb{}&ltLeft&gt</td></tr>
+    <tr><td><div class=map>imap ##cal</div></td><td></td><td> \mathcal{}&ltLeft&gt</td></tr>
+</table></p>
 <a name="atp-imap-greek-letters"></a>							
 <h3>Greek Letters</h3>
 <p>Note: You can list this mappings using the command |atp-:HelpMathIMaps|.
@@ -535,6 +525,7 @@ is how you can set the rhs:</p>
 			href="#g:atp_imap_first_leader">g:atp_imap_first_leader</a>='#']</td></tr>
 	<tr><td><div class=map>imap `6</div></td><td>		\partial	[as above, you
 		    can also use \p&ltTab&gt]</td></tr>
+	<tr><td><div class=map>imap `D</div></td><td>		&ltEsc&gtvxi\frac{\partial}{\partial ^R"}	[you type x`D and you get \frac{\partial}{\partial x} ]
 	<tr><td><div class=map>imap #@</div></td><td>		\circ</td></tr>
 	<tr><td><div class=map>imap #=</div></td><td>		\equiv</td></tr>
 	<tr><td><div class=map>imap #*</div></td><td>		\bigcap</td></tr>
@@ -608,6 +599,68 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
 	</table>
 	You can use |n| and |N| Vim normal commands to repeat previous search [count] times.</p>
 
+<a name="atp-maps-WrapSelection"></a> <a name="atp-maps-InteligentWrapSelection"></a>
+<h3>Wrap Selection Vmaps</h3>
+	<p>These are the provided maps in visual mode:
+	    <div class=map>vmap &ltbuffer&gt \rm	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\mathrm{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&lt \em	:&ltC-U&gtInteligentWrapSelection ['\\emph{'],	['\\mathit{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \it	:&ltC-U&gtInteligentWrapSelection ['\\textit{'],	['\\mathit{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \sf	:&ltC-U&gtInteligentWrapSelection ['\\textsf{'],	['\\mathsf{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \tt	:&ltC-U&gtInteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \bf	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbf{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \bb	:&ltC-U&gtInteligentWrapSelection ['\\textbf{'],	['\\mathbb{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection ['\\textrm{'],	['\\text{']&gtCR&lt</div>
+	    <div class=map>vmap &ltbuffer&gt \sl	:&ltC-U&gtWrapSelection \\textsl{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \sc	:&ltC-U&gtWrapSelection \\textsc{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \up	:&ltC-U&gtWrapSelection \\textup{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \md	:&ltC-U&gtWrapSelection \\textmd{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \un	:&ltC-U>WrapSelection \\underline{&ltCR&gt</div&gt
+	    <div class=map>vmap &ltbuffer&gt \ov	:&ltC-U&gtWrapSelection \\overline{&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \n	:&ltC-U&gtInteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \cal	:&ltC-U&gtInteligentWrapSelection [''],['\\mathcal{']&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtmb :WrapSelection \\mbox{ } begin&ltCR&gt</div>
+   	Suggested maps: 
+	    <div class=map>vmap &ltbuffer&gt \tx	:&ltC-U&gtInteligentWrapSelection [''],['\\text{']&ltCR&gt</div>
+	    <div class=map>vmap &ltbuffer&gt \in	:&ltC-U&gtInteligentWrapSelection [''],['\\intertext{']&ltCR&gt"</div>
+	The leader '\' in above commands is configurable: the value of
+	<div class=map>g:atp_vmap_text_font_leader is used (the default value is &ltLocalLeader&gt).</div></p>
+
+	<p>Another provided font wrapper: 
+	    <div class=map>vmap LocalLeaderf	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'&ltCR&gt'</div>
+	Where the variable:
+	<a name="g:atp_font_encoding"></a>
+	    <div class=variable>g:atp_font_encoding</div>
+	<p>stores the default encoding which is 'OT1', unless you use fontenc
+	package, then the default for fontenc is used (the last defined in
+	\usepackage[...]{fontenc} see the 'Latex2e font selection'
+	/font user guide/ available on CTAN).</p>
+
+	<p>Other wrappers: 
+	    <div class=map>vmap m			:WrapSelection \( \)&ltCR&gt</div>
+	    <div class=map>vmap M			:WrapSelection \[ \]&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt(		:WrapSelection ( ) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt[		:WrapSelection [ ] begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt{		:WrapSelection { } begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt)		:WrapSelection ( ) end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt]		:WrapSelection [ ] end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gt}		:WrapSelection { } end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb(	:WrapSelection \left( \right) begin&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb[	:WrapSelection \left[ \right] end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtb{	:WrapSelection \left{ \right} end&ltCR&gt</div>
+ 	And the maps to put the selected text into an environment:
+	    <div class=map>vmap &ltLocalLeader&gtA	:WrapSelection \begin{align} \end{align} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtC	:WrapSelection \begin{center} \end{center} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtE	:WrapSelection \begin{equation} \end{equation} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtL	:WrapSelection \begin{flushleft} \end{flushleft} 0 1&ltCR&gt</div>
+	    <div class=map>vmap &ltLocalLeader&gtR	:WrapSelection \begin{flushright} \end{flushright} 0 1&ltCR&gt</div>
+
+	    The leader <LocalLeader> can be changes using the variable <a name="g:atp_vmap_environment_leader">g:atp_vmap_environment_leader</a> 
+	(its default value is &ltLocalLeader&gt).
+	Note: that the arguments for this command must be put in ':' or ":".
+   	the highlighted text will put inside \textbf{ }.</p>
 <br><hr>
 <div>
     <p class="alignleft"><a href="atp-ProjectFiles.html"><b>Previous:</b></a><b> Project Files</b></p>

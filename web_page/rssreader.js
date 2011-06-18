@@ -70,7 +70,12 @@ function ReqChange() {
 				    content += '<hr class="leftpanel">'
 				}
 
-				content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>'+description+'</li>';
+				content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>';
+				if (Backend_short == "news")
+				{
+				    content +=description;
+				}
+				content += '</li>'
 			}
 			
 			
