@@ -1,4 +1,5 @@
 <!-- Left Panel-->
+<table width="100"><tr><td>
 <font size="4">
     <a href="http://www.vim.org/scripts/script.php?script_id=2945"><img border=0
 	align=left src="vim-logo-128.png" width=90></a>
@@ -25,6 +26,9 @@
 <hr class="leftpanel">
     <a style="color:#2E006C; text-decoration:none;" href="features.shtml"><b>Feature List</b></a>
 <br>
+    <a style="color:#2E006C; text-decoration:none;"
+	href="videos.shtml"><b>Videos</b></a>
+<br>
     <a style="color:#2E006C; text-decoration:none;" href="requirements.shtml"><b>Requirements</b></a>
 <br>
     <a style="color:#2E006C; text-decoration:none;" href="plugins.shtml"><b>Vim Plugins</b></a>
@@ -37,14 +41,11 @@
 <hr class="leftpanel">
     <a style="color:#2E006C; text-decoration:none;" href="stats.shtml"><b>Statistics</b></a>
 <hr class="leftpanel">
-    <a href="http://sourceforge.net/projects/atp-vim"><img
-	src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=13"
-	width="120" height="30" alt="Get Automatic LaTex Plugin for Vim at
-	SourceForge.net. Fast, secure and Free Open Source software downloads"
-	/></a>
+    <a href="http://sourceforge.net/projects/atp-vim"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=513143&amp;type=10" width="80" height="15" alt="Get Automatic LaTex Plugin for Vim at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
 <br>
     <a 
 	href="http://www.facebook.com/pages/Automatic-TeX-Plugin-for-Vim/121534677930695"><img
     width=40px src="facebook_logo.png"></a>
 <hr class="leftpanel">
 </font>
+</td></tr></table>

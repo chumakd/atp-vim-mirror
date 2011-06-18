@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Jun 16 09:00  2011 W
+" Last Change: Sat Jun 18 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -177,7 +177,6 @@ function! WrapSelection_compl(ArgLead, CmdLine, CursorPos)
 	call add(variables, "g:atp_math_commands")
 	call add(variables, "g:atp_math_commands_non_expert_mode")
 	call add(variables, "g:atp_amsmath_commands")
-	call add(variables, "g:atp_amsmath_fonts")
     endif
     if atplib#SearchPackage("fancyhdr")
 	call add(variables, "g:atp_fancyhdr_commands")
@@ -1554,7 +1553,7 @@ let g:atp_open_completion = []
 " {{{ ToDo
 "
 " TODO if the file was not found ask to make one.
-function! ToDo(keyword,stop,...)
+function! ToDo(keyword, stop, bang, ...)
 
     if a:0 == 0
 	let bufname	= bufname("%")
@@ -1562,14 +1561,16 @@ function! ToDo(keyword,stop,...)
 	let bufname	= a:1
     endif
 
+    let b_pat	= ( a:bang == "!" ? '' : '^\s*' )
+
     " read the buffer
-    let texfile=getbufline(bufname, 1, "$")
+    let texfile	= getbufline(bufname, 1, "$")
 
     " find ToDos
     let todo = {}
     let nr=1
     for line in texfile
-	if line =~ '%.*' . a:keyword 
+	if line =~ b_pat.'%\s*' . a:keyword 
 	    call extend(todo, { nr : line }) 
 	endif
 	let nr += 1
@@ -1578,21 +1579,21 @@ function! ToDo(keyword,stop,...)
     " Show ToDos
     echohl atp_Todo
     if len(keys(todo)) == 0
-	echomsg "[ATP:] list for '%.*" . a:keyword . "' in '" . bufname . "' is empty."
+	echomsg "[ATP:] list for ".b_pat."'%\s*" . a:keyword . "' in '" . bufname . "' is empty."
 	return
     endif
-    echomsg "[ATP:] list for '%.*" . a:keyword . "' in '" . bufname . "':"
+    echomsg "[ATP:] list for ".b_pat."'%\s*" . a:keyword . "' in '" . bufname . "':"
     let sortedkeys=sort(keys(todo), "atplib#CompareNumbers")
     for key in sortedkeys
 	" echo the todo line.
-	echomsg key . " " . substitute(substitute(todo[key],'%','',''),'\t',' ','g')
+	echo key . " " . substitute(substitute(todo[key],'%','',''),'\t',' ','g')
 	let true	= 1
 	let a		= 1
 	let linenr	= key
 	" show all comment lines right below the found todo line.
-	while true && texfile[linenr] !~ '%.*\c\<todo\>' 
+	while true && texfile[linenr] !~ b_pat.'%\s*\c\<todo\>' 
 	    let linenr=key+a-1
-	    if texfile[linenr] =~ '\s*%' && texfile[linenr] !~ a:stop
+	    if texfile[linenr] =~ b_pat.'\s*%' && texfile[linenr] !~ a:stop
 		" make space of length equal to len(linenr)
 		let space=""
 		let j=0
@@ -1600,7 +1601,7 @@ function! ToDo(keyword,stop,...)
 		    let space=space . " " 
 		    let j+=1
 		endwhile
-		echomsg space . " " . substitute(substitute(texfile[linenr],'%','',''),'\t',' ','g')
+		echo space . " " . substitute(substitute(texfile[linenr],'%','',''),'\t',' ','g')
 	    else
 		let true = 0
 	    endif
@@ -1797,7 +1798,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	endif
 	let bibref = '\bibitem{} ' . matchstr(data[0]['text'], '^<tr><td align="left">\zs.*\ze<\/td><\/tr>')
 	let g:atp_bibref = bibref
-	exe "let @" . g:atp_bibrefRegister . ' = "' . escape(bibref, '\') . '"'
+	exe "let @" . g:atp_bibrefRegister . ' = "' . escape(bibref, '\"') . '"'
 	let bibdata = [ bibref ]
     endif
     let g:atp_bibdata = bibdata
@@ -2401,11 +2402,11 @@ command! -buffer 	ListPrinters				:echo <SID>ListPrinters("", "", "")
 " List Packages:
 command! -buffer 	ShowPackages				:let b:atp_PackageList = atplib#GrepPackageList() | echo join(b:atp_PackageList, "\n")
 if &l:cpoptions =~# 'B'
-    command! -buffer -nargs=? -complete=buffer ToDo			:call ToDo('\c\<to\s*do\>','\s*%\c.*\<note\>',<f-args>)
-    command! -buffer -nargs=? -complete=buffer Note			:call ToDo('\c\<note\>','\s*%\c.*\<to\s*do\>',<f-args>)
+    command! -buffer -nargs=? -complete=buffer -bang ToDo			:call ToDo('\c\<to\s*do:\>','\s*%\s*$\|\s*%\c.*\<note:\>',<q-bang>, <f-args>)
+    command! -buffer -nargs=? -complete=buffer -bang Note			:call ToDo('\c\<note:\>','\s*%\s*$\|\s*%\c.*\<to\s*do:\>', <q-bang>, <f-args>)
 else
-    command! -buffer -nargs=? -complete=buffer ToDo			:call ToDo('\\c\\<to\\s*do\\>','\\s*%\\c.*\\<note\\>',<f-args>)
-    command! -buffer -nargs=? -complete=buffer Note			:call ToDo('\\c\\<note\\>','\\s*%\\c.*\\<to\\s*do\\>',<f-args>)
+    command! -buffer -nargs=? -complete=buffer ToDo			:call ToDo('\\c\\<to\\s*do:\\>','\\s*%\\s*$\\|\\s*%\\c.*\\<note:\\>',<f-args>)
+    command! -buffer -nargs=? -complete=buffer Note			:call ToDo('\\c\\<note:\\>','\\s*%\\s*$\\|\\s*%\\c.*\\<to\\s*do:\\>',<f-args>)
 endif
 command! -buffer ReloadATP					:call <SID>ReloadATP("!")
 command! -bang -buffer -nargs=1 AMSRef				:call AMSRef(<q-bang>, <q-args>)

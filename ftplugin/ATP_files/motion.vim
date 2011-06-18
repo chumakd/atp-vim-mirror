@@ -1714,7 +1714,7 @@ function! JMotion(flag)
 	endif
     else
 	let pline = strpart(line, 0, col("."))
-	if line =~ '}{'
+	if pline =~ '}{'
 	    call search('}{', 'b')
 	    normal! h
 	    return

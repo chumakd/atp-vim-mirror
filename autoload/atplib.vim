@@ -729,12 +729,19 @@ endfunction
 " resove(fnamemodify(bufname("%"),":p"))
 
 " {{{2 --------------- atplib#GrepAuxFile
+" This function searches in aux file (actually it tries first ._aux file,
+" made by compile.py - this is because compile.py is copying aux file only if
+" there are no errors (for to not affect :Labels command)
 function! atplib#GrepAuxFile(...)
     " Aux file to read:
     if exists("b:atp_MainFile")
 	let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     endif
-    let aux_filename	= ( a:0 == 0 && exists("b:atp_MainFile") ? fnamemodify(atp_MainFile, ":r") . ".aux" : a:1 )
+    if filereadable(fnamemodify(atp_MainFile, ":r") . "._aux")
+	let aux_filename	= ( a:0 == 0 && exists("b:atp_MainFile") ? fnamemodify(atp_MainFile, ":r") . "._aux" : a:1 )
+    else
+	let aux_filename	= ( a:0 == 0 && exists("b:atp_MainFile") ? fnamemodify(atp_MainFile, ":r") . ".aux" : a:1 )
+    endif
     let tex_filename	= fnamemodify(aux_filename, ":r") . ".tex"
 
     if !filereadable(aux_filename)
@@ -776,104 +783,110 @@ function! atplib#GrepAuxFile(...)
     let equation = len(atplib#GrepPreambule('^\s*\\numberwithin{\s*equation\s*}{\s*section\s*}', tex_filename))
 "     for line in aux_file
     for line in loc_list
-" 	if line =~ '^\\newlabel' 
-	    " line is of the form:
-	    " \newlabel{<label>}{<rest>}
-	    " where <rest> = {<label_number}{<title>}{<counter_name>.<counter_number>}
-	    " <counter_number> is usually equal to <label_number>.
-	    "
-	    " Document classes: article, book, amsart, amsbook, review:
-	    " NEW DISCOVERY {\zs\%({[^}]*}\|[^}]\)*\ze} matches for inner part of 
-	    " 	{ ... { ... } ... }	/ only one level of being recursive / 
-	    " 	The order inside the main \%( \| \) is important.
-	    "This is in the case that the author put in the title a command,
-	    "for example \mbox{...}, but not something more difficult :)
-	    if line =~ '^\\newlabel{[^}]*}{{[^}]*}{[^}]*}{\%({[^}]*}\|[^}]\)*}{[^}]*}'
-		let debug	= 1
-		let label	= matchstr(line, '^\\newlabel\s*{\zs[^}]*\ze}')
-		let rest	= matchstr(line, '^\\newlabel\s*{[^}]*}\s*{\s*{\zs.*\ze}\s*$')
-		let l:count = 1
-		let i	= 0
-		while l:count != 0 
-		    let l:count = ( rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count )
-		    let i+= 1
-		endwhile
-		let number	= substitute(strpart(rest,0,i-1), '{\|}', '', 'g')  
-		let rest	= strpart(rest,i)
-		let rest	= substitute(rest, '^{[^}]*}{', '', '')
-		let l:count = 1
-		let i	= 0
-		while l:count != 0 
-		    let l:count = rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count 
-		    let i+= 1
-		endwhile
-		let counter	= substitute(strpart(rest,i-1), '{\|}', '', 'g')  
-		let counter	= strpart(counter, 0, stridx(counter, '.')) 
+    if line =~ '\\newlabel\>'
+	" line is of the form:
+	" \newlabel{<label>}{<rest>}
+	" where <rest> = {<label_number}{<title>}{<counter_name>.<counter_number>}
+	" <counter_number> is usually equal to <label_number>.
+	"
+	" Document classes: article, book, amsart, amsbook, review:
+	" NEW DISCOVERY {\zs\%({[^}]*}\|[^}]\)*\ze} matches for inner part of 
+	" 	{ ... { ... } ... }	/ only one level of being recursive / 
+	" 	The order inside the main \%( \| \) is important.
+	"This is in the case that the author put in the title a command,
+	"for example \mbox{...}, but not something more difficult :)
+	if line =~ '^\\newlabel{[^}]*}{{[^}]*}{[^}]*}{\%({[^}]*}\|[^}]\)*}{[^}]*}'
+	    let debug	= 1
+	    let label	= matchstr(line, '^\\newlabel\s*{\zs[^}]*\ze}')
+	    let rest	= matchstr(line, '^\\newlabel\s*{[^}]*}\s*{\s*{\zs.*\ze}\s*$')
+	    let l:count = 1
+	    let i	= 0
+	    while l:count != 0 
+		let l:count = ( rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count )
+		let i+= 1
+	    endwhile
+	    let number	= substitute(strpart(rest,0,i-1), '{\|}', '', 'g')  
+	    let rest	= strpart(rest,i)
+	    let rest	= substitute(rest, '^{[^}]*}{', '', '')
+	    let l:count = 1
+	    let i	= 0
+	    while l:count != 0 
+		let l:count = rest[i] == '{' ? l:count+1 : rest[i] == '}' ? l:count-1 : l:count 
+		let i+= 1
+	    endwhile
+	    let counter	= substitute(strpart(rest,i-1), '{\|}', '', 'g')  
+	    let counter	= strpart(counter, 0, stridx(counter, '.')) 
 
-	    " Document classes: article, book, amsart, amsbook, review
-	    " (sometimes the format is a little bit different)
-	    elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|\.\)*{\d\%(\d\|\.\)*}}{\d*}{\%({[^}]*}\|[^}]\)*}{[^}]*}'
-		let debug	= 2
-		let list = matchlist(line, 
-		    \ '\\newlabel{\([^}]*\)}{{\(\d\%(\d\|\.\)*{\d\%(\d\|\.\)*\)}}{\d*}{\%({[^}]*}\|[^}]\)*}{\([^}]*\)}')
-	    	let [ label, number, counter ] = [ list[1], list[2], list[3] ]
-		let number	= substitute(number, '{\|}', '', 'g')
-		let counter	= matchstr(counter, '^\w\+')
+	" Document classes: article, book, amsart, amsbook, review
+	" (sometimes the format is a little bit different)
+	elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|\.\)*{\d\%(\d\|\.\)*}}{\d*}{\%({[^}]*}\|[^}]\)*}{[^}]*}'
+	    let debug	= 2
+	    let list = matchlist(line, 
+		\ '\\newlabel{\([^}]*\)}{{\(\d\%(\d\|\.\)*{\d\%(\d\|\.\)*\)}}{\d*}{\%({[^}]*}\|[^}]\)*}{\([^}]*\)}')
+	    let [ label, number, counter ] = [ list[1], list[2], list[3] ]
+	    let number	= substitute(number, '{\|}', '', 'g')
+	    let counter	= matchstr(counter, '^\w\+')
 
-	    " Document class: article
-	    elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|\.\)*}{\d\+}}'
-		let debug	= 3
-		let list = matchlist(line, '\\newlabel{\([^}]*\)}{{\(\d\%(\d\|\.\)*\)}{\d\+}}')
-	    	let [ label, number, counter ] = [ list[1], list[2], "" ]
+	" Document class: article
+	elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|\.\)*}{\d\+}}'
+	    let debug	= 3
+	    let list = matchlist(line, '\\newlabel{\([^}]*\)}{{\(\d\%(\d\|\.\)*\)}{\d\+}}')
+	    let [ label, number, counter ] = [ list[1], list[2], "" ]
 
-	    " Memoir document class uses '\M@TitleReference' command
-	    " which doesn't specify the counter number.
-	    elseif line =~ '\\M@TitleReference' 
-		let debug	= 4
-		let label	= matchstr(line, '^\\newlabel\s*{\zs[^}]*\ze}')
-		let number	= matchstr(line, '\\M@TitleReference\s*{\zs[^}]*\ze}') 
-		let counter	= ""
+	" Memoir document class uses '\M@TitleReference' command
+	" which doesn't specify the counter number.
+	elseif line =~ '\\M@TitleReference' 
+	    let debug	= 4
+	    let label	= matchstr(line, '^\\newlabel\s*{\zs[^}]*\ze}')
+	    let number	= matchstr(line, '\\M@TitleReference\s*{\zs[^}]*\ze}') 
+	    let counter	= ""
 
-	    elseif line =~ '\\newlabel{[^}]*}{.*\\relax\s}{[^}]*}{[^}]*}}'
-		" THIS METHOD MIGHT NOT WORK WELL WITH: book document class.
-		let debug	= 5.0
-		let label 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{.*\\relax\s}{[^}]*}{[^}]*}}')
-		let nc 		= matchstr(line, '\\newlabel{[^}]*}{.*\\relax\s}{\zs[^}]*\ze}{[^}]*}}')
-		let counter	= matchstr(nc, '\zs\a*\ze\(\.\d\+\)\+')
-		let number	= matchstr(nc, '.*\a\.\zs\d\+\(\.\d\+\)\+') 
-		if counter == 'equation' && !equation
-		    let number = matchstr(number, '\d\+\.\zs.*')
-		endif
-
-	    " aamas2010 class
-	    elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|.\)*{\d\%(\d\|.\)*}{[^}]*}}' && atplib#DocumentClass(b:atp_MainFile) =~? 'aamas20\d\d'
-		let debug	= 5.1
-		let label 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{{\d\%(\d\|.\)*{\d\%(\d\|.\)*}{[^}]*}}')
-		let number 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{{\zs\d\%(\d\|.\)*{\d\%(\d\|.\)*\ze}{[^}]*}}')
-		let number	= substitute(number, '{\|}', '', 'g')
-		let counter	= ""
-
-	    " subeqautions
-	    elseif line =~ '\\newlabel{[^}]*}{{[^}]*}{[^}]*}}'
-		let debug	= 6
-		let list = matchlist(line, '\\newlabel{\([^}]*\)}{{\([^}]*\)}{\([^}]*\)}}')
-		let [ label, number ] = [ list[1], list[2] ]
-		let counter	= ""
-
-	    " AMSBook uses \newlabel for tocindent
-	    " which we filter out here.
-	    else
-		let debug	= 7
-		let label	= "nolabel: " . line
+	elseif line =~ '\\newlabel{[^}]*}{.*\\relax\s}{[^}]*}{[^}]*}}'
+	    " THIS METHOD MIGHT NOT WORK WELL WITH: book document class.
+	    let debug	= 5.0
+	    let label 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{.*\\relax\s}{[^}]*}{[^}]*}}')
+	    let nc 		= matchstr(line, '\\newlabel{[^}]*}{.*\\relax\s}{\zs[^}]*\ze}{[^}]*}}')
+	    let counter	= matchstr(nc, '\zs\a*\ze\(\.\d\+\)\+')
+	    let number	= matchstr(nc, '.*\a\.\zs\d\+\(\.\d\+\)\+') 
+	    if counter == 'equation' && !equation
+		let number = matchstr(number, '\d\+\.\zs.*')
 	    endif
 
-	    if label !~ '^nolabel:\>'
-		call add(labels, [ label, number, counter, debug])
-	    endif
+	" aamas2010 class
+	elseif line =~ '\\newlabel{[^}]*}{{\d\%(\d\|.\)*{\d\%(\d\|.\)*}{[^}]*}}' && atplib#DocumentClass(b:atp_MainFile) =~? 'aamas20\d\d'
+	    let debug	= 5.1
+	    let label 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{{\d\%(\d\|.\)*{\d\%(\d\|.\)*}{[^}]*}}')
+	    let number 	= matchstr(line, '\\newlabel{\zs[^}]*\ze}{{\zs\d\%(\d\|.\)*{\d\%(\d\|.\)*\ze}{[^}]*}}')
+	    let number	= substitute(number, '{\|}', '', 'g')
+	    let counter	= ""
+
+	" subeqautions
+	elseif line =~ '\\newlabel{[^}]*}{{[^}]*}{[^}]*}}'
+	    let debug	= 6
+	    let list 	= matchlist(line, '\\newlabel{\([^}]*\)}{{\([^}]*\)}{\([^}]*\)}}')
+	    let [ label, number ] = [ list[1], list[2] ]
+	    let counter	= ""
+
+	" AMSBook uses \newlabel for tocindent
+	" which we filter out here.
+	elseif line =~ '\\newlabel{[^}]*}{{\d\+.\?{\?\d*}\?}{\d\+}}'
+	    let debug	= 7
+	    let list 	= matchlist(line,  '\\newlabel{\([^}]*\)}{{\(\d\+.\?{\?\d*}\?\)}{\(\d\+}\)}')
+	    let [ label, number ] = [ list[1], list[2] ]
+	    let number 	= substitute(number, '\%({\|}\)', '', 'g')
+	    let counter 	= ""
+	else
+	    let debug	= 8
+	    let label	= "nolabel: " . line
+	endif
+
+	if label !~ '^nolabel:\>'
+	    call add(labels, [ label, number, counter, debug])
 	    if g:atp_debugGAF
 		call extend(g:gaf_debug, { label : [ number, counter, debug ] })
 	    endif
-" 	endif
+	endif
+    endif
     endfor
 
     return labels

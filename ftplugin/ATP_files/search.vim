@@ -248,7 +248,8 @@ function! <SID>LocalCommands_vim(...)
 	elseif line['text'] =~ '^[^%]*\%(\\def\>\|\\newcommand\)'
 	    " definition name 
 	    let name= '\' . matchstr(line['text'], '\\def\\\zs[^{]*\ze{\|\\newcommand{\?\\\zs[^\[{]*\ze}')
-	    let name=substitute(name, '\(#\d\+\)\+\s*$', '{', '')
+	    let name=substitute(name, '\(#\d\+\)\+\s*$', '', '')
+            let name.=(line['text'] =~ '\\def\\\w\+#[1-9]\|\\newcommand{[^}]*}\[[1-9]\]' ? '{' : '')
 	    if name =~ '#\d\+'
 		echo line['text']
 		echo name
@@ -336,9 +337,15 @@ for file in files:
             m=re.match(pattern, line)
             if m:
                 if m.group('def'):
-                    localcommands.append(m.group('def_c'))
+                    if re.search('\\\\def\\\\\w+#[1-9]', line):
+                        localcommands.append(m.group('def_c')+'{')
+                    else:
+                        localcommands.append(m.group('def_c'))
                 elif m.group('nc') or m.group('dec') or m.group('sma'):
-                    localcommands.append(m.group('arg'))
+                    if re.search('\\\\newcommand\s*{[^}]*}\s*\[[1-9]\]\s*{', line):
+                        localcommands.append(m.group('arg')+'{')
+                    else:
+                        localcommands.append(m.group('arg'))
                 elif m.group('nt') or m.group('env'):
                     localenvs.append(m.group('arg'))
                 elif m.group('col'):

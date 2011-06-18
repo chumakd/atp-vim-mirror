@@ -742,7 +742,7 @@ function! s:SelectCurrentParagraph(seltype)
 	call atplib#Log("SelectCurrentParagraph.log", "eeline_str=".eeline_str)
     endif
 
-    if getline(bline) =~ '\\par\|\\newline\|\\begin\s*{\s*\%(document\|letter\)\s*}' || bline_str =~ '^\%(\\\[\|\\item\>\)'
+    if getline(bline) =~ '\\par\>\|\\newline\>\|\\begin\s*{\s*\%(document\|letter\)\s*}' || bline_str =~ '^\%(\\\[\|\\item\>\)'
 	" move to the beginning of \par
 	let bmove	= ''
     else
@@ -751,14 +751,14 @@ function! s:SelectCurrentParagraph(seltype)
     endif
 
 
-    if getline(eline) =~ '\\par'
+    if getline(eline) =~ '\\par\>'
 	let emove	= 'gE'
     elseif eline_str  =~ '\\@<!\\\]'
 	let emove	= ''
     elseif eeline_str =~ '^\s*\\end\s*{\s*\%(align\%(at\)\=\|equation\|display\%(ed\)\=math'
 		\ . '\|array\|eqnarray\|inlinemath\|math\)\*\=\s*}'
 	let emove	= 'E'
-    elseif eeline_str =~ '^\\closing'
+    elseif eeline_str =~ '^\\closing\>'
 	let emove	= 'ge'
     else
 	let emove	= 'ge'

@@ -10,13 +10,13 @@
 <body bgcolor="#ffffff">
     <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
 
-    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
+    <table cellpadding="0" cellspacing="0" border="0" class="head"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
 		<!--#include virtual="leftpanel.shtml"-->
 	    </td>
 
-	    <td class=mainpanel>
+	    <td class=mainpanel width=700px>
 		<h2 >Requirements</h2>
 		<h3>vim 7.3</h3>
 		You need <a href="http://www.vim.org">vim</a> 7.3. It was
@@ -43,7 +43,7 @@
 		<h3>python</h3>
 		<b>ATP</b> uses <a href="http://www.python.org">python</a>. It is
 		written so that you can use python3 or python2.7. You can use
-		<b>ATP</b> without python, however some features will be much
+		<b>ATP</b> without python some features will be much
 		slower and some might not even work (for example the <i>progress
 		    bar</i> and <a href="http://www.ams.org/mref"><i>AMS
 			Ref</i></a> interface, <code>:UpdateATP</code>,

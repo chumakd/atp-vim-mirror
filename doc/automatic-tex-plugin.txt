@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 18 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -841,7 +841,8 @@ map \l, map \d
 	errors, with "!" it updates the aux file even if there were errors.
 	This is done to make the labels completion work better, when there are
 	errors they often affect the aux file in a way that interferes with
-	|atp-:Labels| command.
+	|atp-:Labels| command. However ATP also makes a copy of aux file with
+	extension ._aux - this is for label completion: |atp-completion-label|.
 
 	If b:atp_OpenViewer=1 and there current viewer (b:Viewer) is not
 	running on the output file then this function will open a viewer. By
@@ -1901,18 +1902,19 @@ vmap <F4>
 	output directory will be not seen in the statusline.
 
 ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
-:ToDo [bufname]					*atp-:ToDo*
-:Note [bufname]					*atp-:Note*
+:ToDo[!] [bufname]					*atp-:ToDo*
+:Note[!] [bufname]					*atp-:Note*
 	The function list all the lines of the buffer [bufname] which match
-	for the pattern '%.*{keyword}'. The {stop} argument is the pattern to
+	for the pattern '^\s*%.*{keyword}'. The {stop} argument is the pattern to
 	before which to stop. The optional argument is the buffer name
 	(the buffer name completion is set on). If not given the current
 	buffer is assumed.  You can set highlighting for this command by:
 		highlight atp-Todo ctermfg=... 	guifg=...
-	The command :ToDo sets keyword='\c\<todo\>' and
+	The command :ToDo sets keyword='\s*%\s*$\|\s*%\c.*\<note:\>' and
 	stop='\s*%.*\c\<note\>', and the command :Note sets
-	keyword='\c\<note\>' and stop='\s*%.*\c\<todo\>'. This prevent from
-	listing ToDo lines with Notes and vice versa. 
+	keyword='\c\<note\>' and stop='\s*%\s*$\|\s*%\c.*\<to\s*do:\>'. This
+	prevent from listing ToDo lines with Notes and vice versa and stops at
+	lines which contains only '%'. 
 
   							*atp-:WordCount*
 :WordCount[!] 					
@@ -2534,9 +2536,9 @@ COMPLETION MODES		                       	*atp-completion-modes*
 				b:atp_LocalColors
 				b:atp_LocalCommands
 				b:atp_LocalEnvironments
-<		If a command was declared with a arguments (i.e. using #1, or
-		#1#2, etc.) a single '{' is attached. It doesn't match for
-		definitions inside comments.
+<		If a command was declared with a arguments (i.e. using \def#1, or
+		\def#1#2, etc. or with \newcommand{...}[1]{...}) a single '{'
+		is attached. It doesn't match for definitions inside comments.
 
 		Note: the python version searches for commands, environments,
 		...  defined in the begining of line (with possible white

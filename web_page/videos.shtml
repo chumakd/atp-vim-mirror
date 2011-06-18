@@ -1,0 +1,44 @@
+<html lang="en">
+    <head>
+	<title >Automatic LaTeX Plugin for Vim</title>
+	<link rel="stylesheet" href="style.css"> 
+	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
+	<script language="javascript" src="rssreader.js"></script>
+	<!--#include virtual="google_tracking_code.shtml"-->
+    </head>
+
+<body>
+<h1><center>Videos</center></h1>
+    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"  style="table-layout:fixed"> 
+	<tr> 
+	    <td class=leftpanel valign=top width=30%> 
+		<!--#include virtual="leftpanel.shtml"-->
+	    </td>
+
+	    <td class=mainpanel valign="top">
+		<h2>Writing Preamble with <b>ATP</b></h2>
+		    This video shows how to use <b>ATP</b> tab completion to
+		    write preambule.
+		    <p><div align="center">
+		    <iframe
+		    src="http://player.vimeo.com/video/25270766?title=0&amp;byline=0&amp;portrait=0"
+		    width="900" height="510"frameborder="0"></iframe><p><a
+		    href="http://vimeo.com/25270766">How
+		    to write LaTeX preamble.</a> on <a
+		    href="http://vimeo.com">Vimeo</a>.</p></div></p>
+	    <!--
+		<h2>Completion for \ref{} LaTeX command</h2>
+	    -->
+		<h2>AMSRef command</h2>
+		    This video shows how to obtain bibliographic data from
+		    <a href="http://www.ams.org/mref">ams reference</a> web
+		    page.
+		    <p> <div align="center"> <iframe
+		    src="http://player.vimeo.com/video/25270805?title=0&amp;byline=0&amp;portrait=0"
+		    width="900" height="510" frameborder="0"></iframe><p><a
+		    href="http://vimeo.com/25270805">AMSRef command</a>
+		on <a href="http://vimeo.com">Vimeo</a>.</p></div></p>
+	    </td>
+	</tr>
+    </table>
+</body>

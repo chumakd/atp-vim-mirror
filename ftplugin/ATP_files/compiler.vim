@@ -1009,10 +1009,16 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 	" Preserve files with extension belonging to the g:atp_keep list variable.
 	let copy_cmd=""
 	let j=1
-	for i in filter(copy(g:atp_keep), 'v:val != "aux"') 
+	for i in g:atp_keep 
 " ToDo: this can be done using internal vim functions.
-	    let copycmd=g:atp_cpcmd." ".cpoptions." ".shellescape(atplib#append(tmpdir,"/")).
-			\ "*.".i." ".shellescape(atplib#append(b:atp_OutDir,"/")) 
+	    if i != "aux"
+		let copycmd=g:atp_cpcmd." ".cpoptions." ".shellescape(atplib#append(tmpdir,"/")).
+			    \ "*.".i." ".shellescape(atplib#append(b:atp_OutDir,"/")) 
+	    else
+		let copycmd=g:atp_cpcmd." ".cpoptions." ".shellescape(atplib#append(tmpdir,"/")).
+			    \ "*.".i." ".shellescape(atplib#append(b:atp_OutDir,"/".fnamemodify(b:atp_MainFile, ":t:r")."_aux")) 
+	    endif
+
 	    if j == 1
 		let copy_cmd=copycmd
 	    else

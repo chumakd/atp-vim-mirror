@@ -359,7 +359,7 @@ ToDo: Make python script which looks at vim page with recent script updates to
 ToDo: :WrapSelection if without arguments should assume :WrapSelection {
 ToDo: Wizard for inputing graphics, show window with file to choose, ... (with browse())
 	But maybe its better to use vim file searching capabilities ...
-ToDo: Tikz Completion for -> <-, etc.
+ToDo:   Tikz Completion for -> <-, etc.
 SOLVED: b:atp_TexCompiler is not set by the value stored in project.vim file.
 	Because I called :SetXpdf with VimEnter, see my atprc file for the
 	solution - it should be possible to write it in one line, without a function.
@@ -375,16 +375,17 @@ ToDo:	Make better accent maps which takes the letter as an argument and returns 
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
 ToDo:	\cite with bibliography environment is not filtering the results
 	This is done but adding } is not implemented yet.
-ToDo:   _te -> \text{} imap should be done (for math mode).
+Done:   _te -> \text{} imap should be done (for math mode).
 Done: 	\begin in math mode is not completing. /added to g:atp_math_commands, I should investigate this further/
+(Review TabCompletion for commands)
 ToDo:   Howto solve the problem \{:\. (it seems to be not solved) or mayby I just don't remember how to do that in LaTeX.
 ToDo:   \wedge map #& should be defined with a space after wedge, and some other maps as well \partial (`6)
 	Maybe make an option with list of commands to which TabCompletion will append a space.
+(I had problem implementing this as a configurable feature)
 ToDo: (IDEA) make C_M inside align inteligent ( put & if first column is empty ) 
 Done:  j motion with {}{}{} should jump after next { (skipping the position before it!)
-ToDo:  write imap which makes \frac{\partial}{\partial x} where is an input data.
+Done:  write imap which makes \frac{\partial}{\partial x} where is an input data.
 Done:  prevent AuTeX running when we are in insert mode in math.
-Done:	WrapSelection with completion of commands (this would be cool)
+Done:  WrapSelection with completion of commands (this would be cool)
 Done:  TexAlign is not working for matrix (inside tikz).
 ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
-ToDo:  gw joins \] with next line.

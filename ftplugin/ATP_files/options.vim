@@ -373,6 +373,10 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+" if !exists("g:atp_imap_put_space") || g:atp_imap_put_space
+" This was not working :(.
+"     let g:atp_imap_put_space 	= 1
+" endif
 if !exists("g:atp_imap_diffop_move") || g:atp_reload_variables
     let g:atp_imap_diffop_move 	= 0
 endif
@@ -1019,7 +1023,7 @@ if !exists("g:atp_no_math_command_completion") || g:atp_reload_variables
     let g:atp_no_math_command_completion = 0
 endif
 if !exists("g:atp_tex_extensions") || g:atp_reload_variables
-    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
+    let g:atp_tex_extensions	= ["tex.project.vim", "aux", "_aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
 endif
 for ext in g:atp_tex_extensions
     let suffixes = split(&suffixes, ",")
@@ -2491,7 +2495,7 @@ endfunction
 	" Remove b:atp_TempDir (where compelation is done).
 	au VimLeave *.tex :call <SID>Rmdir(b:atp_TempDir)
 	" Remove TempDir for debug files.
-	au VimLeave *.tex :call <SID>RmTempDir()
+	au VimLeave *     :call <SID>RmTempDir()
 	" :Kill! (i.e. silently if there is no python support.)
 	au VimLeave *.tex :Kill!
     augroup END
