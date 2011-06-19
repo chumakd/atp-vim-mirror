@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Jun 18 09:00  2011 W
+" Last Change: Sun Jun 19 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -364,8 +364,6 @@ function! TexAlign()
 	return
     endif
 	
-"     let g:env=env
-
     if !exists("bline")
 	let bline = search(bpat, 'cnb') + 1
     endif
@@ -377,9 +375,6 @@ function! TexAlign()
 	let eline = searchpair('{', '', '}', 'n')  - 1
 	call cursor(saved_pos[1], saved_pos[2])
     endif
-
-" 	let g:bline = bline
-" 	let g:eline = eline
 
     if bline <= eline
 	execute bline . ',' . eline . 'Align ' . AlignCtr
@@ -1714,6 +1709,7 @@ function! <SID>GetAMSRef(what, bibfile)
  
     " Get data from AMS web site.
     let atpbib_WgetOutputFile = tempname()
+    let g:atpbib_WgetOutputFile = atpbib_WgetOutputFile
     let URLquery_path = globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
     if a:bibfile != "nobibfile"
 	let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=bibtex"
@@ -1788,6 +1784,7 @@ function! <SID>GetAMSRef(what, bibfile)
 	catch /E480:/
 	endtry
 	let data = getloclist(0)
+	let g:data = data
 	if !len(data) 
 	    echohl WarningMsg
 	    echomsg "[ATP:] nothing found."
@@ -1796,13 +1793,26 @@ function! <SID>GetAMSRef(what, bibfile)
 	elseif len(data) > 1
 	    echoerr "ATP Error: AMSRef vimgrep pattern error. You can send a bug report. Please include the exact :ATPRef command." 
 	endif
-	let bibref = '\bibitem{} ' . matchstr(data[0]['text'], '^<tr><td align="left">\zs.*\ze<\/td><\/tr>')
+	let bib_data = data[0]['text']
+	let ams_file = readfile(atpbib_WgetOutputFile)
+	if bib_data !~ '<\/td><\/tr>'
+	    let lnr	= data[0]['lnum']
+	    while bib_data !~ '<\/td><\/tr>'
+		let lnr+=1
+		let line = ams_file[lnr-1]
+		echo line
+		let bib_data .= line
+	    endwhile
+	endif
+	let g:bib_data = bib_data
+
+	let bibref = '\bibitem{} ' . matchstr(bib_data, '^<tr><td align="left">\zs.*\ze<\/td><\/tr>')
 	let g:atp_bibref = bibref
 	exe "let @" . g:atp_bibrefRegister . ' = "' . escape(bibref, '\"') . '"'
 	let bibdata = [ bibref ]
     endif
     let g:atp_bibdata = bibdata
-    call delete(atpbib_WgetOutputFile)
+"     call delete(atpbib_WgetOutputFile)
     return bibdata
 endfunction
 catch /E127/
@@ -1823,7 +1833,7 @@ function! AMSRef(bang, what)
     let return=<SID>GetAMSRef(a:what, bibfile)
 "     let g:bang=a:bang
 "     let g:bibfile=bibfile
-"     let g:return=return
+    let g:return=return
     if a:bang == "" && bibfile != "nobibfile" && return != [0] && return != ['NoUniqueMatch']
 	silent! w
 	silent! bd

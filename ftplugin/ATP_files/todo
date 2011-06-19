@@ -344,11 +344,9 @@ ToDo: :BibSearch -- when there is (STRING) the last ) is lost and syntax fails. 
 ToDo: There is quite big mess when callig gf (how files are listed)
 
 ToDo: opening skeletal file: b:ListOfFiles is empty => b:atp_LocalCommands is empty.
-ToDo: links in split doc are not working: how to refere to some place in other html file (href+name)?
-ToDo: docs doesn't contain latexmk info. LatexBox docs should be included.
 ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
 ToDo: \nu<Tab> completes to sth. (add greek letters to completion)
-ToDo: \partial \overlline \overline{
+ToDo: \partial \overline \overline{
 ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).
 ToDo: test b:atp_updatetime_ variables when they are set to 0, test &l:updatetime setting in options.vim (line 920).
 Done: use Kill command to Kill python scripts before running. We can make it
@@ -370,7 +368,6 @@ Todo:   WrapSelectoin \'{ } end	- accent maps (might be inteligent with Intelige
 ToDo:	Write to CmdAlias author to handle the bang.
 	One more feature: if the command is called :TEX and :TE is unique user
 	command the :TE will work, the same shoul be with command aliases ':help user-cmd-ambiguous'.
-ToDo:	:TEX starts after hitting k,j (in normal mode)
 ToDo:	Make better accent maps which takes the letter as an argument and returns accented one.
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
 ToDo:	\cite with bibliography environment is not filtering the results
@@ -389,3 +386,10 @@ Done:  prevent AuTeX running when we are in insert mode in math.
 Done:  WrapSelection with completion of commands (this would be cool)
 Done:  TexAlign is not working for matrix (inside tikz).
 ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
+ToDo:  gw mis behaves when it is near \todo{}
+ToDo:  completion fot \includegraphics with image directory.
+ToDo:  #ve -> \vee colides with #v -> \varsigma (imaps)
+	#Z -> \mathrm ?
+ToDo:  add switch to atplib#CloseLastEnvironment() so that it only returns what to close. Then add this to line: 4966 (atplib) where I add greek letters and brackets.
+ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
+ToDo:  Do some chagnes, goto opened TOC window, split the window with 's' - the changes are lost!

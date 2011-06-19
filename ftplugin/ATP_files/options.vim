@@ -377,6 +377,9 @@ lockvar b:atp_autex_wait
 " This was not working :(.
 "     let g:atp_imap_put_space 	= 1
 " endif
+if !exists("g:atp_imap_diacritics_inteligent") || g:atp_reload_variables
+    let g:atp_imap_diacritics_inteligent = 1
+endif
 if !exists("g:atp_imap_diffop_move") || g:atp_reload_variables
     let g:atp_imap_diffop_move 	= 0
 endif
@@ -2082,10 +2085,12 @@ endif
 	\ "\\langle", "\\rangle", "\\Diamond", "\\lgroup", "\\rgroup", "\\propto", "\\Join", "\\div", 
 	\ "\\land", "\\star", "\\uplus", "\\leadsto", "\\rbrack", "\\lbrack", "\\mho", 
 	\ "\\diamondsuit", "\\heartsuit", "\\clubsuit", "\\spadesuit", "\\top", "\\ell", 
-	\ "\\imath", "\\jmath", "\\wp", "\\Im", "\\Re", "\\prime", "\\ll", "\\gg" ]
+	\ "\\imath", "\\jmath", "\\wp", "\\Im", "\\Re", "\\prime", "\\ll", "\\gg", "\\Nabla" ]
 
 	let g:atp_math_commands_PRE=[ "\\diagdown", "\\diagup", "\\subset", "\\subseteq", "\\supset", "\\supsetneq",
 		    \ "\\sharp", "\\underline", "\\underbrace{",  ]
+
+	let g:atp_greek_letters = ['\alpha', '\beta', '\chi', '\delta', '\epsilon', '\phi', '\gamma', '\eta', '\iota', '\kappa', '\lambda', '\mu', '\nu', '\theta', '\pi', '\rho', '\sigma', '\tau', '\upsilon', '\vartheta', '\xi', '\psi', '\zeta', '\Delta', '\Phi', '\Gamma', '\Lambda', '\Mu', '\Theta', '\Pi', '\Sigma', '\Tau', '\Upsilon', '\Omega', '\Psi']
 
 	" commands defined by the user in input files.
 	" ToDo: to doc.

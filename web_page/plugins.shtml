@@ -10,13 +10,14 @@
 <body bgcolor="#ffffff">
     <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
 
-    <table cellpadding="0" cellspacing="0" border="0" class="head"> 
+    <table cellpadding="0" cellspacing="0" border="0" class="head"
+	valign="top"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
 		<!--#include virtual="leftpanel.shtml"-->
 	    </td>
 
-	    <td class=mainpanel width=700px>
+	    <td class=mainpanel width=700px valign="top">
 		<h2>Suggested Plugins</h2>
 		These are very nice plugins, compatible with <b>ATP</b>, which
 		help a lot to use <b>Vim</b>.

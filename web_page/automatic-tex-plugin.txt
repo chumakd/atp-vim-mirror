@@ -154,12 +154,14 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.6.2
+ Changes in version 9.6.5
 <
   See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
 
   The variables |b:atp_TexOptions|, |b:atp_StarEnvDefault|,
   |b:atp_StarMathEnvDefault| are added to |g:atp_ProjectLocalVariables|.
+
+  See |g:atp_imap_diacritics_inteligent| how to write diacritics with ATP.
 >
  ======================
  Changes in version 9.6.1
@@ -4163,6 +4165,13 @@ These imaps are defined in g:atp_imap_math variable.  They might be turned off
 usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
 (be setting it to 0, works on the fly).
 
+						*g:atp_imap_diacritics_inteligent*
+if |g:atp_imap_diacritics_inteligent| is set to 1 (the default) to get \'{a}
+you have to type a`', i.e. the map acts on the character just before the
+cursor. Otherwise, if |g:atp_imap_diacritics_inteligent|=0 they act as normal
+imaps, i.e. typing `' resolves to \'{} with cursor placed between the
+brackets. Here is a list of all provided imaps to diacritics:
+
     imap `'	\'{}
     imap `"	\"{}
     imap `^	\^{}
@@ -4175,6 +4184,9 @@ usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
     imap `.	\.{}
     imap `c	\c{}
     imap `t	\t{}
+
+You can turn off diacritics imaps by setting |g:atp_imap_diacritics|=[] in
+your |vimrc| or |atprc| file.
 
 							*atp-:ToggleIMaps*
 :ToggleIMaps

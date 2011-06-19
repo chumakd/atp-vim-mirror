@@ -10,7 +10,8 @@
 
 <body onload="RSSRequest();" bgcolor="#ffffff" >
 <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
-    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"  style="table-layout:fixed"> 
+    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"
+	style="table-layout:fixed" valign="top"> 
 	<tr> 
 	    <td class=leftpanel valign=top width=30%> 
 		<!--#include virtual="leftpanel.shtml"-->
@@ -19,8 +20,14 @@
 	    <td class=mainpanel valign="top">
 		<h2>Intro</h2>
 		<b>Automatic LaTeX Plugin</b> (<b>ATP</b>) provides
-		<i>commands</i> and <i>maps</i> to edit <a href="http://www.latex-project.org/">LaTeX</a> files in one of the greatest editors: <a href="http://www.vim.org">Vim</a>.<br>
-		It is made for vim 7.3.  You can see long <a href="features.shtml"><em>feature list</em></a>.<br>
+		<i>commands</i> and <i>maps</i> to <b>edit</b>, <b>build</b>
+		and <b>view</b> output
+		of <a
+		    href="http://www.latex-project.org/">LaTeX</a> files in
+		one of the greatest editors: <a
+		href="http://www.vim.org">Vim</a>. 
+		You can see long <a href="features.shtml"><em>feature
+			list</em></a> here.<br>
 		<em>The main purpose of this plugin is to make you free from
 		    compiling cycle.</em> When <b>ATP</b> finds that the file has
 		changed it fires compiler of your choice and makes your
@@ -112,7 +119,7 @@
 			https://atp-vim.svn.sourceforge.net/svnroot/atp-vim
 		    atp-vim</code>
 		<!-- LEAVE A COMMENT -->
-		<a name="leave_a_comment"></a>
+		<a name="comment"></a>
 		<!-- customize labels of htmlcommentbox.com -->
 		<script>
 		// This code goes ABOVE the main HTML Comment Box code!
@@ -194,6 +201,6 @@
 	    </td>
 	</tr>
     </table>
-    <br><br><br>
+    <br><br><br><br><br>
 </body>
 </html>

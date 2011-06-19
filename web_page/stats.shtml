@@ -10,13 +10,13 @@
 <body bgcolor="#ffffff">
 <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
 
-    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"> 
+    <table width=100% cellpadding="0" cellspacing="0" border="0" class="head"  valign="top"> 
 	<tr> 
 	    <td class=leftpanel valign=top> 
 		<!--#include virtual="leftpanel.shtml"-->
 	    </td>
 
-	    <td class=mainpanel>
+	    <td class=mainpanel valign="top">
 		Here is a link to <a
 		    href="http://sourceforge.net/project/stats/detail.php?group_id=513143&ugn=atp-vim&mode=week&&type=prdownload"><b>ATP
 		SourceForge</b></a> downloads statistics web page.

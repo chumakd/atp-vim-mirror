@@ -1,5 +1,7 @@
 		    Automatic TeX Plugin For Vim version 7.3
+			 http://atp-vim.sf.net
 		         by Marcin Szamotulski
+
 
 Supported OS'es: Linux, Mac OS, Windows (it is in development).
 
@@ -29,6 +31,9 @@ Now you can read the documentation for ATP with :help atp (this goes to table
 of contents, you can also start from beginning with :help
 automatic-tex-plugin)
 
+You can find more instructions at
+	http://atp-vim.sf.net
+
 -------------------------------------------------------------
 HELP:
 You can start with :help atp, then
@@ -37,8 +42,7 @@ you can get more help subscribing to the mailing list:
 and post your question. I will also announce new releases there.
 
 Some Project NEWS will be post on:
-    https://sourceforge.net/news/?group_id=513143 
-
+    https://atp-vim.sf.net
 ------------------------------------------------------------    
 Dependencies:
 

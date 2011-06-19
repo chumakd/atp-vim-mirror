@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Jun 18 12:00  2011 W
+" Last Change: Sun Jun 19 07:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -947,7 +947,8 @@ endif
 " 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_math_misc, 'BufEnter')
     augroup END
 
-    let g:atp_imap_diacritics = [
+    if g:atp_imap_diacritics_inteligent == 0
+	let g:atp_imap_diacritics = [
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '''', s:backslash.'''{}<Left>', 	
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '"', s:backslash.'"{}<Left>', 	
@@ -975,6 +976,38 @@ endif
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  't', s:backslash.'t{}<Left>', 	
 		    \ "g:atp_imap_define_diacritics", '\t{}' ]
 	    \ ]
+
+    else
+	let g:atp_imap_diacritics = [
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '''',  '<ESC>vxa'.s:backslash.'''{"}', 
+		    \ "g:atp_imap_define_diacritics", '\''{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '"', '<ESC>vxa'.s:backslash.'"{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\"{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '2', '<ESC>vxa'.s:backslash.'2{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\"{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '^', '<ESC>vxa'.s:backslash.'^{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\^{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'v', '<ESC>vxa'.s:backslash.'v{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\v{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'b', '<ESC>vxa'.s:backslash.'b{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\b{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'd', '<ESC>vxa'.s:backslash.'d{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\d{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '`', '<ESC>vxa'.s:backslash.'`{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\d{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'H', '<ESC>vxa'.s:backslash.'H{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\H{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '~', '<ESC>vxa'.s:backslash.'~{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\~{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '.', '<ESC>vxa'.s:backslash.'.{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\.{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'c', '<ESC>vxa'.s:backslash.'c{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\c{}' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  't', '<ESC>vxa'.s:backslash.'t{"}', 	
+		    \ "g:atp_imap_define_diacritics", '\t{}' ]
+	    \ ]
+" 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', "(atplib#IsInMath() ? '' : '<ESC>vxa".s:backslash."`{\"}')", 	
+    endif
 
 " Environment Maps:
 if g:atp_no_env_maps != 1

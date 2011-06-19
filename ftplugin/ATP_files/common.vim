@@ -708,6 +708,8 @@ endfunction
 " a:1 = 0 [1]	- use cached values of tree of files.
 function! FindInputFiles(MainFile,...)
 
+    call atplib#write()
+
     let cached_Tree	= a:0 >= 1 ? a:1 : 0
 
     let saved_llist	= getloclist(0)

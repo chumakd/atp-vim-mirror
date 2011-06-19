@@ -880,6 +880,9 @@ function! atplib#GrepAuxFile(...)
 	    let label	= "nolabel: " . line
 	endif
 
+	let g:debug = debug
+	let g:label = label
+
 	if label !~ '^nolabel:\>'
 	    call add(labels, [ label, number, counter, debug])
 	    if g:atp_debugGAF
@@ -4076,10 +4079,10 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    return ''
 	endif
-    "{{{3 --------- brackets
+    "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
+	"{{{4 --------- brackets
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-" 	let g:begParen = copy(begParen)
 	if begParen[1] != 0
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
@@ -4096,10 +4099,8 @@ function! atplib#TabCompletion(expert_mode,...)
 		else
 		    let pattern = ''
 		endif
-" 		let g:pattern = pattern
 		if !empty(pattern)
 		    let begMathZone = searchpos(pattern, 'bnW')
-" 		    let g:begMathZone = copy(begMathZone)
 		    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
 			call atplib#CloseLastEnvironment(append, 'math')
 		    else
@@ -4114,7 +4115,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		return ''
 	    endif
-    "{{{3 --------- algorithmic
+    "{{{4 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0
 		if atplib#CheckSyntaxGroups(['texMathZoneALG']) && (
 			\ (!normal_mode && index(g:atp_completion_active_modes, 'algorithmic' ) != -1 ) ||
@@ -4129,12 +4130,12 @@ function! atplib#TabCompletion(expert_mode,...)
 		    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		    return ''
 		endif
-    "{{{3 --------- abbreviations
+    "{{{4 --------- abbreviations
     elseif l =~ '=\w\+\*\=$'
 	let completion_method='abbreviations' 
 	let b:comp_method='abbreviations'
 	call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- close environments
+    "{{{4 --------- close environments
 	else
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
 			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
@@ -4960,8 +4961,26 @@ function! atplib#TabCompletion(expert_mode,...)
         endif
     " {{{3 command, tikzcpicture commands
     elseif !normal_mode && (completion_method == 'command' || completion_method == 'tikzpicture commands')
+	" We are not completing greek letters, but we add them if cbegin is
+	" one. 
+	if count(g:atp_greek_letters, cbegin) >= 1
+	    " Add here brackets - somebody might want to
+	    " close a bracket after \nu and not get \numberwithin{ (which is
+	    " rarely used).
+	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
+		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
+		let begParen = atplib#CheckBracket(g:atp_bracket_dict)
+		let g:begParen = begParen
+		if begParen[1] != 0
+		    let bracket	= atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+		    if bracket != "0" && bracket != ""
+			call add(completions, cbegin.bracket)
+		    endif
+		endif
+	    endif
+	    call add(completions, cbegin)
+	endif
 	call complete(o+1,completions)
-	let b:tc_return="command X"
     " {{{3 tikzpicture keywords
     elseif !normal_mode && (completion_method == 'tikzpicture keywords')
 	let t=match(l,'\zs\<\w*$')
@@ -5029,17 +5048,6 @@ function! atplib#TabCompletion(expert_mode,...)
     endif
     "}}}3
 ""}}}2
-"  ToDo: (a challenging one)  
-"  Move one step after completion is done (see the condition).
-"  for this one have to end till complete() function will end, and this can be
-"  done using (g)vim server functions.
-"     let b:check=0
-"     if completion_method == 'environment_names' && end =~ '\s*}'
-" 	let b:check=1
-" 	let pos=getpos(".")
-" 	let pos[2]+=1
-" 	call setpos(".",pos) 
-"     endif
 "
     " unlet variables if there were defined.
     if exists("completion_list")

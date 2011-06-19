@@ -154,12 +154,14 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.6.2
+ Changes in version 9.6.5
 <
   See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
 
   The variables |b:atp_TexOptions|, |b:atp_StarEnvDefault|,
   |b:atp_StarMathEnvDefault| are added to |g:atp_ProjectLocalVariables|.
+
+  See |g:atp_imap_diacritics_inteligent| how to write diacritics with ATP.
 >
  ======================
  Changes in version 9.6.1
@@ -1910,11 +1912,12 @@ ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 	(the buffer name completion is set on). If not given the current
 	buffer is assumed.  You can set highlighting for this command by:
 		highlight atp-Todo ctermfg=... 	guifg=...
-	The command :ToDo sets keyword='\s*%\s*$\|\s*%\c.*\<note:\>' and
-	stop='\s*%.*\c\<note\>', and the command :Note sets
-	keyword='\c\<note\>' and stop='\s*%\s*$\|\s*%\c.*\<to\s*do:\>'. This
+	The command :ToDo sets keyword='^\s*%\s*$\|^\s*%\c.*\<note:\>' and
+	stop='^\s*%.*\c\<note\>', and the command :Note sets
+	keyword='\c\<note\>' and stop='^\s*%\s*$\|^\s*%\c.*\<to\s*do:\>'. This
 	prevent from listing ToDo lines with Notes and vice versa and stops at
-	lines which contains only '%'. 
+	lines which contains only '%'. With bang "!" the '^\s*' is not
+	prepended to the patterns.
 
   							*atp-:WordCount*
 :WordCount[!] 					
@@ -3833,7 +3836,7 @@ nmap [[, vmap [[
 	Goto previous \begin{
 
 							*atp-][*
-nmap ]], vmap ][
+nmap ][, vmap ][
 	Goto next \end{
 
 							*atp-[]*
@@ -3892,12 +3895,12 @@ is only one given in both. The map leader is defined by the variable
 setting is '_')
 	  	in text			in math ~
 imap ##rm 	\textrm{}<Left>		\mathrm{}<Left>
-imap ##te 	\textrm{}<Left>
+imap ##te 	\textrm{}<Left>		\text{}<Left>
 imap ##up	\textup{}<Left>
 imap ##md	\textmd{}<Left>
 imap ##sl	\textsl{}<Left>
 imap ##sc	\textsc{}<Left>
-imap ##em	\emphp{}<Left>
+imap ##em	\emph{}<Left>
 imap ##it 	\textit{}<Left>		\mathit{}<Left>
 imap ##sf 	\textsf{}<Left>		\mathsf{}<Left>
 imap ##bf 	\textbf{}<Left>		\mathbf{}<Left>
@@ -4083,7 +4086,7 @@ imap #=		\equiv
 imap `8		\infty		[the default '#' is not working, ` is used intead, 
 				 but only if |g:atp_imap_first_leader|='#']
 imap `6		\partial	[as above, you can also use \p<Tab>]
-imap `D 	<Esc>vxa\frac{\partial}{\partial "}
+imap `D 	<Esc>vxi\frac{\partial}{\partial "}
 				[ let me explain the above map: you type x`D
 				and you get \frac{\partial}{\partial x} ]
 imap #@		\circ
@@ -4162,6 +4165,13 @@ These imaps are defined in g:atp_imap_math variable.  They might be turned off
 usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
 (be setting it to 0, works on the fly).
 
+						*g:atp_imap_diacritics_inteligent*
+if |g:atp_imap_diacritics_inteligent| is set to 1 (the default) to get \'{a}
+you have to type a`', i.e. the map acts on the character just before the
+cursor. Otherwise, if |g:atp_imap_diacritics_inteligent|=0 they act as normal
+imaps, i.e. typing `' resolves to \'{} with cursor placed between the
+brackets. Here is a list of all provided imaps to diacritics:
+
     imap `'	\'{}
     imap `"	\"{}
     imap `^	\^{}
@@ -4174,6 +4184,9 @@ usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
     imap `.	\.{}
     imap `c	\c{}
     imap `t	\t{}
+
+You can turn off diacritics imaps by setting |g:atp_imap_diacritics|=[] in
+your |vimrc| or |atprc| file.
 
 							*atp-:ToggleIMaps*
 :ToggleIMaps

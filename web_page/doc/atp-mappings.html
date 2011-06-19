@@ -558,6 +558,14 @@ turned off usgin <a href="#atp-:ToggleIMaps">atp-:ToggleIMaps</a> commands or
 <a href="#g:atp_imap_define_math">g:atp_imap_define_diacritics</a> variable
 (be setting it to 0, works on the fly).
 
+<a name="#g:atp_imap_diacritics_inteligent"></a>
+<p>If <a
+    href="#g:atp_imap_diacritics_inteligent">g:atp_imap_diacritics_inteligent</a>
+is set to 1 (the default) to get \'{a} you have to type a`', i.e. the map acts
+on the character just before the cursor. Otherwise, if <a
+href="#g:atp_imap_diacritics_inteligent">g:atp_imap_diacritics_inteligent</a>=0
+they act as normal imaps, i.e. typing `' resolves to \'{} with cursor placed
+between the brackets. Here is a list of all provided imaps to diacritics:</p>
 <p><table border=0 vspace=0 cellspacing=1 >
     <tr><td><div class=map>imap `'</div></td><td>\'{}</td></tr>
     <tr><td><div class=map>imap `"</div></td><td>\"{}</td></tr>

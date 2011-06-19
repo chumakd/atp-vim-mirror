@@ -29,6 +29,21 @@ a:visited
     { 
 	color: #DE0055
     }
+a.leftpanel:link
+    {
+	color:#2E006C; 
+	text-decoration:none;
+    }
+a.leftpanel:hover
+    {
+	color:#2E006C; 
+	text-decoration:underline;
+    }
+a.leftpanel:visited
+    {
+	color:#2E006C; 
+	text-decoration:none;
+    }
 div.indented
    {
        padding-left: 50pt;
