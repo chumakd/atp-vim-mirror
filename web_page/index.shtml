@@ -72,14 +72,16 @@
 		You can <em>download</em> one of the <a
 		    href="https://sourceforge.net/projects/atp-vim/files/releases"><i>stable
 			versions</i></a> or a <a
-		    href="https://sourceforge.net/projects/atp-vim/files/snapshots"><i>snapshot</i></a>.<br>
+		    href="https://sourceforge.net/projects/atp-vim/files/snapshots"><i>snapshot</i></a>
+		<small>(or click the <b>Rleases</b> button of the <i>RSS</i> reader on the right and
+		    choose file to download)</small>.<br>
 		Snapshots have recent bug fixes, are published more often,
-		and they contain unstable new features. If you want to
-		have the latest version or you want to help with testing
-		you can use them. You can download <b>vba</b> file or
-		<b>tar.gz</b> file.  To install <b>vba</b> file all you
-		have to do is open it with vim and run the following vim
-		command <code>':source %'</code>. The <b>tar.gz</b> file
+		and they contain unstable versions of new features. If you
+		want to have the latest version or you want to help with
+		testing you can use them. You can download <b>vba</b> file or
+		<b>tar.gz</b> file. To install <b>vba</b> file all you have
+		to do is open it with vim and run the following vim command
+		<code>':source %'</code>. The <b>tar.gz</b> file
 		has to be unbundled in your <i>~/.vim</i> directory.
 		(<em>Note: it is not contained in any directory!!!, test
 		    it with <code>tar -tzf</code> first</em>) Don't forget

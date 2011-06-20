@@ -442,6 +442,8 @@ if !exists("g:atp_imap_ShortEnvIMaps") || g:atp_reload_variables
     let g:atp_imap_ShortEnvIMaps = 1
 endif
 if !exists("g:atp_imap_over_leader") || g:atp_reload_variables
+    " I'm not using "'" by default - because it is used quite often in mathematics to
+    " denote symbols.
     let g:atp_imap_over_leader	= "`"
 endif
 if !exists("g:atp_imap_subscript") || g:atp_reload_variables
@@ -1861,7 +1863,8 @@ let g:atp_completion_modes=[
 	    \ 'beamerthemes', 		'beamerinnerthemes',
 	    \ 'beamerouterthemes', 	'beamercolorthemes',
 	    \ 'beamerfontthemes',	'todonotes',
-	    \ 'siunits' ]
+	    \ 'siunits',		'includegraphics'
+	    \ ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
 endtry
@@ -1982,7 +1985,7 @@ endif
 	\ "\\usefont{", "\\fontsize{", "\\selectfont", "\\fontencoding{", "\\fontfamiliy{", "\\fontseries{", "\\fontshape{",
 	\ "\\rmdefault", "\\sfdefault", "\\ttdefault", "\\bfdefault", "\\mddefault", "\\itdefault",
 	\ "\\sldefault", "\\scdefault", "\\updefault",  "\\renewcommand{", "\\newcommand{",
-	\ "\\input", "\\include", "\\includeonly", "\\includegraphics",  
+	\ "\\input", "\\include{", "\\includeonly{", "\\includegraphics{",  
 	\ "\\savebox", "\\sbox", "\\usebox", "\\rule", "\\raisebox{", "\\rotatebox{",
 	\ "\\parbox{", "\\mbox{", "\\makebox{", "\\framebox{", "\\fbox{",
 	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", "\\vbox",

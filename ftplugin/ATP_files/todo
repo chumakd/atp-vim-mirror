@@ -361,13 +361,13 @@ ToDo:   Tikz Completion for -> <-, etc.
 SOLVED: b:atp_TexCompiler is not set by the value stored in project.vim file.
 	Because I called :SetXpdf with VimEnter, see my atprc file for the
 	solution - it should be possible to write it in one line, without a function.
-Todo:   WrapSelectoin \'{ } end	- accent maps (might be inteligent with InteligentWrapSelection
+Done:   WrapSelectoin \'{ } end	- accent maps (might be inteligent with InteligentWrapSelection
 	(they might be normal maps but there is not nice key to use in normal mode, i.e. ` cannot be used)
 	ADD TO DOC
 	ADD !hasmapto()
-ToDo:	Write to CmdAlias author to handle the bang.
+Done:	Write to CmdAlias author to handle the bang.
 	One more feature: if the command is called :TEX and :TE is unique user
-	command the :TE will work, the same shoul be with command aliases ':help user-cmd-ambiguous'.
+	command the :TE will work, the same should be with command aliases ':help user-cmd-ambiguous'.
 ToDo:	Make better accent maps which takes the letter as an argument and returns accented one.
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
 ToDo:	\cite with bibliography environment is not filtering the results
@@ -387,9 +387,21 @@ Done:  WrapSelection with completion of commands (this would be cool)
 Done:  TexAlign is not working for matrix (inside tikz).
 ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
 ToDo:  gw mis behaves when it is near \todo{}
-ToDo:  completion fot \includegraphics with image directory.
+Done:  completion fot \includegraphics with image directory.
+	it uses \graphicspath{{path1}{path2}{path3}} variable.
+	formats: 
+		dvi: eps.
+		pdf: jpg, gif, jpeg, png, pdf, pdf_tex (made by inkscape), eps.
+
+	\includesvg{} command.
+	Does my code works on mac? File path differences ... - I think vim should take care of this. 
+	\DeclareGraphicsExtension{}  (both in graphics and graphicx packages)
+
+Note:  grffile package -- allows to have spaces in file/direcotry names.
 ToDo:  #ve -> \vee colides with #v -> \varsigma (imaps)
 	#Z -> \mathrm ?
 ToDo:  add switch to atplib#CloseLastEnvironment() so that it only returns what to close. Then add this to line: 4966 (atplib) where I add greek letters and brackets.
 ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
 ToDo:  Do some chagnes, goto opened TOC window, split the window with 's' - the changes are lost!
+ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
+ToDo:  put all the leader variables in doc (g:atp_infty_leader might not be documented -- check this).

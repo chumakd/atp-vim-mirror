@@ -41,11 +41,12 @@ function ReqChange() {
 			}
 			if (Backend_short == "activity")
 			{
-			    content = '<table class=rsstable><tr><td><br><table align=center><tr><td><a class=button_off onclick="GetNews();">News</a></td><td><a class=button_on onclick="GetActivity();">Activity</a></td><td><a class=button_off onclick="GetReleases();">Releases</a></td></tr></table><ul>';
+			    content = '<table class=rsstable><tr><td><br><table align=center><tr><td><a class=button_off onclick="GetNews();">News</a></td><td><a class=button_on onclick="GetActivity();">Activity</a></td><td><a class=button_off onclick="GetReleases();">Releases</a></td></tr></table><p align="center" style="line-height: 50%;"><a href="http://atp-vim.svn.sourceforge.net/viewvc/atp-vim/">svn repository</a></p><ul>';
 			}
+
 			if (Backend_short == "releases")
 			{
-			    content = '<table class=rsstable><tr><td><br><table align=center><tr><td><a class=button_off onclick="GetNews();">News</a></td><td><a class=button_off onclick="GetActivity();">Activity</a></td><td><a class=button_on onclick="GetReleases();">Releases</a></td></tr></table><ul>';
+			    content = '<table class=rsstable><tr><td><br><table align=center><tr><td><a class=button_off onclick="GetNews();">News</a></td><td><a class=button_off onclick="GetActivity();">Activity</a></td><td><a class=button_on onclick="GetReleases();">Releases</a></td></tr></table><p align="center" style="line-height: 50%;">click link to download</p><ul>';
 			}
 		
 			// Browse items
@@ -70,7 +71,15 @@ function ReqChange() {
 				    content += '<hr class="leftpanel">'
 				}
 
-				content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>';
+				if (Backend_short == "releases")
+				{
+				    content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2><a href="http://sourceforge.net/projects/atp-vim/files/'+description+'">'+itemTitle+'</a></div>';
+				}
+				else
+				{
+				    content += '<li style="padding: 5px 0px;" title="'+itemTitle+'">'+itemPubDate+'</font><div class=rsstitle2>'+itemTitle+'</div>';
+				}
+
 				if (Backend_short == "news")
 				{
 				    content +=description;

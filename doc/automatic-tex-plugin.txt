@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 18 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.5)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -154,7 +154,7 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.6.5
+ Changes in version 9.7
 <
   See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
 

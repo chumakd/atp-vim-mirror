@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Jun 19 08:00  2011 W
+" Last Change: Mon Jun 20 12:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -444,19 +444,19 @@ endif
 
 " Accents:
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."' 	:<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."' 		:<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>"
 endif
 if !hasmapto(":<C-U>WrapSelection ".s:backslash."\"{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."\"	:<C-U>WrapSelection ".s:backslash."\"{ } end<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."\"		:<C-U>WrapSelection ".s:backslash."\"{ } end<CR>"
 endif
 if !hasmapto(":<C-U>WrapSelection ".s:backslash."^{ } end<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."^		:<C-U>WrapSelection ".s:backslash."^{ } end<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."v 	:<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."v 		:<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."` 	:<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."` 		:<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>"
 endif
 if !hasmapto(":<C-U>WrapSelection ".s:backslash."b{ } end<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."b		:<C-U>WrapSelection ".s:backslash."b{ } end<CR>"
@@ -471,7 +471,7 @@ if !hasmapto(":<C-U>WrapSelection ".s:backslash."~{ } end<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."~		:<C-U>WrapSelection ".s:backslash."~{ } end<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader.". 	:<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader.". 		:<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>"
 endif
 if !hasmapto(":<C-U>WrapSelection ".s:backslash."c{ } end<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."c		:<C-U>WrapSelection ".s:backslash."c{ } end<CR>"
@@ -931,6 +931,10 @@ let g:atp_imap_math_misc = [
 	\ "g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."tilde"' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '^', s:backslash.'=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>', 	
 	\ "g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ], 
+\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'o', s:backslash.'overline{}<Left>', 	
+	\ "g:atp_imap_define_math_misc", '\overline{}' ] ,
+\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'u', s:backslash.'underline{}<Left>', 	
+	\ "g:atp_imap_define_math_misc", '\underline{}' ]
 \ ]
 " 		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '~', s:backslash.'=(g:atp_imap_wide ? "wide" : "")<CR>tilde{}<Left>', 	"g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."tilde"' ],
 " 		\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_first_leader, '^', s:backslash.'=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>', 	"g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ], 

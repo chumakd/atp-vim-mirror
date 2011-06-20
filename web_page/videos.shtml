@@ -26,7 +26,7 @@
 			width="398" height="289" frameborder="0" autostart="false"></iframe></div><p>
 		    <a name="ref"></a>
 		</td><td valign="top">
-		    <h2>Completion for \ref{} by numbers</h2>
+		    <h2>Completion for \ref by numbers</h2>
 			This video shows how one can complete labels for ref
 			commands using output numbers from pdf/dvi file.
 			<p><div align="left"><iframe src="http://player.vimeo.com/video/25289512?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0" width="398" height="299" frameborder="0" autostart="false"></iframe></div><p>
@@ -41,6 +41,14 @@
 		    src="http://player.vimeo.com/video/25270805?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
 		    width="398" height="299" frameborder="0"></iframe></div><p>
 		</td><td valign="top">
+		<h2>Progress Bar</h2>
+		    This video shows progress bar of <b>ATP</b>. The number in
+		    square brackets is the current page number processed by LaTeX.
+		    <p><div align="left"><iframe
+		    src="http://player.vimeo.com/video/25351177?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
+		    width="398" height="299" frameborder="0"></iframe></div><p>
+		</td></tr>
+		<td valign="top">
 		<a name="toc"></a>
 		<h2>Table of Contents</h2>
 		    <p><div align="left"><iframe

@@ -3925,6 +3925,19 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    return ''
 	endif
+    "{{{3 --------- includegraphics
+    elseif (l =~ '\\includegraphics\s*\(\[[^\]]*\]\s*\)\?{[^}]*$')
+	if index(g:atp_completion_active_modes, 'includegraphics') != -1
+	    let completion_method='includegraphics'
+	    " DEBUG:
+	    let b:comp_method='includegraphics'
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+	else
+	    let b:comp_method='includegraphics fast return'
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+	    return ''
+	endif
+
     "{{{3 --------- bibfiles
     elseif pline =~ '\\\%(bibliography\%(style\)\@!\|addbibresource\|addglobalbib\)' && !normal_mode
 	if index(g:atp_completion_active_modes, 'bibfiles') != -1
@@ -4539,6 +4552,30 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list=[]
 	call  extend(completion_list, atplib#KpsewhichGlobPath('tex', b:atp_OutDir . ',' . g:atp_texinputs, '*.tex', ':t:r', '^\%(\/home\|\.\|.*users\)', '\%(^\\usr\|texlive\|miktex\|kpsewhich\|generic\)'))
 	call sort(completion_list)
+    " {{{3 ------------ TEX INCLUDEGRAPHICS
+    elseif completion_method == 'includegraphics'
+	" Search for \graphicspath but only in the preamble
+	let matches=atplib#GrepPreambule('\\graphicspath')
+	for match in matches
+	    let dirs = map(split(matchstr(match['text'], '\graphicspath\s*{\zs.*\ze}'), '}'), "substitute(v:val, '^\s*{', '', '')")
+	    call map(dirs, "substitute(v:val, '\/\/', '/**', 'g')")
+	endfor
+	let gr_dirs= ( len(dirs) == 0 ? "./" : join(dirs,',') )
+	if b:atp_TexCompiler == "latex"
+	    let gr = ["*.eps", "*.EPS"]
+	else
+	    let gr = ["*.gif", "*jpeg", "*.jpg", "*.png", "*.pdf", "*.pdf_tex", "*.eps",
+			\ "*.GIF", "*JPEG", "*.JPG", "*.PNG", "*.PDF", "*.PDF_TEX", "*.EPS"]
+	endif
+	let completion_list=[]
+	if begin !~ '\(gif\|jpe\?g\|png\|pdf\|pdf_tex\|eps\)$'
+	    for ext in gr
+		let completion_list+=split(globpath(gr_dirs, begin.ext), "\n")
+	    endfor
+	else
+	    let completion_list+=split(globpath(gr_dirs, begin), "\n")
+	endif
+	call map(completion_list, "substitute(v:val, '^\s*\.\/', '', '')")
     " {{{3 ------------ BIBFILES
     elseif completion_method ==  'bibfiles'
 	let  completion_list=[]
@@ -4893,6 +4930,9 @@ function! atplib#TabCompletion(expert_mode,...)
 			call add(completion_dict, { "word" : data[0].close, "abbr" : data[0], "menu" : ( data[2] == 'equation' && data[1] != "" ? "(".data[1].")" : data[1] ) , "kind" : data[2][0] })
 		    endif
 		endfor 
+	    " {{{4 --------- includegraphics
+	    elseif completion_method == 'includegraphics'
+		let completions=completion_list
 	    endif
     "{{{3 --------- else: try to close environment
     else
@@ -4923,7 +4963,7 @@ function! atplib#TabCompletion(expert_mode,...)
     " DEBUG
     let b:completions=completions 
     " {{{2 COMPLETE 
-    " {{{3 package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding and input files 
+    " {{{3 package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding, input files, includegraphics
     if
 		\ completion_method == 'package' 	|| 
 		\ completion_method == 'tikz libraries'    || 
@@ -4941,7 +4981,8 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'font encoding'||
 		\ completion_method == 'todo options' ||
 		\ completion_method == 'missingfigure options' ||
-		\ completion_method == 'inputfiles' 
+		\ completion_method == 'inputfiles' ||
+		\ completion_method == 'includegraphics' 
 	call complete(nr+2,completions)
     "{{{3 labels
     elseif completion_method == 'labels'
@@ -5031,12 +5072,12 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
 	    " DEBUG
 	    if exists("zone")
-		let b:tc_return.=" close_env end " . zone
-		let b:comp_method.=' close_env end ' . zone
+		let b:tc_return =" close_env end " . zone
+		let b:comp_method=' close_env end ' . zone
 		call atplib#Log("TabCompletion.log", "b:comp_method.=".b:comp_method)
 	    else
-		let b:tc_return.=" close_env end"
-		let b:comp_method.=' close_env end'
+		let b:tc_return=" close_env end"
+		let b:comp_method=' close_env end'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    endif
 	elseif completion_method == 'package' || 
