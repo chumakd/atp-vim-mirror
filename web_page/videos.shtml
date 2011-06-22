@@ -1,7 +1,7 @@
 <html lang="en">
     <head>
 	<title >Automatic LaTeX Plugin for Vim</title>
-	<link rel="stylesheet" href="style.css"> 
+	<link rel="stylesheet" type="text/css" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
 	<script language="javascript" src="rssreader.js"></script>
 	<!--#include virtual="google_tracking_code.shtml"-->
@@ -16,44 +16,54 @@
 	    </td>
 
 	    <td class=mainpanel valign="top">
-		<table ><tr><td valign="top">
-		    <a name="preamble"></a>
-		    <h2>Writing Preamble with <b>ATP</b></h2>
-			This video shows how to use <b>ATP</b> tab completion to
-			write preambule.
+		<table ><tr><td valign="top" style="padding: 0 20 0 0;"
+			    width="410">
+		    <a name="progress_bar"></a>
+		    <h2>Progress Bar</h2>
+			This video shows progress bar of <b>ATP</b>. The number in
+			square brackets is the current page number processed by LaTeX.
 			<p><div align="left"><iframe
-				src="http://player.vimeo.com/video/25270766?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0"
-			width="398" height="289" frameborder="0" autostart="false"></iframe></div><p>
-		    <a name="ref"></a>
-		</td><td valign="top">
+			src="http://player.vimeo.com/video/25359008?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
+			width="398" height="299" frameborder="0"></iframe></div><p>
+			<a name="ref"></a>
+		</td><td valign="top" style="padding: 0 20 0 0;"
+			    width="410">
 		    <h2>Completion for \ref by numbers</h2>
 			This video shows how one can complete labels for ref
 			commands using output numbers from pdf/dvi file.
 			<p><div align="left"><iframe src="http://player.vimeo.com/video/25289512?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0" width="398" height="299" frameborder="0" autostart="false"></iframe></div><p>
 		</td><tr>
-		<tr><td valign="top">
-		<a name="amsref"></a>
-		<h2>AMSRef command</h2>
-		    This video shows how to obtain bibliographic data from
-		    <a href="http://www.ams.org/mref">ams reference</a> web
-		    page.
-		    <p><div align="left"><iframe
-		    src="http://player.vimeo.com/video/25270805?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
-		    width="398" height="299" frameborder="0"></iframe></div><p>
-		</td><td valign="top">
-		<h2>Progress Bar</h2>
-		    This video shows progress bar of <b>ATP</b>. The number in
-		    square brackets is the current page number processed by LaTeX.
-		    <p><div align="left"><iframe
-		    src="http://player.vimeo.com/video/25351177?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
-		    width="398" height="299" frameborder="0"></iframe></div><p>
+		<tr><td valign="top" style="padding: 0 20 0 0;"
+			    width="410">
+		    <a name="amsref"></a>
+		    <h2>AMSRef command</h2>
+			This video shows how to obtain bibliographic data from
+			<a href="http://www.ams.org/mref">ams reference</a> web
+			page.
+			<p><div align="left"><iframe
+			src="http://player.vimeo.com/video/25270805?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
+			width="398" height="299" frameborder="0"></iframe></div><p>
+		</td><td valign="top" style="padding: 0 20 0 0;"
+			    width="410">
+			<a name="preamble"></a>
+			<h2>Writing Preamble with <b>ATP</b></h2>
+			    This video shows how to use <b>ATP</b> tab
+			    completion to write preambule.  <p><div
+			    align="left"><iframe
+			    src="http://player.vimeo.com/video/25270766?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0"
+			    width="398" height="289" frameborder="0"
+			    autostart="false"></iframe></div><p>
 		</td></tr>
-		<td valign="top">
-		<a name="toc"></a>
-		<h2>Table of Contents</h2>
-		    <p><div align="left"><iframe
-		    src="http://player.vimeo.com/video/25298421?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0"
-		    width="398" height="289" frameborder="0" autostart="false"></iframe></div></p>
+		<tr><td valign="top" style="padding: 0 20 0 0;"
+			    width="410">
+		    <a name="toc"></a>
+		    <h2>Table of Contents</h2>
+			This video shows table of contents and some of its
+			features: yanking and pasting sections and spliting
+			the file. It has more features!
+			<p><div align="left"><iframe
+			src="http://player.vimeo.com/video/25298421?title=0&amp;byline=0&amp;portrait=0&amp;autoplay=0"
+			width="398" height="289" frameborder="0" autostart="false"></iframe></div></p>
 		</td></tr></table>
 	    </td>
 	</tr>

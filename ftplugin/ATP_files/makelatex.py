@@ -261,7 +261,7 @@ def reload_xpdf():
 
 def copy_back_output(tmpdir):
     os.chdir(tmpdir)
-    if os.path.exists(file_cp):
+    if os.path.exists(file_cp) and os.path.exists(basename+output_ext):
         shutil.copy(basename+output_ext, texfile_dir)
     os.chdir(texfile_dir)
 

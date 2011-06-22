@@ -2754,6 +2754,7 @@ endfunction
 " 	if one wants to find an environment name it must be 0 or "" or not
 " 	given at all.
 " a:4 = line and column number (in a vim list) where environment is opened
+" a:5 = return only (only return the closing code (implemented only for a:2="math") 
 " ToDo: Ad a highlight to messages!!! AND MAKE IT NOT DISAPPEAR SOME HOW?
 " (redrawing doesn't help) CHECK lazyredraw. 
 " Note: this function tries to not double the checks what to close if it is
@@ -2764,12 +2765,13 @@ function! atplib#CloseLastEnvironment(...)
     let l:com	= a:0 >= 1 ? a:1 : 'i'
     let l:close = a:0 >= 2 && a:2 != "" ? a:2 : 0
     if a:0 >= 3
-	let l:env_name	= a:3 == "" ? 0 : a:3
+	let l:env_name	= ( a:3 == "" ? 0 : a:3 )
 	let l:close 	= ( a:3 != '' ? "environment" : l:close )
     else
 	let l:env_name 	= 0
     endif
-    let l:bpos_env	= a:0 >= 4 ? a:4 : [0, 0]
+    let l:bpos_env	= ( a:0 >= 4 ? a:4 : [0, 0] )
+    let return_only	= ( a:0 >= 5 ? a:5 : 0 )
 
     if g:atp_debugCloseLastEnvironment
 	exe "redir! > " . g:atp_TempDir."/CloseLastEnvironment.log"
@@ -2938,7 +2940,7 @@ function! atplib#CloseLastEnvironment(...)
 		silent echo "Given coordinates are closed."
 		redir END
 	    endif
-	    return " Given coordinates are closed."
+	    return ''
 	endif
     endif
 "}}}2
@@ -2957,7 +2959,7 @@ if a:0 <= 1
 	    silent echo "return: l:env_name=".string(l:env_name)." && math_1+...+math_4=".string(math_1+math_2+math_3+math_4)
 	    redir END
 	endif
-	return
+	return ''
     endif
 endif
 if g:atp_debugCloseLastEnvironment
@@ -2973,7 +2975,7 @@ if l:close == "0" || l:close == 'math' && !exists("begin_line")
 	silent echo "there was nothing to close"
 	redir END
     endif
-    return "there was nothing to close"
+    return ''
 endif
 if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4") && math_4 )
     echohl ErrorMsg
@@ -2984,14 +2986,14 @@ if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4"
 	silent echo "return A"
 	redir END
     endif
-    return 
+    return  ''
 endif
 if l:env_name =~ '^\s*document\s*$'
     if g:atp_debugCloseLastEnvironment
 	silent echo "return B"
 	redir END
     endif
-    return ""
+    return ''
 endif
 let l:cline	= getline(".")
 let l:pos	= getpos(".")
@@ -3121,7 +3123,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			silent echo "return C"
 			redir END
 		    endif
-		    return
+		    return ''
 		endif
 
 		" get all names of environments which begin in this line
@@ -3176,7 +3178,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			    silent echo "return D"
 			    redir END
 			endif
-			return 0
+			return ''
 		    endif
 		    let l:eindent=atplib#CopyIndentation(getline(l:line_nr))
 		    let l:pos=getpos(".")
@@ -3270,14 +3272,14 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			    silent echo "return E"
 			    redir END
 			endif
-			return 1
+			return ''
 		    endif
 		else
 		    if g:atp_debugCloseLastEnvironment
 			silent echo "return F"
 			redir END
 		    endif
-		    return "this is too hard?"
+		    return ''
 		endif
 		unlet! l:env_names
 		unlet! l:env_dict
@@ -3291,86 +3293,120 @@ let l:eindent=atplib#CopyIndentation(l:line)
     "{{{2 close math: texMathZoneV, texMathZoneW, texMathZoneX, texMathZoneY 
     else
 	"{{{3 Close math in the current line
-	echomsg "[ATP:] closing math from line " . l:begin_line
+	if !return_only
+	    echomsg "[ATP:] closing math from line " . l:begin_line
+	endif
 	if    math_mode == 'texMathZoneV' && l:line !~ '^\s*\\(\s*$' 	||
 	    \ math_mode == 'texMathZoneW' && l:line !~ '^\s*\\\[\s*$' 	||
 	    \ math_mode == 'texMathZoneX' && l:line !~ '^\s*\$\s*$' 	||
 	    \ math_mode == 'texMathZoneY' && l:line !~ '^\s*\$\{2,2}\s*$'
 	    if math_mode == "texMathZoneW"
-	 	if l:com == 'a' 
-		    if getline(l:begin_line) =~ '^\s*\\\[\s*$'
-			call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
+		if !return_only
+		    if l:com == 'a' 
+			if getline(l:begin_line) =~ '^\s*\\\[\s*$'
+			    call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
+			else
+			    call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\]'. strpart(l:cline,getpos(".")[2]))
+			endif
 		    else
-			call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\]'. strpart(l:cline,getpos(".")[2]))
+			if getline(l:begin_line) =~ '^\s*\\\[\s*$'
+			    call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
+			else
+			    call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '\]'. strpart(l:cline,getpos(".")[2]-1))
+    " TODO: This could be optional: (but the option rather
+    " should be an argument of this function rather than
+    " here!
+			endif
+			let l:pos=getpos(".")
+			let l:pos[2]+=2
+			keepjumps call setpos(("."),l:pos)
+			let b:cle_return="texMathZoneW"
 		    endif
 		else
-		    if getline(l:begin_line) =~ '^\s*\\\[\s*$'
-			call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
-		    else
-			call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '\]'. strpart(l:cline,getpos(".")[2]-1))
-" TODO: This could be optional: (but the option rather
-" should be an argument of this function rather than
-" here!
-		    endif
-		    let l:pos=getpos(".")
-		    let l:pos[2]+=2
-		    keepjumps call setpos(("."),l:pos)
-		    let b:cle_return="texMathZoneW"
+		    return '\]'
 		endif
 	    elseif math_mode == "texMathZoneV"
-		if l:com == 'a'
-		    call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\)'. strpart(l:cline,getpos(".")[2]))
+		if !return_only
+		    if l:com == 'a'
+			call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\)'. strpart(l:cline,getpos(".")[2]))
+		    else
+			call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '\)'. strpart(l:cline,getpos(".")[2]-1))
+			call cursor(line("."),col(".")+2)
+			let b:cle_return="V"
+		    endif
 		else
-		    call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '\)'. strpart(l:cline,getpos(".")[2]-1))
-		    call cursor(line("."),col(".")+2)
-		    let b:cle_return="V"
+		    return '\)'
 		endif
 	    elseif math_mode == "texMathZoneX" 
-		call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '$'. strpart(l:cline,getpos(".")[2]-1))
-		call cursor(line("."),col(".")+1)
+		if !return_only
+		    call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '$'. strpart(l:cline,getpos(".")[2]-1))
+		    call cursor(line("."),col(".")+1)
+		else
+		    return "$"
+		endif
 	    elseif math_mode == "texMathZoneY" 
-		call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '$$'. strpart(l:cline,getpos(".")[2]-1))
-		call cursor(line("."),col(".")+2)
+		if !return_only
+		    call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '$$'. strpart(l:cline,getpos(".")[2]-1))
+		    call cursor(line("."),col(".")+2)
+		else
+		    return '$$'
+		endif
 	    endif " }}}3
 	"{{{3 Close math in a new line, preserv the indentation.
 	else 	    
 	    let l:eindent=atplib#CopyIndentation(l:line)
 	    if math_mode == 'texMathZoneW'
-		let l:iline=line(".")
-		" if the current line is empty append before it.
-		if getline(".") =~ '^\s*$' && l:iline > 1
-		    let l:iline-=1
+		if !return_only
+		    let l:iline=line(".")
+		    " if the current line is empty append before it.
+		    if getline(".") =~ '^\s*$' && l:iline > 1
+			let l:iline-=1
+		    endif
+		    call append(l:iline, l:eindent . '\]')
+		    echomsg "[ATP:] \[ closed in line " . l:iline
+		else
+		    return '\]'
 		endif
-		call append(l:iline, l:eindent . '\]')
-		echomsg "[ATP:] \[ closed in line " . l:iline
-" 		let b:cle_return=2 . " dispalyed math " . l:iline  . " indent " . len(l:eindent) " DEBUG
+    " 		let b:cle_return=2 . " dispalyed math " . l:iline  . " indent " . len(l:eindent) " DEBUG
 	    elseif math_mode == 'texMathZoneV'
-		let l:iline=line(".")
-		" if the current line is empty append before it.
-		if getline(".") =~ '^\s*$' && l:iline > 1
-		    let l:iline-=1
+		if !return_only
+		    let l:iline=line(".")
+		    " if the current line is empty append before it.
+		    if getline(".") =~ '^\s*$' && l:iline > 1
+			let l:iline-=1
+		    endif
+		    call append(l:iline, l:eindent . '\)')
+		    echomsg "[ATP:] \( closed in line " . l:iline
+		else
+		    return '\)'
 		endif
-		call append(l:iline, l:eindent . '\)')
-		echomsg "[ATP:] \( closed in line " . l:iline
-" 		let b:cle_return=2 . " inline math " . l:iline . " indent " .len(l:eindent) " DEBUG
+    " 		let b:cle_return=2 . " inline math " . l:iline . " indent " .len(l:eindent) " DEBUG
 	    elseif math_mode == 'texMathZoneX'
-		let l:iline=line(".")
-		" if the current line is empty append before it.
-		if getline(".") =~ '^\s*$' && l:iline > 1
-		    let l:iline-=1
+		if !return_only
+		    let l:iline=line(".")
+		    " if the current line is empty append before it.
+		    if getline(".") =~ '^\s*$' && l:iline > 1
+			let l:iline-=1
+		    endif
+		    let sindent=atplib#CopyIndentation(getline(search('\$', 'bnW')))
+		    call append(l:iline, sindent . '$')
+		    echomsg "[ATP:] $ closed in line " . l:iline
+		else
+		    return '$'
 		endif
-		let sindent=atplib#CopyIndentation(getline(search('\$', 'bnW')))
-		call append(l:iline, sindent . '$')
-		echomsg "[ATP:] $ closed in line " . l:iline
 	    elseif math_mode == 'texMathZoneY'
-		let l:iline=line(".")
-		" if the current line is empty append before it.
-		if getline(".") =~ '^\s*$' && l:iline > 1
-		    let l:iline-=1
+		if !return_only
+		    let l:iline=line(".")
+		    " if the current line is empty append before it.
+		    if getline(".") =~ '^\s*$' && l:iline > 1
+			let l:iline-=1
+		    endif
+		    let sindent=atplib#CopyIndentation(getline(search('\$\$', 'bnW')))
+		    call append(l:iline, sindent . '$$')
+		    echomsg "[ATP:] $ closed in line " . l:iline
+		else
+		    return '$$'
 		endif
-		let sindent=atplib#CopyIndentation(getline(search('\$\$', 'bnW')))
-		call append(l:iline, sindent . '$$')
-		echomsg "[ATP:] $ closed in line " . l:iline
 	    endif
 	endif "}}3
     endif
@@ -3379,6 +3415,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 	redir END
     endif
     "}}}2
+    return ''
 endfunction
 " imap <F7> <Esc>:call atplib#CloseLastEnvironment()<CR>
 " }}}1
@@ -3962,7 +3999,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    return ''
 	endif
     "{{{3 --------- todo & missingfigure options
-    elseif obegin =~ '\\todo\[[^\]]*'
+    elseif obegin =~ '\\todo\[[^\]]*$'
 	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
 	    let completion_method='todo options'
 	    let b:comp_method='todo options'
@@ -3972,7 +4009,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    return ''
 	endif
-    elseif obegin =~ '\\missingfigure\[[^\]]*'
+    elseif obegin =~ '\\missingfigure\[[^\]]*$'
 	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
 	    let completion_method='missingfigure options'
 	    let b:comp_method='missingfigure options'
@@ -4094,28 +4131,28 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
     "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
-	"{{{4 --------- brackets
+	"{{{4 --------- brackets and math zones \(:\),\[:\],$:$,$$:$$.
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-	if begParen[1] != 0
+	if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 		let b:comp_method='brackets'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		if atplib#CheckSyntaxGroups(['texMathZoneV'])
-		    let pattern = '\\\@!\\('
+		    let pattern = '\\\@!\\(\zs'
 		elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
-		    let pattern = '\\\@<!\\\['
+		    let pattern = '\\\@<!\\\[\zs'
 		elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
-		    let pattern = '\%(\\\|\$\)\@<!\$\$\@!'
+		    let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
 		elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
-		    let pattern = '\\\@<!\$\$'
+		    let pattern = '\\\@<!\$\$\zs'
 		else
 		    let pattern = ''
 		endif
 		if !empty(pattern)
 		    let begMathZone = searchpos(pattern, 'bnW')
 		    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
-			call atplib#CloseLastEnvironment(append, 'math')
+			call atplib#CloseLastEnvironment(append, 'math', '', [0, 0], 1)
 		    else
 			call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
 		    endif
@@ -4416,7 +4453,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	
 	    " nicefrac {{{5
 	    if atplib#SearchPackage('nicefrac', stop_line)
-		call add(completion_list,"\\nicefrac")
+		call add(completion_list,"\\nicefrac{")
 	    endif
 	    " SIunits {{{5
 	    if atplib#SearchPackage('SIunits', stop_line) && ( index(g:atp_completion_active_modes, 'SIunits') != -1 || index(g:atp_completion_active_modes, 'siunits') != -1 )
@@ -5008,12 +5045,37 @@ function! atplib#TabCompletion(expert_mode,...)
 	    " Add here brackets - somebody might want to
 	    " close a bracket after \nu and not get \numberwithin{ (which is
 	    " rarely used).
+	    let g:debug = 0
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
+		let g:debug = 1
 		let begParen = atplib#CheckBracket(g:atp_bracket_dict)
 		let g:begParen = begParen
-		if begParen[1] != 0
-		    let bracket	= atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+		if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
+		    if atplib#CheckSyntaxGroups(['texMathZoneV'])
+			let pattern = '\\\@!\\(\zs'
+		    elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
+			let pattern = '\\\@<!\\\[\zs'
+		    elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
+			let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
+		    elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
+			let pattern = '\\\@<!\$\$\zs'
+		    else
+			let pattern = ''
+		    endif
+		    let g:pattern_1 = pattern
+		    if !empty(pattern)
+			let begMathZone = searchpos(pattern, 'bnW')
+			let g:begMathZone = begMathZone
+			if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
+			    let bracket = atplib#CloseLastEnvironment(append, 'math', '', [0, 0], 1)
+			else
+			    let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+			endif
+		    else
+			let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+		    endif
+		    let g:bracket=bracket
 		    if bracket != "0" && bracket != ""
 			call add(completions, cbegin.bracket)
 		    endif

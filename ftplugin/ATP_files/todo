@@ -345,17 +345,13 @@ ToDo: There is quite big mess when callig gf (how files are listed)
 
 ToDo: opening skeletal file: b:ListOfFiles is empty => b:atp_LocalCommands is empty.
 ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
-ToDo: \nu<Tab> completes to sth. (add greek letters to completion)
+Done: \nu<Tab> completes to sth. (add greek letters to completion)
 ToDo: \partial \overline \overline{
 ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).
 ToDo: test b:atp_updatetime_ variables when they are set to 0, test &l:updatetime setting in options.vim (line 920).
-Done: use Kill command to Kill python scripts before running. We can make it
-so that never runs more than 2 or 3 script at a time. Kill the latets or the oldest one. This is very easy to implement.
-ToDo: Make python script which looks at vim page with recent script updates to
-	look if the sctip that I listed at atp web page (plugins.shtml) and list the
-	changes. This can be fetched and taken with a python script.
-ToDo: :WrapSelection if without arguments should assume :WrapSelection {
-ToDo: Wizard for inputing graphics, show window with file to choose, ... (with browse())
+Done: :WrapSelection if without arguments should assume :WrapSelection {
+Done: Wizard for inputing graphics, show window with file to choose, ... (with browse())
+	This is done without a wizzard, it is faster (for a typer) to have a completion for this.
 	But maybe its better to use vim file searching capabilities ...
 ToDo:   Tikz Completion for -> <-, etc.
 SOLVED: b:atp_TexCompiler is not set by the value stored in project.vim file.
@@ -370,7 +366,7 @@ Done:	Write to CmdAlias author to handle the bang.
 	command the :TE will work, the same should be with command aliases ':help user-cmd-ambiguous'.
 ToDo:	Make better accent maps which takes the letter as an argument and returns accented one.
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
-ToDo:	\cite with bibliography environment is not filtering the results
+Done:	\cite with bibliography environment is not filtering the results
 	This is done but adding } is not implemented yet.
 Done:   _te -> \text{} imap should be done (for math mode).
 Done: 	\begin in math mode is not completing. /added to g:atp_math_commands, I should investigate this further/
@@ -386,6 +382,8 @@ Done:  prevent AuTeX running when we are in insert mode in math.
 Done:  WrapSelection with completion of commands (this would be cool)
 Done:  TexAlign is not working for matrix (inside tikz).
 ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
+	in my test file it works...
+	only \begin{scope}<Tab> will not close environment since keywords are 'flying' around ;).
 ToDo:  gw mis behaves when it is near \todo{}
 Done:  completion fot \includegraphics with image directory.
 	it uses \graphicspath{{path1}{path2}{path3}} variable.
@@ -398,10 +396,18 @@ Done:  completion fot \includegraphics with image directory.
 	\DeclareGraphicsExtension{}  (both in graphics and graphicx packages)
 
 Note:  grffile package -- allows to have spaces in file/direcotry names.
-ToDo:  #ve -> \vee colides with #v -> \varsigma (imaps)
+ToDo:  #ve -> \vee colides with #v -> \vartheta (imaps)
 	#Z -> \mathrm ?
-ToDo:  add switch to atplib#CloseLastEnvironment() so that it only returns what to close. Then add this to line: 4966 (atplib) where I add greek letters and brackets.
+Done:  add switch to atplib#CloseLastEnvironment() so that it only returns
+	what to close. Then add this to line: 5049 (atplib) where I add greek letters
+	and brackets.
 ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
-ToDo:  Do some chagnes, goto opened TOC window, split the window with 's' - the changes are lost!
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
 ToDo:  put all the leader variables in doc (g:atp_infty_leader might not be documented -- check this).
+ToDo:  make \frac/\nicefrac imap, 
+ToDo:  check ]I, ]i and ]ite - they mess up when going in/out of insert mode I think.
+ToDo:  :WrapSelection -> :Wrap
+Done:  \mathsf map is not working when it is first in the line typed after nonzero indentation.
+ToDo:  % should work with <:> as well (this is not possible > and < appears in alone also. 
+ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
+ToDo:  imap \_s\+ ! remove it so that it doesn't appear in insert mode. Do not forget about the menu!!!

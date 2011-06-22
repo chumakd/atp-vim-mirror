@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 	<title >ATP Feature List</title>
-	<link rel="stylesheet" href="style.css"> 
+	<link rel="stylesheet" type="text/css" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
 	<!--#include virtual="google_tracking_code.shtml"-->
     </head>
@@ -21,7 +21,10 @@
 		    <h3>Compilation Features:</h3>
 		    <div>* <b>background TeX/LaTeX processing</b> with status
 			info (current page number processed by LaTeX in status
-			line - what I call <a href="doc/atp-commands.html#g:atp_ProgressBar"><em>progress bar</em></a>)</div>
+			line - what I call <a
+			    href="doc/atp-commands.html#g:atp_ProgressBar"><em>progress
+				bar</em></a>) (see a <a
+			    href="videos.shtml#progress_bar">video</a>)</div>
 		    <div>* interface for <a href="doc/atp-commands.html#atp-:Latexmk">latexmk</a></div>
 		    <div>* <b>reverse/inverse searching</b> for: <b>okular</b>,
 			<b>xdvi</b> (<i>okular,xdvi->vim</i>)</div>

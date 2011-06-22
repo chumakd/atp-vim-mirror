@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 	<title >Automatic LaTeX Plugin for Vim</title>
-	<link rel="stylesheet" href="style.css"> 
+	<link rel="stylesheet" type="text/css" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="../vim_shortcut.ico">
 	<script language="javascript" src="rssreader.js"></script>
 	<!--#include virtual="google_tracking_code.shtml"-->
@@ -42,9 +42,10 @@
 		Maps are <em>highly configurable</em> (some of them you
 		can be turn on/off temporarily).<br> <b>ATP</b> has
 		a powerful <b>Tab completion</b> for commands,
-		environments, closing environments, ... . <i>It also
-		    completes labels by numbers (as seen in your output
-		    file)</i>.<br> Instead of <i>folding</i> ATP provides
+		environments, closing environments and brackets ... . <i>It also
+		    completes labels by numbers (as seen in your output file,
+		    see this <a href="videos.shtml#ref">video</a>)</i>.<br>
+		Instead of <i>folding</i> ATP provides
 		<b>Table of Contents</b>, which also can be used to copy
 		(yank), move, paste sections.
 		<br><br>
@@ -86,7 +87,8 @@
 		(<em>Note: it is not contained in any directory!!!, test
 		    it with <code>tar -tzf</code> first</em>) Don't forget
 		to run <code>':helptags ~/.vim/doc'</code>, if you install
-		from <b>tar.gz</b> bundle.<br> Here is a list of <a
+		from <b>tar.gz</b> bundle.<br> 
+		Here is a list of <a
 		    href="requirements.shtml"><b><i>requirements</i></b></a>.
 		<p>You need to set <code>:syntax on</code> and <code>:filetype
 		    plugin on</code> in your vimrc file for <b>ATP</b> to work.
@@ -94,7 +96,8 @@
 		<code>:filetype indent on</code>.</p>
 		<p>On <a href="www.gentoo.org">Gentoo</a> you can
 		<code>emerge</code> <b>ATP</b>. Thanks to <i>Tim Harder</i> for
-		the ebuild.</p>
+		the ebuild
+		(<nobr><code>app-vim/automatictexplugin</code></nobr>).</p>
 		<h2>Updates</h2>
 		If you have <b>ATP</b> you can use <a
 		    href="doc/atp-installation.html#atp-:UpdateATP"><code>:UpdateATP[!]</code></a>

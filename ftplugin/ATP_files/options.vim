@@ -1004,7 +1004,7 @@ if !exists("g:atp_algorithmic_dict") || g:atp_reload_variables
     let g:atp_algorithmic_dict = { 'IF' : 'ENDIF', 'FOR' : 'ENDFOR', 'WHILE' : 'ENDWHILE' }
 endif
 if !exists("g:atp_bracket_dict") || g:atp_reload_variables
-    let g:atp_bracket_dict = { '(' : ')', '{' : '}', '[' : ']', '\lceil' : '\rceil', '\lfloor' : '\rfloor', '\langle' : '\rangle', '\lgroup' : '\rgroup' }
+    let g:atp_bracket_dict = { '(' : ')', '{' : '}', '[' : ']', '\lceil' : '\rceil', '\lfloor' : '\rfloor', '\langle' : '\rangle', '\lgroup' : '\rgroup', '<' : '>' }
 endif
 if !exists("g:atp_LatexBox") || g:atp_reload_variables
     let g:atp_LatexBox		= 1
@@ -1194,7 +1194,7 @@ function! s:ShowOptions(bang,...)
     echohl WarningMsg
     echo "Local buffer variables:"
     echohl Normal
-    for key in keys(s:optionsDict)
+    for key in sort(keys(s:optionsDict))
 	let space = ""
 	for s in range(mlen-len(key)+1)
 	    let space .= " "
@@ -1223,6 +1223,7 @@ function! s:ShowOptions(bang,...)
 		call add(var_list, var_name)
 	    endif
 	endfor
+	call sort(var_list)
 
 	" Filter only matching variables that exists!
 	call filter(var_list, 'count(var_list, v:val) == 1 && exists(v:val)')
@@ -1234,7 +1235,7 @@ function! s:ShowOptions(bang,...)
 	    endfor
 	    if var_name =~ pattern && var_name !~ '_command\|_amsfonts\|ams_negations\|tikz_\|keywords'
 " 		if patn != '' && var_name !~ patn
-		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_CupsOptions", "g:atp_CompilerMsg_Dict", "g:ViewerMsg_Dict", "g:CompilerMsg_Dict", "g:atp_amsmath_environments"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
+		if index(["g:atp_LatexPackages", "g:atp_LatexClasses", "g:atp_completion_modes", "g:atp_completion_modes_normal_mode", "g:atp_Environments", "g:atp_shortname_dict", "g:atp_MathTools_environments", "g:atp_keymaps", "g:atp_CupsOptions", "g:atp_CompilerMsg_Dict", "g:ViewerMsg_Dict", "g:CompilerMsg_Dict", "g:atp_amsmath_environments", "g:atp_siuinits"], var_name) == -1 && var_name !~# '^g:atp_Beamer' && var_name !~# '^g:atp_TodoNotes'
 		    echo var_name.space.string({var_name})
 		    if len(var_name.space.string({var_name})) > &l:columns
 			echo "\n"
@@ -1396,8 +1397,20 @@ function! <SID>SetXdvi()
 	let g:atp_xdviOptions	+= index(g:atp_xdviOptions, '-editor') != -1 && 
 		    \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
 		    \ ? ["-editor", "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"] : []
+	if index(g:atp_xdviOptions, '-watchfile') != -1 && \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
+	    let g:atp_xdviOptions += [ '-watchfile', '1' 
+
     else
-	let g:atp_xdviOptions = ["-editor",  "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"]
+	if ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
+	    let g:atp_xdviOptions = ["-editor",  "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"]
+	endif
+	if ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
+	    if exists("g:atp_xdviOptions")
+		let g:atp_xdviOptions += [ '-watchfile', '1' ]
+	    else
+		let g:atp_xdviOptions = [ '-watchfile', '1' ]
+	    endif
+	endif
     endif
 
     map <buffer> <LocalLeader>rs				:call RevSearch()<CR>
@@ -2006,7 +2019,7 @@ endif
 	\ "\\newlength{", "\\setlength{", "\\addtolength{", "\\settodepth{", "\\nointerlineskip", 
 	\ "\\addcontentsline{", "\\addtocontents",
 	\ "\\settoheight{", "\\settowidth{", "\\stretch{",
-	\ "\\width", "\\height", "\\depth", "\\totalheight",
+	\ "\\width", "\\height", "\\depth", "\\todo", "\\totalheight",
 	\ "\\footnote{", "\\footnotemark", "\\footnotetetext", 
 	\ "\\bibliography{", "\\bibliographystyle{", "\\baselineskip",
 	\ "\\flushbottom", "\\onecolumn", "\\raggedbottom", "\\twocolumn",  
@@ -2054,8 +2067,8 @@ endif
 	\ "\\sum", "\\bigsum", "\\cup", "\\bigcup", "\\cap", "\\bigcap", 
 	\ "\\prod", "\\coprod", "\\bigvee", "\\bigwedge", "\\wedge",  
 	\ "\\int", "\\bigoplus", "\\bigotimes", "\\bigodot", "\\times",  
-	\ "\\smile", "\\frown", 
-	\ "\\dashv", "\\vdash", "\\vDash", "\\Vdash", "\\models", "\\sim", "\\simeq", 
+	\ "\\smile",
+	\ "\\dashv", "\\vdash", "\\vDash", "\\Vert", "\\Vdash", "\\models", "\\sim", "\\simeq", 
 	\ "\\prec", "\\preceq", "\\preccurlyeq", "\\precapprox", "\\mid",
 	\ "\\succ", "\\succeq", "\\succcurlyeq", "\\succapprox", "\\approx", 
 	\ "\\ldots", "\\cdot", "\\cdots", "\\vdots", "\\ddots", "\\circ", 
@@ -2071,7 +2084,7 @@ endif
 	\ "\\hat", "\\grave", "\\bar", "\\acute", "\\mathring", "\\check", 
 	\ "\\dots", "\\dot", "\\vec", "\\breve",
 	\ "\\tilde", "\\widetilde" , "\\widehat", "\\ddot", 
-	\ "\\sqrt", "\\frac", "\\binom{", "\\cline", "\\vline", "\\hline", "\\multicolumn{", 
+	\ "\\sqrt{", "\\frac{", "\\binom{", "\\cline", "\\vline", "\\hline", "\\multicolumn{", 
 	\ "\\nouppercase", "\\sqsubseteq", "\\sqsubset", "\\sqsupseteq", "\\sqsupset", 
 	\ "\\square", "\\blacksquare",  
 	\ "\\nexists", "\\varnothing", "\\Bbbk", "\\circledS", 

@@ -72,8 +72,8 @@ function! s:JumpToMatch(mode, ...)
 	endif
 
 	" open/close pairs (dollars signs are treated apart)
-	let open_pats 		= ['{', '\[', '(', '\\begin\>', '\\left\>']
-	let close_pats 		= ['}', '\]', ')', '\\end\>', '\\right\>']
+	let open_pats 		= ['{', '\[', '(', '\\begin\>', '\\left\>', '\\lceil\>', '\\lgroup\>', '\\lfloor', '\\langle']
+	let close_pats 		= ['}', '\]', ')', '\\end\>', '\\right\>', '\\rceil', '\\rgroup\>', '\\rfloor', '\\rangle']
 	let dollar_pat 		= '\\\@<!\$'
 	let two_dollar_pat 	= '\\\@<!\$\$'
 
@@ -426,8 +426,8 @@ function! s:HighlightMatchingPair()
 
 " 	let open_pats 		= ['\\begin\>\ze\%(\s*{\s*document\s*}\)\@!', '\\left\>', '\c\\bigg\=\>\%((\|{\|\\{\|\[\)' ]
 " 	let close_pats 		= ['\\end\>\ze\%(\s*{\s*document\s*}\)\@!', '\\right\>', '\c\\bigg\=\>\%()\|}\|\\}\|\]\)' ]
-	let open_pats 		= ['\\begin\>\ze', '\\left\>', '\c\\bigg\=l\=\>\%((\|{\|\\{\|\[\)' ]
-	let close_pats 		= ['\\end\>\ze', '\\right\>', '\c\\bigg\=r\=\>\%()\|}\|\\}\|\]\)' ]
+	let open_pats 		= ['\\begin\>\ze', '\\left\>', '\c\\bigg\=l\=\>\%((\|{\|\\{\|\[\)', '\\lceil\>', '\\lgroup\>', '\\lfloor', '\\langle' ]
+	let close_pats 		= ['\\end\>\ze', '\\right\>', '\c\\bigg\=r\=\>\%()\|}\|\\}\|\]\)', '\\rceil', '\\rgroup\>', '\\rfloor', '\\rangle' ]
 	let dollar_pat 		= '\\\@<!\$'
 	let two_dollar_pat 	= '\\\@<!\$\$'
 

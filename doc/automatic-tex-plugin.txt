@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 June 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.6)
 			by Marcin Szamotulski
@@ -1153,6 +1153,11 @@ map t, map <S-LeftMouse>
 <	and also other variable to enable reverse searching (Xdvi->Vim) see
 	more |atp-viewers-Xdvi|.
 
+	This command sets |g:atp_xdviOptions| variable, but do not overrides
+	your settings if you defined '-editor' and '-watchfile' switches (it
+	defines only these two, watch file makes xdvi reload the file every
+	given interval)
+
 :SetXpdf						*atp-:SetXpdf*
 :SetOkular						*atp-SetOkular*
 	This command sets options for Xpdf viewer. Xpdf supports forward
@@ -1349,18 +1354,18 @@ map <F6>d
 	List printers available on the host |g:atp_ssh|.
 
 							*atp-:WrapSelection*
-:WrapSelection {beginWrapper} [endWrapper] [cursor_pos] [new_lines]
+:WrapSelection [beginWrapper] [endWrapper] [cursor_pos] [new_lines]
 
-	Puts selected text between {beginWrapper} and [endWrapper]. Also sets
+	Puts selected text between [beginWrapper] and [endWrapper]. Also sets
 	the cursor position according to the [cursor_pos]. Possible values
 	are: a number -- indicates the character offset from beginning of
-	{beginWrapper}; or 'end' put the cursor at the end of [endWrapper] or
+	[beginWrapper]; or 'end' put the cursor at the end of [endWrapper] or
 	'begin' leave the cursor at the beginning (to be precise at the end of
-	the starting wrapper).  The default [endWrapper] is '}'.  The last
-	argument [new_lines] 0/1 (default is 0): if 1 then the {beginWrapper}
-	and [endWrapper] are put in separate lines (the begin line and end
-	line are split), this is useful for putting text into and environment
-	\begin{}:\end{}. 
+	the starting wrapper).  The default [beginWrapper] is '{' and
+	[endWrapper] is '}'.  The last argument [new_lines] has two values 0/1
+	(default is 0): if 1 then the [beginWrapper] and [endWrapper] are put
+	in separate lines (the begin line and end line are split), this is
+	useful for putting text into an environment \begin{}:\end{}. 
 
 	See |<f-args>| to know how to pass arguments. (They are separated with
 	spaces, white spaces in arguments should be escaped with backslash
@@ -3281,7 +3286,7 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 >
  	let b:atp_xpdfOptions	= ['-bg', 'Grey30', '-mattecolor', 'SlateBlue2', '-papercolor', 'White']
 	let g:atp_xpdfOptions	= ['-bg', 'NavajoWhite4', '-fg', 'black', '-mattecolor', 'burlywood']
-	let b:atp_xdviOptions	= ['-expertmode', '0', '-s', '6']
+	let b:atp_xdviOptions	= ['-expertmode', '0', '-s', '6', '-watchfile', '1']
 <	
 							*g:atp_XpdfServer* 
 >
@@ -3956,9 +3961,7 @@ imap #O 	\Theta
 imap #S 	\Sigma
 imap #T 	\Tau
 imap #U 	\Upsilon
-imap #V 	\Varsigma
 imap #W 	\Omega
-imap #Z 	\mathrm{Z}
 
 ENVIRONMENT IMAPS				*atp-imap-environments*
 						*g:atp_imap_ShortEnvIMaps*
@@ -4097,6 +4100,7 @@ imap #\		\backslash
 imap #>		\geq
 imap #<		\leq
 imap #.		\dot		[#.s will put \dots]
+imap 
 
 MATH ACCENTS ~
 
@@ -4149,6 +4153,8 @@ imap c*		\prod		[    cat *]		/cat = categorical/
 imap c+		\coprod		[    cat +]
 imap <=		\leq
 imap >=		\geq
+imap ->		\rightarrow
+imap <-		\leftarrow
 imap t<		\triangleleft
 imap t>		\triangleright
 imap s<		\subseteq	[    set <]
@@ -4554,12 +4560,14 @@ Xdvi								*atp-Viewers-Xdvi*
 	    let b:atp_TexCompiler	= "latex"
 	    let b:atp_TexOptions	= ["-src-specials"]
 	    let b:atp_Viewer		= "xdvi" 
-	    let b:atp_xdviOptions	= ["-editor", "'gvim --remote-wait +%l %f'"]
+	    let b:atp_xdviOptions	= ["-editor", "'gvim --remote-wait +%l %f'", "-watchfile", "1"]
 <	They are not set by default, however there is simple command to set
 	them at once |atp-:SetXdvi|.	
 	This are excellent sources of information on this:
 	    http://xdvi.sourceforge.net/inverse-search.html
 	    http://Vim.wikia.com/wiki/Vim_can_interact_with_xdvi
+	Note the watchfile switch for xdvi: with it xdvi will reload the file,
+	if needed, every second.
 
 Zathura							
 	Perfectly works (but there is no reverse/inverse searching).

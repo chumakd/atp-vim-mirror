@@ -35,6 +35,8 @@
 <hr class="leftpanel">
     <a class="leftpanel" href="help.shtml"><b>Help</b></a>
 <br>
+    <a class="leftpanel" href="links.shtml"><b>Links</b></a>
+<br>
     <a class="leftpanel" 
 	href="https://sourceforge.net/mailarchive/forum.php?forum_name=atp-vim-list"><b>Mailing
     List</b></a>

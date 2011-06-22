@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 	<title >Suggested Plugins</title>
-	<link rel="stylesheet" href="style.css"> 
+	<link rel="stylesheet" type="text/css" href="style.css"> 
 	<link rel="shortcut icon" type="image/x-icon" href="vim_shortcut.ico">
 	<!--#include virtual="google_tracking_code.shtml"-->
     </head>

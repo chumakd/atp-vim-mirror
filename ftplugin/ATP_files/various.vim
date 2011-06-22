@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Jun 19 09:00  2011 W
+" Last Change: Wed Jun 22 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -394,6 +394,7 @@ endfunction
 function! Insert(text, math, ...)
 
     let move = ( a:0 >= 1 ? a:1 : 0 )
+    let col  = col('.')
 
     if b:atp_TexFlavor == 'plaintex' && index(g:atp_MathZones, 'texMathZoneY') == -1
 	call add(g:atp_MathZones, 'texMathZoneY')
@@ -418,6 +419,9 @@ function! Insert(text, math, ...)
     let new_line	= strpart(line, 0, col) . insert . strpart(line, col)
     call setline(line("."), new_line)
     call cursor(line("."), col(".")+len(insert)-move)
+    if col == 1
+	call cursor(line("."), col(".")-1)
+    endif
 
     return ""
 endfunction
@@ -1833,7 +1837,6 @@ function! AMSRef(bang, what)
     let return=<SID>GetAMSRef(a:what, bibfile)
 "     let g:bang=a:bang
 "     let g:bibfile=bibfile
-    let g:return=return
     if a:bang == "" && bibfile != "nobibfile" && return != [0] && return != ['NoUniqueMatch']
 	silent! w
 	silent! bd
