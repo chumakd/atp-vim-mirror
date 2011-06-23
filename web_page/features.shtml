@@ -8,7 +8,7 @@
     </head>
 
     <body bgcolor="#ffffff">
-	<h1><center>Automatic LaTeX Plugin for Vim</center></h1>
+	<h1><center>Automatic <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> Plugin for Vim</center></h1>
 
 	<table width=100% cellpadding="0" cellspacing="0" border="0" class="head" valign="top"> 
 	    <tr> 
@@ -19,8 +19,8 @@
 		<td class=mainpanel valign="top">
 		    <h2>Feature List</h2>
 		    <h3>Compilation Features:</h3>
-		    <div>* <b>background TeX/LaTeX processing</b> with status
-			info (current page number processed by LaTeX in status
+		    <div>* <b>background <span class="latex">T<sub>E</sub>X</span>/<span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> processing</b> with status
+			info (current page number processed by <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> in status
 			line - what I call <a
 			    href="doc/atp-commands.html#g:atp_ProgressBar"><em>progress
 				bar</em></a>) (see a <a
@@ -37,7 +37,7 @@
 			<code>hyperref</code> package you can put named
 			destinations into pdf file, you can go to them with one
 			command from vim (Xpdf only)</div>
-		    <div>* <b>Making LaTeX projects</b> with just one command
+		    <div>* <b>Making <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> projects</b> with just one command
 			<a
 			    href="doc/atp-commands.html#atp-:MakeLatex"><code>:MakeLatex</code></a>
 			<div class="indented">/ bibliography, index, table of
@@ -129,7 +129,7 @@
 				 <code>\(:\)</code> and <code>\[:\]</code> (in plain tex also on
 				 <code>$$:$$</code>), brackets and <code>\begin:\end</code> pairs, which also
 		     gets highlighted</div>
-		     <div>* <i>TeX</i>/<i>LaTeX</i> oriented normal <a
+		     <div>* <i><span class="latex">L<sup>A</sup>T<sub>E</sub>X</span></i>/<i><span class="latex">T<sub>E</sub>X</span></i> oriented normal <a
 			     href="doc/atp-commands.html#atp-:GotoFile"><code>gf</code></a> command<br>
 		     <div class="indented">/ <code>gf</code> = go to file under
 			 cursor, if there is no file under the cursor gives

@@ -45,6 +45,9 @@ function! atplib#write(...) "{{{
 endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1
+    if finddir(g:atp_TempDir, "/") == ""
+	call mkdir(g:atp_TempDir, "p", 0700)
+    endif
     if a:0 >= 1
 	call delete(g:atp_TempDir."/".a:file)
     else
@@ -53,6 +56,28 @@ function! atplib#Log(file, string, ...) "{{{1
 	redir END
     endif
 endfunction "}}}1
+
+"Make g:atp_TempDir, where log files are stored.
+"{{{1
+function! atplib#TempDir() 
+    " Return temporary directory, unique for each user.
+if has("python")
+function! ATP_SetTempDir(tmp)
+    let g:atp_TempDir=a:tmp
+endfunction
+python << END
+import tempfile, os
+USER=os.getenv("USER")
+tmp=tempfile.mkdtemp(suffix="", prefix="atp_")
+vim.eval("ATP_SetTempDir('"+tmp+"')")
+END
+delfunction ATP_SetTempDir
+else
+    let g:atp_TempDir=substitute(tempname(), '\d\+$', "atp_debug", '')
+    call mkdir(g:atp_TempDir, "p", 0700)
+endif
+endfunction
+"}}}1
 " Outdir: append to '/' to b:atp_OutDir if it is not present. 
 function! atplib#outdir() "{{{1
     if has("win16") || has("win32") || has("win64") || has("win95")
@@ -4139,7 +4164,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		let b:comp_method='brackets'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		if atplib#CheckSyntaxGroups(['texMathZoneV'])
-		    let pattern = '\\\@!\\(\zs'
+		    let pattern = '\\\@<!\\(\zs'
 		elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
 		    let pattern = '\\\@<!\\\[\zs'
 		elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
@@ -4152,7 +4177,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		if !empty(pattern)
 		    let begMathZone = searchpos(pattern, 'bnW')
 		    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
-			call atplib#CloseLastEnvironment(append, 'math', '', [0, 0], 1)
+			call atplib#CloseLastEnvironment(append, 'math')
 		    else
 			call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
 		    endif
@@ -5053,7 +5078,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		let g:begParen = begParen
 		if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
 		    if atplib#CheckSyntaxGroups(['texMathZoneV'])
-			let pattern = '\\\@!\\(\zs'
+			let pattern = '\\\@<!\\(\zs'
 		    elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
 			let pattern = '\\\@<!\\\[\zs'
 		    elseif atplib#CheckSyntaxGroups(['texMathZoneX'])

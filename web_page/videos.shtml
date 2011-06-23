@@ -21,7 +21,7 @@
 		    <a name="progress_bar"></a>
 		    <h2>Progress Bar</h2>
 			This video shows progress bar of <b>ATP</b>. The number in
-			square brackets is the current page number processed by LaTeX.
+			square brackets is the current page number processed by <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span>.
 			<p><div align="left"><iframe
 			src="http://player.vimeo.com/video/25359008?title=0&amp;byline=0&amp;portrait=0;autoplay=0"
 			width="398" height="299" frameborder="0"></iframe></div><p>

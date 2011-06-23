@@ -595,6 +595,14 @@ if !exists("g:atp_imap_align") || g:atp_reload_variables
 	let g:atp_imap_align="ali"
     endif
 endif
+if !exists("g:atp_imap_multiline") || g:atp_reload_variables
+    " Is not defined by default: ]m, and ]M are used for \(:\) and \[:\].
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_multiline=""
+    else
+	let g:atp_imap_multiline="lin"
+    endif
+endif
 if !exists("g:atp_imap_abstract") || g:atp_reload_variables
     if g:atp_imap_ShortEnvIMaps
 	let g:atp_imap_abstract="A"
@@ -2446,11 +2454,11 @@ if !s:did_options
 	au InsertLeave *.tex 	:call <SID>InsertLeave_InsertEnter()
     augroup END
 
-    augroup ATP_Cmdwin
-	au!
-	au CmdwinLeave / :call ATP_CmdwinToggleSpace(0)
-	au CmdwinLeave ? :call ATP_CmdwinToggleSpace(0)
-    augroup END
+"     augroup ATP_Cmdwin
+" 	au!
+" 	au CmdwinLeave / if expand("<afile>") == "/"|:call ATP_CmdwinToggleSpace(0)|:endif
+" 	au CmdwinLeave ? if expand("<afile>") == "/"|:call ATP_CmdwinToggleSpace(0)|:endif
+"     augroup END
 
     augroup ATP_cmdheight
 	" update g:atp_cmdheight when user writes the buffer
@@ -2959,31 +2967,6 @@ if g:atp_Compiler == "python"
 endif
 " }}}
 
-"Make g:atp_TempDir, where log files are stored.
-"{{{
-function! <SID>TempDir() 
-    " Return temporary directory, unique for each user.
-if has("python")
-function! ATP_SetTempDir(tmp)
-    let g:atp_TempDir=a:tmp
-endfunction
-python << END
-import tempfile, os
-USER=os.getenv("USER")
-tmp=tempfile.mkdtemp(suffix="", prefix="atp_")
-vim.eval("ATP_SetTempDir('"+tmp+"')")
-END
-delfunction ATP_SetTempDir
-else
-    let g:atp_TempDir=substitute(tempname(), '\d\+$', "atp_debug", '')
-    call mkdir(g:atp_TempDir, "p", 0700)
-endif
-endfunction
-if g:atp_reload_functions == 0
-    call <SID>TempDir()
-endif
-"}}}
-
 " Remove g:atp_TempDir tree where log files are stored.
 " {{{
 function! <SID>RmTempDir()
@@ -3002,5 +2985,8 @@ else
     echohl Normal
 endif
 endfunction "}}}
+if g:atp_reload_functions == 0
+    call atplib#TempDir()
+endif
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Jun 22 07:00  2011 W
+" Last Change: Thu Jun 23 09:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -226,28 +226,7 @@ function! s:InteligentWrapSelection(text_wrapper, math_wrapper, ...)
     let cursor_pos	= ( a:0 >= 1 ? a:2 : 'end' )
     let new_line	= ( a:0 >= 2 ? a:3 : 0 )
 
-    let MathZones = copy(g:atp_MathZones)
-    let pattern		= '^texMathZone[VWX]'
-    if b:atp_TexFlavor == 'plaintex'
-	call add(MathZones, 'texMathZoneY')
-	let pattern	= '^texMathZone[VWXY]'
-    endif
-
-    " select the correct wrapper
-
-    let MathZone	= get(filter(map(synstack(line("."),max([1,col(".")-1])),"synIDattr(v:val,'name')"),"v:val=~pattern"),0,"")
-    if MathZone	=~ '^texMathZone[VWY]'
-	let step 	= 2
-    elseif MathZone == 'texMathZoneX'
-	let step 	= 1
-    else
-	let step	= 0
-    endif
-
-    " Note: in visual mode col(".") returns always the column starting position of
-    " the visual area, thus it is enough to check the begining (if we stand on
-    " $:\(:\[:$$ use text wrapper). 
-    if !empty(MathZone) && col(".") > step && atplib#CheckSyntaxGroups(MathZones, line("."), max([1, col(".")-step]))
+    if atplib#IsInMath()
 	let begin_wrapper 	= a:math_wrapper[0]
 	let end_wrapper 	= get(a:math_wrapper,1, '}')
     else
@@ -267,10 +246,16 @@ endfunction
 " WrapEnvironment "{{{
 " a:1 = 0 (or not present) called by a command
 " a:1 = 1 called by a key map (ask for env)
-function! <SID>WrapEnvironment(env_name,...)
-    let map = ( a:0 == 0 ? 0 : a:1 ) 
+function! <SID>WrapEnvironment(...)
+    let env_name = ( a:0 == 0 ? '' : a:1 )
+    let map = ( a:0 <= 1 ? 0 : a:2 ) 
     if !map
-	'<,'>WrapSelection '\begin{'.a:env_name.'}','\end{'.a:env_name.'}','0', '1'
+	execute "'<,'>Wrap \\begin{".escape(env_name, ' ')."} \\end{".escape(env_name, ' ')."} 0 1"
+	if env_name == ""
+	    call search("{") 
+	else
+	    call search('\\end{'.env_name.'}', 'e')
+	endif
     else
 	let envs=sort(filter(EnvCompletion("","",""), "v:val !~ '\*$' && v:val != 'thebibliography'"))
 	let g:envs=envs
@@ -297,6 +282,19 @@ function! <SID>WrapEnvironment(env_name,...)
     endif
 endfunction "}}}
 vmap <buffer> <silent> <Plug>WrapEnvironment		:<C-U>call <SID>WrapEnvironment('', 1)<CR>
+
+" SetUpdateTimes
+function! <SID>UpdateTime(...)
+    if a:0 == 0
+	" Show settings
+	echo "'updatetime' is set to:\nb:atp_updatetime_normal=".b:atp_updatetime_normal."\nb:atp_updatetime_insert=".b:atp_updatetime_insert
+	return
+    else
+	let b:atp_updatetime_normal=a:1
+	let b:atp_updatetime_insert=(a:0>=2 ? a:2 : a:1)
+	echo "'updatetime' is set to:\nb:atp_updatetime_normal=".b:atp_updatetime_normal."\nb:atp_updatetime_insert=".b:atp_updatetime_insert
+    endif
+endfunction
 
 " Inteligent Aling
 " TexAlign {{{
@@ -2389,8 +2387,9 @@ nnoremap <silent> <buffer> 	<Plug>ToggleEnvBackward		:call <SID>ToggleEnvironmen
 nnoremap <silent> <buffer> 	<Plug>ChangeEnv			:call <SID>ToggleEnvironment(1)<CR>
 nnoremap <silent> <buffer> 	<Plug>TexDoc			:TexDoc 
 " Commands: "{{{1
+command! -buffer -nargs=* SetUpdateTime				:call <SID>UpdateTime(<f-args>)
 command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
-command! -buffer -nargs=* -complete=custom,WrapSelection_compl -range WrapSelection		:call <SID>WrapSelection(<f-args>)
+command! -buffer -nargs=* -complete=custom,WrapSelection_compl -range Wrap			:call <SID>WrapSelection(<f-args>)
 command! -buffer -nargs=? -complete=customlist,EnvCompletion -range WrapEnvironment		:call <SID>WrapEnvironment(<f-args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
 command! -buffer	TexAlign				:call TexAlign()

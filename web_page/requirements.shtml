@@ -8,7 +8,7 @@
     </head>
 
 <body bgcolor="#ffffff">
-    <h1><center>Automatic LaTeX Plugin for Vim</center></h1>
+    <h1><center>Automatic <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> Plugin for Vim</center></h1>
 
     <table cellpadding="0" cellspacing="0" border="0" class="head"
 	valign="top"> 
@@ -124,7 +124,7 @@
 		    href="http://packages.gentoo.org/package/app-text/poppler">gentoo</a>,
 		<a
 		    href="http://rpm.pbone.net/index.php3/stat/4/idpl/13686417/dir/fedora_10/com/poppler-utils-0.8.7-7.fc10.x86_64.rpm.html">fedora</a>.
-		<h3>vim-latex</h3>
+		<h3>Vim-<span class="latex">L<sup>A</sup>T<sub>E</sub>X</span></h3>
 		You should not use <a
 		    href="http://vim-latex.sf.net"><b>vim-latex</b></a> plugin
 		together with <b>ATP</b>.  If you want you can disable <b>ATP</b>

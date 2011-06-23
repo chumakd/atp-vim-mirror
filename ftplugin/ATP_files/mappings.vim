@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Jun 22 08:00  2011 W
+" Last Change: Thu Jun 23 07:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -275,9 +275,9 @@ if !exists("g:atp_no_tab_map") || g:atp_no_tab_map == 0
     if !hasmapto("atplib#TabCompletion(0,1)<CR>", 'i')
 	nnoremap <silent> <buffer> <S-Tab>	:call atplib#TabCompletion(0,1)<CR> 
     endif
-    if !hasmapto(":WrapSelection { } begin<CR>", 'v')
-	vnoremap <buffer> <silent> <F7> 	:WrapSelection { } begin<CR>
-	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+    if !hasmapto(":Wrap { } begin<CR>", 'v')
+	vnoremap <buffer> <silent> <F7> 	:Wrap { } begin<CR>
+	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
     endif
 else 
     "Non Default Completion Maps:
@@ -293,17 +293,17 @@ else
     if !hasmapto(" atplib#TabCompletion(0,1)<CR>", 'n')
 	nnoremap <silent> <buffer> <S-F7>	:call atplib#TabCompletion(0,1)<CR> 
     endif
-    if !hasmapto(":WrapSelection { } begin<cr>", 'v')
-	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+    if !hasmapto(":Wrap { } begin<cr>", 'v')
+	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
     endif
 endif
 
 " Fonts:
-if !hasmapto(":WrapSelection {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."f	:WrapSelection {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont\\  } ".(len(g:atp_font_encoding)+11)."<CR>"
+if !hasmapto(":Wrap {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."f	:Wrap {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont\\  } ".(len(g:atp_font_encoding)+11)."<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."mbox{", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."mb	:WrapSelection ".s:backslash."mbox{ } begin<CR>"
+if !hasmapto(":Wrap ".s:backslash."mbox{", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."mb	:Wrap ".s:backslash."mbox{ } begin<CR>"
 endif
 
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."textrm{'],['".s:backslash."text{']<CR>", 'v')
@@ -333,23 +333,23 @@ endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."textbf{'],['".s:backslash."mathbb{']<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."bb	:<C-U>InteligentWrapSelection ['".s:backslash."textbf{'],['".s:backslash."mathbb{']<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."textsl{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."sl	:<C-U>WrapSelection ".s:backslash."textsl{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."textsl{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."sl	:<C-U>Wrap ".s:backslash."textsl{<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."textsc{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."sc	:<C-U>WrapSelection ".s:backslash."textsc{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."textsc{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."sc	:<C-U>Wrap ".s:backslash."textsc{<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."textup{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."up	:<C-U>WrapSelection ".s:backslash."textup{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."textup{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."up	:<C-U>Wrap ".s:backslash."textup{<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."textmd{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>WrapSelection ".s:backslash."textmd{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."textmd{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>Wrap ".s:backslash."textmd{<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."underline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>WrapSelection ".s:backslash."underline{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."underline{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>Wrap ".s:backslash."underline{<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."overline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>WrapSelection ".s:backslash."overline{<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."overline{<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>Wrap ".s:backslash."overline{<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."no	:<C-U>InteligentWrapSelection ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>"
@@ -359,98 +359,98 @@ if !hasmapto(":<C-U>InteligentWrapSelection [''],['".s:backslash."mathcal{']<CR>
 endif
 
 " Environments:
-if !hasmapto(":WrapSelection ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."C   :WrapSelection ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>"
+if !hasmapto(":Wrap ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."C   :Wrap ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."begin{flushright} ".s:backslash."end{flushright} 0 1<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."R   :WrapSelection ".s:backslash."begin{flushright} ".s:backslash."end{flushright} 0 1<CR>"
+if !hasmapto(":Wrap ".s:backslash."begin{flushright} ".s:backslash."end{flushright} 0 1<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."R   :Wrap ".s:backslash."begin{flushright} ".s:backslash."end{flushright} 0 1<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."begin{flushleft} ".s:backslash."end{flushleft} 0 1<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."L   :WrapSelection ".s:backslash."begin{flushleft} ".s:backslash."end{flushleft} 0 1<CR>"
+if !hasmapto(":Wrap ".s:backslash."begin{flushleft} ".s:backslash."end{flushleft} 0 1<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."L   :Wrap ".s:backslash."begin{flushleft} ".s:backslash."end{flushleft} 0 1<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."begin{equation=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{equation=b:atp_StarMathEnvDefault<CR>} 0 1<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."E   :WrapSelection ".s:backslash."begin{equation=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{equation=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
+if !hasmapto(":Wrap ".s:backslash."begin{equation=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{equation=b:atp_StarMathEnvDefault<CR>} 0 1<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."E   :Wrap ".s:backslash."begin{equation=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{equation=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."A   :WrapSelection ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
+if !hasmapto(":Wrap ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."A   :Wrap ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
 endif
 
 " Math Modes:
-if !hasmapto(':<C-U>WrapSelection '.s:backslash.'( '.s:backslash.')<CR>', 'v')
-    exe "vmap <silent> <buffer> m				:<C-U>WrapSelection ".s:backslash."( ".s:backslash.")<CR>"
+if !hasmapto(':<C-U>Wrap '.s:backslash.'( '.s:backslash.')<CR>', 'v')
+    exe "vmap <silent> <buffer> m				:<C-U>Wrap ".s:backslash."( ".s:backslash.")<CR>"
 endif
-if !hasmapto(':<C-U>WrapSelection '.s:backslash.'[ '.s:backslash.']<CR>', 'v')
-    exe "vmap <silent> <buffer> M				:<C-U>WrapSelection ".s:backslash."[ ".s:backslash."]<CR>"
+if !hasmapto(':<C-U>Wrap '.s:backslash.'[ '.s:backslash.']<CR>', 'v')
+    exe "vmap <silent> <buffer> M				:<C-U>Wrap ".s:backslash."[ ".s:backslash."]<CR>"
 endif
 
     " Brackets:
-if !hasmapto(":WrapSelection ( ) begin<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."( 	:WrapSelection ( ) begin<CR>"
+if !hasmapto(":Wrap ( ) begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."( 	:Wrap ( ) begin<CR>"
 endif
-if !hasmapto(":WrapSelection ( ) end<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.") 	:WrapSelection ( ) end<CR>"
+if !hasmapto(":Wrap ( ) end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.") 	:Wrap ( ) end<CR>"
 endif
-if !hasmapto(":WrapSelection [ ] begin<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."[ 	:WrapSelection [ ] begin<CR>"
+if !hasmapto(":Wrap [ ] begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."[ 	:Wrap [ ] begin<CR>"
 endif
-if !hasmapto(":WrapSelection [ ] end<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."] 	:WrapSelection [ ] end<CR>"
+if !hasmapto(":Wrap [ ] end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."] 	:Wrap [ ] end<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."{ ".s:backslash."} begin<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."{	:WrapSelection ".s:backslash."{ ".s:backslash."} begin<CR>"
+if !hasmapto(":Wrap ".s:backslash."{ ".s:backslash."} begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."{	:Wrap ".s:backslash."{ ".s:backslash."} begin<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."} ".s:backslash."} end<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."}	:WrapSelection ".s:backslash."{ ".s:backslash."} end<CR>"
+if !hasmapto(":Wrap ".s:backslash."} ".s:backslash."} end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."}	:Wrap ".s:backslash."{ ".s:backslash."} end<CR>"
 endif
 " This is defined before (together with <F7> map.
-" if !hasmapto(":WrapSelection { } begin<cr>", 'v')
-"     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:WrapSelection { } begin<CR>"
+" if !hasmapto(":Wrap { } begin<cr>", 'v')
+"     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 " endif
-if !hasmapto(":WrapSelection { } end<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."}	:WrapSelection { } end<CR>"
+if !hasmapto(":Wrap { } end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."}	:Wrap { } end<CR>"
 endif
-if !hasmapto(":WrapSelection < > begin<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."< 	:WrapSelection < > begin<CR>"
+if !hasmapto(":Wrap < > begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."< 	:Wrap < > begin<CR>"
 endif
-if !hasmapto(":WrapSelection < > end<cr>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."> 	:WrapSelection < > end<CR>"
+if !hasmapto(":Wrap < > end<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."> 	:Wrap < > end<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."left( ".s:backslash."right) begin<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."(	:WrapSelection ".s:backslash."left( ".s:backslash."right) begin<CR>"
+if !hasmapto(":Wrap ".s:backslash."left( ".s:backslash."right) begin<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."(	:Wrap ".s:backslash."left( ".s:backslash."right) begin<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."left[ ".s:backslash."right] begin<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."[	:WrapSelection ".s:backslash."left[ ".s:backslash."right] begin<CR>"
+if !hasmapto(":Wrap ".s:backslash."left[ ".s:backslash."right] begin<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."[	:Wrap ".s:backslash."left[ ".s:backslash."right] begin<CR>"
 endif
-if !hasmapto(":WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."{	:WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>"
-endif
-" for compatibility:
-if !hasmapto(":WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.s:backslash."{	:WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>"
-endif
-if !hasmapto(":WrapSelection ".s:backslash."left( ".s:backslash."right) end<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.")	:WrapSelection ".s:backslash."left( ".s:backslash."right) end<CR>"
-endif
-if !hasmapto(":WrapSelection ".s:backslash."left[ ".s:backslash."right] end<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."]	:WrapSelection ".s:backslash."left[ ".s:backslash."right] end<CR>"
-endif
-if !hasmapto(":WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."}	:WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
+if !hasmapto(":Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."{	:Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>"
 endif
 " for compatibility:
-if !hasmapto(":WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.s:backslash."	:WrapSelection ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
+if !hasmapto(":Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.s:backslash."{	:Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} begin<CR>"
+endif
+if !hasmapto(":Wrap ".s:backslash."left( ".s:backslash."right) end<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.")	:Wrap ".s:backslash."left( ".s:backslash."right) end<CR>"
+endif
+if !hasmapto(":Wrap ".s:backslash."left[ ".s:backslash."right] end<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."]	:Wrap ".s:backslash."left[ ".s:backslash."right] end<CR>"
+endif
+if !hasmapto(":Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."}	:Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
+endif
+" for compatibility:
+if !hasmapto(":Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader.s:backslash."	:Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
 endif
 
 " Accents:
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."' 		:<C-U>InteligentWrapSelection ['".s:backslash."''{'],['".s:backslash."acute{']<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."\"{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."\"		:<C-U>WrapSelection ".s:backslash."\"{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."\"{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."\"		:<C-U>Wrap ".s:backslash."\"{ } end<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."^{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."^		:<C-U>WrapSelection ".s:backslash."^{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."^{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."^		:<C-U>Wrap ".s:backslash."^{ } end<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."v 		:<C-U>InteligentWrapSelection ['".s:backslash."v{'],['".s:backslash."check{']<CR>"
@@ -458,27 +458,28 @@ endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."` 		:<C-U>InteligentWrapSelection ['".s:backslash."`{'],['".s:backslash."grave{']<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."b{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."b		:<C-U>WrapSelection ".s:backslash."b{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."b{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."b		:<C-U>Wrap ".s:backslash."b{ } end<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."d{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."d		:<C-U>WrapSelection ".s:backslash."d{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."d{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."d		:<C-U>Wrap ".s:backslash."d{ } end<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."H{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."H		:<C-U>WrapSelection ".s:backslash."H{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."H{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."H		:<C-U>Wrap ".s:backslash."H{ } end<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."~{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."~		:<C-U>WrapSelection ".s:backslash."~{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."~{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."~		:<C-U>Wrap ".s:backslash."~{ } end<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader.". 		:<C-U>InteligentWrapSelection ['".s:backslash.".{'],['".s:backslash."dot{']<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."c{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."c		:<C-U>WrapSelection ".s:backslash."c{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."c{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."c		:<C-U>Wrap ".s:backslash."c{ } end<CR>"
 endif
-if !hasmapto(":<C-U>WrapSelection ".s:backslash."t{ } end<CR>", "v")
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."t		:<C-U>WrapSelection ".s:backslash."t{ } end<CR>"
+if !hasmapto(":<C-U>Wrap ".s:backslash."t{ } end<CR>", "v")
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."t		:<C-U>Wrap ".s:backslash."t{ } end<CR>"
 endif
+execute "vnoremap <silent> <buffer> <expr>".g:atp_imap_over_leader."~		':<C-U>Wrap ".s:backslash."'.(g:atp_imap_wide ? \"wide\" : \"\").'tilde{ } end<CR>'"
 
 " Tex Align:
 if !hasmapto(":TexAlign<CR>", 'n')
@@ -580,17 +581,18 @@ if mapcheck('<LocalLeader>v') == "" && !hasmapto("<Plug>ATP_ViewOutput", "n")
     nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
 endif
 
-exe "nmap  <silent> <buffer> <Plug>QForwardSearch 	q".s:backslash.":call ATP_CmdwinToggleSpace(1)<CR>i"
+" Enabling this requires uncommenting augroup ATP_Cmdwin in options.vim
+" exe "nnoremap  <silent> <buffer> <Plug>QForwardSearch 	q".s:backslash.":call ATP_CmdwinToggleSpace(1)<CR>i"
 " if !hasmapto("<Plug>QForwardSearch", "n")
-"     if mapcheck('Q/$', 'n') == ""
+" "     if mapcheck('Q/', 'n') == ""
 " 	nmap <silent> <buffer> Q/			<Plug>QForwardSearch
-"     endif
+" "     endif
 " endif
-exe "nmap <silent> <buffer> <Plug>QBackwardSearch	q?:call ATP_CmdwinToggleSpace(1)<CR>"
+" exe "nmap <silent> <buffer> <Plug>QBackwardSearch	q?:call ATP_CmdwinToggleSpace(1)<CR>"
 " if !hasmapto("<Plug>QBackwardSearch", "n")
-"     if mapcheck('Q?$', 'n') == "" && !hasmapto("<Plug>QBackwardSearch", "n")
+" "     if mapcheck('Q?', 'n') == "" && !hasmapto("<Plug>QBackwardSearch", "n")
 " 	nmap <silent> <buffer> Q?			<Plug>QBackwardSearch
-"     endif
+" "     endif
 " endif
 
 if mapcheck('<LocalLeader>s$') == "" && !hasmapto("<Plug>ToggleStar", "n")
@@ -1041,6 +1043,7 @@ if g:atp_no_env_maps != 1
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_example, 		s:backslash.'begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'example' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_corollary, 		s:backslash.'begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'corollary' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_align, 		s:backslash.'begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'align' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_multiline, 		s:backslash.'begin{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'multiline' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_equation, 		s:backslash.'begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'equation' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_third_leader, g:atp_imap_letter, 		s:backslash.'begin{letter}{}<CR>'.s:backslash.'opening{=g:atp_letter_opening<CR>}<CR>'.s:backslash.'closing{=g:atp_letter_closing<CR>}<CR>'.s:backslash.'end{letter}<Esc>?'.s:bbackslash.'begin{letter}{'.s:backslash.'zs<CR>i', 				"g:atp_imap_define_environments", 'letter' ],
 	\ ]
