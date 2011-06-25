@@ -414,3 +414,6 @@ ToDo:  add \forall \exists maps (first check if they exists!)
 Done:  add multiline to b:atp_StarMathEnvDefault
 Done:  vmap for Wrapping with \tilde/\widetilde (vmap ~~ like imap ~~, no this has to be different, ~ is often used in visual mode, I use g:atp_imap_over_leader.)
 ToDo:  recover.vim plugin fails with my settings when openinig a file from other directory than its base directory!
+ToDo:  HelpIMathIMaps add all math imaps, make it like ShowOptions, allow for patterns.
+	Maybe make a HelpMap command to search for a map - just one command.
+	:HelpMap [pattern] [mode]
