@@ -1059,6 +1059,20 @@ function! <SID>GotoEnvironment(flag,count,...)
     silent! let @/ 	 = pattern
     return ""
 endfunction
+function <SID>GotoFrame(f)
+    let lz=&lazyredraw
+    set lazyredraw
+    if a:f == "backward"
+	call <SID>GotoEnvironment('bsW', 1, 'frame')
+    else
+	call <SID>GotoEnvironment('sW', 1, 'frame')
+    endif
+    normal! zt
+    let &lz=lz
+endfunction
+nnoremap <Plug>NextFrame	:call <SID>GotoFrame('forward')<CR>
+nnoremap <Plug>PreviousFrame	:call <SID>GotoFrame('backward')<CR>
+
 " function! <SID>GotoEnvironmentB(flag,count,...)
 "     let env_name 	= (a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*')
 "     for i in range(1,a:count)

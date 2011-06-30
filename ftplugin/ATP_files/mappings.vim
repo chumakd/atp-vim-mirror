@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Jun 25 01:00  2011 W
+" Last Change: Wed Jun 29 07:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -140,6 +140,16 @@ endif
 if !hasmapto(":PInput<CR>")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."i	:PInput<CR>"
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf	:PInput<CR>"
+endif
+
+if atplib#DocumentClass("b:atp_MainFile") == "beamer"
+    " >f, <f
+    exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."f :F frame<CR>"
+    exe "nmap <buffer> <silent> ".g:atp_map_backward_motion_leader."f :B frame<CR>"
+
+    " >F, <F
+    exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."F <Plug>NextFrame"
+    exe "nmap <buffer> <silent> ".g:atp_map_backward_motion_leader."F <Plug>PreviousFrame"
 endif
 
 " Syntax motions:
@@ -574,6 +584,14 @@ endif
 " Select Comment:
 if !hasmapto("v<Plug>vSelectComment", "n")
     exe "nmap <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
+endif
+" Select Frame: (beamer)
+if atplib#DocumentClass(b:atp_MainFile) == "beamer"
+    let g:atp_MapSelectFrame = "_f"
+    if !hasmapto("v<Plug>vSelectFrameEnvironment", "n")
+	exe "nmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>SelectFrameEnvironment"
+" 	exe "vmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>vSelectFrameEnvironment"
+    endif
 endif
 
 " Normal Mode Maps: (most of them)
@@ -1019,33 +1037,33 @@ endif
 if g:atp_no_env_maps != 1
     if !exists("g:atp_imap_environments") || g:atp_reload_variables
     let g:atp_imap_environments = [
-	\ [ "inoremap", "<buffer> <silent>", 	g:atp_imap_leader_3, "m", 				s:backslash.'('.s:backslash.')<Left><Left>', 						"g:atp_imap_define_environments", 'inlince math' ],
-	\ [ "inoremap", "<buffer> <silent>", 	g:atp_imap_leader_3, "M", 				s:backslash.'['.s:backslash.']<Left><Left>', 						"g:atp_imap_define_environments", 'displayed math' ],
+	\ [ "inoremap", "<buffer> <silent>", 	g:atp_imap_leader_3, "m", 			s:backslash.'('.s:backslash.')<Left><Left>', 						"g:atp_imap_define_environments", 'inlince math' ],
+	\ [ "inoremap", "<buffer> <silent>", 	g:atp_imap_leader_3, "M", 			s:backslash.'['.s:backslash.']<Left><Left>', 						"g:atp_imap_define_environments", 'displayed math' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_begin, 		s:backslash.'begin{}<Left>', 						"g:atp_imap_define_environments", '\begin{}' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_end, 		s:backslash.'end{}<Left>', 						"g:atp_imap_define_environments", '\end{}' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_proof, 		s:backslash.'begin{proof}<CR>'.s:backslash.'end{proof}<Esc>O', 				"g:atp_imap_define_environments", 'proof' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_center, 		s:backslash.'begin{center}<CR>\end{center}<Esc>O', 			"g:atp_imap_define_environments", 'center' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_flushleft, 		s:backslash.'begin{flushleft}<CR>'.s:backslash.'end{flushleft}<Esc>O', 			"g:atp_imap_define_environments", 'flushleft' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_center, 	s:backslash.'begin{center}<CR>\end{center}<Esc>O', 			"g:atp_imap_define_environments", 'center' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_flushleft, 	s:backslash.'begin{flushleft}<CR>'.s:backslash.'end{flushleft}<Esc>O', 			"g:atp_imap_define_environments", 'flushleft' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_flushright, 	s:backslash.'begin{flushright}<CR>'.s:backslash.'end{flushright}<Esc>O', 		"g:atp_imap_define_environments", 'flushright' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_bibliography, 	s:backslash.'begin{thebibliography}<CR>'.s:backslash.'end{thebibliography}<Esc>O', 	"g:atp_imap_define_environments", 'bibliography' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_abstract, 		s:backslash.'begin{abstract}<CR>'.s:backslash.'end{abstract}<Esc>O', 			"g:atp_imap_define_environments", 'abstract' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_abstract, 	s:backslash.'begin{abstract}<CR>'.s:backslash.'end{abstract}<Esc>O', 			"g:atp_imap_define_environments", 'abstract' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_item, 		'<Esc>:call InsertItem()<CR>a', 				"g:atp_imap_define_environments", 'item' 	],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_frame, 		s:backslash.'begin{frame}<CR>'.s:backslash.'end{frame}<Esc>O', 				"g:atp_imap_define_environments", 'frame' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_enumerate, 		s:backslash.'begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>'.s:backslash.'end{enumerate}<Esc>O'.s:backslash.'item', 	"g:atp_imap_define_environments", 'enumerate' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_itemize, 		s:backslash.'begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>'.s:backslash.'end{itemize}<Esc>O'.s:backslash.'item', 		"g:atp_imap_define_environments", 'itemize' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_enumerate, 	s:backslash.'begin{enumerate}'.g:atp_EnvOptions_enumerate.'<CR>'.s:backslash.'end{enumerate}<Esc>O'.s:backslash.'item', 	"g:atp_imap_define_environments", 'enumerate' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_itemize, 	s:backslash.'begin{itemize}'.g:atp_EnvOptions_itemize.'<CR>'.s:backslash.'end{itemize}<Esc>O'.s:backslash.'item', 		"g:atp_imap_define_environments", 'itemize' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_tikzpicture, 	s:backslash.'begin{center}<CR>'.s:backslash.'begin{tikzpicture}<CR>'.s:backslash.'end{tikzpicture}<CR>'.s:backslash.'end{center}<Up><Esc>O', "g:atp_imap_define_environments", 'tikzpicture' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_theorem, 		s:backslash.'begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O',  	"g:atp_imap_define_environments", 'theorem'],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_theorem, 	s:backslash.'begin{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameTheorem<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O',  	"g:atp_imap_define_environments", 'theorem'],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_definition, 	s:backslash.'begin{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameDefinition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'definition'],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_proposition, 	s:backslash.'begin{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameProposition<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'proposition' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_lemma, 		s:backslash.'begin{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameLemma<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'lemma' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_remark, 		s:backslash.'begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'remark' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_remark, 	s:backslash.'begin{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameRemark<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'remark' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_note, 		s:backslash.'begin{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameNote<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'note' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_example, 		s:backslash.'begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'example' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_corollary, 		s:backslash.'begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'corollary' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_example, 	s:backslash.'begin{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{example=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 		"g:atp_imap_define_environments", 'example' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_corollary, 	s:backslash.'begin{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<CR>'.s:backslash.'end{=g:atp_EnvNameCorollary<CR>=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'corollary' ],
 	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_align, 		s:backslash.'begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'align' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_multiline, 		s:backslash.'begin{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'multiline' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_equation, 		s:backslash.'begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'equation' ],
-	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_letter, 		s:backslash.'begin{letter}{}<CR>'.s:backslash.'opening{=g:atp_letter_opening<CR>}<CR>'.s:backslash.'closing{=g:atp_letter_closing<CR>}<CR>'.s:backslash.'end{letter}<Esc>?'.s:bbackslash.'begin{letter}{'.s:backslash.'zs<CR>i', 				"g:atp_imap_define_environments", 'letter' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_multiline, 	s:backslash.'begin{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{multiline=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'multiline' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_equation, 	s:backslash.'begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<CR>'.s:backslash.'end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)<CR>}<Esc>O', 	"g:atp_imap_define_environments", 'equation' ],
+	\ [ 'inoremap', '<silent> <buffer>',	g:atp_imap_leader_3, g:atp_imap_letter, 	s:backslash.'begin{letter}{}<CR>'.s:backslash.'opening{=g:atp_letter_opening<CR>}<CR>'.s:backslash.'closing{=g:atp_letter_closing<CR>}<CR>'.s:backslash.'end{letter}<Esc>?'.s:bbackslash.'begin{letter}{'.s:backslash.'zs<CR>i', 				"g:atp_imap_define_environments", 'letter' ],
 	\ ]
     endif
     " Make Environment Maps:
@@ -1058,7 +1076,7 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
     let g:atp_imap_math= [ 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "( g:atp_imap_subscript == '_' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('_') <bar><bar> g:atp_imap_subscript != '_' ) && atplib#IsInMath() ? (g:atp_imap_subscript == '_' ? '<BS>' : '' ).'_{}<Left>' : '_' ", "g:atp_imap_define_math", 	'_{}'], 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_supscript, "( g:atp_imap_supscript == '^' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('^') <bar><bar> g:atp_imap_supscript != '^' ) && atplib#IsInMath() ? (g:atp_imap_supscript == '^' ? '<BS>' : '' ).'^{}<Left>' : (atplib#IsLeft('~') ? '<BS>".s:backslash."=(g:atp_imap_wide ? ''wide'' : '''' )<CR>hat{}<Left>' : '^') ", "g:atp_imap_define_math", 	'^{}'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "~", "atplib#IsLeft('~') && atplib#IsInMath() ? '<BS>".s:backslash."=(g:atp_imap_wide ? \"wide\" : \"\" ) <CR>tilde{}<Left>' : '~' " , "g:atp_imap_define_math", 	'^{}'], 
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "~", "atplib#IsLeft('~') && atplib#IsInMath() ? '<BS>".s:backslash."=(g:atp_imap_wide ? \"wide\" : \"\" ) <CR>tilde=(g:atp_imap_tilde_braces ? \"{}\" : \"\") <CR>'.(g:atp_imap_tilde_braces ? '<Left>' : '') : '~' " , "g:atp_imap_define_math", 	'^{}'], 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=", "atplib#IsInMath() && atplib#IsLeft('=') && !atplib#IsLeft('&',1) ? '<BS>&=' : '='", "g:atp_imap_define_math",	'&=' ],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o+", "atplib#IsInMath() ? '".s:backslash."oplus' 	: 'o+' ", "g:atp_imap_define_math", 		'\\oplus' ],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O+", "atplib#IsInMath() ? '".s:backslash."bigoplus' 	: 'O+' ", "g:atp_imap_define_math",		'\\bigoplus'],
@@ -1080,8 +1098,8 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>' ", "g:atp_imap_define_math",		'\\supseteq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<=' ", "g:atp_imap_define_math",		'\\leq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>=' ", "g:atp_imap_define_math",		'\\geq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath() ? '".s:backslash."rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath() ? '".s:backslash."leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
 	\ ]
 endif
 

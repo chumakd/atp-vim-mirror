@@ -131,7 +131,7 @@ if empty(maparg(g:atp_iabbrev_leader . "flalign\\*" . g:atp_iabbrev_leader, "i",
     execute 'iabbrev <buffer> '.g:atp_iabbrev_leader.'flalign*'.g:atp_iabbrev_leader.'	\begin{flalign*}<CR>\end{flalign*}<Esc>O'
 endif
 
-" Local Environments
+" Local Abbreviations
 function! <SID>LocalAbbreviations()
     if !exists("b:atp_LocalEnvironments")
 	call LocalCommands(0)

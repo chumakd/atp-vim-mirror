@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Jun 23 09:00  2011 W
+" Last Change: Thu Jun 30 12:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -199,9 +199,9 @@ function! WrapSelection_compl(ArgLead, CmdLine, CursorPos)
     if atplib#SearchPackage("todonotes")
 	call add(variables, "g:atp_TodoNotes_commands")
     endif
-    if !exists("b:atp_LocalCommands")
-	LocalCommands
-    endif
+"     if !exists("b:atp_LocalCommands")
+" 	call LocalCommands(0)
+"     endif
     call add(variables, "b:atp_LocalCommands")
 
     let wrap_commands=[]
@@ -848,7 +848,7 @@ endtry "}}}
 " b:atp_LocalEnvironments variable.
 function! EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
     if !exists("b:atp_LocalEnvironments")
-	LocalCommands
+	call LocalCommands(1)
     endif
 
     let env_list = copy(b:atp_LocalEnvironments)
@@ -862,7 +862,7 @@ function! EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
 endfunction "}}}
 function! EnvCompletionWithoutStarEnvs(ArgLead, CmdLine, CursorPos) "{{{
     if !exists("b:atp_LocalEnvironments")
-	LocalCommands
+	call LocalCommands(1)
     endif
 
     let env_list = copy(b:atp_LocalEnvironments)
@@ -877,14 +877,14 @@ endfunction "}}}
 function! F_compl(ArgLead, CmdLine, CursorPos) "{{{
     " This is like EnvCompletion but without stared environments and with: chapter, section, ...
     if !exists("b:atp_LocalEnvironments")
-	LocalCommands
+	call LocalCommands(1)
     endif
 
     let env_list = copy(b:atp_LocalEnvironments)
     " add standard and ams environment if not present.
     let env_list=atplib#Extend(env_list, g:atp_Environments)
     let env_list=atplib#Extend(env_list, ['part', 'chapter', 'section', 'subsection', 'subsubsection'])
-    if atplib#SearchPackage('amsmath')
+    if atplib#SearchPackage('amsmath') || atplib#SearchPackage('amsthm')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
     call filter(env_list+['math'], "v:val !~ '\*$'")

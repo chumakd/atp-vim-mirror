@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 30 June 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.6)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.7)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -162,6 +162,9 @@ NEWS							*atp-news*
   |b:atp_StarMathEnvDefault| are added to |g:atp_ProjectLocalVariables|.
 
   See |g:atp_imap_diacritics_inteligent| how to write diacritics with ATP.
+
+  Tikzpicture keyword completion is only active in non expert mode
+  (|atp-completion-non-expert-mode|). See |atp-completion-tikzpicture|.
 >
  ======================
  Changes in version 9.6.1
@@ -2556,13 +2559,15 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		current buffer, without saving project script and with
 		'nowritebackup' and 'nobackup' set. 
 
-							*atp-tikzpicture*
+							*atp-completion-tikzpicture*
 	tikzpicture ~
 		There is an extended support for tikz picture environment both
 		inline \tikz{:} and displayed: \begin{tikzpicture}
 		\end{tikzpicture}. The completion works for both commands and
 		keywords. The pull of them is enlarged if you add tikz
 		libraries. Normal commands are added if you are inside {:}.
+		Keyword completion is only active in non expert mode
+		(|atp-completion-non-expert-mode|).
 
 							*atp-completion-ref*
 							*atp-completion-label*

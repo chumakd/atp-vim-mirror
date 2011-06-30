@@ -192,8 +192,14 @@ endfunction
 " IMap Functions:
 " {{{
 " These maps extend ideas from TeX_9 plugin:
-function! atplib#IsInMath()
-    return atplib#CheckSyntaxGroups(g:atp_MathZones) && 
+" With a:1 = "!" (bang) remove texMathZoneT (tikzpicture from MathZones).
+function! atplib#IsInMath(...)
+    if a:0 > 0 && a:1 == "!"
+	let atp_MathZones=filter(copy(g:atp_MathZones), "v:val != 'texMathZoneT'")
+    else
+	let atp_MathZones=copy(g:atp_MathZones)
+    endif
+    return atplib#CheckSyntaxGroups(atp_MathZones) && 
 		    \ !atplib#CheckSyntaxGroups(['texMathText'])
 endfunction
 function! atplib#MakeMaps(maps, ...)
@@ -2594,6 +2600,11 @@ function! atplib#DocumentClass(file)
     try
 	silent execute 'lvimgrep /\\documentclass/j ' . fnameescape(a:file)
     catch /E480:/
+	return 0
+    catch /E680:/
+	return 0
+    catch /E683:/
+	return 0
     endtry
     let line		= get(get(getloclist(0), 0, { 'text' : "no_document_class"}), 'text')
     call setloclist(0, saved_loclist)
@@ -3819,6 +3830,7 @@ function! atplib#TabCompletion(expert_mode,...)
     endif
 
 
+    let g:debug=-1
 " {{{2 SET COMPLETION METHOD
     " {{{3 --------- command
     if o > n && o > s && 
@@ -3828,8 +3840,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	\ begin !~ '^\[\|\]\|-\|{\|}\|(\|)' &&
 	\ cbegin =~ '^\\' && !normal_mode &&
 	\ l !~ '\\\%(no\)\?cite[^}]*$' &&
-	\ l !~ '\\ref\s*{\S*$'
-
+	\ l !~ '\\ref\s*{\S*$' &&
+	\ index(g:atp_completion_active_modes, 'commands') != -1
 	" in this case we are completing a command
 	" the last match are the things which for sure do not ends any
 	" command. The pattern '[^\\]\\\\[^\\]$' do not matches "\" and "\\\",
@@ -3837,100 +3849,77 @@ function! atplib#TabCompletion(expert_mode,...)
 	" (here "\" is one character \ not like in magic patterns '\\')
 	" but matches "" and "\\" (i.e. when completing "\" or "\\\" [end line
 	" + command].
-	if index(g:atp_completion_active_modes, 'commands') != -1
 	    let completion_method='command'
 	    " DEBUG:
 	    let b:comp_method='command'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-" 	    let b:comp_method='command fast return'
-	    return ''
-	endif
     "{{{3 --------- environment names
-    elseif (pline =~ '\%(\\begin\|\\end\)\s*$' && begin !~ '}.*$' && !normal_mode)
-	if index(g:atp_completion_active_modes, 'environment names') != -1 
+    elseif (pline =~ '\%(\\begin\|\\end\)\s*$' && begin !~ '}.*$' && !normal_mode) &&
+		\ index(g:atp_completion_active_modes, 'environment names') != -1 
 	    let completion_method='environment_names'
 	    " DEBUG:
 	    let b:comp_method='environment_names'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-" 	    let b:comp_method='environment_names fast return'
-	    return ''
-	endif
     "{{{3 --------- colors
-    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$\|\<\%(backgroundcolor\|bordercolor\|color\|linecolor\)=\s*\w*$'
+    elseif l =~ '\\\%(textcolor\|pagecolor\){[^}]*$\|\<\%(backgroundcolor\|bordercolor\|color\|linecolor\)=\s*\w*$' &&
+		\ index(g:atp_completion_active_modes, 'color names') != -1 
+
 	" this supports todonotes \todo command.
 	let completion_method='colors'
 	" DEBUG:
 	let b:comp_method='colors'
 	call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- label
-    elseif l =~ '\\\%(eq\)\?ref\s*{[^}]*$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'labels') != -1 
+    elseif l =~ '\\\%(eq\)\?ref\s*{[^}]*$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'labels') != -1 
 	    let completion_method='labels'
 	    " DEBUG:
 	    let b:comp_method='labels'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='labels fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- pagestyle
-    elseif l =~ '\\\%(pagestyle\|thispagestyle\){\s*$'
+    elseif l =~ '\\\%(pagestyle\|thispagestyle\){\s*$' &&
+		\ index(g:atp_completion_active_modes, 'page styles') != -1 
 	let completion_method='pagestyle'
 	" DEBUG:
 	let b:comp_method='pagestyle'
 	call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- pagenumbering
-    elseif l =~ '\\pagenumbering{\s*$'
+    elseif l =~ '\\pagenumbering{\s*$' &&
+		\ index(g:atp_completion_active_modes, 'page numberings') != -1 
 	let completion_method='pagenumbering'
 	" DEBUG:
 	let b:comp_method='pagenumbering'
 	call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- bibitems
-    elseif ppline =~ '\\\%(no\)\?cite\(\s*\[[^]]*\]\s*\)\={[^}]*$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'bibitems') != -1
+    elseif ppline =~ '\\\%(no\)\?cite\(\s*\[[^]]*\]\s*\)\={[^}]*$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'bibitems') != -1
 	    let completion_method='bibitems'
 	    " DEBUG:
 	    let b:comp_method='bibitems'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='bibitems fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- tikzpicture
-    elseif ( search('\%(\\def\>.*\|\\\%(re\)\?newcommand\>.*\|%.*\)\@<!\\begin{tikzpicture}','bnW') > search('[^%]*\\end{tikzpicture}','bnW') ||
+    elseif 
+	\ !normal_mode &&
+	\ ( search('\%(\\def\>.*\|\\\%(re\)\?newcommand\>.*\|%.*\)\@<!\\begin{tikzpicture}','bnW') > search('[^%]*\\end{tikzpicture}','bnW') ||
 	\ !atplib#CompareCoordinates(searchpos('[^%]*\zs\\tikz{','bnw'),searchpos('}','bnw')) )
-" 	\ && ( l =~ '\%(\s\|\[\|{\|}\|,\|\.\|=\|:\)' . tbegin . '$' || l =~ '\\' . tbegin  . '$' )
+
 	"{{{4 ----------- tikzpicture keywords
-	if l =~ '\%(\s\|\[\|{\|}\|,\|\.\|=\|:\)' . tbegin . '$' && !normal_mode
-	    if index(g:atp_completion_active_modes, 'tikzpicture keywords') != -1 
-		" DEBUG:
+	if l =~ '\%(\s\|\[\|{\|}\|,\|\.\|=\|:\)' . tbegin . '$' &&
+		    \ !a:expert_mode
 		let b:comp_method='tikzpicture keywords'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		let completion_method="tikzpicture keywords"
-	    else
-		let b:comp_method='tikzpicture keywords fast return'
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		return ''
-	    endif
 	"{{{4 ----------- tikzpicture commands
-	elseif  l =~ '\\' . tbegin  . '$' && !normal_mode
-	    if index(g:atp_completion_active_modes, 'tikzpicture commands') != -1
+	elseif  l =~ '\\' . tbegin  . '$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'tikzpicture commands') != -1
 		" DEBUG:
 		let b:comp_method='tikzpicture commands'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		let completion_method="tikzpicture commands"
-	    else
-		let b:comp_method='tikzpicture commands fast return'
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		return ''
-	    endif
 	"{{{4 ----------- close_env tikzpicture
 	else
 	    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
+	    let g:debug="Z"
 	    if begParen[0]
 		return g:atp_bracket_dict[begParen[2]]
 	    endif
@@ -3947,219 +3936,131 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
 	endif
     "{{{3 --------- package
-    elseif pline =~ '\\usepackage\%([.*]\)\?\s*' && !normal_mode
-	if index(g:atp_completion_active_modes, 'package names') != -1
+    elseif pline =~ '\\usepackage\%([.*]\)\?\s*' && !normal_mode &&
+		\  index(g:atp_completion_active_modes, 'package names') != -1
 	    let completion_method='package'
 	    " DEBUG:
 	    let b:comp_method='package'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='package fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- tikz libraries
-    elseif pline =~ '\\usetikzlibrary\%([.*]\)\?\s*' && !normal_mode
-	if index(g:atp_completion_active_modes, 'tikz libraries') != -1
+    elseif pline =~ '\\usetikzlibrary\%([.*]\)\?\s*' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'tikz libraries') != -1
 	    let completion_method='tikz libraries'
 	    " DEBUG:
 	    let b:comp_method='tikz libraries'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='tikz libraries fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- inputfiles
     elseif (l =~ '\\input\%([^{}]*\|\s*{[^}]*\)$'||
 	  \ l =~ '\\include\s*{[^}]*$' ||
-	  \ l =~ '\\includeonly\s*{[^}]*$') && !normal_mode 
-	if begin =~ 'input'
-	    let begin=substitute(begin,'.*\%(input\|include\%(only\)\?\)\s\?','','')
-	endif
-	if index(g:atp_completion_active_modes, 'input files') != -1
+	  \ l =~ '\\includeonly\s*{[^}]*$') && !normal_mode &&
+	  \ index(g:atp_completion_active_modes, 'input files') != -1
+	    if begin =~ 'input'
+		let begin=substitute(begin,'.*\%(input\|include\%(only\)\?\)\s\?','','')
+	    endif
 	    let completion_method='inputfiles'
 	    " DEBUG:
 	    let b:comp_method='inputfiles'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='inputfiles fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- includegraphics
-    elseif (l =~ '\\includegraphics\s*\(\[[^\]]*\]\s*\)\?{[^}]*$')
-	if index(g:atp_completion_active_modes, 'includegraphics') != -1
+    elseif (l =~ '\\includegraphics\s*\(\[[^\]]*\]\s*\)\?{[^}]*$') &&
+		\ index(g:atp_completion_active_modes, 'includegraphics') != -1
 	    let completion_method='includegraphics'
 	    " DEBUG:
 	    let b:comp_method='includegraphics'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='includegraphics fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
-
     "{{{3 --------- bibfiles
-    elseif pline =~ '\\\%(bibliography\%(style\)\@!\|addbibresource\|addglobalbib\)' && !normal_mode
-	if index(g:atp_completion_active_modes, 'bibfiles') != -1
+    elseif pline =~ '\\\%(bibliography\%(style\)\@!\|addbibresource\|addglobalbib\)' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'bibfiles') != -1
 	    let completion_method='bibfiles'
 	    " DEBUG:
 	    let b:comp_method='bibfiles'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='bibfiles fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- bibstyles
-    elseif pline =~ '\\bibliographystyle' && !normal_mode 
-	if ( index(g:atp_completion_active_modes, 'bibstyles') != -1 ) 
+    elseif pline =~ '\\bibliographystyle' && !normal_mode  &&
+	 \ index(g:atp_completion_active_modes, 'bibstyles') != -1
 	    let completion_method='bibstyles'
 	    let b:comp_method='bibstyles'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='bibstyles fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- todo & missingfigure options
-    elseif obegin =~ '\\todo\[[^\]]*$'
-	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
+    elseif obegin =~ '\\todo\[[^\]]*$' &&
+		\ ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
 	    let completion_method='todo options'
 	    let b:comp_method='todo options'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='todo options fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
-    elseif obegin =~ '\\missingfigure\[[^\]]*$'
-	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) 
+    elseif obegin =~ '\\missingfigure\[[^\]]*$' &&
+		\ ( index(g:atp_completion_active_modes, 'todonotes') != -1 )
 	    let completion_method='missingfigure options'
 	    let b:comp_method='missingfigure options'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='missingfigure options fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- documentclass
-    elseif pline =~ '\\documentclass\>' && !normal_mode 
-	if index(g:atp_completion_active_modes, 'documentclass') != -1
+    elseif pline =~ '\\documentclass\>' && !normal_mode  &&
+		\ index(g:atp_completion_active_modes, 'documentclass') != -1
 	    let completion_method='documentclass'
 	    let b:comp_method='documentclass'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='documentclass fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- Beamer Themes
-    elseif pline =~ '\\usetheme$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'beamerthemes') != -1
+    elseif pline =~ '\\usetheme$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'beamerthemes') != -1
 	    let completion_method='beamerthemes'
 	    let b:comp_method='beamerthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='beamerthemes fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- Beamer Inner Themes
-    elseif pline =~ '\\useinnertheme$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'beamerinnerthemes') != -1
+    elseif pline =~ '\\useinnertheme$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'beamerinnerthemes') != -1
 	    let completion_method='beamerinnerthemes'
 	    let b:comp_method='beamerinnerthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='beamerinnerthemes fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- Beamer Outer Themes
-    elseif pline =~ '\\useoutertheme$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'beamerouterthemes') != -1
+    elseif pline =~ '\\useoutertheme$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'beamerouterthemes') != -1
 	    let completion_method='beamerouterthemes'
 	    let b:comp_method='beamerouterthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='beamerouterthemes fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- Beamer Color Themes
-    elseif pline =~ '\\usecolortheme$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'beamercolorthemes') != -1
+    elseif pline =~ '\\usecolortheme$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'beamercolorthemes') != -1
 	    let completion_method='beamercolorthemes'
 	    let b:comp_method='beamercolorthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='beamercolorthemes fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- Beamer Font Themes
-    elseif pline =~ '\\usefonttheme$' && !normal_mode
-	if index(g:atp_completion_active_modes, 'beamerfontthemes') != -1
+    elseif pline =~ '\\usefonttheme$' && !normal_mode &&
+		\ index(g:atp_completion_active_modes, 'beamerfontthemes') != -1
 	    let completion_method='beamerfontthemes'
 	    let b:comp_method='beamerfontthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='beamerfontthemes fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- font family
-    elseif l =~ '\%(\\usefont{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{\|\\fontfamily{\)[^}]*$' && !normal_mode 
-	if index(g:atp_completion_active_modes, 'font family') != -1
+    elseif l =~ '\%(\\usefont{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{\|\\fontfamily{\)[^}]*$' && !normal_mode  &&
+		\ index(g:atp_completion_active_modes, 'font family') != -1
 	    let completion_method='font family'
 	    let b:comp_method='font family'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='font family fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- font series
-    elseif l =~ '\%(\\usefont{[^}]*}{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{[^}]*}{\|\\fontseries{\)[^}]*$' && !normal_mode 
-	if index(g:atp_completion_active_modes, 'font series') != -1
+    elseif l =~ '\%(\\usefont{[^}]*}{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{[^}]*}{\|\\fontseries{\)[^}]*$' && 
+		\ !normal_mode  &&
+		\ index(g:atp_completion_active_modes, 'font series') != -1
 	    let completion_method='font series'
 	    let b:comp_method='font series'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='font series fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- font shape
-    elseif l =~ '\%(\\usefont{[^}]*}{[^}]*}{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{[^}]*}{[^}]*}{\|\\fontshape{\)[^}]*$' && !normal_mode 
-	if index(g:atp_completion_active_modes, 'font shape') != -1
+    elseif l =~ '\%(\\usefont{[^}]*}{[^}]*}{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{[^}]*}{[^}]*}{\|\\fontshape{\)[^}]*$' 
+		\ && !normal_mode  &&
+		\ index(g:atp_completion_active_modes, 'font shape') != -1
 	    let completion_method='font shape'
 	    let b:comp_method='font shape'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='font shape fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- font encoding
-    elseif l =~ '\%(\\usefont{\|\\DeclareFixedFont{[^}]*}{\|\\fontencoding{\)[^}]*$' && !normal_mode 
-	if index(g:atp_completion_active_modes, 'font encoding') != -1
+    elseif l =~ '\%(\\usefont{\|\\DeclareFixedFont{[^}]*}{\|\\fontencoding{\)[^}]*$' && !normal_mode  &&
+		\ index(g:atp_completion_active_modes, 'font encoding') != -1
 	    let completion_method='font encoding'
 	    let b:comp_method='font encoding'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	else
-	    let b:comp_method='font encoding fast return'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    return ''
-	endif
     "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
+	let g:debug="X"
 	"{{{4 --------- brackets and math zones \(:\),\[:\],$:$,$$:$$.
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-	if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
-	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
+	if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
+		    \ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 		let b:comp_method='brackets'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
@@ -4174,6 +4075,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		else
 		    let pattern = ''
 		endif
+		let g:debug = 4
 		if !empty(pattern)
 		    let begMathZone = searchpos(pattern, 'bnW')
 		    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
@@ -4185,48 +4087,37 @@ function! atplib#TabCompletion(expert_mode,...)
 		    call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
 		endif
 		return '' 
-	    else
-		let b:comp_method='brackets fast return'
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		return ''
-	    endif
     "{{{4 --------- algorithmic
-	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0
-		if atplib#CheckSyntaxGroups(['texMathZoneALG']) && (
-			\ (!normal_mode && index(g:atp_completion_active_modes, 'algorithmic' ) != -1 ) ||
-			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'algorithmic') != -1 )
-			\ )
-		    let b:comp_method='algorithmic'
-		    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		    call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
-		    return '' 
-		else
-		    let b:comp_method='algorithmic fast return'
-		    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		    return ''
-		endif
+	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0 && 
+		    \ atplib#CheckSyntaxGroups(['texMathZoneALG']) && 
+		    \ ((!normal_mode && index(g:atp_completion_active_modes, 'algorithmic' ) != -1 ) ||
+		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'algorithmic') != -1 ))
+		let b:comp_method='algorithmic'
+		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+		let g:debug = 5
+		call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
+		return '' 
     "{{{4 --------- abbreviations
-    elseif l =~ '=\w\+\*\=$'
+    elseif l =~ '=\w\+\*\=$' &&
+	    \ index(g:atp_completion_active_modes, 'abbreviations') != -1
 	let completion_method='abbreviations' 
 	let b:comp_method='abbreviations'
 	call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{4 --------- close environments
-	else
-	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
+	elseif (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
 			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
 		let completion_method='close_env'
 		" DEBUG:
 		let b:comp_method='close_env a' 
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    else
-		let b:comp_method='close_env a fast return' 
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		return ''
-	    endif
+	else
+	    return ''
 	endif
     endif
+
 " if the \[ is not closed, first close it and then complete the commands, it
 " is better as then automatic tex will have better file to operate on.
+let g:debug="Y"
 " {{{2 close environments
     if completion_method=='close_env'
 
@@ -4236,6 +4127,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \ atplib#CheckInlineMath('texMathZoneX') ||
 		    \ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
 	    let b:tc_return = "close_env math"
+	    let g:debug = 7
 	    call atplib#CloseLastEnvironment(append, 'math')
 	" Close environments
 	else
@@ -4269,6 +4161,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		" should be save:
 
 		if env_name !~# '^\s*document\s*$'
+		    let g:debug = 8
 		    call atplib#CloseLastEnvironment(append, 'environment', '', [line_nr, 0])
 		    return ""
 		else
@@ -4998,6 +4891,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
     "{{{3 --------- else: try to close environment
     else
+	let g:debug = 9
 	call atplib#CloseLastEnvironment('a', 'environment')
 	let b:tc_return="1"
 	return ''
@@ -5070,10 +4964,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	    " Add here brackets - somebody might want to
 	    " close a bracket after \nu and not get \numberwithin{ (which is
 	    " rarely used).
-	    let g:debug = 0
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
-		let g:debug = 1
 		let begParen = atplib#CheckBracket(g:atp_bracket_dict)
 		let g:begParen = begParen
 		if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
@@ -5088,7 +4980,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		    else
 			let pattern = ''
 		    endif
-		    let g:pattern_1 = pattern
+		    let g:debug = 2
 		    if !empty(pattern)
 			let begMathZone = searchpos(pattern, 'bnW')
 			let g:begMathZone = begMathZone
@@ -5100,7 +4992,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		    else
 			let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 		    endif
-		    let g:bracket=bracket
 		    if bracket != "0" && bracket != ""
 			call add(completions, cbegin.bracket)
 		    endif
@@ -5131,10 +5022,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let stopline 	= search('^\s*$\|\\par\>', 'bnW')
 
 	    " Check Brackets 
+	    let g:debug = 3
 	    let cl_return 	= atplib#CloseLastBracket(g:atp_bracket_dict)
-	    if g:atp_debugTabCompletion
-		let g:return	= cl_return
-	    endif
+
 	    " If the bracket was closed return
 	    if cl_return != "0"
 		return ""
@@ -5146,6 +5036,7 @@ function! atplib#TabCompletion(expert_mode,...)
 			\ atplib#CheckInlineMath('texMathZoneX') ||
 			\ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
 		let zone = 'texMathZoneVWXY' 	" DEBUG
+		let g:debug = 9
 		call atplib#CloseLastEnvironment(append, 'math')
 
 	    " Check environments:
@@ -5153,6 +5044,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		let env_opened= searchpairpos('\\begin','','\\end','bnW','searchpair("\\\\begin{".matchstr(getline("."),"\\\\begin{\\zs[^}]*\\ze}"),"","\\\\end{".matchstr(getline("."),"\\\\begin{\\zs[^}]*\\ze}"),"nW")',max([1,(line(".")-g:atp_completion_limits[2])]))
 		let env_name 	= matchstr(strpart(getline(env_opened[0]), env_opened[1]-1), '\\begin\s*{\zs[^}]*\ze}')
 		let zone	= env_name 	" DEBUG
+		let g:debug = 10
 		if env_opened != [0, 0]
 		    call atplib#CloseLastEnvironment('a', 'environment', env_name, env_opened)
 		endif
@@ -5171,6 +5063,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \  completion_method == 'bibstyles' || 
 		    \ completion_method == 'bibfiles'
 	    let b:tc_return='close_bracket end'
+	    let g:debug=1
 	    call atplib#CloseLastBracket(g:atp_bracket_dict)
 	endif
     endif

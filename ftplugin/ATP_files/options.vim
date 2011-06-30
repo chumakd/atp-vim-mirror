@@ -196,7 +196,8 @@ endif
 exe "setlocal complete+=".
 	    \ "k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/greek").
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary").
-	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits")
+	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits").
+	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/tikz")
 " The ams_dictionary is added after g:atp_amsmath variable is defined.
 
 " setlocal iskeyword+=\
@@ -377,6 +378,9 @@ lockvar b:atp_autex_wait
 " This was not working :(.
 "     let g:atp_imap_put_space 	= 1
 " endif
+if !exists("g:atp_imap_tilde_braces")
+    let g:atp_imap_tilde_braces = 0
+endif
 if !exists("g:atp_imap_diacritics_inteligent") || g:atp_reload_variables
     let g:atp_imap_diacritics_inteligent = 1
 endif
@@ -1405,8 +1409,10 @@ function! <SID>SetXdvi()
 	let g:atp_xdviOptions	+= index(g:atp_xdviOptions, '-editor') != -1 && 
 		    \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
 		    \ ? ["-editor", "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"] : []
-	if index(g:atp_xdviOptions, '-watchfile') != -1 && \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
-	    let g:atp_xdviOptions += [ '-watchfile', '1' 
+	if index(g:atp_xdviOptions, '-watchfile') != -1 && 
+	\ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
+	    let g:atp_xdviOptions += [ '-watchfile', '1' ]
+	endif
 
     else
 	if ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
@@ -1884,7 +1890,9 @@ let g:atp_completion_modes=[
 	    \ 'beamerthemes', 		'beamerinnerthemes',
 	    \ 'beamerouterthemes', 	'beamercolorthemes',
 	    \ 'beamerfontthemes',	'todonotes',
-	    \ 'siunits',		'includegraphics'
+	    \ 'siunits',		'includegraphics',
+	    \ 'color names',		'page styles',
+	    \ 'page numberings',	'abbreviations',
 	    \ ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
@@ -1900,6 +1908,7 @@ endif
 " By defualt all completion modes are ative.
 if !exists("g:atp_completion_active_modes") || g:atp_reload_variables
     let g:atp_completion_active_modes=deepcopy(g:atp_completion_modes)
+"     call filter(g:atp_completion_active_modes, "v:val != 'tikzpicture keywords'")
 endif
 if !exists("g:atp_completion_active_modes_normal_mode") || g:atp_reload_variables
     let g:atp_completion_active_modes_normal_mode=deepcopy(g:atp_completion_modes_normal_mode)
@@ -2002,22 +2011,24 @@ endif
 	\ "\\noindent", "\\normalfont", "\normalsize", "\\normalsize", "\\normal", 
 	\ "\hfil", "\\hfill", "\\hspace","\\hline", 
 	\ "\\large", "\\Large", "\\LARGE", "\\huge", "\\HUGE",
-	\ "\\overline{", "\\underline{", 
+	\ "\\underline{", 
 	\ "\\usefont{", "\\fontsize{", "\\selectfont", "\\fontencoding{", "\\fontfamiliy{", "\\fontseries{", "\\fontshape{",
+	\ "\\familydefault", 
 	\ "\\rmdefault", "\\sfdefault", "\\ttdefault", "\\bfdefault", "\\mddefault", "\\itdefault",
 	\ "\\sldefault", "\\scdefault", "\\updefault",  "\\renewcommand{", "\\newcommand{",
 	\ "\\input", "\\include{", "\\includeonly{", "\\includegraphics{",  
 	\ "\\savebox", "\\sbox", "\\usebox", "\\rule", "\\raisebox{", "\\rotatebox{",
 	\ "\\parbox{", "\\mbox{", "\\makebox{", "\\framebox{", "\\fbox{",
 	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", "\\vbox",
-	\ "\\hrulefill", "\\dotfill", "\\hbox",
+	\ "\\hrule", "\\hrulefill", "\\dotfill", "\\hbox",
 	\ "\\thispagestyle{", "\\mathnormal", "\\markright{", "\\markleft{", "\\pagestyle{", "\\pagenumbering{",
 	\ "\\author{", "\\address{", "\\date{", "\\thanks{", "\\title{",
 	\ "\\maketitle",
 	\ "\\marginpar", "\\indent", "\\par", "\\sloppy", "\\pagebreak", "\\nopagebreak",
 	\ "\\newpage", "\\newline", "\\newtheorem{", "\\linebreak", "\\line", "\\linespread{",
 	\ "\\hyphenation{", "\\fussy", "\\eject",
-	\ "\\enlagrethispage{", "\\clearpage", "\\cleardoublepage",
+	\ "\\enlagrethispage{", "\\centerline{", "\\clearpage", "\\cleardoublepage",
+	\ "\\encodingdefault", 
 	\ "\\caption{",
 	\ "\\opening{", "\\name{", "\\makelabels{", "\\location{", "\\closing{", 
 	\ "\\signature{", "\\stopbreaks", "\\startbreaks",
@@ -2027,6 +2038,7 @@ endif
 	\ "\\newlength{", "\\setlength{", "\\addtolength{", "\\settodepth{", "\\nointerlineskip", 
 	\ "\\addcontentsline{", "\\addtocontents",
 	\ "\\settoheight{", "\\settowidth{", "\\stretch{",
+	\ "\\seriesdefault", "\\shapedefault",
 	\ "\\width", "\\height", "\\depth", "\\todo", "\\totalheight",
 	\ "\\footnote{", "\\footnotemark", "\\footnotetetext", 
 	\ "\\bibliography{", "\\bibliographystyle{", "\\baselineskip",
@@ -2036,7 +2048,7 @@ endif
 	\ "\\topmargin", "\\oddsidemargin", "\\evensidemargin", "\\headheight", "\\headsep", 
 	\ "\\textwidth", "\\textheight", "\\marginparwidth", "\\marginparsep", "\\marginparpush", "\\footskip", "\\hoffset",
 	\ "\\voffset", "\\paperwidth", "\\paperheight", "\\theequation", "\\thepage", "\\usetikzlibrary{",
-	\ "\\tableofcontents", "\\newfont{", "\\phantom",
+	\ "\\tableofcontents", "\\newfont{", "\\phantom{",
 	\ "\\DeclareRobustCommand", "\\DeclareFixedFont", "\\DeclareMathSymbol", 
 	\ "\\DeclareTextFontCommand", "\\DeclareMathVersion", "\\DeclareSymbolFontAlphabet",
 	\ "\\DeclareMathDelimiter", "\\DeclareMathAccent", "\\DeclareMathRadical",
@@ -2067,7 +2079,7 @@ endif
 	\ "\\rightarrow", "\\Rightarrow", "\\leftarrow", "\\Leftarrow", "\\infty", "\\iff", 
 	\ "\\oplus", "\\otimes", "\\odot", "\\oint",
 	\ "\\leftrightarrow", "\\Leftrightarrow", "\\downarrow", "\\Downarrow", 
-	\ "\\overline", "\\underline", "\\overbrace{", "\\Uparrow",
+	\ "\\overline{", "\\underline{", "\\overbrace{", "\\Uparrow",
 	\ "\\Longrightarrow", "\\longrightarrow", "\\Longleftarrow", "\\longleftarrow",
 	\ "\\overrightarrow{", "\\overleftarrow{", "\\underrightarrow{", "\\underleftarrow{",
 	\ "\\uparrow", "\\nearrow", "\\searrow", "\\swarrow", "\\nwarrow", "\\mapsto", "\\longmapsto",
@@ -2112,7 +2124,7 @@ endif
 	\ "\\imath", "\\jmath", "\\wp", "\\Im", "\\Re", "\\prime", "\\ll", "\\gg", "\\Nabla" ]
 
 	let g:atp_math_commands_PRE=[ "\\diagdown", "\\diagup", "\\subset", "\\subseteq", "\\supset", "\\supsetneq",
-		    \ "\\sharp", "\\underline", "\\underbrace{",  ]
+		    \ "\\sharp", "\\underline{", "\\underbrace{",  ]
 
 	let g:atp_greek_letters = ['\alpha', '\beta', '\chi', '\delta', '\epsilon', '\phi', '\gamma', '\eta', '\iota', '\kappa', '\lambda', '\mu', '\nu', '\theta', '\pi', '\rho', '\sigma', '\tau', '\upsilon', '\vartheta', '\xi', '\psi', '\zeta', '\Delta', '\Phi', '\Gamma', '\Lambda', '\Mu', '\Theta', '\Pi', '\Sigma', '\Tau', '\Upsilon', '\Omega', '\Psi']
 
@@ -2151,7 +2163,7 @@ endif
 		    \ "\\nsupseteqq", "\\subsetneqq", "\\supsetneqq", "\\nsucceqq", "\\precneqq", "\\succneqq" ] 
 
 	" ToDo: add more amsmath commands.
-	let g:atp_amsmath_commands=[ "\\boxed", "\\intertext", "\\multiligngap", "\\shoveleft{", "\\shoveright{", "\\notag", "\\tag", 
+	let g:atp_amsmath_commands=[ "\\boxed", "\\intertext{", "\\multiligngap", "\\shoveleft{", "\\shoveright{", "\\notag", "\\tag", 
 		    \ "\\notag", "\\raistag{", "\\displaybreak", "\\allowdisplaybreaks", "\\numberwithin{",
 		    \ "\\hdotsfor{" , "\\mspace{",
 		    \ "\\negthinspace", "\\negmedspace", "\\negthickspace", "\\thinspace", "\\medspace", "\\thickspace",
@@ -2325,7 +2337,7 @@ endif
 	let g:atp_MathTools_math_commands = [ '\cramped', '\crampedllap', '\crampedclap', '\crampedrlap', '\smashoperator',
 		    \ '\adjustlimits', '\newtagform{', '\usetagform{', '\renewtagform{', 
 		    \ '\xleftrightarrow', '\xRightarrow', '\xLeftarrow', '\xLeftrightarrow', 
-		    \ '\xhookleftarrow', '\xhookrightarrow', '\xmapsto', '\underbracket', '\overbracket',
+		    \ '\xhookleftarrow', '\xhookrightarrow', '\xmapsto', '\underbracket{', '\overbracket{',
 		    \ '\LaTeXunderbrace', '\LaTeXoverbrace', '\Aboxed', '\ArrowBetweenLines', '\ArrowBetweenLines*',
 		    \ '\shortintertext', '\lparen', '\rparen', '\vcentcolon', 
 		    \ '\ordinarycolon', '\mathtoolsset{', '\prescript',
@@ -2488,7 +2500,11 @@ endfunction
 
     function! ErrorMsg(type)
 	let errors		= len(filter(getqflist(),"v:val['type']==a:type"))
-	let type		= (a:type == 'E' ? 'errors' : 'warnnings')
+	if errors > 1
+	    let type		= (a:type == 'E' ? 'errors' : 'warnnings')
+	else
+	    let type		= (a:type == 'E' ? 'error' : 'warnning')
+	endif
 	let msg			= ""
 	if errors
 	    let msg.=" ".errors." ".type
@@ -2551,7 +2567,7 @@ endfunction
     endif
 
     if g:atp_local_completion == 2
-	augroup ATP_LocaCommands
+	augroup ATP_LocalCommands
 	    au!
 	    au BufEnter *.tex 	call LocalCommands(0)
 	augroup END

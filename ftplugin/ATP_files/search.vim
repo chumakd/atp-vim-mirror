@@ -307,7 +307,7 @@ function! <SID>LocalCommands_py(write, ...)
      " called! There is an option to store full path in ATP, then this is not needed.
      let files = []
      for file in b:ListOfFiles
-	 if b:TypeDict[file] == "input" || b:TypeDict[file] == "preambule" 
+	 if get(b:TypeDict, file, "") == "input" || get(b:TypeDict, file, "") == "preambule" 
 	     if filereadable(file)
 		 call add(files, file)
 	     else
@@ -361,12 +361,12 @@ if exists("atp_LocalCommands")
 else
     let b:atp_LocalCommands=[]
 endif
-if exists("b:atp_LocalColors")
+if exists("atp_LocalColors")
     let b:atp_LocalColors=map(atp_LocalColors, 'substitute(v:val, ''\\\\'', ''\'', '''')')
 else
     let b:atp_LocalColors=[]
 endif
-if exists("b:atp_LocalEnvironments")
+if exists("atp_LocalEnvironments")
     let b:atp_LocalEnvironments=map(atp_LocalEnvironments, 'substitute(v:val, ''\\\\'', ''\'', '''')')
 else
     let b:atp_LocalEnvironments=[]

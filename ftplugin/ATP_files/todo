@@ -417,3 +417,35 @@ ToDo:  recover.vim plugin fails with my settings when openinig a file from other
 ToDo:  HelpIMathIMaps add all math imaps, make it like ShowOptions, allow for patterns.
 	Maybe make a HelpMap command to search for a map - just one command.
 	:HelpMap [pattern] [mode]
+Done:  disable -> map in tikzpicture (this is certaintly possible)
+ToDo:  Why texMathZoneT (tikz) is in g:atp_MathZones (atplib#IsInMath() function,
+       it can filter it if invoked with bang atplib#IsInMath("!").  If because
+       of \matrix[matrix of math nodes, it can be matched sepretaly] (this
+       will be slower, but first we can check if we are in tikzpicture and
+       where it starts/ends
+ToDo:  closing \(:\) when \(\s*$ and cursor is in the same line close this env in the same line not next one!
+ToDo:  I think my changes are such that one cannot turn off 'tikzpicture
+	keywords' from completion - this should be ended and tested ...
+ToDo:  \\d is not opening the QuickFix window (Almeria talk). 
+ToDo:  TOC with two files one beamer (press <Enter> on beamer document)
+ToDo:  \\[2em<Tab> \\[2em\]!
+Done:  \\[1em] <paragraph> and use gw.
+ToDo:  why sometimes progress bar starts at [5] or sth like that.
+Done:  \overline{ / \overline
+Done:  nmap _f -> Select frame environment
+       vmap _f -> \usefont{}{}{}{} 	/this map isn't useful, I think/
+ToDo:  vae commented evironment inside another environment will match the
+       outer one: do we want that, note that the inner, commented one can be
+       marked with _c.
+Done:  <F5> is not working!
+ToDo:  biber log messages
+ToDo:  Why :InputFiles works so slow in seminar.tex (Almeria)
+ToDo:  Add count to >F (next/previous frame)
+ToDo:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
+ToDo:  \renewcommand{\fmailyd<TAB>} (the closing } is importand
+ToDo:  Check when LocalCommands is fired at startup - just added in options.vim when g:atp_ProjectLocalVariables is set (needed in almeria/seminar.tex)
+ToDo:  rewrite LocalAbbreviations in the following way:
+	they will be done by the function LocalCommands on startup if g:atp_
+	...
+	or write a wrapper function which will chose how to run this ... 
+	why when LocalAbbreviations run LocalCommands there are not all environments (hgt.tex) ?

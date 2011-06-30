@@ -669,7 +669,7 @@ function! s:SelectCurrentParagraph(seltype)
 			\ '\|\\closing{' .
 			\ '\|\\\@<!\\\]\s*$' . 
 			\ '\|\\\@<!\$\$\s*$' . 
-			\ '\|\\\\\*\=\)'
+			\ '\|\\\\\*\=\%(\[\d\+\w\+\]\)\=\)'
 	    let [ bline, bcol ] = searchpos(pattern, 'ecnW')
 	elseif bline_str =~ '^\\item\>\|^\\begin\>' && bcol > 1
 	    let bcol -= 1 
@@ -804,6 +804,17 @@ function! SelectComment()
     endif
     call search('\%(^\s*%.*\zs\n\)\%(^\s*%\)\@!', "cW")
 endfunction
+
+" {{{ select group
+function! SelectEnvironment(name)
+    call search('\\begin\s*{\s*'.a:name.'\s*}', "cbW")
+"     if visualmode() ==# 'V'
+	    normal! V
+"     else
+" 	    normal! v
+"     endif
+    call search('\\end\s*{\s*'.a:name.'\s*}', "cW")
+endfunction
 " }}}
 
 " {{{ LatexBox_HighlightPairs augroup
@@ -894,5 +905,7 @@ vnoremap <silent> <Plug>LatexBox_SelectCurrentEnvOuter 	:<C-U>call <SID>SelectCu
 vnoremap <silent> <Plug>ATP_SelectCurrentParagraphInner :<C-U>call <SID>SelectCurrentParagraph('inner')<CR>
 vnoremap <silent> <Plug>ATP_SelectCurrentParagraphOuter :<C-U>call <SID>SelectCurrentParagraph('outer')<CR>
 vmap <silent><buffer> <Plug>vSelectComment 		:<C-U>call SelectComment()<CR>
+nmap <silent><buffer> <Plug>SelectFrameEnvironment	:call SelectEnvironment('frame')<CR>
+" vmap <silent><buffer> <Plug>vSelectFrameEnvironment	:<C-U>call <SID>SelectEnvironment('frame')<CR>
 "}}}
 
