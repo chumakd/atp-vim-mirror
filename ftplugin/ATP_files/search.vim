@@ -374,6 +374,31 @@ endif
 return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
+" Local Abbreviations
+function! <SID>LocalAbbreviations()
+    if !exists("b:atp_LocalEnvironments")
+	let no_abbrev= ( exists('g:atp_no_local_abbreviations') ? g:atp_no_local_abbreviations : -1 )
+	let g:atp_no_local_abbreviations = 1
+	call LocalCommands(0)
+	if no_abbrev == -1
+	    unlet g:atp_no_local_abbreviations
+	else
+	    let g:atp_no_local_abbreviations = no_abbrev
+	endif
+    endif
+    for env in b:atp_LocalEnvironments
+	if !empty(maparg(g:atp_iabbrev_leader.env.g:atp_iabbrev_leader, "i", 1))
+    " 	silent echomsg "abbreviation " . g:atp_iabbrev_leader.env.g:atp_iabbrev_leader . " exists."
+	    continue
+	endif
+	if exists("g:atp_abbreviate_".env)
+	    execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}".get(g:atp_abbreviate_{env}, 0, "<CR>")."\\end{".env."}".get(g:atp_abbreviate_{env}, 1, "<Esc>O")
+	else
+	    execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}<CR>\\end{".env."}<Esc>O"
+	endif
+    endfor
+endfunction
+
 " {{{ LocalCommands
 function! LocalCommands(write, ...)
     let time=reltime()
@@ -387,6 +412,9 @@ function! LocalCommands(write, ...)
 	call <SID>LocalCommands_py(a:write, '' , bang)
     else
 	call <SID>LocalCommands_vim(pattern, bang)
+    endif
+    if !(exists("g:atp_no_local_abbreviations") && g:atp_no_local_abbreviations == 1)
+	call <SID>LocalAbbreviations()
     endif
     let g:time_LocalCommands=reltimestr(reltime(time))
 endfunction

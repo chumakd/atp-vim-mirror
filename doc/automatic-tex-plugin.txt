@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 30 June 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.7)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.8)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -165,6 +165,8 @@ NEWS							*atp-news*
 
   Tikzpicture keyword completion is only active in non expert mode
   (|atp-completion-non-expert-mode|). See |atp-completion-tikzpicture|.
+
+  |atp-:LocalCommands| will make abbreviations to found environments.
 >
  ======================
  Changes in version 9.6.1
@@ -2551,6 +2553,9 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		\def#1#2, etc. or with \newcommand{...}[1]{...}) a single '{'
 		is attached. It doesn't match for definitions inside comments.
 
+		This command will also make abbreviations to environments
+		found, see |atp-abbreviations|.
+
 		Note: the python version searches for commands, environments,
 		...  defined in the begining of line (with possible white
 		spaces).
@@ -4314,8 +4319,11 @@ ABBREVIATIONS						*atp-abbreviations*
     |atp-completion-abbreviations|.
 
     Locally defined environments are also supported (the one defined in
-    |b:atp_LocalEnvironments|). If you need something different than
-    abbreviation for
+    |b:atp_LocalEnvironments|). They are made by the command
+    |atp-:LocalCommands|, e.g if g:atp_local_completion == 2 then they are
+    made on startup.
+
+    If you need something different than abbreviation for
 	\begin{theorem}
 	     <Cursor placed here>
 	\end{theorem}
@@ -4323,14 +4331,14 @@ ABBREVIATIONS						*atp-abbreviations*
 	\begin{corollary}<Cursor placed here>
 	\end{corollary}
     You can set the variable g:atp_abbreviation_{environment_name}. It is list
-    with two elements. First is used after \begin{...} and the second after
-    \end{...}. For the above examples:
+    with two elements. First element is used after \begin{...} and the second
+    after \end{...}. For the above examples:
 	let g:atp_abbreviation_theorem		= [ '<CR>', '<ESC>O' ]
 	let g:atp_abbreviation_corollary	= [ '<CR>', '<ESC><UP>A' ]
     The first one is the default so you do not need to set it. In the second
     example the abbreviation command will look like: >
 	abbreviate =corollary= \begin{corollary}<CR>\end{corollary}<ESC><UP>A
-<   This will only work for b:atp_LocalEnvironments, LaTeX and AMS
+<   This will only work for b:atp_LocalEnvironments; LaTeX and AMS
     environments are set accordingly.
     Environment name abbreviations are defined only if there were not defined.
     So you can override the settings using |atprc| file (or |vimrc| file).

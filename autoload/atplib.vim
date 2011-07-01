@@ -1198,6 +1198,36 @@ function! atplib#CompareCoordinates_leq(listA,listB)
     endif
 endfunction
 "}}}1
+" {{{1 atplib#CompareStarAfter
+" This is used by atplib#TabCompletion to put abbreviations of starred environment after not starred version
+function! atplib#CompareStarAfter(i1, i2)
+    if a:i1 !~ '\*' && a:i2 !~ '\*'
+	if a:i1 == a:i2
+	    return 0
+	elseif a:i1 < a:i2
+	    return -1
+	else
+	    return 1
+	endif
+    else
+	let i1 = substitute(a:i1, '\*', '', 'g')
+	let i2 = substitute(a:i2, '\*', '', 'g')
+	if i1 == i2
+	    if a:i1 =~ '\*' && a:i2 !~ '\*'
+		return 1
+	    else
+		return -1
+	    endif
+	    return 0
+	elseif i1 < i2
+	    return -1
+	else
+	    return 1
+	endif
+    endif
+endfunction
+" }}}1
+
 " ReadInputFile function reads finds a file in tex style and returns the list
 " of its lines. 
 " {{{1 atplib#ReadInputFile
@@ -4493,12 +4523,8 @@ let g:debug="Y"
 	call extend(completion_list, [ '\label{' . short_env_name ],0)
     " {{{3 ------------ ABBREVIATIONS
     elseif completion_method == 'abbreviations'
-	let completion_list = [ "=document=","=description=","=letter=","=picture=","=list=","=minipage=","=titlepage=","=thebibliography=","=bibliography=","=center=","=flushright=","=flushleft=","=tikzpicture=","=frame=","=itemize=","=enumerate=","=quote=","=quotation=","=verse=","=abstract=","=verbatim=","=figure=","=array=","=table=","=tabular=","=equation=","=equation*=","=align=","=align*=","=alignat=","=alignat*=","=gather=","=gather*=","=multline=","=multline*=","=split=","=flalign=","=flalign*=","=corollary=","=theorem=","=proposition=","=lemma=","=definition=","=proof=","=remark=","=example=","=exercise=","=note=","=question=","=notation="]
-	for env in reverse(b:atp_LocalEnvironments)
-	    if index(completion_list, "=".env."=") == -1
-		call extend(completion_list, ['='.env.'='],0)
-	    endif
-	endfor
+	let completion_list  = sort(copy(b:atp_LocalEnvironments), "atplib#CompareStarAfter")+[ "document","description","letter","picture","list","minipage","titlepage","thebibliography","bibliography","center","flushright","flushleft","tikzpicture","frame","itemize","enumerate","quote","quotation","verse","abstract","verbatim","figure","array","table","tabular","equation","equation*","align","align*","alignat","alignat*","gather","gather*","multline","multline*","split","flalign","flalign*","corollary","theorem","proposition","lemma","definition","proof","remark","example","exercise","note","question","notation"]
+	call map(completion_list, "g:atp_iabbrev_leader.v:val.g:atp_iabbrev_leader")
     " {{{3 ------------ LABELS /are done later only the completions variable /
     elseif completion_method ==  'labels'
 	let completion_list = []
@@ -4901,7 +4927,7 @@ let g:debug="Y"
     " made by a variable! Maybe better is to provide a positive list !!!
     if g:atp_completion_truncate && a:expert_mode && 
 		\ index(['bibfiles', 'bibitems', 'bibstyles', 'font family',
-		\ 'font series', 'font shape', 'font encoding' ],completion_method) == -1
+		\ 'font series', 'font shape', 'font encoding', ],completion_method) == -1
 	call filter(completions,'len(substitute(v:val,"^\\","","")) >= g:atp_completion_truncate')
     endif
 "     THINK: about this ...
@@ -4914,7 +4940,11 @@ let g:debug="Y"
     " if the list is long it is better if it is sorted, if it short it is
     " better if the more used things are at the beginning.
     if g:atp_sort_completion_list && len(completions) >= g:atp_sort_completion_list && completion_method != 'labels'
-	let completions=sort(completions)
+	if completion_method == 'abbreviations'
+	    let completions=sort(completions, "atplib#CompareStarAfter")
+	else
+	    let completions=sort(completions)
+	endif
     endif
     " DEBUG
     let b:completions=completions 
