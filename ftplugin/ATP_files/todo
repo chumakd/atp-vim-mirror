@@ -440,14 +440,11 @@ ToDo:  vae commented evironment inside another environment will match the
 Done:  <F5> is not working!
 ToDo:  biber log messages
 ToDo:  Why :InputFiles works so slow in seminar.tex (Almeria)
-ToDo:  Add count to >F (next/previous frame)
-ToDo:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
+Done:  Add count to >F (next/previous frame)
+Done:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
 ToDo:  \renewcommand{\fmailyd<TAB>} (the closing } is importand
+	\renewcommand{\rmdefa<TAB>} (the closing } is importand
 ToDo:  Check when LocalCommands is fired at startup - just added in options.vim when g:atp_ProjectLocalVariables is set (needed in almeria/seminar.tex)
-ToDo:  rewrite LocalAbbreviations in the following way:
-	they will be done by the function LocalCommands on startup if g:atp_
-	...
-	or write a wrapper function which will chose how to run this ... 
-	why when LocalAbbreviations run LocalCommands there are not all environments (hgt.tex) ?
 ToDo:  webpage rssreader (see the 9.6.7 message in it and in news - what is
 	after <CR> is not showing up - check what is in the xml file.
+ToDo:  make >e, >E, >f, >F maps work in vmode (but it might not make much sense)

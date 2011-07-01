@@ -1059,20 +1059,22 @@ function! <SID>GotoEnvironment(flag,count,...)
     silent! let @/ 	 = pattern
     return ""
 endfunction
-function <SID>GotoFrame(f)
+" {{{3 GotoFrame
+function! <SID>GotoFrame(f, count)
+    let g:Count=a:count
     let lz=&lazyredraw
     set lazyredraw
     if a:f == "backward"
-	call <SID>GotoEnvironment('bsW', 1, 'frame')
+	call <SID>GotoEnvironment('bsW', a:count, 'frame')
     else
-	call <SID>GotoEnvironment('sW', 1, 'frame')
+	call <SID>GotoEnvironment('sW', a:count, 'frame')
     endif
     normal! zt
     let &lz=lz
 endfunction
-nnoremap <Plug>NextFrame	:call <SID>GotoFrame('forward')<CR>
-nnoremap <Plug>PreviousFrame	:call <SID>GotoFrame('backward')<CR>
-
+nnoremap <Plug>NextFrame	:<C-U>call <SID>GotoFrame('forward', v:count1)<CR>
+nnoremap <Plug>PreviousFrame	:<C-U>call <SID>GotoFrame('backward', v:count1)<CR>
+"{{{3 JumptoEnvironment
 " function! <SID>GotoEnvironmentB(flag,count,...)
 "     let env_name 	= (a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*')
 "     for i in range(1,a:count)
@@ -1080,7 +1082,7 @@ nnoremap <Plug>PreviousFrame	:call <SID>GotoFrame('backward')<CR>
 " 	call <SID>GotoEnvironment(flag,1,env_name)
 "     endfor
 " endfunction
-" Jump over current \begin and go to next one. {{{3
+" Jump over current \begin and go to next one.
 " i.e. if on line =~ \begin => % and then search, else search
 function! <SID>JumptoEnvironment(backward)
     call setpos("''", getpos("."))

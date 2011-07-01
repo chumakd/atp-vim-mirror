@@ -519,9 +519,9 @@ def scan_preambule(file, pattern):
     for line in file:
         ret=re.search(pattern, line)
         if ret:
-            return ret
+            return True
         elif re.search('\\\\begin\s*{\s*document\s*}', line):
-            return ret
+            return False
     return False
 
 def preambule_end(file):
@@ -677,7 +677,7 @@ except IOError:
     vim.command("let b:TypeDict={}")
     vim.command("let b:LevelDict={}")
 END_PYTHON
-let g:time_TreeOfFiles=reltimestr(reltime(time))
+let g:time_TreeOfFiles_py=reltimestr(reltime(time))
 endfunction
 "}}}
 "
@@ -694,7 +694,7 @@ function! TreeOfFiles(main_file,...)
 	call TreeOfFiles_vim(a:main_file, pattern, flat, run_nr)
     endif
     " Notes: vim script avrage is 0.38s, python avrage is 0.28
-    let g:source_time_TreeOfFiles=reltimestr(reltime(time))
+    let g:time_TreeOfFiles=reltimestr(reltime(time))
 "     echomsg string(g:source_time_TreeOfFiles)
     return [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]
 endfunction
@@ -708,6 +708,7 @@ endfunction
 " a:1 = 0 [1]	- use cached values of tree of files.
 function! FindInputFiles(MainFile,...)
 
+"     let time=reltime()
     call atplib#write()
 
     let cached_Tree	= a:0 >= 1 ? a:1 : 0
@@ -758,6 +759,7 @@ function! FindInputFiles(MainFile,...)
     let g:NotReadableInputFiles	= NotReadableInputFiles
 
     " return the list  of readable bibfiles
+"     let g:time_FindInputFiles=reltimestr(reltime(time))
     return Files
 endfunction
 function! UpdateMainFile()

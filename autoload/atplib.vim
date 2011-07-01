@@ -4059,7 +4059,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let b:comp_method='beamerfontthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- font family
-    elseif l =~ '\%(\\usefont{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{\|\\fontfamily{\)[^}]*$' && !normal_mode  &&
+    elseif l =~ '\%(\\renewcommand\s*{\s*\\\%(rm\|sf\|bf\|tt\|md\|it\|sl\|sc\|up\)default\s*}\s*{\|\\usefont{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{\|\\fontfamily{\)[^}]*$' && !normal_mode  &&
 		\ index(g:atp_completion_active_modes, 'font family') != -1
 	    let completion_method='font family'
 	    let b:comp_method='font family'
@@ -4622,6 +4622,9 @@ let g:debug="Y"
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
 	redraw
+	if len(completion_list) == 0
+	    echo "[ATP:] nothing found."
+	endif
 	let g:time_font_family=reltimestr(reltime(time))
     "{{{3 ------------ FONT SERIES
     elseif completion_method == 'font series'

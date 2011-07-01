@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Jun 29 07:00  2011 W
+" Last Change: Fri Jul 01 08:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -144,8 +144,8 @@ endif
 
 if atplib#DocumentClass("b:atp_MainFile") == "beamer"
     " >f, <f
-    exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."f :F frame<CR>"
-    exe "nmap <buffer> <silent> ".g:atp_map_backward_motion_leader."f :B frame<CR>"
+    exe "nmap <buffer> <silent> <expr> ".g:atp_map_forward_motion_leader."f ':<C-U>'.v:count1.'F frame<CR>'"
+    exe "nmap <buffer> <silent> <expr> ".g:atp_map_backward_motion_leader."f ':<C-U>'.v:count1.'B frame<CR>'"
 
     " >F, <F
     exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."F <Plug>NextFrame"
@@ -241,29 +241,29 @@ if !hasmapto("<Plug>vGotoPreviousPart", 'v')
     execute "vmap <silent> <buffer> ".g:atp_map_backward_motion_leader."p 	<Plug>vGotoPreviousPart"
 endif
 
-if !hasmapto("<Plug>GotoNextEnvironment")
-    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."e		<Plug>GotoNextEnvironment"
+if !hasmapto("<Plug>GotoNextEnvironment", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."e	<Plug>GotoNextEnvironment"
 endif
-if !hasmapto("<Plug>JumptoNextEnvironment")
-    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."E		<Plug>JumptoNextEnvironment"
+if !hasmapto("<Plug>JumptoNextEnvironment", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."E	<Plug>JumptoNextEnvironment"
 endif
-if !hasmapto("<Plug>GotoPreviousEnvironment")
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."e	<Plug>GotoPreviousEnvironment"
+if !hasmapto("<Plug>GotoPreviousEnvironment", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."e	<Plug>GotoPreviousEnvironment"
 endif
-if !hasmapto("<Plug>JumptoPreviousEnvironment")
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."E 	<Plug>JumptoPreviousEnvironment"
+if !hasmapto("<Plug>JumptoPreviousEnvironment", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."E 	<Plug>JumptoPreviousEnvironment"
 endif
-if !hasmapto("<Plug>GotoNextMath")
-    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."m		<Plug>GotoNextMath"
+if !hasmapto("<Plug>GotoNextMath", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."m	<Plug>GotoNextMath"
 endif
-if !hasmapto("<Plug>GotoPreviousMath")
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."m	<Plug>GotoPreviousMath"
+if !hasmapto("<Plug>GotoPreviousMath", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."m	<Plug>GotoPreviousMath"
 endif
-if !hasmapto("<Plug>GotoNextDisplayedMath")
-    execute "map <silent> <buffer> ".g:atp_map_forward_motion_leader."M		<Plug>GotoNextDisplayedMath"
+if !hasmapto("<Plug>GotoNextDisplayedMath", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_forward_motion_leader."M	<Plug>GotoNextDisplayedMath"
 endif
-if !hasmapto("<Plug>GotoPreviousDisplayedMath")
-    execute "map <silent> <buffer> ".g:atp_map_backward_motion_leader."M	<Plug>GotoPreviousDisplayedMath"
+if !hasmapto("<Plug>GotoPreviousDisplayedMath", "n")
+    execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."M	<Plug>GotoPreviousDisplayedMath"
 endif
 
 " Goto File Map:

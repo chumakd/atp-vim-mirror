@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.8)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.9)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -167,6 +167,8 @@ NEWS							*atp-news*
   (|atp-completion-non-expert-mode|). See |atp-completion-tikzpicture|.
 
   |atp-:LocalCommands| will make abbreviations to found environments.
+
+  See |atp->f| for two new motions made for beamer frame environment. 
 >
  ======================
  Changes in version 9.6.1
@@ -318,20 +320,7 @@ NEW IMAPS ~
     See also |atp-:ToggleIMaps|.
 
 NEW MOTIONS ~
- 							*atp->E* *atp-<E*
-    There are two more nice map >E which is something like %>e, i.e. jump over
-    the current environment and go to next one. The reverse <E is also
-    implemented, thought it is not simply <e%. They do not support count
-    (yet), and actually count breaks them. If you want to add |zz|, (|zt| or
-    |zb|) after >E you can put this in your |atprc| file:
-	map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
-	map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
-
-    |atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|,
-    |atp-:Sec|, |atp-:Chap| and |atp-:Part|. They also works relatively to the
-    current unit (section/chapter/part), i.e. 2]s will jump to second section
-    of the current chapter.
-
+    See |atp->E| and |atp-<E|.
 
 UPDATETIME ~
     |b:atp_updatetime_insert| can be changed on the fly to 0 (previously it
@@ -1549,8 +1538,8 @@ map \L
 							*atp-:NEnv* *atp->e* *atp-<C-F>*
 :NEnv {environment}
 :[count]F {environment}
-[count]map >e
-[count]map <C-F>
+map [count]>e
+map [count]<C-F>
 	Move to next environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
@@ -1565,11 +1554,37 @@ map \L
 							*atp-:PEnv* *atp-<e* *atp-<C-B>*
 :PEnv {environment}
 [count]:B {environment}
-[count]map <e
-[count]map <C-B>
+map [count]<e
+map [count]<C-B>
 	Move to previous environment, for example ':NEnv definition'. Completion
 	is set, which finds environments defined in current tex source file.
 	This function omits environments in comment lines.
+
+ 							*atp->E* *atp-<E*
+nmap [count]>E
+nmap [count]<E
+	There are two more nice map >E which is something like %>e, i.e. jump
+	over the current environment and go to next one. The reverse <E is
+	also implemented, thought it is not simply <e%. They do not support
+	count (yet), and actually count breaks them. If you want to add |zz|,
+	(|zt| or |zb|) after >E you can put this in your |atprc| file:
+	    map <buffer> <silent> >E	<Plug>JumptoNextEnvironmentzz
+	    map <buffer> <silent> <E	<Plug>JumptoPreviousEnvironmentzz
+
+	|atp--S|, |atp--s|, |atp--c|, |atp--p| new maps for |atp-:SSec|,
+	|atp-:Sec|, |atp-:Chap| and |atp-:Part|. They also works relatively to
+	the current unit (section/chapter/part), i.e. 2]s will jump to second
+	section of the current chapter.
+
+							*atp->f* *atp-<f*
+							*atp->F* *atp-<F*
+nmap [count]>f [count]>F
+nmap [count]<f [count]<F
+	These two maps are only valid in beamer. They goto next/previous
+	frame. >F and <F are using |zt| command.
+    	
+						
+
 
 							*atp-<m* *atp-<M*
 	{environment} can be also math or displayedmath. For convenience
