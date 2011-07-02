@@ -448,3 +448,6 @@ ToDo:  Check when LocalCommands is fired at startup - just added in options.vim 
 ToDo:  webpage rssreader (see the 9.6.7 message in it and in news - what is
 	after <CR> is not showing up - check what is in the xml file.
 ToDo:  make >e, >E, >f, >F maps work in vmode (but it might not make much sense)
+ToDo:  search for commands (LocalCommands), inside packages which are install
+	under local texmf or which are in the current directory
+	/this feature should be optional/

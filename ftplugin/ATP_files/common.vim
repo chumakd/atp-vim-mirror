@@ -687,7 +687,7 @@ function! TreeOfFiles(main_file,...)
     let flat		= a:0 >= 2	? a:2 : 0	
     let run_nr		= a:0 >= 3	? a:3 : 1 
     let time=reltime()
-    if has("python") && &filetype != "plaintex"
+    if has("python") && &filetype != "plaintex" && ( !exists("g:atp_no_python") || g:atp_no_python == 0 )
 	" It was not tested on plaintex files.
 	call TreeOfFiles_py(a:main_file)
     else

@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 02 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.9)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.10)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -3847,6 +3847,14 @@ Note: you might like to use |'notimeout'| and |'nottimeout'| settings.
 However, they require that there are no maps such that no lhs is a subset ot
 the another, i.e. like "ab" and "abc". With the default settings it is
 shouldn't be a problem.
+
+NOTE: If you are looking for some imap, using :imap you might not find it,
+bacuse some imaps are oly defined when ATP is in insert mode. Moreover, the
+result depends if you are in a mathematical environment or not. Here is
+a trick how to find an imap which is only defined in insert mode. First go to
+insert mode, then press <Ctrl-O> (see |i_CTRL-O|), and then type ':imap<CR>'.
+If the cursor sands inside mathematical environment (for example inside \[:\])
+the result will show mathematical imaps.
 
 						*atp-j_motion* *atp-k_motion*
 imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)
