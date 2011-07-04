@@ -258,7 +258,6 @@ ToDo: when working with two tex files and opened QuickFix window, :copen changes
 this is not working:
 "     au FileType qf :call <SID>SetErrorFormat(getbufvar(bufnr(fnamemodify(&l:errorfile, ":r").".tex"),"atp_ErrorFormat"),1)
 two files and one QFList, set efm, change it and ...
-Bug: t:toc_window_width not set after entering new tab
 
 New Feature: add dictionary of J.Trzeciak: http://www.impan.pl/cgi-bin/dictsearch?q=<SEARCH_KEYWORD>
 	I even can add completion as there are web pages with words starting with each letter, for example for m:
@@ -299,8 +298,6 @@ I should follow the hasmapto step for every map!
 	endif
 
 Viewer command (map) might say: [ATP:] openning ... some times it takes a second or two, this will make the time past faster ;)
-
-map t -> :SyncTex not working
 
 ToDo: do what hier plugin does (but not for tex files) highlight what is in quick fix window in the buffer (correct).
 ToDo: vip is matching \label and \hypertarget
@@ -426,7 +423,6 @@ ToDo:  Why texMathZoneT (tikz) is in g:atp_MathZones (atplib#IsInMath() function
 ToDo:  closing \(:\) when \(\s*$ and cursor is in the same line close this env in the same line not next one!
 ToDo:  I think my changes are such that one cannot turn off 'tikzpicture
 	keywords' from completion - this should be ended and tested ...
-ToDo:  \\d is not opening the QuickFix window (Almeria talk). 
 ToDo:  TOC with two files one beamer (press <Enter> on beamer document)
 ToDo:  \\[2em<Tab> \\[2em\]!
 Done:  \\[1em] <paragraph> and use gw.
@@ -442,12 +438,21 @@ ToDo:  biber log messages
 ToDo:  Why :InputFiles works so slow in seminar.tex (Almeria)
 Done:  Add count to >F (next/previous frame)
 Done:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
-ToDo:  \renewcommand{\fmailyd<TAB>} (the closing } is importand
+Done:  \renewcommand{\fmailyd<TAB>} (the closing } is importand
 	\renewcommand{\rmdefa<TAB>} (the closing } is importand
-ToDo:  Check when LocalCommands is fired at startup - just added in options.vim when g:atp_ProjectLocalVariables is set (needed in almeria/seminar.tex)
+       This is because LocalCommands is run and it adds a command, though it is not yet written.  
+       LocalCommand should not look for \renewcommand - now it is and it also
+       is not looking for \renewenvironment and \renewtheorem - this is the
+       original behaviour of LocalCommands_vim 
+Done:  Check when LocalCommands is fired at startup - just added in options.vim when g:atp_ProjectLocalVariables is set (needed in almeria/seminar.tex)
 ToDo:  webpage rssreader (see the 9.6.7 message in it and in news - what is
 	after <CR> is not showing up - check what is in the xml file.
 ToDo:  make >e, >E, >f, >F maps work in vmode (but it might not make much sense)
-ToDo:  search for commands (LocalCommands), inside packages which are install
+ToDo:  search for commands (LocalCommands), inside packages which are installed
 	under local texmf or which are in the current directory
 	/this feature should be optional/
+Done:  \medskip might end the line (it usually is after \\ , the safest way is to add optional match after \\.
+Done:  :Dsearch \\lmonoir only shows the first line of this definition.
+Done:  RemoveFromToC -- if TOC is not opened in this window, do not leave an open TOC (but if it is open leave it).
+ToDo:  :Wrap \begin{proof} \end{proof} 1 1 around another evnironment.
+ToDo:  vie \centerline{...} the end should stop the line. \\ is not well recognized.

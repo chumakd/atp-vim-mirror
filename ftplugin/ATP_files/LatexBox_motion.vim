@@ -569,6 +569,7 @@ function! s:InnerSearchPos(begin, line, col, run)
 			\ '\|\\closing{' .
 			\ '\|\\\@<!\$\$\s*$' . 
 			\ '\|\\\\\*\=' . 
+			\ '\|\\\%(small\|med\|big\)skip' .
 			\ '\|\%^\|\%$\)' 
 " 			\ '\|^\s*%\)'
 	    let [ line, column ] = searchpos(pattern, flag)
@@ -596,6 +597,7 @@ function! s:InnerSearchPos(begin, line, col, run)
 			\ '\|^\s*\\\@<!\\\[' . 
 			\ '\|^\s*\\\@<!\$\$' . 
 			\ '\|\\\\\*\=' .
+			\ '\|\\\%(small\|med\|big\)skip' .
 			\ '\|\%^\|\%$\)'
 	    let [ line, column ] = searchpos(pattern, 'nW')
 	endif
@@ -669,7 +671,8 @@ function! s:SelectCurrentParagraph(seltype)
 			\ '\|\\closing{' .
 			\ '\|\\\@<!\\\]\s*$' . 
 			\ '\|\\\@<!\$\$\s*$' . 
-			\ '\|\\\\\*\=\%(\[\d\+\w\+\]\)\=\)'
+			\ '\|\\\\\*\=\%(\[\d\+\w\+\]\)\=' .
+			\ '\|\\\%(small\|med\|big\)skip\)'
 	    let [ bline, bcol ] = searchpos(pattern, 'ecnW')
 	elseif bline_str =~ '^\\item\>\|^\\begin\>' && bcol > 1
 	    let bcol -= 1 

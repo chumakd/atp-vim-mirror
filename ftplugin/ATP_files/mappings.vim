@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Jul 01 08:00  2011 W
+" Last Change: Sun Jul 03 07:00  2011 C
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -794,6 +794,10 @@ let g:atp_imap_fonts = [
 	\ s:backslash.'mathbb{}<Left>', "g:atp_imap_define_fonts", 'mathbb font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cal', 
 	\ s:backslash.'mathcal{}<Left>', "g:atp_imap_define_fonts", 'mathcal font'],
+    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cr', 
+	\ s:backslash.'mathscr{}<Left>', "g:atp_imap_define_fonts", 'mathscr font'],
+    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'fr', 
+	\ s:backslash.'mathfrak{}<Left>', "g:atp_imap_define_fonts", 'mathfrak font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'uf',
 	\ s:backslash.'usefont{'.g:atp_font_encoding.'}{}{}{}<Left><Left><Left><Left><Left>', "g:atp_imap_define_fonts", 'usefont command']
 \ ]
@@ -814,8 +818,6 @@ if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
 		    \ "g:atp_imap_define_greek_letters", '\delta' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'e', s:backslash.'epsilon',	 
 		    \ "g:atp_imap_define_greek_letters", '\epsilon' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'v', s:backslash.'varepsilon', 
-		    \ "g:atp_imap_define_greek_letters", '\varepsilon' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'f', s:backslash.'phi',	 
 		    \ "g:atp_imap_define_greek_letters", '\phi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'y', s:backslash.'psi',	 
@@ -846,16 +848,24 @@ if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
 		    \ "g:atp_imap_define_greek_letters", '\tau' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'u', s:backslash.'upsilon',	 
 		    \ "g:atp_imap_define_greek_letters", '\upsilon' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'v', s:backslash.'varsigma',	 
-		    \ "g:atp_imap_define_greek_letters", '\varsigma' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'v', s:backslash.'vartheta',	 
-		    \ "g:atp_imap_define_greek_letters", '\vartheta' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'w', s:backslash.'omega',	 
 		    \ "g:atp_imap_define_greek_letters", '\omega' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'x', s:backslash.'xi',	 
 		    \ "g:atp_imap_define_greek_letters", '\xi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'z', s:backslash.'zeta',	 
 		    \ "g:atp_imap_define_greek_letters", '\zeta' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 've', s:backslash.'varepsilon', 
+		    \ "g:atp_imap_define_greek_letters", '\varepsilon' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vs', s:backslash.'varsigma',	 
+		    \ "g:atp_imap_define_greek_letters", '\varsigma' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vt', s:backslash.'vartheta',	 
+		    \ "g:atp_imap_define_greek_letters", '\vartheta' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vf', s:backslash.'varphi',	 
+		    \ "g:atp_imap_define_greek_letters", '\varphi' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vp', s:backslash.'varpi',	 
+		    \ "g:atp_imap_define_greek_letters", '\varpi' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'C', s:backslash.'Xi',	 
+		    \ "g:atp_imap_define_greek_letters", '\Xi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'D', s:backslash.'Delta',	 
 		    \ "g:atp_imap_define_greek_letters", '\Delta' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'Y', s:backslash.'Psi',	 
@@ -866,16 +876,12 @@ if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
 		    \ "g:atp_imap_define_greek_letters", '\Gamma' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'L', s:backslash.'Lambda',	 
 		    \ "g:atp_imap_define_greek_letters", '\Lambda' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'M', s:backslash.'Mu',	 
-		    \ "g:atp_imap_define_greek_letters", '\Mu' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'P', s:backslash.'Pi',	 
 		    \ "g:atp_imap_define_greek_letters", '\Pi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'O', s:backslash.'Theta',	 
 		    \ "g:atp_imap_define_greek_letters", '\Theta' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'S', s:backslash.'Sigma',	 
 		    \ "g:atp_imap_define_greek_letters", '\Sigma' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'T', s:backslash.'Tau',	 
-		    \ "g:atp_imap_define_greek_letters", '\Tau' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'U', s:backslash.'Upsilon',	 
 		    \ "g:atp_imap_define_greek_letters", '\Upsilon' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'W', s:backslash.'Omega',	 
@@ -1100,6 +1106,8 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>=' ", "g:atp_imap_define_math",		'\\geq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
 	\ ]
 endif
 

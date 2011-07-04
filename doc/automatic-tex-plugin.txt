@@ -1347,8 +1347,8 @@ map <F6>d
 :ListPrinters
 	List printers available on the host |g:atp_ssh|.
 
-							*atp-:WrapSelection*
-:WrapSelection [beginWrapper] [endWrapper] [cursor_pos] [new_lines]
+							*atp-:Wrap*
+:Wrap [beginWrapper] [endWrapper] [cursor_pos] [new_lines]
 
 	Puts selected text between [beginWrapper] and [endWrapper]. Also sets
 	the cursor position according to the [cursor_pos]. Possible values
@@ -1376,20 +1376,20 @@ map <F6>d
 	{textWrapperPair} are Vim lists of length at least 1, the first
 	wrapper is the opening and the second is the closing one (if not given
 	the default '}' is used. The other arguments are as for
-	|atp-:WrapSelection|. If the opening leader in is not given then this
+	|atp-:Wrap|. If the opening leader in is not given then this
 	command is not wrapping the text (see below for the suggested map
 	'\tx').
 
 	The command arguments should be separated with commas and quoted
 	separately (see |<args>|).
 
-	For the predefined maps which use |atp-:WrapSelection| see below
+	For the predefined maps which use |atp-:Wrap| see below
 	|atp-maps-InteligentWrapSelection| or use |atp-:HelpVMaps|.
 
 	See section |atp-vmap-WrapSelection| on predefined set of vmaps.
 
 	You can also use a wrapper which was yanked into register 'a': >
-		:WrapSelection @a
+		:Wrap @a
 <  	This will work not only in visual mode. It will operate on last
 	selected text. So if you accidentally lost the selection you can still
 	use this command (but not the maps)!
@@ -4269,7 +4269,7 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	    vmap <buffer> \n	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>
 	    vmap <buffer> \cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>
 
-	    vmap <LocalLeader>mb :WrapSelection \\mbox{ } begin<CR>
+	    vmap <LocalLeader>mb :Wrap \\mbox{ } begin<CR>
 <   	Suggested maps: >
 	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection [''],['\\text{']<CR>
 	    vmap <buffer> \in	:<C-U>InteligentWrapSelection [''],['\\intertext{']<CR>"
@@ -4277,7 +4277,7 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	g:atp_vmap_text_font_leader is used (the default value is <LocalLeader>).
 
 	Another provided font wrapper: >
-	    vmap <LocalLeader>f	:exe ':WrapSelection {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
+	    vmap <LocalLeader>f	:exe ':Wrap {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
 <	Where the variable: 				*g:atp_font_encoding*
 >
 	    g:atp_font_encoding
@@ -4287,26 +4287,26 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	/font user guide/ available on CTAN).
 
 	Other wrappers: >
-	    vmap m			:WrapSelection \( \)<CR>
-	    vmap M			:WrapSelection \[ \]<CR>
-	    vmap <LocalLeader>(		:WrapSelection ( ) begin<CR>
-	    vmap <LocalLeader>[		:WrapSelection [ ] begin<CR>
-	    vmap <LocalLeader>{		:WrapSelection { } begin<CR>
-	    vmap <LocalLeader>)		:WrapSelection ( ) end<CR>
-	    vmap <LocalLeader>]		:WrapSelection [ ] end<CR>
-	    vmap <LocalLeader>}		:WrapSelection { } end<CR>
-	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
-	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] begin<CR>
-	    vmap <LocalLeader>b(	:WrapSelection \left( \right) begin<CR>
-	    vmap <LocalLeader>b[	:WrapSelection \left[ \right] end<CR>
-	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
-	    vmap <LocalLeader>b{	:WrapSelection \left{ \right} end<CR>
+	    vmap m			:Wrap \( \)<CR>
+	    vmap M			:Wrap \[ \]<CR>
+	    vmap <LocalLeader>(		:Wrap ( ) begin<CR>
+	    vmap <LocalLeader>[		:Wrap [ ] begin<CR>
+	    vmap <LocalLeader>{		:Wrap { } begin<CR>
+	    vmap <LocalLeader>)		:Wrap ( ) end<CR>
+	    vmap <LocalLeader>]		:Wrap [ ] end<CR>
+	    vmap <LocalLeader>}		:Wrap { } end<CR>
+	    vmap <LocalLeader>b(	:Wrap \left( \right) begin<CR>
+	    vmap <LocalLeader>b[	:Wrap \left[ \right] begin<CR>
+	    vmap <LocalLeader>b(	:Wrap \left( \right) begin<CR>
+	    vmap <LocalLeader>b[	:Wrap \left[ \right] end<CR>
+	    vmap <LocalLeader>b{	:Wrap \left{ \right} end<CR>
+	    vmap <LocalLeader>b{	:Wrap \left{ \right} end<CR>
 < 	And the maps to put the selected text into an environment: >
-	    vmap <LocalLeader>A	:WrapSelection \begin{align} \end{align} 0 1<CR>
-	    vmap <LocalLeader>C	:WrapSelection \begin{center} \end{center} 0 1<CR>
-	    vmap <LocalLeader>E	:WrapSelection \begin{equation} \end{equation} 0 1<CR>
-	    vmap <LocalLeader>L	:WrapSelection \begin{flushleft} \end{flushleft} 0 1<CR>
-	    vmap <LocalLeader>R	:WrapSelection \begin{flushright} \end{flushright} 0 1<CR>
+	    vmap <LocalLeader>A	:Wrap \begin{align} \end{align} 0 1<CR>
+	    vmap <LocalLeader>C	:Wrap \begin{center} \end{center} 0 1<CR>
+	    vmap <LocalLeader>E	:Wrap \begin{equation} \end{equation} 0 1<CR>
+	    vmap <LocalLeader>L	:Wrap \begin{flushleft} \end{flushleft} 0 1<CR>
+	    vmap <LocalLeader>R	:Wrap \begin{flushright} \end{flushright} 0 1<CR>
 <
 							*atp-vmap-WrapSelection-accents*
 							*atp-vmap-InteligentWrapSelection-accents*

@@ -270,16 +270,13 @@ function! RemoveFromToC(file)
 	silent! call remove(t:atp_toc,which)
     endif
     let winnr=winnr()
-    call <SID>TOC("!", 0)
+    if index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__') != -1
+	call <SID>TOC("!", 0)
+    endif
     exe winnr."wincmd w"
 endfunction
 function! RemoveFromToCComp(A, B, C)
-    if exists("b:atp_MainFile")
-	let list = filter(copy(t:atp_toc_buflist), "v:val != fnamemodify(b:atp_MainFile, ':p')")
-    else
-	let list = copy(t:atp_toc_buflist)
-    endif
-    return join(list,"\n")
+    return join(t:atp_toc_buflist,"\n")
 endfunction
 " {{{3 s:showtoc
 function! s:showtoc(toc)

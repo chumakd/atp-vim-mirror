@@ -146,11 +146,10 @@ else:
     preambule_only=False
     files=[main_file]
     files.extend(vim.eval("b:ListOfFiles"))
-if vim.eval("only_begining") !=0:
+if vim.eval("only_begining") != "0":
     only_begining=True
 else:
     only_begining=False
-
 def isnonempty(string):
     if str(string) == "":
         return False
@@ -321,7 +320,7 @@ function! <SID>LocalCommands_py(write, ...)
 python << END
 import re, vim
 
-pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>(?:re)?newcommand)|\\\\(?P<env>(?:re)?newenvironment)|\\\\(?P<nt>(?:re)?newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
+pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>newcommand)|\\\\(?P<env>newenvironment)|\\\\(?P<nt>newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
 
 files=[vim.eval("atp_MainFile")]+vim.eval("files")
 localcommands   =[]

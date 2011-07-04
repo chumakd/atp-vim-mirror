@@ -1040,11 +1040,11 @@ function! <SID>Compiler(bibtex, start, runs, verbose, command, filename, bang)
 
 	    let command = command . " " . callback_cmd
 
+	    if g:atp_debugCompiler
+		silent echomsg "callback_cmd=" . callback_cmd
+	    endif
 	endif
 
-    if g:atp_debugCompiler
-	silent echomsg "callback_cmd=" . callback_cmd
-    endif
 
  	let rmtmp="rm -rf " . shellescape(tmpdir) . "; "
 	let command=command . " " . rmtmp . ") &"
