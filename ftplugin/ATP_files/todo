@@ -456,3 +456,4 @@ Done:  :Dsearch \\lmonoir only shows the first line of this definition.
 Done:  RemoveFromToC -- if TOC is not opened in this window, do not leave an open TOC (but if it is open leave it).
 ToDo:  :Wrap \begin{proof} \end{proof} 1 1 around another evnironment.
 ToDo:  vie \centerline{...} the end should stop the line. \\ is not well recognized.
+Done:  ]I insert item works strange when inserting before sth.
