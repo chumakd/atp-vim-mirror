@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.6.12
+VERSION = 9.6.13
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -29,6 +29,7 @@ SOURCE += ftplugin/ATP_files/dictionaries/dictionary
 SOURCE += ftplugin/ATP_files/dictionaries/ams_dictionary
 SOURCE += ftplugin/ATP_files/dictionaries/greek
 SOURCE += ftplugin/ATP_files/dictionaries/SIunits
+SOURCE += ftplugin/ATP_files/dictionaries/tikz
 SOURCE += ftplugin/bibsearch_atp.vim
 SOURCE += ftplugin/fd_atp.vim
 SOURCE += ftplugin/plaintex_atp.vim

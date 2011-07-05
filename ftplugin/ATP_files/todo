@@ -398,16 +398,18 @@ Done:  add switch to atplib#CloseLastEnvironment() so that it only returns
 ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
 ToDo:  put all the leader variables in doc (g:atp_infty_leader might not be documented -- check this).
-ToDo:  make \frac/\nicefrac imap, 
-ToDo:  check ]I, ]i and ]ite - they mess up when going in/out of insert mode I think.
-ToDo:  :WrapSelection -> :Wrap
+Done:  make \frac/\nicefrac imap, 
+Done:  check ]I, ]i and ]ite - they mess up when going in/out of insert mode I think.
+Done:  :WrapSelection -> :Wrap
 Done:  \mathsf map is not working when it is first in the line typed after nonzero indentation.
 Done:  % should work with <:> as well (this is not possible > and < appears in alone also. 
+
 IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
+
 Done:  imap \_s\+ ! remove it so that it doesn't appear in insert mode. Do not forget about the menu!!!
 Done:  line 365: 
 	\[\Phi(\sum_{i=1}^{n}f_iW^0(g_i)+K)=\sum_{i=1}^{n}\left((f_iW^0(g_i))+J\right) <TAB> was not closing \].
-ToDo:  add \forall \exists maps (first check if they exists!)
+ToDo:  add \forall \exists maps - I don't know the right keays to use: <C-a> and <C-m>?
 Done:  add multiline to b:atp_StarMathEnvDefault
 Done:  vmap for Wrapping with \tilde/\widetilde (vmap ~~ like imap ~~, no this has to be different, ~ is often used in visual mode, I use g:atp_imap_over_leader.)
 ToDo:  recover.vim plugin fails with my settings when openinig a file from other directory than its base directory!
