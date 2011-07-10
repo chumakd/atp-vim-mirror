@@ -93,7 +93,9 @@ function! s:maketoc(filename)
     endfor
 
     let s:filtered	= filter(deepcopy(texfile), 'v:val =~ filter')
+    let line_number = -1
     for line in s:filtered
+	let line_number+=1
 	for section in keys(g:atp_sections)
 	    if line =~ g:atp_sections[section][0] 
 		if line !~ '^\s*\\\@<!%'
@@ -102,6 +104,25 @@ function! s:maketoc(filename)
 		    " 'Abstract' will be plased, as we know what we have
 		    " matched
 		    let title	= line
+" This is an attempt to join consecutive lines iff the title is spanned
+" through more than one line.
+" s:filtered doesn't is not the same as texfile!!!
+" we should use texfile, but for this we need to know the true line numbers,
+" they should be around though.
+" 		    let open=count(split(title, '\zs'), '{')
+" 		    let closed=count(split(title, '\zs'), '}')
+" 		    let i=0
+" 		    if open!=closed
+" 			echomsg "XXXXXXX"
+" 			echomsg title
+" 		    endif
+" 		    while open!=closed && line_number+i+2<=len(s:filtered)
+" 			echomsg i." ".s:filtered[line_number+i]
+" 			let i+=1 
+" 			let open+=count(split(s:filtered[line_number+i], '\zs'), '{')
+" 			let closed+=count(split(s:filtered[line_number+i], '\zs'), '}')
+" 			let title.=" ".substitute(s:filtered[line_number+i], '^\s*', '', '')
+" 		    endwhile
 
 		    " test if it is a starred version.
 		    let star=0
@@ -137,6 +158,7 @@ function! s:maketoc(filename)
 			endif
 		    endwhile	
 		    let title = strpart(title,0,i)
+		    let title = substitute(title, '[{}]\|\\titlefont\|\\hfill\=\|\\hrule\|\\[vh]space\s*{[^}]\+}', '', 'g')
 
 		    " Section Number:
 		    " if it is not starred version add one to the section number
@@ -156,7 +178,7 @@ function! s:maketoc(filename)
 			let indsection		= 0
 			let indsubsection	= 0
 			let indsubsubsection	= 0
-		    elseif section ==  'section'
+		    elseif section ==  'section' || section == 'frame'
 			let indsubsection	= 0
 			let indsubsubsection	= 0
 		    elseif section ==  'subsection'
@@ -391,7 +413,7 @@ function! s:showtoc(toc)
 		else
 		    call setline (number, showline . "\t" . nr . " " . a:toc[openfile][line][2])
 		endif
-	    elseif a:toc[openfile][line][0] == 'section'
+	    elseif a:toc[openfile][line][0] == 'section' || a:toc[openfile][line][0] == 'frame'
 		let secnr=a:toc[openfile][line][1]
 		if chap_on
 		    let nr=chnr . "." . secnr  

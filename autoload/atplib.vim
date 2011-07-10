@@ -3965,6 +3965,11 @@ function! atplib#TabCompletion(expert_mode,...)
 		return ''
 	    endif
 	endif
+    "{{{3 --------- package options
+    elseif l =~ '\\usepackage\[[^\]]*$' && !normal_mode &&
+		\  index(g:atp_completion_active_modes, 'package options') != -1
+	    let completion_method='package options'
+	    let b:comp_method="package options"
     "{{{3 --------- package
     elseif pline =~ '\\usepackage\%([.*]\)\?\s*' && !normal_mode &&
 		\  index(g:atp_completion_active_modes, 'package names') != -1
@@ -4021,6 +4026,12 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ ( index(g:atp_completion_active_modes, 'todonotes') != -1 )
 	    let completion_method='missingfigure options'
 	    let b:comp_method='missingfigure options'
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+    "{{{3 --------- documentclass options
+    elseif pline =~ '\\documentclass\s*\[[^\]]*$' && !normal_mode  &&
+	    \ index(g:atp_completion_active_modes, 'documentclass options') != -1
+	    let completion_method='documentclass options'
+	    let b:comp_method=completion_method
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- documentclass
     elseif pline =~ '\\documentclass\>' && !normal_mode  &&
@@ -4272,6 +4283,24 @@ let g:debug="Y"
 		call extend(completion_list,g:atp_MathTools_environments)
 	    endif
 	endif
+	" Packages
+	for package in g:atp_packages
+	    if atplib#SearchPackage(package) && exists("g:atp_package_".package."_environments")
+		if end !~ '\s*}'
+		    call extend(completion_list,atplib#Add({'g:atp_package_'.package.'_environments'},'}'))
+		else
+		    call extend(completion_list,{'g:atp_package_'.package.'_environments'})
+		endif
+	    endif
+	endfor
+    "{{{3 ------------ PACKAGE OPTIONS
+    elseif completion_method == 'package options'
+	let package = matchstr(line, '\\usepackage\[[^{]*{\zs[^}]*\ze}')
+	if exists("g:atp_package_".package."_options")
+	    let completion_list={"g:atp_package_".package."_options"}
+	else
+	    return
+	endif
     "{{{3 ------------ PACKAGES
     elseif completion_method == 'package'
 	if exists("g:atp_LatexPackages")
@@ -4407,6 +4436,11 @@ let g:debug="Y"
 	    if atplib#SearchPackage('SIunits', stop_line) && ( index(g:atp_completion_active_modes, 'SIunits') != -1 || index(g:atp_completion_active_modes, 'siunits') != -1 )
 		call extend(completion_list, g:atp_siuinits)
 	    endif
+	for package in g:atp_packages
+	    if exists("g:atp_package_".package."_math_commands")
+		call extend(completion_list, {"g:atp_package_".package."_math_commands"})
+	    endif
+	endfor
 	    " math non expert mode {{{5
 	    if a:expert_mode == 0
 		call extend(completion_list, g:atp_math_commands_non_expert_mode)
@@ -4476,10 +4510,12 @@ let g:debug="Y"
 	if searchpair('\\begin\s*{\s*picture\s*}','','\\end\s*{\s*picture\s*}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
 	    call extend(completion_list, g:atp_picture_commands)
 	endif 
-   	"{{{4 -------------------- hyperref
-	if atplib#SearchPackage('hyperref')
-	    call extend(completion_list, g:atp_hyperref_commands)
-	endif
+   	"{{{4 -------------------- PACKAGES
+	for package in g:atp_packages
+	    if atplib#SearchPackage(package) && exists("g:atp_package_".package."_commands")
+		call extend(completion_list, {"g:atp_package_".package."_commands"})
+	    endif
+	endfor
 	" ToDo: add layout commands and many more packages. (COMMANDS FOR
 	" PREAMBULE)
 	"{{{4 -------------------- final stuff
@@ -4524,6 +4560,11 @@ let g:debug="Y"
     " {{{3 ------------ ABBREVIATIONS
     elseif completion_method == 'abbreviations'
 	let completion_list  = sort(copy(b:atp_LocalEnvironments), "atplib#CompareStarAfter")+[ "document","description","letter","picture","list","minipage","titlepage","thebibliography","bibliography","center","flushright","flushleft","tikzpicture","frame","itemize","enumerate","quote","quotation","verse","abstract","verbatim","figure","array","table","tabular","equation","equation*","align","align*","alignat","alignat*","gather","gather*","multline","multline*","split","flalign","flalign*","corollary","theorem","proposition","lemma","definition","proof","remark","example","exercise","note","question","notation"]
+	for package in g:atp_packages
+	    if exists("g:atp_package_".package."_environments")
+		call extend(completion_list, {"g:atp_package_".package."_environments"})
+	    endif
+	endfor
 	call map(completion_list, "g:atp_iabbrev_leader.v:val.g:atp_iabbrev_leader")
     " {{{3 ------------ LABELS /are done later only the completions variable /
     elseif completion_method ==  'labels'
@@ -4565,6 +4606,14 @@ let g:debug="Y"
     " {{{3 ------------ BIBSTYLES
     elseif completion_method == 'bibstyles'
 	let completion_list=atplib#KpsewhichGlobPath("bst", "", "*.bst")
+    "{{{3 ------------ DOCUMENTCLASS OPTIONS
+    elseif completion_method == 'documentclass options'
+	let documentclass = matchstr(line, '\\documentclass\[[^{]*{\zs[^}]*\ze}')
+	if exists("g:atp_documentclass_".documentclass."_options")
+	    let completion_list={"g:atp_documentclass_".documentclass."_options"}
+	else
+	    return
+	endif
     "{{{3 ------------ DOCUMENTCLASS
     elseif completion_method == 'documentclass'
 	if exists("g:atp_LatexClasses")
@@ -4833,8 +4882,10 @@ let g:debug="Y"
     "{{{3 --------- completion_method = !close environments !env_close
     if completion_method != 'close environments' && completion_method != 'env_close'
 	let completions=[]
-	    " {{{4 --------- packages, bibstyles, font (family, series, shapre, encoding), document class
+	    " {{{4 --------- packages, package options, bibstyles, font (family, series, shapre, encoding), document class, documentclass options
 	    if (completion_method == 'package' 		||
+			\ completion_method == 'package options'||
+			\ completion_method == 'documentclass options'||
 			\ completion_method == 'bibstyles' 	||
 			\ completion_method =~ 'beamer\%(\|inner\|outer\|color\|font\)themes' ||
 			\ completion_method == 'font family' 	||
@@ -4955,22 +5006,22 @@ let g:debug="Y"
     " {{{3 package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding, input files, includegraphics
     if
 		\ completion_method == 'package' 	|| 
-		\ completion_method == 'tikz libraries'    || 
+		\ completion_method == 'tikz libraries' || 
 		\ completion_method == 'environment_names' ||
-		\ completion_method == 'abbreviations' ||
+		\ completion_method == 'abbreviations'  ||
 		\ completion_method == 'pagestyle'	||
 		\ completion_method == 'pagenumbering'	||
 		\ completion_method == 'bibfiles' 	|| 
 		\ completion_method == 'bibstyles' 	|| 
-		\ completion_method == 'documentclass'|| 
+		\ completion_method == 'documentclass'  || 
 		\ completion_method =~ 'beamer\%(\|inner\|outer\|color\|font\)themes' ||
-		\ completion_method == 'font family'  ||
-		\ completion_method == 'font series'  ||
-		\ completion_method == 'font shape'   ||
-		\ completion_method == 'font encoding'||
-		\ completion_method == 'todo options' ||
+		\ completion_method == 'font family'  	||
+		\ completion_method == 'font series'  	||
+		\ completion_method == 'font shape'   	||
+		\ completion_method == 'font encoding'	||
+		\ completion_method == 'todo options' 	||
 		\ completion_method == 'missingfigure options' ||
-		\ completion_method == 'inputfiles' ||
+		\ completion_method == 'inputfiles' 	||
 		\ completion_method == 'includegraphics' 
 	call complete(nr+2,completions)
     "{{{3 labels
@@ -5042,6 +5093,13 @@ let g:debug="Y"
 	endif
 	call complete(t+1,completions)
 	let b:tc_return="tikzpicture keywords"
+    " {{{3 package and document class options
+    elseif !normal_mode && (completion_method == 'package options' || completion_method == 'documentclass options')
+	let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[.*,\ze'))
+	if col==0
+	    let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[\ze'))
+	endif
+	call complete(col+1, completions)
     endif
     " If the completion method was a command (probably in a math mode) and
     " there was no completion, check if environments are closed.

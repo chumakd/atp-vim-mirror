@@ -459,3 +459,18 @@ Done:  RemoveFromToC -- if TOC is not opened in this window, do not leave an ope
 ToDo:  :Wrap \begin{proof} \end{proof} 1 1 around another evnironment.
 ToDo:  vie \centerline{...} the end should stop the line. \\ is not well recognized.
 Done:  ]I insert item works strange when inserting before sth.
+ToDo:  TOC should work in a different way in beamer class - should search for
+	frame environment, and inside it search for a title.
+ToDo:  s:maketoc join lines if title is spanned in more than one line.
+ToDo:  disable :YankSection ... commands in beamer! or adapt them.
+ToDo:  \times map
+Done:  add g:atp_imap_tilde_braces to g:atp_ProjectLocalVariables. /only in my atprc file/
+ToDo:  add g:atp_package_..._environments to abbreviations
+	add completion for command options:
+	g:atp_package_PNAME_command_CNAME_options
+ToDo:  \mulitcolumn of longtable might need more than one latex run --> look at log file for a message!
+ToDo: in options.vim where package files are loaded:
+    " We cannot restrict here to not source some files - because the completion
+    " variables might be needed later. I need to find another way of using this files
+    " as additional scripts running syntax ... commands for example only if the
+    " packages are defined.

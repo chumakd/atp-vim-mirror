@@ -429,7 +429,8 @@ if !exists("g:atp_sections") || g:atp_reload_variables
 	\	'subsubsection' : [ '\m^\s*\(\\subsubsection\*\?\>\)',			'\m\\subsubsection\*'	],
 	\	'bibliography' 	: [ '\m^\s*\(\\begin\s*{\s*thebibliography\s*}\|\\bibliography\s*{\)' , 'nopattern'],
 	\	'abstract' 	: [ '\m^\s*\(\\begin\s*{abstract}\|\\abstract\s*{\)',	'nopattern'		],
-	\   	'part'		: [ '\m^\s*\(\\part\*\?\>\)',				'\m\\part\*'		]
+	\   	'part'		: [ '\m^\s*\(\\part\*\?\>\)',				'\m\\part\*'		],
+	\   	'frame'		: [ '\m^\s*\(\\frametitle\*\?\>\)',			'\m\\frametitle\*'	]
 	\ }
 endif
 if !exists("g:atp_cgetfile") || g:atp_reload_variables
@@ -1160,7 +1161,7 @@ if !exists("g:atp_ProjectLocalVariables") || g:atp_reload_variables
 		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles", 	
 		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler", 
 		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault", 
-		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal"
+		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal",
 		\ ] 
     if !has("python")
 	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])
@@ -1893,6 +1894,7 @@ let g:atp_completion_modes=[
 	    \ 'siunits',		'includegraphics',
 	    \ 'color names',		'page styles',
 	    \ 'page numberings',	'abbreviations',
+	    \ 'package options', 	'documentclass options'
 	    \ ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
@@ -2060,14 +2062,6 @@ endif
 		    \"\\framebox(", "\\line(", "\\linethickness{",
 		    \ "\\makebox(", "\\\multiput(", "\\oval(", "\\put", 
 		    \ "\\shortstack", "\\vector(" ]
-	let g:atp_hyperref_commands=[ '\hypersetup{', '\hypertarget{', '\url{', '\nolinkurl{', '\hyperbaseurl{', 
-		    \ '\hyperdef{', '\hyperref', '\hyperlink{', '\phantomsection', '\autoref{', '\autopageref{', 
-		    \ '\ref*{', '\autoref*{', '\autopageref*{', '\pdfstringdef{', '\pdfbookmark', 
-		    \ '\curretnpdfbookmark{', '\subpdfbookmark{', '\subpdfbookmark{', '\belowpdfbookmark{',
-		    \ '\texorpdfstring{', '\hypercalcbp', '\Acrobatmenu{', 
-		    \ '\textField', '\CheckBox', '\ChoiceMenu', '\PushButton', '\Submit', '\Reset',
-		    \ '\LayoutTextField', '\LayoutChoiceField', '\LayoutCheckField', '\MakeRadioField{', 
-		    \ '\MakeCheckField{', '\MakeTextField{', '\MakeChoiceField{', '\MakeButtonField{' ]
 	" ToDo: end writting layout commands. 
 	" ToDo: MAKE COMMANDS FOR PREAMBULE.
 
@@ -2318,7 +2312,7 @@ endif
 		    \ '\hyperlinksound', '\hyperlinkmute',
 		    \ '\usetheme', '\usecolortheme', '\usefonttheme', '\useinnertheme', '\useoutertheme',
 		    \ '\usefonttheme', '\note', '\AtBeginNote', '\AtEndNote', '\setbeameroption{',
-		    \ '\setbeamerfont{', '\mode' ]
+		    \ '\setbeamerfont{', "\\setbeamertemplate{", '\mode', '\insertframetitle' ]
 
 	let g:atp_BeamerThemes = [ "default", "boxes", "Bergen", "Boadilla", "Madrid", "AnnArbor", 
 		    \ "CambridgeUS", "Pittsburgh", "Rochester", "Antibes", "JuanLesPins", "Montpellier", 
@@ -2428,6 +2422,21 @@ let g:atp_siuinits= [
  \ '\wattpersquaremetresteradiannp', '\weber', '\weberbase', '\yocto', '\yoctod', '\yotta',
  \ '\yottad', '\zepto', '\zeptod', '\zetta', '\zettad' ]
  " }}}
+
+" Read Package/Documentclass Files {{{
+let time=reltime()
+let package_files = split(globpath(&rtp, "ftplugin/ATP_files/packages/*"), "\n")
+let g:atp_packages = map(copy(package_files), 'fnamemodify(v:val, ":t:r")')
+for file in package_files
+    " We cannot restrict here to not source some files - because the completion
+    " variables might be needed later. I need to find another way of using this files
+    " as additional scripts running syntax ... commands for example only if the
+    " packages are defined.
+    execute "source ".file
+endfor
+let g:source_time_package_files=reltimestr(reltime(time))
+
+" }}}
 
 " AUTOCOMMANDS:
 " Some of the autocommands (Status Line, LocalCommands, Log File):
