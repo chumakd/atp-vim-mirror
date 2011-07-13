@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 10 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 13 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.6.14)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.1)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -156,6 +156,12 @@ NEWS							*atp-news*
  ======================
  Changes in version 9.7
 <
+  The g:atp_imap_first_leader, g:atp_imap_second_leader,
+  g:atp_imap_third_leader, g:atp_imap_fourth_leader variables 
+  are now called:
+  |g:atp_imap_leader_1|, |g:atp_imap_leader_2|, |g:atp_imap_leader_3|,
+  |g:atp_imap_leader_4|.
+
   See |b:atp_MaxProcesses| and |b:atp_KillYoungest|.
 
   The variables |b:atp_TexOptions|, |b:atp_StarEnvDefault|,
@@ -169,6 +175,19 @@ NEWS							*atp-news*
   |atp-:LocalCommands| will make abbreviations to found environments.
 
   See |atp->f| for two new motions made for beamer frame environment. 
+
+  See |atp-completion-documentclass-options|,
+  |atp-completion-pacakages-options|.
+
+  Q? and Q/ searching maps removed.
+
+  Some new imaps:
+  	`u 	\underline{}
+	`o	\overline{}
+	`D	see in |atp-imap-math-misc|.
+  
+  + Many Small Bug Fixes :)
+
 >
  ======================
  Changes in version 9.6.1
@@ -311,7 +330,7 @@ NEW IMAPS ~
     to open new line.
 
     The abbreviations are customizable: g:atp_imap_{envname}, also the leader
-    is customizable with |g:atp_imap_third_leader| and environment names for
+    is customizable with |g:atp_imap_leader_3| and environment names for
     example if you set |g:atp_EnvNameTheorem|="thm" then ]the imap will insert
     \begin{thm}:\end{thm} pair. You can list supported environments with ':let
     g:atp_EnvName<C-d>'. If you set g:atp_imap_{envname} to empty string ""
@@ -374,8 +393,7 @@ SPACE CMAP ~						|atp-<space>|
  cmap <buffer> <C-Space> 	\_s\+
  cmap <buffer> <C-_> 		\_s\+
     The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
-    as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
-    |atp-Q?| where <Space> is mapped to \_s\+.
+    as <C-Space>. In Vim, and gVim as well.
 
     Note: from version 9.6 <Space> is mapped to \_s\+ in cmdline modes / and ?.
     <F2> turns it on/off. The above maps are always on.
@@ -2828,6 +2846,30 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		Completion for the command '\documentclass'. Returns list of
 		all classes available in your distribution.
 
+							*atp-completion-documentclass-options*
+							*atp-completion-package-options*
+	documentclass options ~
+	package options ~
+		You can write your own scrip which will add support for
+		documentclass or a package. Put it under
+		ftplugin/ATP_files/packages/ directory in your vim path.
+		Supported variables:
+>
+	    g:atp_documentclass_{dc_name}_options
+	    g:atp_package_{p_name}_options
+	    g:atp_package_{p_name}_commands
+	    g:atp_package_{p_name}_math_commands
+<		These are just list of options/commands. math_commands will be
+		added to completion only in math mode.
+>
+	    g:atp_package_{p_name}_options_values
+<		This variable is a vim dictionary: keys are vim patterns which
+		should match a package option, values are lists of the option
+		values. See ftplugin/ATP_files/packages/caption.vim for an
+		example. This was tested with the following option syntax: >
+		    option1=value1,option2={value1,value2}
+<
+	
 ------------------------------------------------------------------
 ATP COMPLETION VARIABLES				*atp-completion-variables*
 
@@ -3784,21 +3826,21 @@ some other key that it is not used in Vim (there are not many of them though).
 The most commonly used latex-suite plugin uses similar set of mappings (but
 there might be some differences). The easy way to change imap leaders is by
 using the variables:
-							*g:atp_imap_first_leader*
+							*g:atp_imap_leader_1*
 >
-	    g:atp_imap_first_leader == "#"
+	    g:atp_imap_leader_1 == "#"
 <	    	for Greak letters and some math commands,
-							*g:atp_imap_second_leader*
+							*g:atp_imap_leader_2*
 >
-	    g:atp_imap_second_leader == "##"
+	    g:atp_imap_leader_2 == "##"
 <	    	for font commands, (another good choice is "_") 
-							*g:atp_imap_third_leader*
+							*g:atp_imap_leader_3*
 >
-	    g:atp_imap_third_leader == "]"
+	    g:atp_imap_leader_3 == "]"
 <	    	for environments, 
-							*g:atp_imap_fourth_leader*
+							*g:atp_imap_leader_4*
 >
-	    g:atp_imap_fourth_leader == "["
+	    g:atp_imap_leader_4 == "["
 <	    	for extra environments in the old layout (this will be removed).
 
 							|g:atp_map_forward_motion_leader|
@@ -3909,27 +3951,13 @@ nmap \u, vmap \u		-- uncomment
 cmap <buffer> <C-Space> 	\_s\+
 cmap <buffer> <C-_> 		\_s\+
     The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
-    as <C-Space>. In Vim, and gVim as well, you can also use |atp-Q/|,
-    |atp-Q?| or |atp-<F2>| where <Space> is mapped to \_s\+.
-								*atp-Q/*
-								*atp-Q?*
-								*atp-<F2>*
-nmap Q/, nmap Q?, nmap <F2>
-	Q/ and Q? to enter command-line window in which <space> is mapped to
-	'\_s\+'. If you want to insert a white space type CTRL-V followed by
-	<Space>.
-
-	<F2> acts as 'Q/i' (i.e. enters insert mode).
-	If you want Q/ and Q? enter insert mode as well you can set: >
-	    nmap Q/		q/:call ATP_CmdwinToggleSpace('on')<CR>i
-	    nmap Q?		q?:call ATP_CmdwinToggleSpace('on')<CR>i
-<	in your |atprc| or |vimrc| file.
+    as <C-Space>. In Vim, and gVim as well.
 
 FONT COMMANDS						*atp-imap-fonts*
 
 Below are listed font imaps. They work in text mode, or math mode, or if there
 is only one given in both. The map leader is defined by the variable
-|g:atp_imap_second_leader|, which by default is set to '##' (another good
+|g:atp_imap_leader_2|, which by default is set to '##' (another good
 setting is '_')
 	  	in text			in math ~
 imap ##rm 	\textrm{}<Left>		\mathrm{}<Left>
@@ -4005,7 +4033,7 @@ g:atp_imap_ShortEnvIMaps=1
     and \item (I). You can also reconfigure them using the variables:
     g:atp_imap_{env_name} (for example g:atp_imap_theorem, if you don't want
     a map for particular environment set the corresponding variable to empty
-    string ""), |g:atp_imap_third_leader| is used as a leader (the default is
+    string ""), |g:atp_imap_leader_3| is used as a leader (the default is
     ]).  Map for letter environment is not defined when you use short imaps.
 
 Note: you can list this mappings using the command |atp-:HelpEnvIMaps|.
@@ -4120,7 +4148,7 @@ imap #V		\Vee
 imap #N		\Nabla
 imap #=		\equiv
 imap `8		\infty		[the default '#' is not working, ` is used intead, 
-				 but only if |g:atp_imap_first_leader|='#']
+				 but only if |g:atp_imap_leader_1|='#']
 imap `6		\partial	[as above, you can also use \p<Tab>]
 imap `D 	<Esc>vxi\frac{\partial}{\partial "}
 				[ let me explain the above map: you type x`D
@@ -4135,7 +4163,7 @@ imap #<		\leq
 imap #.		\dot		[#.s will put \dots]
 imap 
 
-MATH ACCENTS ~
+MATH ACCENTS AND DECORATIONS ~
 
 These imaps are defined in g:atp_iap_math_misc variable. They might be turned
 off usgin |atp-:ToggleIMaps| commands or |g:atp_imap_define_math_misc| variable.
@@ -4148,6 +4176,8 @@ imap `v		\check{}
 imap `_		\bar{}
 imap `~		\tilde{}	[if g:atp_imap_wide is nonempty it is \widetilde{}]
 imap `^		\hat{}		[as above]
+imap `u		\underline{}
+imap `o		\overline{}
 
 
  							*atp-imap-math*

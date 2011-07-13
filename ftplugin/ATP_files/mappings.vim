@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Jul 06 08:00  2011 C
+" Last Change: Mon Jul 11 07:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -864,7 +864,7 @@ if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
 		    \ "g:atp_imap_define_greek_letters", '\varphi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vp', s:backslash.'varpi',	 
 		    \ "g:atp_imap_define_greek_letters", '\varpi' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'C', s:backslash.'Xi',	 
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'X', s:backslash.'Xi',	 
 		    \ "g:atp_imap_define_greek_letters", '\Xi' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'D', s:backslash.'Delta',	 
 		    \ "g:atp_imap_define_greek_letters", '\Delta' ],

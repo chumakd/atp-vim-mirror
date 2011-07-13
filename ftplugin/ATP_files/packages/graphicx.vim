@@ -5,3 +5,7 @@ let g:atp_package_graphicx_options=['xdvi', 'dvipdf',
 	\ 'textures', 'pctexps', 'pctexwin', 'pctexhp', 'pctex32', 'truetex', 'tcidvi',
 	\ 'vtex', 'debugshow', 'draft', 'final', 'hiderotate', 'hiresbb',
 	\ 'hidescale', 'unknownkeysallowed', 'unknownkeyserror']
+let g:atp_package_graphicx_commands=[
+	\ '\rotatebox{', '\scalebox{', '\resizebox{', '\includegraphics{', '\DeclareGraphicsExtensions{',
+	\ '\DeclareGraphicsRule{'
+	\ ]

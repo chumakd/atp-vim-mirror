@@ -3,3 +3,7 @@ let g:atp_package_inputenc_options=[
     \ 'latin9', 'decmulti', 'cp850', 'cp852', 'cp858', 
     \ 'cp437', 'cp437de', 'cp865', 'applemac', 'macce', 'next',
     \ 'ansinew', 'cp1250', 'cp1252', 'utf8' ]
+let g:atp_package_inputenc_commands=[
+    \ '\inputencoding{', '\DeclareInputText{', '\DeclareInputMath{',
+    \ '\DeclareUnicodeCharacter{'
+    \ ]

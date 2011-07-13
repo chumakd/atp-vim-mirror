@@ -118,8 +118,13 @@ function! <SID>GetSyncData(line, col)
 
      	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
 	    redraw!
-	    echomsg "[SyncTex:] calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
-	    let cmd=b:atp_TexCompiler . " -synctex=1 " . shellescape(atplib#FullPath(b:atp_MainFile))
+	    let cmd=b:atp_TexCompiler." ".join(split(b:atp_TexOptions, ','), " ")." ".shellescape(atplib#FullPath(b:atp_MainFile))
+	    if b:atp_TexOptions !~ '\%(-synctex\s*=\s*1\|-src-specials\>\)'
+		echomsg "[SyncTex:] b:atp_TexOptions does not contain -synctex=1 or -src-specials switches!"
+		return
+	    else
+		echomsg "[SyncTex:] calling ".get(g:CompilerMsg_Dict, b:atp_TexCompiler, b:atp_TexCompiler)." to generate synctex data. Wait a moment..."
+	    endif
  	    call system(cmd) 
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file

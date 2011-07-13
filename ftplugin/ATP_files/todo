@@ -474,3 +474,8 @@ ToDo: in options.vim where package files are loaded:
     " variables might be needed later. I need to find another way of using this files
     " as additional scripts running syntax ... commands for example only if the
     " packages are defined.
+ToDo: _aux file is not working, adding label + 1compile => \ref{1.2<Tab> is
+	not found, but found when there are no compilation errors.
+ToDo: \usepackage[font={small,<tab> is not working, yet :)
+ToDo: \leq<tab> => \leqslant.
+ToDo: __ and ^^ imaps where sometimes not working when I was typing project.tex file.

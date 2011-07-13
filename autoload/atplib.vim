@@ -3811,6 +3811,8 @@ function! atplib#TabCompletion(expert_mode,...)
     let tbegin		= matchstr(l,'\zs\<\w*$')
     " start with last '\'
     let obegin		= strpart(l,o)
+    " start with last =
+    let ebegin		= strpart(l,max([r,m,n])+1)
 
     " what we are trying to complete: usepackage, environment.
     let pline		= strpart(l, 0, nr)
@@ -3850,6 +3852,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	call atplib#Log("TabCompletion.log", "obegin=".obegin)
 	let g:begin	= begin 
 	call atplib#Log("TabCompletion.log", "begin=".begin)
+	let g:ebegin	= ebegin 
+	call atplib#Log("TabCompletion.log", "ebegin=".ebegin)
 	let g:pline	= pline
 	call atplib#Log("TabCompletion.log", "pline=".pline)
 	let g:ppline	= ppline
@@ -3965,11 +3969,18 @@ function! atplib#TabCompletion(expert_mode,...)
 		return ''
 	    endif
 	endif
+    "{{{3 --------- package options values
+    elseif l =~ '\\usepackage\[[^\]]*=\%([^\],]*\|{\([^}]\+,\)\?[^}]*\)$' &&
+		\ !( l =~ '\\usepackage\[[^\]]*=\%(.*\]\|{.*}\),$' ) && 
+		\ !normal_mode &&
+		\  index(g:atp_completion_active_modes, 'package options values') != -1
+	    let completion_method='package options values'
+	    let b:comp_method=completion_method
     "{{{3 --------- package options
     elseif l =~ '\\usepackage\[[^\]]*$' && !normal_mode &&
 		\  index(g:atp_completion_active_modes, 'package options') != -1
 	    let completion_method='package options'
-	    let b:comp_method="package options"
+	    let b:comp_method=completion_method
     "{{{3 --------- package
     elseif pline =~ '\\usepackage\%([.*]\)\?\s*' && !normal_mode &&
 		\  index(g:atp_completion_active_modes, 'package names') != -1
@@ -4276,13 +4287,14 @@ let g:debug="Y"
 	    endif
 	endif
 	" MathTools
-	if atplib#SearchPackage('mathtools', stop_line)
-	    if end !~ '\s*}'
-		call extend(completion_list,atplib#Add(g:atp_MathTools_environments,'}'))
-	    else
-		call extend(completion_list,g:atp_MathTools_environments)
-	    endif
-	endif
+	" moved to packages/mathtools.vim
+" 	if atplib#SearchPackage('mathtools', stop_line)
+" 	    if end !~ '\s*}'
+" 		call extend(completion_list,atplib#Add(g:atp_MathTools_environments,'}'))
+" 	    else
+" 		call extend(completion_list,g:atp_MathTools_environments)
+" 	    endif
+" 	endif
 	" Packages
 	for package in g:atp_packages
 	    if atplib#SearchPackage(package) && exists("g:atp_package_".package."_environments")
@@ -4293,11 +4305,30 @@ let g:debug="Y"
 		endif
 	    endif
 	endfor
+    "{{{3 ------------ PACKAGE OPTIONS VALUES
+    elseif completion_method == 'package options values'
+	let package = matchstr(line, '\\usepackage\[.*{\zs[^}]*\ze}')
+	let option  = matchstr(l,'\zs\<\w\+=\ze[^=]*$')
+	let g:package=package
+	let g:option=option
+	let completion_list=[]
+	if exists("g:atp_package_".package."_options_values") 
+	   for pat in keys({"g:atp_package_".package."_options_values"})
+	       if (option =~ pat)
+		   let completion_list={"g:atp_package_".package."_options_values"}[pat]
+		   break
+	       endif
+	   endfor
+       else
+	   return ""
+       endif
     "{{{3 ------------ PACKAGE OPTIONS
     elseif completion_method == 'package options'
-	let package = matchstr(line, '\\usepackage\[[^{]*{\zs[^}]*\ze}')
+	let package = matchstr(line, '\\usepackage.*{\zs[^}]*\ze}')
+	let g:package=package
 	if exists("g:atp_package_".package."_options")
 	    let completion_list={"g:atp_package_".package."_options"}
+	    let g:Debug=1
 	else
 	    return
 	endif
@@ -4422,12 +4453,6 @@ let g:debug="Y"
 		    endif
 		endif
 	    endif
-	    " MathTools commands {{{5
-	    if atplib#SearchPackage('mathtools', stop_line)
-		call extend(completion_list, g:atp_MathTools_math_commands)
-	    endif
-	    call extend(completion_list, g:atp_math_commands_PRE, 0)
-	
 	    " nicefrac {{{5
 	    if atplib#SearchPackage('nicefrac', stop_line)
 		call add(completion_list,"\\nicefrac{")
@@ -4436,11 +4461,12 @@ let g:debug="Y"
 	    if atplib#SearchPackage('SIunits', stop_line) && ( index(g:atp_completion_active_modes, 'SIunits') != -1 || index(g:atp_completion_active_modes, 'siunits') != -1 )
 		call extend(completion_list, g:atp_siuinits)
 	    endif
-	for package in g:atp_packages
-	    if exists("g:atp_package_".package."_math_commands")
-		call extend(completion_list, {"g:atp_package_".package."_math_commands"})
-	    endif
-	endfor
+	    for package in g:atp_packages
+		if exists("g:atp_package_".package."_math_commands")
+		    call extend(completion_list, {"g:atp_package_".package."_math_commands"})
+		endif
+	    endfor
+
 	    " math non expert mode {{{5
 	    if a:expert_mode == 0
 		call extend(completion_list, g:atp_math_commands_non_expert_mode)
@@ -4498,9 +4524,9 @@ let g:debug="Y"
 	    endif
 	endif
 	" {{{4 -------------------- MathTools commands
-	if atplib#SearchPackage('mathtools', stop_line)
-	    call extend(completion_list, g:atp_MathTools_commands)
-	endif
+" 	if atplib#SearchPackage('mathtools', stop_line)
+" 	    call extend(completion_list, g:atp_MathTools_commands)
+" 	endif
 	" {{{4 -------------------- ToDoNotes package commands
 	if ( index(g:atp_completion_active_modes, 'todonotes') != -1 ) && atplib#SearchPackage('todonotes', stop_line)
 	    call extend(completion_list, g:atp_TodoNotes_commands)
@@ -4516,6 +4542,11 @@ let g:debug="Y"
 		call extend(completion_list, {"g:atp_package_".package."_commands"})
 	    endif
 	endfor
+   	"{{{4 -------------------- CLASS
+	let documentclass=atplib#DocumentClass(b:atp_MainFile)
+	if exists("g:atp_documentclass_".documentclass."_commands")
+	    call extend(completion_list, {"g:atp_documentclass_".documentclass."_commands"})
+	endif
 	" ToDo: add layout commands and many more packages. (COMMANDS FOR
 	" PREAMBULE)
 	"{{{4 -------------------- final stuff
@@ -4900,6 +4931,13 @@ let g:debug="Y"
 		else
 		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
 		endif
+	    " {{{4 --------- package options values
+	    elseif ( completion_method == 'package options values' )
+		if a:expert_mode
+		    let completions	= filter(deepcopy(completion_list),' v:val =~? "^".ebegin') 
+		else
+		    let completions	= filter(deepcopy(completion_list),' v:val =~? ebegin') 
+		endif
 	    " {{{4 --------- environment names, bibfiles 
 	    elseif ( completion_method == 'environment_names'	||
 			\ completion_method == 'bibfiles' 	)
@@ -4927,11 +4965,11 @@ let g:debug="Y"
 	    " must match at the beginning (but in a different way)
 	    " (only in expert_mode).
 	    elseif completion_method == 'command' 
-			if a:expert_mode == 1 
-			    let completions	= filter(copy(completion_list),'v:val =~# "\\\\".tbegin')
-			elseif a:expert_mode != 1 
-			    let completions	= filter(copy(completion_list),'v:val =~? tbegin')
-			endif
+		if a:expert_mode == 1 
+		    let completions	= filter(copy(completion_list),'v:val =~# "\\\\".tbegin')
+		elseif a:expert_mode != 1 
+		    let completions	= filter(copy(completion_list),'v:val =~? tbegin')
+		endif
 	    " {{{4 --------- Abbreviations
 	    elseif completion_method == 'abbreviations'
 		let completions		= filter(copy(completion_list), 'v:val =~# "^" . abegin')
@@ -4981,7 +5019,9 @@ let g:debug="Y"
     " made by a variable! Maybe better is to provide a positive list !!!
     if g:atp_completion_truncate && a:expert_mode && 
 		\ index(['bibfiles', 'bibitems', 'bibstyles', 'font family',
-		\ 'font series', 'font shape', 'font encoding', ],completion_method) == -1
+		\ 'font series', 'font shape', 'font encoding', 'package options', 
+		\ 'package options values', 'documentclass options', 
+		\ 'documentclass options values' ],completion_method) == -1
 	call filter(completions,'len(substitute(v:val,"^\\","","")) >= g:atp_completion_truncate')
     endif
 "     THINK: about this ...
@@ -5096,6 +5136,14 @@ let g:debug="Y"
     " {{{3 package and document class options
     elseif !normal_mode && (completion_method == 'package options' || completion_method == 'documentclass options')
 	let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[.*,\ze'))
+	if col==0
+	    let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[\ze'))
+	endif
+	call complete(col+1, completions)
+    " {{{3 package and document class options values
+    elseif !normal_mode && (completion_method == 'package options values' 
+		\ || completion_method == 'documentclass options values')
+	let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[.*=\%({[^}]*,\|{\)\?\ze'))
 	if col==0
 	    let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[\ze'))
 	endif

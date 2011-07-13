@@ -1894,7 +1894,8 @@ let g:atp_completion_modes=[
 	    \ 'siunits',		'includegraphics',
 	    \ 'color names',		'page styles',
 	    \ 'page numberings',	'abbreviations',
-	    \ 'package options', 	'documentclass options'
+	    \ 'package options', 	'documentclass options',
+	    \ 'package options values'
 	    \ ]
 lockvar 2 g:atp_completion_modes
 catch /E741:/
@@ -2327,20 +2328,6 @@ endif
 		    \ "dolphin" ]
 	let g:atp_BeamerFontThemes = [ "default", "serif", "structurebold", "structureitalicserif",
 		    \ "structuresmallcapsserif" ]
-
-	let g:atp_MathTools_math_commands = [ '\cramped', '\crampedllap', '\crampedclap', '\crampedrlap', '\smashoperator',
-		    \ '\adjustlimits', '\newtagform{', '\usetagform{', '\renewtagform{', 
-		    \ '\xleftrightarrow', '\xRightarrow', '\xLeftarrow', '\xLeftrightarrow', 
-		    \ '\xhookleftarrow', '\xhookrightarrow', '\xmapsto', '\underbracket{', '\overbracket{',
-		    \ '\LaTeXunderbrace', '\LaTeXoverbrace', '\Aboxed', '\ArrowBetweenLines', '\ArrowBetweenLines*',
-		    \ '\shortintertext', '\lparen', '\rparen', '\vcentcolon', 
-		    \ '\ordinarycolon', '\mathtoolsset{', '\prescript',
-		    \ '\newgathered', '\renewgathered', '\splitfrac{', '\splitdfrac{' ]
-	let g:atp_MathTools_commands = [ '\DeclarePairedDelimiter{', '\DeclarePairedDelimiterX{' ]
-
-	let g:atp_MathTools_environments = [ 'matrix*', 'pmatrix*', 'bmatrix*', 'Bmatrix*', 'vmatrix*', 'Vmatrix*', 
-		    \ 'multilined', 'dcases', 'dcases*', 'rcases', 'rcases*', 'drcases*', 'cases*', 'spreadlines',
-		    \ 'lgathered', 'rgathered' ]
 
 	let g:atp_TodoNotes_commands = [ '\todo{', '\listoftodos', '\missingfigure' ] 
 	let g:atp_TodoNotes_todo_options = 

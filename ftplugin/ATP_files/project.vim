@@ -535,7 +535,10 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
     " Make a list of variables defined in project script
     let defined_variables	= []
     let save_loclist		= getloclist(0)
-    silent! exe 'lvimgrep /^\s*\<let\>\s\+[bg]:/j ' . fnameescape(a:project_script)
+    try
+	silent! exe 'lvimgrep /^\s*\<let\>\s\+[bg]:/j ' . fnameescape(a:project_script)
+    catch E486:
+    endtry
     let defined_variables	= getloclist(0) 
     call map(defined_variables, 'matchstr(v:val["text"], ''^\s*let\s\+\zs[bg]:[^[:blank:]=]*'')') 
     call setloclist(0, save_loclist) 
