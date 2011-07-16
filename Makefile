@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.7.1
+VERSION = 9.7.2
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -35,7 +35,9 @@ SOURCE += ftplugin/ATP_files/packages/babel.vim
 SOURCE += ftplugin/ATP_files/packages/beamer.vim
 SOURCE += ftplugin/ATP_files/packages/biblatex.vim
 SOURCE += ftplugin/ATP_files/packages/caption.vim
+SOURCE += ftplugin/ATP_files/packages/cancel.vim
 SOURCE += ftplugin/ATP_files/packages/color.vim
+SOURCE += ftplugin/ATP_files/packages/enumitem.vim
 SOURCE += ftplugin/ATP_files/packages/geometry.vim
 SOURCE += ftplugin/ATP_files/packages/graphicx.vim
 SOURCE += ftplugin/ATP_files/packages/hyperref.vim
@@ -44,8 +46,10 @@ SOURCE += ftplugin/ATP_files/packages/libgreek.vim
 SOURCE += ftplugin/ATP_files/packages/longtable.vim
 SOURCE += ftplugin/ATP_files/packages/mathdesign.vim
 SOURCE += ftplugin/ATP_files/packages/mathtools.vim
+SOURCE += ftplugin/ATP_files/packages/ntheorem.vim
 SOURCE += ftplugin/ATP_files/packages/standard_classes.vim
 SOURCE += ftplugin/ATP_files/packages/textcmds.vim
+SOURCE += ftplugin/ATP_files/packages/xcolor.vim
 SOURCE += ftplugin/bibsearch_atp.vim
 SOURCE += ftplugin/fd_atp.vim
 SOURCE += ftplugin/plaintex_atp.vim

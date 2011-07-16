@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 13 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 16 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.1)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.2)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -152,6 +152,12 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 9.7.2
+<
+  See |atp-completion-packages|: the variable
+  g:atp_package_{p_name}_command_values was added.
 >
  ======================
  Changes in version 9.7
@@ -2848,11 +2854,12 @@ COMPLETION MODES		                       	*atp-completion-modes*
 
 							*atp-completion-documentclass-options*
 							*atp-completion-package-options*
+							*atp-completion-package*
 	documentclass options ~
 	package options ~
 		You can write your own scrip which will add support for
 		documentclass or a package. Put it under
-		ftplugin/ATP_files/packages/ directory in your vim path.
+		'ftplugin/ATP_files/packages/' directory in your vim path.
 		Supported variables:
 >
 	    g:atp_documentclass_{dc_name}_options
@@ -2865,11 +2872,21 @@ COMPLETION MODES		                       	*atp-completion-modes*
 	    g:atp_package_{p_name}_options_values
 <		This variable is a vim dictionary: keys are vim patterns which
 		should match a package option, values are lists of the option
-		values. See ftplugin/ATP_files/packages/caption.vim for an
+		values. See 'ftplugin/ATP_files/packages/caption.vim' for an
 		example. This was tested with the following option syntax: >
 		    option1=value1,option2={value1,value2}
-<
+<		In a similar way works the variable: >
+	    g:atp_package_{p_name}_command_values
+<		See 'ftplugin/ATP_files/packages/enumitem.vim' for an example
+		(or use ':echo g:atp_package_enumitem_command_values').
+		or 'ftplugin/ATP_files/packages/xcolors.vim' 
+		The value of a key in this dictionary might be a string, which
+		is supposed to be a name of a function to get list of
+		completions. Afterwards this list will be filtered to get
+		only matching completions. It should return a vim list. An
+		example is in 'ftplugin/ATP_files/packages/xcolors.vim'.
 	
+
 ------------------------------------------------------------------
 ATP COMPLETION VARIABLES				*atp-completion-variables*
 

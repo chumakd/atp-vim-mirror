@@ -479,3 +479,7 @@ ToDo: _aux file is not working, adding label + 1compile => \ref{1.2<Tab> is
 ToDo: \usepackage[font={small,<tab> is not working, yet :)
 ToDo: \leq<tab> => \leqslant.
 ToDo: __ and ^^ imaps where sometimes not working when I was typing project.tex file.
+ToDo: add good log info for TabCompletion: commands values, etc ... and instruct users how to use it.
+ToDo: \thref in ntheorem.sty page 11 - LaTeX needs to be run twice.
+ToDo: amsthm is loaded by ntheorem with option amsmath
+NEW FEATURE: DICTIONARY!!!
