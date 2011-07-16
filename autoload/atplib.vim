@@ -239,13 +239,10 @@ endfunction
 " try
 function! atplib#ToggleIMaps(var, augroup, ...)
     if exists("s:isinmath") && 
-		\ ( atplib#IsInMath() != s:isinmath ) &&
+		\ ( atplib#IsInMath() == s:isinmath ) &&
 		\ ( a:0 >= 2 && a:2 ) &&
 		\ a:augroup == 'CursorMovedI'
-" 	echo "toggle ".g:atp_isinmath." ".atplib#IsInMath()
-    elseif a:augroup == 'CursorMovedI'
 	return
-" 	echo "NOTOGGLE ".g:atp_isinmath." ".atplib#IsInMath()
     endif
 
     if atplib#IsInMath() 
