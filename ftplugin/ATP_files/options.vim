@@ -1888,9 +1888,7 @@ let g:atp_completion_modes=[
 	    \ 'package names',		'font encoding',
 	    \ 'font family',		'font series',
 	    \ 'font shape',		'algorithmic',
-	    \ 'beamerthemes', 		'beamerinnerthemes',
-	    \ 'beamerouterthemes', 	'beamercolorthemes',
-	    \ 'beamerfontthemes',	'todonotes',
+	    \ 'todonotes',
 	    \ 'siunits',		'includegraphics',
 	    \ 'color names',		'page styles',
 	    \ 'page numberings',	'abbreviations',
@@ -2294,41 +2292,6 @@ endif
 	let g:atp_tikz_library_topath_keywords	= ['line to', 'curve to', 'out', 'in', 'relative', 'bend', 'looseness', 'min', 'max', 'control', 'loop']
 	let g:atp_tikz_library_through_keywords	= ['through']
 	let g:atp_tikz_library_trees_keywords	= ['grow', 'via', 'three', 'points', 'two', 'child', 'children', 'sibling', 'clockwise', 'counterclockwise', 'edge', 'parent', 'fork'] 
-
-	" BEAMER
-	let g:atp_BeamerEnvironments = ["frame", "beamercolorbox", "onlyenv", "altenv", 
-		    \ "visibleenv", "uncoverenv", "invisibleenv", "overlayarea", "overprint", "actionenv",
-		    \ 'description', 'structureenv', 'alertenv', 'block', 'alertblock', 'exampleblock', 'beamercolorbox',
-		    \ 'beamerboxesrounded', 'columns', 'semiverbatim' ]
-
-	let g:atp_BeamerCommands = ["\\alert{", "\\frametitle{", "\\framesubtitle", "\\titlepage", "\\setbeamercolor{", 
-		    \ "\\pause", "\\onslide", "\\only", "\\uncover", "\\visible", "\\invisible", "\\temporal", "\\alt",
-		    \ "\\usebeamercolor{", "\\usetheme{", "\\includeonlyframes{", "\\againframe", "\\setbeamersize{",
-		    \ "\\action{", "\\inserttocsection", "\\inserttocsectionumber", "\\lecture", "\\AtBeginLecture{",
-		    \ "\\appendix", "\\hypertarget", "\\beamerbutton", "\\beamerskipbutton", "\\beamerreturnbutton", 
-		    \ "\\beamergotobutton", '\hyperlinkslideprev', '\hyperlinkslidenext', '\hyperlinkframestart', 
-		    \ '\hyperlinkframeend', '\hyperlinkframestartnext', '\hyperlinkframeendprev', 
-		    \ '\hyperlinkpresentationstart', '\hyperlinkpresentationend', '\hyperlinkappendixstart', 
-		    \  '\hyperlinkappendixend', '\hyperlinkdocumentstart',  '\hyperlinkdocumentend',
-		    \ '\framezoom', '\structure', '\insertblocktitle', '\column', '\movie', '\animate', 
-		    \ '\hyperlinksound', '\hyperlinkmute',
-		    \ '\usetheme', '\usecolortheme', '\usefonttheme', '\useinnertheme', '\useoutertheme',
-		    \ '\usefonttheme', '\note', '\AtBeginNote', '\AtEndNote', '\setbeameroption{',
-		    \ '\setbeamerfont{', "\\setbeamertemplate{", '\mode', '\insertframetitle' ]
-
-	let g:atp_BeamerThemes = [ "default", "boxes", "Bergen", "Boadilla", "Madrid", "AnnArbor", 
-		    \ "CambridgeUS", "Pittsburgh", "Rochester", "Antibes", "JuanLesPins", "Montpellier", 
-		    \ "Berkeley" , "PalAlto", "Gottingen", "Marburg", "Hannover", "Berlin", "Ilmenau", 
-		    \ "Dresden", "Darmstadt", "Frankfurt", "Singapore", "Szeged", "Copenhagen", "Luebeck", "Malmoe", 
-		    \ "Warsaw", ]
-	let g:atp_BeamerInnerThemes = [ "default", "circles", "rectangles", "rounded", "inmargin" ]
-	let g:atp_BeamerOuterThemes = [ "default", "infolines", "miniframes", "smoothbars", "sidebar",
-		    \ "split", "shadow", "tree", "smoothtree" ]
-	let g:atp_BeamerColorThemes = [ "default", "structure", "sidebartab", "albatross", "beetle", "crane", 
-		    \ "dove", "fly", "seagull", "wolverine", "beaver", "lily", "orchid", "rose", "whale", "seahorse", 
-		    \ "dolphin" ]
-	let g:atp_BeamerFontThemes = [ "default", "serif", "structurebold", "structureitalicserif",
-		    \ "structuresmallcapsserif" ]
 
 	let g:atp_TodoNotes_commands = [ '\todo{', '\listoftodos', '\missingfigure' ] 
 	let g:atp_TodoNotes_todo_options = 

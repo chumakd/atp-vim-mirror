@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Jul 11 07:00  2011 W
+" Last Change: Sat Jul 16 06:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -892,7 +892,7 @@ endif
     " Make Greek Letters:
     augroup ATP_MathIMaps_GreekLetters
 	au!
-	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'CursorMovedI')
+" 	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'CursorMovedI', [], 1)
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'CursorHoldI')
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'InsertEnter') 
 	" Make imaps visible with :imap /this will not work with i_CTRL-C/
@@ -966,7 +966,7 @@ endif
     " Make Miscellaneous Mathematical Maps:
     augroup ATP_MathIMaps_misc
 	au!
-	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorMovedI', g:atp_imap_diacritics)
+" 	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorMovedI', g:atp_imap_diacritics, 1)
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorHoldI', g:atp_imap_diacritics) 
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'InsertEnter', g:atp_imap_diacritics) 
 	" Make imaps visible with :imap /this will not work with i_CTRL-C/
@@ -1112,12 +1112,17 @@ endif
     " Make Mathematical Maps:
     augroup ATP_MathIMaps
 	au!
-	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorMovedI')
+" 	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorMovedI', [], 1)
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorHoldI')
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'InsertEnter')
 	" Make imaps visible with :imap  /this will not work with i_CTRL-C/
 	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'InsertLeave')
 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'BufEnter')
+    augroup END
+
+    augroup ATP_IMaps_CursorMovedI
+	au CursorMovedI *.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters+g:atp_imap_math_misc
+		    \ +g:atp_imap_math, 'CursorMovedI', g:atp_imap_diacritics, 1)
     augroup END
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1:nowrap

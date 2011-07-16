@@ -194,13 +194,15 @@ endfunction
 " These maps extend ideas from TeX_9 plugin:
 " With a:1 = "!" (bang) remove texMathZoneT (tikzpicture from MathZones).
 function! atplib#IsInMath(...)
+    let line		= a:0 >= 1 ? a:2 : line(".")
+    let col		= a:0 >= 2 ? a:3 : col(".")-1
     if a:0 > 0 && a:1 == "!"
 	let atp_MathZones=filter(copy(g:atp_MathZones), "v:val != 'texMathZoneT'")
     else
 	let atp_MathZones=copy(g:atp_MathZones)
     endif
-    return atplib#CheckSyntaxGroups(atp_MathZones) && 
-		    \ !atplib#CheckSyntaxGroups(['texMathText'])
+    return atplib#CheckSyntaxGroups(atp_MathZones, line, col) && 
+		    \ !atplib#CheckSyntaxGroups(['texMathText'], line, col)
 endfunction
 function! atplib#MakeMaps(maps, ...)
     let aucmd = ( a:0 >= 1 ? a:1 : '' )
@@ -236,14 +238,25 @@ function! atplib#IsLeft(lchar,...)
 endfunction
 " try
 function! atplib#ToggleIMaps(var, augroup, ...)
+    if exists("s:isinmath") && 
+		\ ( atplib#IsInMath() != s:isinmath ) &&
+		\ ( a:0 >= 2 && a:2 ) &&
+		\ a:augroup == 'CursorMovedI'
+" 	echo "toggle ".g:atp_isinmath." ".atplib#IsInMath()
+    elseif a:augroup == 'CursorMovedI'
+	return
+" 	echo "NOTOGGLE ".g:atp_isinmath." ".atplib#IsInMath()
+    endif
+
     if atplib#IsInMath() 
 	call atplib#MakeMaps(a:var, a:augroup)
     else
 	call atplib#DelMaps(a:var)
-	if a:0 >= 1
+	if a:0 >= 1 && len(a:1)
 	    call atplib#MakeMaps(a:1)
 	endif
     endif
+    let s:isinmath = atplib#IsInMath() 
 endfunction
 " catch E127
 " endtry "}}}
@@ -2398,13 +2411,18 @@ endfunction
 " The function doesn't make any checks if the line and column supplied are
 " valid /synstack() function returns 0 rather than [] in such a case/.
 function! atplib#CheckSyntaxGroups(zones,...)
-    let line		= a:0 >= 2 ? a:1 : line(".")
+    let line		= a:0 >= 1 ? a:1 : line(".")
     let col		= a:0 >= 2 ? a:2 : col(".")-1
     let col		= max([1, col])
     let zones		= copy(a:zones)
 
-    let synstack	= map(synstack( line, col), 'synIDattr(v:val, "name")') 
-    let g:atp_debug_synstack=synstack
+    let synstack_raw 	= synstack(line, col)
+    if type(synstack_raw) != 3
+	unlet synstack_raw
+	return 0
+    endif
+
+    let synstack	= map(synstack_raw, 'synIDattr(v:val, "name")') 
 
     return max(map(zones, "count(synstack, v:val)"))
 endfunction
@@ -3940,7 +3958,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	"{{{4 ----------- close_env tikzpicture
 	else
 	    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-	    let g:debug="Z"
 	    if begParen[0]
 		return g:atp_bracket_dict[begParen[2]]
 	    endif
@@ -4037,35 +4054,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let completion_method='documentclass'
 	    let b:comp_method='documentclass'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- Beamer Themes
-    elseif pline =~ '\\usetheme$' && !normal_mode &&
-		\ index(g:atp_completion_active_modes, 'beamerthemes') != -1
-	    let completion_method='beamerthemes'
-	    let b:comp_method='beamerthemes'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- Beamer Inner Themes
-    elseif pline =~ '\\useinnertheme$' && !normal_mode &&
-		\ index(g:atp_completion_active_modes, 'beamerinnerthemes') != -1
-	    let completion_method='beamerinnerthemes'
-	    let b:comp_method='beamerinnerthemes'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- Beamer Outer Themes
-    elseif pline =~ '\\useoutertheme$' && !normal_mode &&
-		\ index(g:atp_completion_active_modes, 'beamerouterthemes') != -1
-	    let completion_method='beamerouterthemes'
-	    let b:comp_method='beamerouterthemes'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- Beamer Color Themes
-    elseif pline =~ '\\usecolortheme$' && !normal_mode &&
-		\ index(g:atp_completion_active_modes, 'beamercolorthemes') != -1
-	    let completion_method='beamercolorthemes'
-	    let b:comp_method='beamercolorthemes'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-    "{{{3 --------- Beamer Font Themes
-    elseif pline =~ '\\usefonttheme$' && !normal_mode &&
-		\ index(g:atp_completion_active_modes, 'beamerfontthemes') != -1
-	    let completion_method='beamerfontthemes'
-	    let b:comp_method='beamerfontthemes'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- font family
     elseif l =~ '\%(\\renewcommand\s*{\s*\\\%(rm\|sf\|bf\|tt\|md\|it\|sl\|sc\|up\)default\s*}\s*{\|\\usefont{[^}]*}{\|\\DeclareFixedFont{[^}]*}{[^}]*}{\|\\fontfamily{\)[^}]*$' && !normal_mode  &&
@@ -4121,7 +4109,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	    else
 		let pattern = ''
 	    endif
-	    let g:debug = 4
 	    if !empty(pattern)
 		let begMathZone = searchpos(pattern, 'bnW')
 		if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
@@ -4140,7 +4127,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'algorithmic') != -1 ))
 		let b:comp_method='algorithmic'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		let g:debug = 5
 		call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
 		return '' 
 	"{{{4 --------- abbreviations
@@ -4175,7 +4161,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \ atplib#CheckInlineMath('texMathZoneX') ||
 		    \ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
 	    let b:tc_return = "close_env math"
-	    let g:debug = 7
 	    call atplib#CloseLastEnvironment(append, 'math')
 	" Close environments
 	else
@@ -4209,7 +4194,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		" should be save:
 
 		if env_name !~# '^\s*document\s*$'
-		    let g:debug = 8
 		    call atplib#CloseLastEnvironment(append, 'environment', '', [line_nr, 0])
 		    return ""
 		else
@@ -4336,7 +4320,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	let g:package=package
 	if exists("g:atp_package_".package."_options") && atplib#SearchPackage(package)
 	    let completion_list={"g:atp_package_".package."_options"}
-	    let g:Debug=1
 	else
 	    return ""
 	endif
@@ -4596,7 +4579,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	let completion_list = []
 	let command_pat='\\\w\+[{\|\[]'
 	for package in g:atp_packages
-	    if exists("g:atp_package_".package."_command_values") && atplib#SearchPackage(package)
+	    if exists("g:atp_package_".package."_command_values") && ( atplib#SearchPackage(package) || atplib#DocumentClass(b:atp_MainFile) == package )
 		for key in keys({"g:atp_package_".package."_command_values"})
 		    if command =~ key
 			let command_pat = key
@@ -4689,22 +4672,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	if nchar != "}"
 	    call map(completion_list,'v:val."}"')
 	endif
-    "{{{3 ------------ Beamer Themes
-    elseif completion_method == 'beamerthemes'
-	let completion_list = g:atp_BeamerThemes
-    "{{{3 ------------ Beamer Inner Themes
-    elseif completion_method == 'beamerinnerthemes'
-	let completion_list = g:atp_BeamerInnerThemes
-    "{{{3 ------------ Beamer Outer Themes
-    elseif completion_method == 'beamerouterthemes'
-	let completion_list = g:atp_BeamerOuterThemes
-    "{{{3 ------------ Beamer Color Themes
-    elseif completion_method == 'beamercolorthemes'
-	let completion_list = g:atp_BeamerColorThemes
-
-    "{{{3 ------------ Beamer Font Themes
-    elseif completion_method == 'beamerfontthemes'
-	let completion_list = g:atp_BeamerFontThemes
     "{{{3 ------------ FONT FAMILY
     elseif completion_method == 'font family'
 	echo "[ATP:] searching through fd files ..."
@@ -5034,7 +5001,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
     "{{{3 --------- else: try to close environment
     else
-	let g:debug = 9
 	call atplib#CloseLastEnvironment('a', 'environment')
 	let b:tc_return="1"
 	return ''
@@ -5080,7 +5046,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ completion_method == 'bibfiles' 	|| 
 		\ completion_method == 'bibstyles' 	|| 
 		\ completion_method == 'documentclass'  || 
-		\ completion_method =~ 'beamer\%(\|inner\|outer\|color\|font\)themes' ||
 		\ completion_method == 'font family'  	||
 		\ completion_method == 'font series'  	||
 		\ completion_method == 'font shape'   	||
@@ -5127,7 +5092,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		    else
 			let pattern = ''
 		    endif
-		    let g:debug = 2
 		    if !empty(pattern)
 			let begMathZone = searchpos(pattern, 'bnW')
 			let g:begMathZone = begMathZone
@@ -5169,7 +5133,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	let g:command_pat=command_pat
 	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
 " 	    let col=max([len(matchstr(l, '.*'.command_pat.'\ze')), len(matchstr(l, '.*'.command_pat.'\%([^}]\|{[^}]*}\)*,\ze'))])
-	    let col=max([len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\){\ze')), len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\){\%([^}]\|{[^}]*}\)*,\ze'))])
+	    let col=max([len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\)*{\ze')), len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\)*{\%([^}]\|{[^}]*}\)*,\ze'))])
 	else
 	    let col=len(matchstr(l, '.*\\renewcommand{[^}]*}{\ze'))
 	endif
@@ -5195,7 +5159,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let stopline 	= search('^\s*$\|\\par\>', 'bnW')
 
 	    " Check Brackets 
-	    let g:debug = 3
 	    let cl_return 	= atplib#CloseLastBracket(g:atp_bracket_dict)
 
 	    " If the bracket was closed return
@@ -5209,7 +5172,6 @@ function! atplib#TabCompletion(expert_mode,...)
 			\ atplib#CheckInlineMath('texMathZoneX') ||
 			\ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
 		let zone = 'texMathZoneVWXY' 	" DEBUG
-		let g:debug = 9
 		call atplib#CloseLastEnvironment(append, 'math')
 
 	    " Check environments:
@@ -5217,7 +5179,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		let env_opened= searchpairpos('\\begin','','\\end','bnW','searchpair("\\\\begin{".matchstr(getline("."),"\\\\begin{\\zs[^}]*\\ze}"),"","\\\\end{".matchstr(getline("."),"\\\\begin{\\zs[^}]*\\ze}"),"nW")',max([1,(line(".")-g:atp_completion_limits[2])]))
 		let env_name 	= matchstr(strpart(getline(env_opened[0]), env_opened[1]-1), '\\begin\s*{\zs[^}]*\ze}')
 		let zone	= env_name 	" DEBUG
-		let g:debug = 10
 		if env_opened != [0, 0]
 		    call atplib#CloseLastEnvironment('a', 'environment', env_name, env_opened)
 		endif
@@ -5236,7 +5197,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \  completion_method == 'bibstyles' || 
 		    \ completion_method == 'bibfiles'
 	    let b:tc_return='close_bracket end'
-	    let g:debug=1
 	    call atplib#CloseLastBracket(g:atp_bracket_dict)
 	endif
     endif

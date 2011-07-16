@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.7.2
+VERSION = 9.7.3
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -66,7 +66,7 @@ SOURCE += syntax/log_atp.vim
 SOURCE += syntax/toc_atp.vim
 SOURCE += colors/coots-beauty-256.vim
 
-${Plugin}_${VERSION}.vba: ${SOURCE}
+${Plugin}_${VERSION}.vmb: ${SOURCE}
 		python stamp.py ${DATE}
 		python version.py ${VERSION}
 		tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
@@ -83,12 +83,12 @@ clean:
 test:
 		tar -tzf ${PLUGIN}${VERSION}.tar.gz
 upload:		
-	cp ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.vba.${DATE}
+	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
-	scp ${PLUGIN}_${VERSION}.vba.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
+	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
 release:		
 	# upload snaphot and release (this is important for UploadATP command)
-	cp ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.vba.${DATE}
+	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
-	scp ${PLUGIN}_${VERSION}.vba.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
-	scp ${PLUGIN}_${VERSION}.vba ${PLUGIN}_${VERSION}.tar.gz mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/releases/
+	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
+	scp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.tar.gz mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/releases/
