@@ -245,6 +245,8 @@ function! atplib#ToggleIMaps(var, augroup, ...)
 	return
     endif
 
+    call SetMathVimOptions()
+
     if atplib#IsInMath() 
 	call atplib#MakeMaps(a:var, a:augroup)
     else

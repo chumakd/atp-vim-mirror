@@ -2618,7 +2618,7 @@ endif
 " a:0 	= 0 check if in math mode
 " a:1   = 0 assume cursor is not in math
 " a:1	= 1 assume cursor stands in math  
-function! s:SetMathVimOptions(...)
+function! SetMathVimOptions(...)
 
 	if !g:atp_SetMathVimOptions
 	    return "no setting to toggle" 
@@ -2656,13 +2656,13 @@ if !s:did_options
     augroup ATP_SetMathVimOptions
 	au!
 	" if leaving the insert mode set the non-math options
-	au InsertLeave 	*.tex 	:call s:SetMathVimOptions(0)
+	au InsertLeave 	*.tex 	:call SetMathVimOptions(0)
 	" if entering the insert mode or in the insert mode check if the cursor is in
 	" math or not and set the options acrodingly
-	au InsertEnter	*.tex 	:call s:SetMathVimOptions()
-	au CursorMovedI *.tex 	:call s:SetMathVimOptions()
-	" This slows down vim when moving the cursor:
-	" au CursorMoved *.tex :call s:SetMathVimOptions()
+	au InsertEnter	*.tex 	:call SetMathVimOptions()
+" This is done by atplib#ToggleIMap() function, which is run only when cursor
+" enters/leaves LaTeX math mode:
+" 	au CursorMovedI *.tex 	:call s:SetMathVimOptions()
     augroup END
 
 endif
