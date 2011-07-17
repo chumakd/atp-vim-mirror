@@ -483,4 +483,6 @@ ToDo: add good log info for TabCompletion: commands values, etc ... and instruct
 ToDo: \thref in ntheorem.sty page 11 - LaTeX needs to be run twice.
 ToDo: amsthm is loaded by ntheorem with option amsmath
 NEW FEATURE: DICTIONARY!!!
-Bug: \(\{ xxxx <TAB> b:comp_method="command values"
+ToDo: tikzpicture keyword completion is not working.
+Done: closing bracktes inside tikzpicture is not working.
+ToDo: \a with \matrix in tikzpicture is not working.

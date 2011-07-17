@@ -194,8 +194,8 @@ endfunction
 " These maps extend ideas from TeX_9 plugin:
 " With a:1 = "!" (bang) remove texMathZoneT (tikzpicture from MathZones).
 function! atplib#IsInMath(...)
-    let line		= a:0 >= 1 ? a:2 : line(".")
-    let col		= a:0 >= 2 ? a:3 : col(".")-1
+    let line		= a:0 >= 2 ? a:2 : line(".")
+    let col		= a:0 >= 3 ? a:3 : col(".")-1
     if a:0 > 0 && a:1 == "!"
 	let atp_MathZones=filter(copy(g:atp_MathZones), "v:val != 'texMathZoneT'")
     else
@@ -3766,6 +3766,45 @@ endfunction
 "ToDo: the completion should be only done if the completed text is different
 "from what it is. But it might be as it is, there are reasons to keep this.
 "
+" {{{2 atplib#GetBracket
+" This function is used in atplib#TabCompletion in several places.
+function! atplib#GetBracket(append,...)
+    " a:1 = 0  - pass through first if (it might be checked already).
+    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
+    let g:begParen = begParen
+    if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 || !a:1 )
+	if atplib#CheckSyntaxGroups(['texMathZoneV'])
+	    let pattern = '\\\@<!\\(\zs'
+	elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
+	    let pattern = '\\\@<!\\\[\zs'
+	elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
+	    let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
+	elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
+	    let pattern = '\\\@<!\$\$\zs'
+	else
+	    let pattern = ''
+	endif
+	let g:pattern=pattern
+	if !empty(pattern)
+	    let begMathZone = searchpos(pattern, 'bnW')
+	    let g:begMathZone = begMathZone
+	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
+		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
+	    else
+		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+	    endif
+	else
+	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+	endif
+	if bracket != "0"
+	    return bracket
+	else
+	    return ''
+	endif
+    endif
+    return ''
+endfunction
+"}}}2
 try
 " Main tab completion function
 function! atplib#TabCompletion(expert_mode,...)
@@ -3956,21 +3995,11 @@ function! atplib#TabCompletion(expert_mode,...)
 		let completion_method="tikzpicture commands"
 	"{{{4 ----------- close_env tikzpicture
 	else
-	    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-	    if begParen[0]
-		return g:atp_bracket_dict[begParen[2]]
-	    endif
-	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != -1 ) ||
-			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != -1 )
-		" DEBUG:
-		let b:comp_method='close_env tikzpicture'
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		let completion_method="close_env"
-	    else
-		let b:comp_method='close_env tikzpicture fast return'
-		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-		return ''
-	    endif
+	    let b:comp_method = "close_env tikzpicture"
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+	    let bracket=atplib#GetBracket(append)
+	    let g:bracket=bracket
+	    return bracket
 	endif
     "{{{3 --------- package options values
     elseif l =~ '\\usepackage\[[^\]]*=\%([^\],]*\|{\([^}]\+,\)\?[^}]*\)$' &&
@@ -4042,7 +4071,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let b:comp_method='missingfigure options'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- documentclass options
-    elseif pline =~ '\\documentclass\s*\[[^\]]*$' && !normal_mode  &&
+    elseif l =~ '\\documentclass\s*\[[^\]]*$' && !normal_mode  &&
 	    \ index(g:atp_completion_active_modes, 'documentclass options') != -1
 	    let completion_method='documentclass options'
 	    let b:comp_method=completion_method
@@ -4095,30 +4124,10 @@ function! atplib#TabCompletion(expert_mode,...)
 	if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
+
 	    let b:comp_method='brackets'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    if atplib#CheckSyntaxGroups(['texMathZoneV'])
-		let pattern = '\\\@<!\\(\zs'
-	    elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
-		let pattern = '\\\@<!\\\[\zs'
-	    elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
-		let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
-	    elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
-		let pattern = '\\\@<!\$\$\zs'
-	    else
-		let pattern = ''
-	    endif
-	    if !empty(pattern)
-		let begMathZone = searchpos(pattern, 'bnW')
-		if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
-		    call atplib#CloseLastEnvironment(append, 'math')
-		else
-		    call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
-		endif
-	    else
-		call atplib#CloseLastBracket(g:atp_bracket_dict, 0, 1)
-	    endif
-	    return '' 
+	    let bracket=atplib#GetBracket(append, 0)
+	    return bracket
 	"{{{4 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0 && 
 		    \ atplib#CheckSyntaxGroups(['texMathZoneALG']) && 
@@ -4214,9 +4223,9 @@ function! atplib#TabCompletion(expert_mode,...)
 
 	if end !~ '\s*}'
 	    let completion_list = []
-	    if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
-		call extend(completion_list, g:atp_BeamerEnvironments)
-	    endif
+" 	    if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
+" 		call extend(completion_list, g:atp_BeamerEnvironments)
+" 	    endif
 	    call extend(completion_list,deepcopy(g:atp_Environments))
 	    if g:atp_local_completion
 		" Make a list of local envs and commands
@@ -4232,9 +4241,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let completion_list=atplib#Add(completion_list,'}')
 	else
 	    let completion_list = []
-	    if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
-		call extend(completion_list, g:atp_BeamerEnvironments)
-	    endif
+" 	    if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
+" 		call extend(completion_list, g:atp_BeamerEnvironments)
+" 	    endif
 	    call extend(completion_list,deepcopy(g:atp_Environments))
 	    if g:atp_local_completion
 		" Make a list of local envs and commands
@@ -4452,9 +4461,9 @@ function! atplib#TabCompletion(expert_mode,...)
 	    endif
 	endif
 	" {{{4 -------------------- BEAMER commands
-	if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
-	    call extend(completion_list, g:atp_BeamerCommands)
-	endif
+" 	if atplib#DocumentClass(b:atp_MainFile) == 'beamer'
+" 	    call extend(completion_list, g:atp_BeamerCommands)
+" 	endif
 	" -------------------- LOCAL commands {{{4
 	if g:atp_local_completion
 	    " make a list of local envs and commands:
@@ -4650,7 +4659,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	if exists("g:atp_documentclass_".documentclass."_options")
 	    let completion_list={"g:atp_documentclass_".documentclass."_options"}
 	else
-	    return
+	    return ''
 	endif
     "{{{3 ------------ DOCUMENTCLASS
     elseif completion_method == 'documentclass'
@@ -5075,36 +5084,13 @@ function! atplib#TabCompletion(expert_mode,...)
 	    " Add here brackets - somebody might want to
 	    " close a bracket after \nu and not get \numberwithin{ (which is
 	    " rarely used).
+	    let b:comp_method = "greek letters"
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
-		let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-		let g:begParen = begParen
-		if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
-		    if atplib#CheckSyntaxGroups(['texMathZoneV'])
-			let pattern = '\\\@<!\\(\zs'
-		    elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
-			let pattern = '\\\@<!\\\[\zs'
-		    elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
-			let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
-		    elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
-			let pattern = '\\\@<!\$\$\zs'
-		    else
-			let pattern = ''
-		    endif
-		    if !empty(pattern)
-			let begMathZone = searchpos(pattern, 'bnW')
-			let g:begMathZone = begMathZone
-			if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
-			    let bracket = atplib#CloseLastEnvironment(append, 'math', '', [0, 0], 1)
-			else
-			    let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
-			endif
-		    else
-			let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
-		    endif
-		    if bracket != "0" && bracket != ""
-			call add(completions, cbegin.bracket)
-		    endif
+		let b:comp_method = "brackets in greek letters"
+		let bracket=atplib#GetBracket(append)
+		if bracket != "0" && bracket != ""
+		    call add(completions, cbegin.bracket)
 		endif
 	    endif
 	    call add(completions, cbegin)
@@ -5151,6 +5137,7 @@ function! atplib#TabCompletion(expert_mode,...)
     " {{{ 3 Final call of CloseLastEnvrionment / CloseLastBracket
     let len=len(completions)
     if len == 0 && (!count(['package', 'bibfiles', 'bibstyles', 'inputfiles'], completion_method) || a:expert_mode == 1 ) || len == 1
+	let b:comp_method = "final"
 	if count(['command', 'tikzpicture commands', 'tikzpicture keywords', 'command values'], completion_method) && 
 	    \ (len == 0 || len == 1 && completions[0] =~ '^\\\='. begin . '$' )
 
@@ -5158,9 +5145,11 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let stopline 	= search('^\s*$\|\\par\>', 'bnW')
 
 	    " Check Brackets 
+	    let b:comp_method   = "brackets: 1"
+	let g:debug=4
 	    let cl_return 	= atplib#CloseLastBracket(g:atp_bracket_dict)
 
-	    " If the bracket was closed return
+	    " If the bracket was closed return.
 	    if cl_return != "0"
 		return ""
 	    endif
@@ -5196,6 +5185,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		    \  completion_method == 'bibstyles' || 
 		    \ completion_method == 'bibfiles'
 	    let b:tc_return='close_bracket end'
+	    let b:comp_method = "brackets: 2"
 	    call atplib#CloseLastBracket(g:atp_bracket_dict)
 	endif
     endif

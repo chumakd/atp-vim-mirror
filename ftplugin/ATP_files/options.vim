@@ -198,6 +198,7 @@ exe "setlocal complete+=".
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary").
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits").
 	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/tikz")
+
 " The ams_dictionary is added after g:atp_amsmath variable is defined.
 
 " setlocal iskeyword+=\
@@ -2625,9 +2626,6 @@ function! SetMathVimOptions(...)
 	endif
 
 	let MathZones = copy(g:atp_MathZones)
-	if b:atp_TexFlavor == 'plaintex'
-	    call add(MathZones, 'texMathZoneY')
-	endif
 	    
 	" Change the long values to numbers 
 	let MathVimOptions = map(copy(g:atp_MathVimOptions),
@@ -2637,7 +2635,8 @@ function! SetMathVimOptions(...)
 
 	" check if the current (and 3 steps back) cursor position is in math
 	" or use a:1
-	let check	= a:0 == 0 ? atplib#CheckSyntaxGroups(MathZones) + atplib#CheckSyntaxGroups(MathZones, line("."), max([ 1, col(".")-3])) : a:1
+" 	let check	= a:0 == 0 ? atplib#CheckSyntaxGroups(MathZones) + atplib#CheckSyntaxGroups(MathZones, line("."), max([ 1, col(".")-3])) : a:1
+	let check	= a:0 == 0 ? atplib#IsInMath() : a:1
 
 	if check
 	    for option_name in keys(MathVimOptions)
