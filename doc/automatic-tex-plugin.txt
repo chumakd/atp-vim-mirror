@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 17 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 18 July 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.3)
 			by Marcin Szamotulski
@@ -102,7 +102,7 @@ TABLE OF CONTENTS 					*atp*
 	|atp-news|			News
 	|atp-installation| 		Installation								
 	|atp-commands| 			Functions and commands:
-	some main commands: ~
+	some most important commands: ~
 	    compile ~
 		|atp-:TEX|
 		|atp-:MakeLatex|
@@ -134,7 +134,14 @@ TABLE OF CONTENTS 					*atp*
 	|atp-configure| 		How to configure to your needs 
 	|atp-ProjectFiles|		A note how to write project files within ATP.
 	|atp-ProjectScript|		A script executing project specific settings.
-	|atp-mappings|  		Mappings and Commands
+	|atp-mappings|  		Mappings
+		|atp-imaps|
+		    |atp-imaps-fonts|
+		    |atp-imaps-greek-letters|
+		    |atp-imaps-environments|
+		    |atp-imaps-math-misc|
+		    |atp-imaps-math|
+		    |atp-imaps-diacritics|
 	|atp-abbreviations|		Abbreviations
 	|atp-errors|  			Debugging ATP
 	|atp-editing|			Editing tools 
@@ -154,10 +161,12 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.7.2
+ Changes in version 9.7.3
 <
   See |atp-completion-packages|: the variable
   g:atp_package_{p_name}_command_values was added.
+
+  You can read now about imaps implementation: |atp-imaps|.
 >
  ======================
  Changes in version 9.7
@@ -3318,6 +3327,7 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 	for align and equation environments (and many others) but some how
 	they are not accessible using synstack() function. 
 			
+							*g:atp_SetMathVimOptions*
 	This feature can be turned off setting variable >
 			g:atp_SetMathVimOptions
 <	to '0', the default is '1'.
@@ -3907,23 +3917,6 @@ However, they require that there are no maps such that no lhs is a subset ot
 the another, i.e. like "ab" and "abc". With the default settings it is
 shouldn't be a problem.
 
-NOTE: If you are looking for some imap, using :imap you might not find it,
-bacuse some imaps are oly defined when ATP is in insert mode. Moreover, the
-result depends if you are in a mathematical environment or not. Here is
-a trick how to find an imap which is only defined in insert mode. First go to
-insert mode, then press <Ctrl-O> (see |i_CTRL-O|), and then type ':imap<CR>'.
-If the cursor sands inside mathematical environment (for example inside \[:\])
-the result will show mathematical imaps.
-
-						*atp-j_motion* *atp-k_motion*
-imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)
-which help to navigate thought brackets (but not only) in insert mode.
-   
-map <Ctrl-j>, map <Ctrl-k> 	- as above but in normal mode.
-
-	These motions emulate the behaviour of latex-suite place holder system <++>,
-	without putting the placeholder into tex file.
-
 							*atp-]]*
 nmap ]], vmap ]]
 	Goto next \begin{
@@ -3964,11 +3957,53 @@ nmap \u, vmap \u		-- uncomment
 		vmap <LocalLeader>C 	<Plug>UnCommentLines
 	A usefull map for uncommenting |atp-_c| (i.e. |atp-select-comments|).
 
-								*atp-<space>*
+							*atp-<space>*
 cmap <buffer> <C-Space> 	\_s\+
 cmap <buffer> <C-_> 		\_s\+
     The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
     as <C-Space>. In Vim, and gVim as well.
+
+
+IMAPS 							*atp-imaps*
+All ATP imaps ae defined in several variables (vim lists): >
+ g:atp_imap_greek_letters 
+ g:atp_imap_math
+ g:atp_imap_math_misc,
+ g:atp_imap_diacritics
+ g:atp_imap_environments
+ g:atp_imap_fonts.
+< Itmes of this vim lists are vim list of the following form:
+[ <imap_command>, <imap_args>, <imap_leader>, <imap_lhs>, <imap_rhs>, <info> ]
+The first four lists: g:atp_imap_greek_letters, g:atp_imap_math,
+g:atp_imap_math_misc, are only defined when you enter LaTeX math mode. For
+example by typing '\(' or '\begin{align}', etc ... (this is recognized using
+syntax: |synstack()|). The imap defined in g:atp_imap_diacritics are only
+defined in non math mode. The advantage of this is that the imap o* which
+produces \otimes doesn't affect typing o in LaTeX text mode. In this way we
+can provide many useful math imaps!
+
+The function which makes the imaps is: atplib#MakeIMaps(), the function which
+toggles on/off math/text imaps is atplib#ToggleIMaps() (which now also set vim
+options for math mode, see |g:atp_MathVimOptions|).
+
+NOTE: If you are looking for some imap, using :imap you might not find it,
+bacuse some imaps are oly defined when ATP is in insert mode. Moreover, the
+result depends if you are in a mathematical environment or not. Here is
+a trick how to find an imap which is only defined in insert mode. First go to
+insert mode, then press <Ctrl-O> (see |i_CTRL-O|), and then type ':imap<CR>'.
+If the cursor sands inside mathematical environment (for example inside \[:\])
+the result will show mathematical imaps. This is especially useful tip for imaps
+which begins with ' - different imaps for accents in LaTeX text and math
+modes.
+
+						*atp-j_motion* *atp-k_motion*
+imap <Ctrl-j>, imap <Ctrl-k>	- these are two motions (based on syntax)
+which help to navigate thought brackets (but not only) in insert mode.
+   
+map <Ctrl-j>, map <Ctrl-k> 	- as above but in normal mode.
+
+	These motions emulate the behaviour of latex-suite place holder system <++>,
+	without putting the placeholder into tex file.
 
 FONT COMMANDS						*atp-imap-fonts*
 
@@ -4130,7 +4165,7 @@ first two are defined only in math environment, while the last only in non
 math environment. In this way `' in math environment will produce \acute{}
 while in non math \'{}. 
 
- 							*atp-imap-math-misc*
+ 							*atp-imaps-math-misc*
 							*g:atp_imap_math_misc*
 MATH IMAPS MISC						*g:atp_imap_define_math_misc*
 
@@ -4197,7 +4232,7 @@ imap `u		\underline{}
 imap `o		\overline{}
 
 
- 							*atp-imap-math*
+ 							*atp-imaps-math*
 							*g:atp_imap_math*
 MATH IMAPS						*g:atp_imap_define_math*
 
@@ -4243,7 +4278,7 @@ imap s>		\supseteq	[    set >]
     If you want to write 'o*' you can wait until |'timeoutlen'| passes or
     write 'o *' (TeX in math mode doesn't see spaces).
 
- 						*atp-imap-diacritics*
+ 						*atp-imaps-diacritics*
 						*g:atp_imap_define_diacritics*
 DIACRITICS					*g:atp_imap_diacritics*
 

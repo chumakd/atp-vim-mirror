@@ -3527,22 +3527,22 @@ function! atplib#CheckBracket(bracket_dict)
     let bracket_list= keys(a:bracket_dict)
     for ket in bracket_list
 	let pos		= deepcopy(pos_saved)
-	let pair_{i}	= searchpairpos(escape(ket,'\[]'),'', escape(a:bracket_dict[ket], '\[]'). 
-		    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) ,'bnW',"",limit_line)
+	let pair_{i}	= searchpairpos('\\\@<!'.escape(ket,'\[]'),'', '\\\@<!'.escape(a:bracket_dict[ket], '\[]'). 
+		    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
 	if g:atp_debugCheckBracket >= 2
 	    echomsg escape(ket,'\[]') . " pair_".i."=".string(pair_{i}) . " limit_line=" . limit_line
 	endif
 	let pos[1]	= pair_{i}[0]
 	let pos[2]	= pair_{i}[1]
 	" check_{i} is 1 if the bracket is closed
-	let check_{i}	= atplib#CheckClosed(escape(ket, '\[]'), escape(a:bracket_dict[ket], '\[]'), line("."), g:atp_completion_limits[0],1) == '0'
+	let check_{i}	= atplib#CheckClosed(escape(ket, '\[]'), escape(a:bracket_dict[ket], '\[]'), pos[1], g:atp_completion_limits[0],1) == '0'
 	" check_dot_{i} is 1 if the bracket is closed with a dot (\right.) . 
-	let check_dot_{i} = atplib#CheckClosed(escape(ket, '\'), '\\\%(right\|\cb\Cig\{1,2}\%(g\|l\)\@!r\=\)\s*\.',line("."),g:atp_completion_limits[0],1) == '0'
+	let check_dot_{i} = atplib#CheckClosed(escape(ket, '\'), '\\\%(right\|\cb\Cig\{1,2}\%(g\|l\)\@!r\=\)\s*\.', line("."), g:atp_completion_limits[0],1) == '0'
 	if g:atp_debugCheckBracket >= 2
 	    echomsg escape(ket,'\[]') . " check_".i."=".string(check_{i}) . " check_dot_".i."=".string(check_dot_{i})
 	endif
 	let check_{i}	= min([check_{i}, check_dot_{i}])
-	call add(check_list, [ pair_{i}[0], (check_{i}*pair_{i}[1]), i ] ) 
+	call add(check_list, [ pair_{i}[0], ((check_{i})*pair_{i}[1]), i ] ) 
 	keepjumps call setpos(".",pos_saved)
 	let i+=1
     endfor
@@ -3631,10 +3631,8 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
        call atplib#Log("CloseLastBracket.log", "open_line=".open_line)
        call atplib#Log("CloseLastBracket.log", "open_col=".open_col)
    endif
-
     "}}}3
     " {{{3 main if statements
-
    if getline(open_line)[open_col-3] . getline(open_line)[open_col-2] . getline(open_line)[open_col-1] =~ '\\\@<!\\\%((\|\[\)$'
        call atplib#CloseLastEnvironment('i', 'math', '', [ open_line, open_col ])
        if g:atp_debugCloseLastBracket
@@ -3773,7 +3771,7 @@ function! atplib#GetBracket(append,...)
     " a:1 = 0  - pass through first if (it might be checked already).
     let pos=getpos(".")
     let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-    if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 || !a:1 )
+    if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 && a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
 	elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
@@ -3791,11 +3789,11 @@ function! atplib#GetBracket(append,...)
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
 	    else
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
-		call setpos(".", pos)
 	    endif
 	else
 	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	endif
+	call setpos(".", pos)
 	if bracket != "0"
 	    return bracket
 	else
