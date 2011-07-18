@@ -3744,7 +3744,8 @@ endfunction
 " 			command in tex which begins with \arrow).
 " 			<S-Tab> or <S-F7> (if g:atp_no_tab_map=1)
 "
-" Completion Modes:
+" Completion Modes: (this is not a complete list any more, see the
+" documentation of ATP)
 " 	documentclass (\documentclass)
 " 	labels   (\ref,\eqref)
 " 	packages (\usepackage)
@@ -3770,8 +3771,8 @@ endfunction
 " This function is used in atplib#TabCompletion in several places.
 function! atplib#GetBracket(append,...)
     " a:1 = 0  - pass through first if (it might be checked already).
+    let pos=getpos(".")
     let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-    let g:begParen = begParen
     if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 || !a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
@@ -3784,14 +3785,13 @@ function! atplib#GetBracket(append,...)
 	else
 	    let pattern = ''
 	endif
-	let g:pattern=pattern
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
-	    let g:begMathZone = begMathZone
 	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
 	    else
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+		call setpos(".", pos)
 	    endif
 	else
 	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)

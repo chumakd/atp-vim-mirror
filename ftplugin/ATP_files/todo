@@ -220,7 +220,6 @@ zathura: how to implement inverse searching using bookmarks:
     this can be done with python script.
 
 ToDo: g:atp_inputfile_pattern : maybe it should be updated by :InputFiles if somebody added/removed biblatex.
-ToDo: test :MakeLatex on different files.
 ToDo: make ToC work with tabs: find file in another tab and go there (?)
 ToDo: The following line is not recognized by TOC: \chapter[Decomposition of values]{Decomposition of Banzhaf and Shapley values}\label{chap:decomposition-of-values}
 MakeLatex: There ware undefined references this should be shown in debug mode (THIS BEGIN SPECIAL DEBUG MODE FOR MakeLatex).
@@ -271,11 +270,9 @@ NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I need
 Delete! could also delete all files under b:atp_TempDir and g:atp_TempDir (but not the directories, which are removed when vim exists).
 
 Done: This is not reconised by :TOC
-\chapter[Banzhaf, Shapley and Johnston indices]{Egalitarian Property for Banzhaf, Shapley and Johnston indices}\label{chap:egalitarian-property-for-indices}
 It seems that TOC is not recognizing \chapter[short_title]{long_title}
 Question: does -s work with the above?
 
-Done: >c can jump and come back to TOC window (then the highlighted line will appear if it is out of window - happens for a long TOC)
 Bug: The problem with TOC window is that it is the same buffer for different tabs, if one changes it in one tab it changes in the other one. This should be FIXED. I can use tabpagenr()
 
 Done: <F4> should work in insert mode as well. 
@@ -308,7 +305,6 @@ ToDo: vip stops before \begin and before \[ but not before \begin{equation}, is 
 Todo: << in visual mode is working not as should.
 Todo: sort completion for Labels according to line number (and files).
 
-Done: two toc windows when :TOC :TOC is used!
 Bug: :Labels with :TOC
 
 ToDo: not copying aux file when there are errors is some times not nice. Maybe we can copy it to aux1 and use it or store it in memory.
@@ -342,32 +338,12 @@ ToDo: There is quite big mess when callig gf (how files are listed)
 
 ToDo: opening skeletal file: b:ListOfFiles is empty => b:atp_LocalCommands is empty.
 ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
-Done: \nu<Tab> completes to sth. (add greek letters to completion)
 ToDo: \partial \overline \overline{
 ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).
 ToDo: test b:atp_updatetime_ variables when they are set to 0, test &l:updatetime setting in options.vim (line 920).
-Done: :WrapSelection if without arguments should assume :WrapSelection {
-Done: Wizard for inputing graphics, show window with file to choose, ... (with browse())
-	This is done without a wizzard, it is faster (for a typer) to have a completion for this.
-	But maybe its better to use vim file searching capabilities ...
 ToDo:   Tikz Completion for -> <-, etc. : no its too short!
-SOLVED: b:atp_TexCompiler is not set by the value stored in project.vim file.
-	Because I called :SetXpdf with VimEnter, see my atprc file for the
-	solution - it should be possible to write it in one line, without a function.
-Done:   WrapSelectoin \'{ } end	- accent maps (might be inteligent with InteligentWrapSelection
-	(they might be normal maps but there is not nice key to use in normal mode, i.e. ` cannot be used)
-	ADD TO DOC
-	ADD !hasmapto()
-Done:	Write to CmdAlias author to handle the bang.
-	One more feature: if the command is called :TEX and :TE is unique user
-	command the :TE will work, the same should be with command aliases ':help user-cmd-ambiguous'.
 ToDo:	Make better accent maps which takes the letter as an argument and returns accented one.
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
-Done:	\cite with bibliography environment is not filtering the results
-	This is done but adding } is not implemented yet.
-Done:   _te -> \text{} imap should be done (for math mode).
-Done: 	\begin in math mode is not completing. /added to g:atp_math_commands, I should investigate this further/
-(Review TabCompletion for commands)
 ToDo:   How to solve the problem \{:\. (it seems to be not solved) or mayby I just don't remember how to do that in LaTeX.
 ToDo:   \wedge map #& should be defined with a space after wedge, and some other maps as well \partial (`6)
 	Maybe make an option with list of commands to which TabCompletion will append a space.
@@ -377,46 +353,16 @@ ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{
 	in my test file it works...
 	only \begin{scope}<Tab> will not close environment since keywords are 'flying' around ;).
 ToDo:  gw mis behaves when it is near \todo{}
-Done:  completion fot \includegraphics with image directory.
-	it uses \graphicspath{{path1}{path2}{path3}} variable.
-	formats: 
-		dvi: eps.
-		pdf: jpg, gif, jpeg, png, pdf, pdf_tex (made by inkscape), eps.
-
-	\includesvg{} command.
-	Does my code works on mac? File path differences ... - I think vim
-	should take care of this. 
-	\DeclareGraphicsExtension{}  (both in graphics and graphicx packages)
-	Note:  grffile package -- allows to have spaces in file/direcotry
-	names.
-
 ToDo:  #ve -> \vee colides with #v -> \vartheta (imaps)
 	#Z -> \mathrm ?
-Done:  add switch to atplib#CloseLastEnvironment() so that it only returns
-	what to close. Then add this to line: 5049 (atplib) where I add greek letters
-	and brackets.
 ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
 ToDo:  put all the leader variables in doc (g:atp_infty_leader might not be documented -- check this).
-Done:  make \frac/\nicefrac imap, 
-Done:  check ]I, ]i and ]ite - they mess up when going in/out of insert mode I think.
-Done:  :WrapSelection -> :Wrap
-Done:  \mathsf map is not working when it is first in the line typed after nonzero indentation.
-Done:  % should work with <:> as well (this is not possible > and < appears in alone also. 
-
-IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
-
-Done:  imap \_s\+ ! remove it so that it doesn't appear in insert mode. Do not forget about the menu!!!
-Done:  line 365: 
-	\[\Phi(\sum_{i=1}^{n}f_iW^0(g_i)+K)=\sum_{i=1}^{n}\left((f_iW^0(g_i))+J\right) <TAB> was not closing \].
 ToDo:  add \forall \exists maps - I don't know the right keays to use: <C-a> and <C-m>?
-Done:  add multiline to b:atp_StarMathEnvDefault
-Done:  vmap for Wrapping with \tilde/\widetilde (vmap ~~ like imap ~~, no this has to be different, ~ is often used in visual mode, I use g:atp_imap_over_leader.)
 ToDo:  recover.vim plugin fails with my settings when openinig a file from other directory than its base directory!
 ToDo:  HelpIMathIMaps add all math imaps, make it like ShowOptions, allow for patterns.
 	Maybe make a HelpMap command to search for a map - just one command.
 	:HelpMap [pattern] [mode]
-Done:  disable -> map in tikzpicture (this is certaintly possible)
 ToDo:  Why texMathZoneT (tikz) is in g:atp_MathZones (atplib#IsInMath() function,
        it can filter it if invoked with bang atplib#IsInMath("!").  If because
        of \matrix[matrix of math nodes, it can be matched sepretaly] (this
@@ -435,8 +381,7 @@ Done:  nmap _f -> Select frame environment
 ToDo:  vae commented evironment inside another environment will match the
        outer one: do we want that, note that the inner, commented one can be
        marked with _c.
-Done:  <F5> is not working!
-ToDo:  biber log messages
+ToDo:  biber log messages /I didn't get a replay from biblatex mailing list/
 ToDo:  Why :InputFiles works so slow in seminar.tex (Almeria)
 Done:  Add count to >F (next/previous frame)
 Done:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
@@ -486,3 +431,11 @@ NEW FEATURE: DICTIONARY!!!
 ToDo: tikzpicture keyword completion is not working.
 Done: closing bracktes inside tikzpicture is not working.
 ToDo: \a with \matrix in tikzpicture is not working.
+
+# IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
+
+ToDo: there are to imap for \times.
+Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
+ToDo: w b are not stopping at \
+ToDo: mess with closing bracets in:
+	\(\mathbf{A}\in\mathcal{A}\left(\PC(\dot{\bR}),\PC_p,(P_\tau)<TAB>\)
