@@ -3503,7 +3503,14 @@ endfunction
 "
 " a:bracket_dict is a dictionary of brackets to use: 
 " 	 	{ open_bracket : close_bracket } 
+"
+" Note: the most time consuming part is searchpairpos() function, especially
+" for the {:} pair.
+" to make it faster I could first count the number of { and } and compare
+" them.
 function! atplib#CheckBracket(bracket_dict)
+
+    let time		= reltime()
     
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[1])])
     let pos_saved 	= getpos(".")
@@ -3527,8 +3534,16 @@ function! atplib#CheckBracket(bracket_dict)
     let bracket_list= keys(a:bracket_dict)
     for ket in bracket_list
 	let pos		= deepcopy(pos_saved)
-	let pair_{i}	= searchpairpos('\\\@<!'.escape(ket,'\[]'),'', '\\\@<!'.escape(a:bracket_dict[ket], '\[]'). 
+" 	let time_{i}	= reltime()
+	if search('\\\@<!'.escape(ket,'\[]'), 'bnW', limit_line)
+" 	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
+	    let pair_{i}	= searchpairpos('\\\@<!'.escape(ket,'\[]'),'', '\\\@<!'.escape(a:bracket_dict[ket], '\[]'). 
 		    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
+	else
+" 	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
+	    let pair_{i}	= [0, 0]
+	endif
+" 	let g:time_{i}  = reltimestr(reltime(time_{i}))
 	if g:atp_debugCheckBracket >= 2
 	    echomsg escape(ket,'\[]') . " pair_".i."=".string(pair_{i}) . " limit_line=" . limit_line
 	endif
@@ -3546,6 +3561,7 @@ function! atplib#CheckBracket(bracket_dict)
 	keepjumps call setpos(".",pos_saved)
 	let i+=1
     endfor
+    let g:time_A=reltimestr(reltime(time))
     keepjumps call setpos(".", pos_saved)
    
     " Find opening line and column numbers
@@ -3560,6 +3576,7 @@ function! atplib#CheckBracket(bracket_dict)
 	call atplib#Log("CheckBracket.log", "open_col=".open_col)
 	call atplib#Log("CheckBracket.log", "opening_bracketCB=".g:opening_bracketCB)
     endif
+    let g:time_CheckBracket=reltimestr(reltime(time))
     return [ open_line, open_col, bracket_list[open_bracket_nr] ]
 endfunction
 " }}}2
@@ -3769,8 +3786,10 @@ endfunction
 " This function is used in atplib#TabCompletion in several places.
 function! atplib#GetBracket(append,...)
     " a:1 = 0  - pass through first if (it might be checked already).
+    " a:2 = atplib#CheckBracket(g:atp_bracket_dict)
+    let time=reltime()
     let pos=getpos(".")
-    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
+    let begParen = ( a:0 >=2 ? a:2 : atplib#CheckBracket(g:atp_bracket_dict) )
     if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 && a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
@@ -3794,18 +3813,22 @@ function! atplib#GetBracket(append,...)
 	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	endif
 	call setpos(".", pos)
+	let g:time_GetBrackets=reltimestr(reltime(time))
 	if bracket != "0"
 	    return bracket
 	else
 	    return ''
 	endif
     endif
+    let g:time_GetBrackets=reltimestr(reltime(time))
     return ''
 endfunction
 "}}}2
 try
 " Main tab completion function
 function! atplib#TabCompletion(expert_mode,...)
+
+    let time=reltime()
 
     if g:atp_debugTabCompletion
 	call atplib#Log("TabCompletion.log", "", "init")
@@ -3997,6 +4020,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    let bracket=atplib#GetBracket(append)
 	    let g:bracket=bracket
+	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    return bracket
 	endif
     "{{{3 --------- package options values
@@ -4124,7 +4148,8 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 
 	    let b:comp_method='brackets'
-	    let bracket=atplib#GetBracket(append, 0)
+	    let bracket=atplib#GetBracket(append, 0, begParen)
+	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    return bracket
 	"{{{4 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0 && 
@@ -4134,6 +4159,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		let b:comp_method='algorithmic'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
+		let g:time_TabCompletion=reltimestr(reltime(time))
 		return '' 
 	"{{{4 --------- abbreviations
 	elseif l =~ '=\w\+\*\=$' &&
@@ -4150,6 +4176,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	"}}}4
 	else
+	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    return ''
 	endif
 	"}}}3
@@ -4199,6 +4226,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		" however the function atplib#CloseLastEnv works perfectly and this
 		" should be save:
 
+		let g:time_TabCompletion=reltimestr(reltime(time))
 		if env_name !~# '^\s*document\s*$'
 		    call atplib#CloseLastEnvironment(append, 'environment', '', [line_nr, 0])
 		    return ""
@@ -4207,6 +4235,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		endif
 	    endif
 	endif
+	let g:time_TabCompletion=reltimestr(reltime(time))
 	return ""
     endif
 " {{{2 SET COMPLETION LIST
@@ -4318,6 +4347,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	       endif
 	   endfor
        else
+	   let g:time_TabCompletion=reltimestr(reltime(time))
 	   return ""
        endif
     "{{{3 ------------ PACKAGE OPTIONS
@@ -4327,6 +4357,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	if exists("g:atp_package_".package."_options") && atplib#SearchPackage(package)
 	    let completion_list={"g:atp_package_".package."_options"}
 	else
+	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    return ""
 	endif
     "{{{3 ------------ PACKAGES
@@ -4657,6 +4688,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	if exists("g:atp_documentclass_".documentclass."_options")
 	    let completion_list={"g:atp_documentclass_".documentclass."_options"}
 	else
+	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    return ''
 	endif
     "{{{3 ------------ DOCUMENTCLASS
@@ -5009,6 +5041,7 @@ function! atplib#TabCompletion(expert_mode,...)
     else
 	call atplib#CloseLastEnvironment('a', 'environment')
 	let b:tc_return="1"
+        let g:time_TabCompletion=reltimestr(reltime(time))
 	return ''
     endif
     "{{{3 --------- SORTING and TRUNCATION
@@ -5149,6 +5182,7 @@ function! atplib#TabCompletion(expert_mode,...)
 
 	    " If the bracket was closed return.
 	    if cl_return != "0"
+	        let g:time_TabCompletion=reltimestr(reltime(time))
 		return ""
 	    endif
 
@@ -5197,6 +5231,7 @@ function! atplib#TabCompletion(expert_mode,...)
     if exists("completions")
 	unlet completions
     endif
+    let g:time_TabCompletion=reltimestr(reltime(time))
     return ''
     "}}}2
 endfunction
