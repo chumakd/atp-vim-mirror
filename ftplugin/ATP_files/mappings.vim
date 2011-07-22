@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Jul 16 06:00  2011 W
+" Last Change: Fri Jul 22 09:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -764,6 +764,8 @@ endif
 if !exists("g:atp_imap_define_fonts")
     let g:atp_imap_define_fonts = 1
 endif
+
+let s:math_open = ( &filetype == 'plaintex' ? '$' : s:bbackslash.'(' )
 if !exists("g:atp_imap_fonts") || g:atp_reload_variables
 let g:atp_imap_fonts = [
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'rm', 
@@ -791,13 +793,13 @@ let g:atp_imap_fonts = [
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'no', 
 	\ '<Esc>:call Insert("'.s:bbackslash.'textnormal{}", "'.s:bbackslash.'mathnormal{}", 1)<Cr>a', "g:atp_imap_define_fonts", 'normal font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'bb', 
-	\ s:backslash.'mathbb{}<Left>', "g:atp_imap_define_fonts", 'mathbb font'],
+	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathbb{}", "'.s:bbackslash.'mathbb{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cal', 
-	\ s:backslash.'mathcal{}<Left>', "g:atp_imap_define_fonts", 'mathcal font'],
+	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathcal{}", "'.s:bbackslash.'mathcal{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cr', 
-	\ s:backslash.'mathscr{}<Left>', "g:atp_imap_define_fonts", 'mathscr font'],
+	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathscr{}", "'.s:bbackslash.'mathscr{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'fr', 
-	\ s:backslash.'mathfrak{}<Left>', "g:atp_imap_define_fonts", 'mathfrak font'],
+	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathfrak{}", "'.s:bbackslash.'mathfrak{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'uf',
 	\ s:backslash.'usefont{'.g:atp_font_encoding.'}{}{}{}<Left><Left><Left><Left><Left>', "g:atp_imap_define_fonts", 'usefont command']
 \ ]
@@ -858,7 +860,7 @@ if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
 		    \ "g:atp_imap_define_greek_letters", '\varepsilon' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vs', s:backslash.'varsigma',	 
 		    \ "g:atp_imap_define_greek_letters", '\varsigma' ],
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vt', s:backslash.'vartheta',	 
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vo', s:backslash.'vartheta',	 
 		    \ "g:atp_imap_define_greek_letters", '\vartheta' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, 'vf', s:backslash.'varphi',	 
 		    \ "g:atp_imap_define_greek_letters", '\varphi' ],

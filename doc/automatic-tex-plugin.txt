@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 19 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -161,12 +161,34 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.7.3
+ Changes in version 9.7.4
 <
   See |atp-completion-packages|: the variable
   g:atp_package_{p_name}_command_values was added.
+  Some new packages are now supported (for the completion).
 
-  You can read now about imaps implementation: |atp-imaps|.
+  You can read now about imaps implementation: |atp-imaps|.  There are new
+  font imaps: ##fr (\mathfrak{}) and #cr (\mathscr{}), see |atp-imap-fonts|.
+  Also the imaps ##cal, ##fr, ##cr, ##bb when used in text mode will insert
+  '\(' (or '$' for tex files), which opens the LaTeX math mode. 
+
+  _> and <_ imaps for \Rightarrow and \Leftarrow.
+
+  Deleted some imaps to non existing uppercase greek letters. There are imaps
+  togreek letters: 
+      \varpi 		#vp
+      \varphi		#vf
+      \vartheta 	#vo
+      \varsigma 	#vs
+      \varepsilon 	#ve
+
+  The main change is the speed up of writting in insert mode by consolidation
+  autocommands for |CursorMovedI| group and changing them when they are
+  actually run. This is used for defining imaps, see |atp-imaps|, and for
+  setting vim options in LaTeX math mode, see |g:atp_MathVimOptions|.
+
+  g:atp_no_python -- set this to one if you want to switch off python. (This
+  is not yet well integrrated but might help).
 >
  ======================
  Changes in version 9.7
@@ -4024,8 +4046,10 @@ imap ##sf 	\textsf{}<Left>		\mathsf{}<Left>
 imap ##bf 	\textbf{}<Left>		\mathbf{}<Left>
 imap ##bf 	\texttt{}<Left>		\mathtt{}<Left>
 imap ##no	\textnormal{}<Left>	\mathnormal{}<Left>
-imap ##bb				\mathbb{}<Left>
-imap ##cal				\mathcal{}<Left>
+imap ##bb	\(\mathbb{}<left>	\mathbb{}<Left>
+imap ##cal	\(\mathcal{}<left>	\mathcal{}<Left>
+imap ##cr	\(\mathscr{}<left>	\mathscr{}<Left>
+imap ##fr	\(\mathfrak{}<left>	\mathfrak{}<Left>
 
 	
 
@@ -4042,7 +4066,9 @@ imap #b 	\beta
 imap #c 	\chi
 imap #d 	\delta
 imap #e 	\epsilon
+imap #ve	\varepsilon
 imap #f 	\phi
+imap #vf	\varphi
 imap #y 	\psi
 imap #h 	\eta
 imap #k 	\kappa
@@ -4052,12 +4078,13 @@ imap #m 	\mu
 imap #n 	\nu
 imap #p 	\pi
 imap #o 	\theta
+imap #vo 	\vartheta
 imap #r 	\rho
 imap #s 	\sigma
+imap #vs 	\varsigma
 imap #t 	\tau
 imap #u 	\upsilon
-imap #vs 	\varsigma
-imap #vo 	\vartheta
+imap #vp	\varpi
 imap #w 	\omega
 imap #x 	\xi
 imap #z 	\zeta
@@ -4270,6 +4297,8 @@ imap <=		\leq
 imap >=		\geq
 imap ->		\rightarrow
 imap <-		\leftarrow
+imap _>		\Rightarrow
+imap <_		\Leftarrow
 imap t<		\triangleleft
 imap t>		\triangleright
 imap s<		\subseteq	[    set <]

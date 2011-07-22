@@ -2002,7 +2002,7 @@ endif
 " 	\ 'qpalatin', 'qbookman', 'qcourier', 'qswiss', 'qtimes', 'verbatim', 'wasysym'])
 
 	" the command \label is added at the end.
-	let g:atp_Commands=["\\begin{", "\\end{", 
+	let g:atp_Commands=[ "\\begin{", "\\end{", 
 	\ "\\cite", "\\nocite{", "\\ref{", "\\pageref{", "\\eqref{", "\\item",
 	\ "\\emph{", "\\documentclass{", "\\usepackage{",
 	\ "\\section", "\\subsection", "\\subsubsection", "\\part", 
@@ -2057,7 +2057,7 @@ endif
 	\ "\\DeclareMathDelimiter", "\\DeclareMathAccent", "\\DeclareMathRadical",
 	\ "\\SetMathAlphabet", "\\show", "\\CheckCommand", "\\mathnormal",
 	\ "\\pounds", "\\magstep{", "\\hyperlink", "\\newenvironment{", 
-	\ "\\renewenvironemt{", "\\DeclareFixedFont", "\\layout", "\\parskip" ]
+	\ "\\renewenvironemt{", "\\DeclareFixedFont", "\\layout", "\\parskip", "\\mathchardef" ]
 	
 	let g:atp_picture_commands=[ "\\put", "\\circle", "\\dashbox", "\\frame{", 
 		    \"\\framebox(", "\\line(", "\\linethickness{",

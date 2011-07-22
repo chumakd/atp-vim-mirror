@@ -437,6 +437,5 @@ ToDo: \a with \matrix in tikzpicture is not working.
 ToDo: there are to imap for \times.
 Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
 ToDo: w b are not stopping at \
-ToDo: mess with closing bracets in:
-	\(\mathbf{A}\in\mathcal{A}\left(\PC(\dot{\bR}),\PC_p,(P_\tau)<TAB>\)
 ToDo: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
+ToDo: Thinks if not restore the tikzpicture keyword completion mode.
