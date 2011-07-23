@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 22 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.5)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -159,6 +159,14 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 9.8
+<
+ If you use <Shift-Tab> (i.e. non-expert mode for completion) to close
+ a bracket, it will be put after the cursor, allowing you to write inside
+ brackets. This doesn't work with \(:\) and other math pairs and closing
+ environments.
 >
  ======================
  Changes in version 9.7.4

@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Sun Jun 19 06:00  2011 W
+" Last Change: Sat Jul 23 08:00  2011 W
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif

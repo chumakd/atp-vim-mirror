@@ -50,7 +50,6 @@ To do: Make an if statement: write if the history is nonempty!
 #To do: \left\.:\right pair! (let the user write the closing bracket.
 	also \lvert:\rvert, \lVert:\rVert (only in amsmath)
 
-Partialy Solved: imap #8 is mapping to <F8> !
 To do: Show History (at least the variables which are short)
  
 To do: Make Todo for project files.
@@ -246,7 +245,6 @@ To do:
 Bug: atplib#CloseLastEnvironment() if invoked without arguments: the variable l:begin_line_env in line 193 is not defined.
 
 ToDo: atplib#CloseLastEnvironment() should not move cursor when closing \begin:\end pairs - then one can use <C-M to open new line.
-Done: -S goes to next section if there is no subsection, this might be OK, but then it should be documented.
 
 ToDo: atplib#CloseLastBracket() add some options: bracket pattern, etc ... for algorithmic envs.
 
@@ -269,16 +267,7 @@ NOTE: from vim_dev CursorHoldRepeat and CursorHoldRepeatI are on the way (I need
 
 Delete! could also delete all files under b:atp_TempDir and g:atp_TempDir (but not the directories, which are removed when vim exists).
 
-Done: This is not reconised by :TOC
-It seems that TOC is not recognizing \chapter[short_title]{long_title}
-Question: does -s work with the above?
-
 Bug: The problem with TOC window is that it is the same buffer for different tabs, if one changes it in one tab it changes in the other one. This should be FIXED. I can use tabpagenr()
-
-Done: <F4> should work in insert mode as well. 
-	With <C-O> instead of <Esc> !!!
-	(keep this to not forget the solution)
-Done: [% on the last line of a multiline comment lands at the same line, should go to the end of previous comment group.
 
 Example from doc how to define maps in filetype plugins:
 I should follow the hasmapto step for every map!
@@ -317,7 +306,6 @@ ToDo: Recover plugin which I use breaks auTeX.
 ToDo: b:atp_updatetime_insert, b:atp_updatetime_normal should be buffer local. Maybe for long files they should have different setting.
 
 Bug: Error while opening plain tex files (%&tex)
-Done: to make cursorline work better in ToC window I should not use cursorline vim option, but rather implement this with matchadd(), matchdelete() functions.
 
 Bug: comments vim option is not working well with [d. Check [i, :dsearch, :isearch are not finding anything. 
 
@@ -373,43 +361,24 @@ ToDo:  I think my changes are such that one cannot turn off 'tikzpicture
 	keywords' from completion - this should be ended and tested ...
 ToDo:  TOC with two files one beamer (press <Enter> on beamer document)
 ToDo:  \\[2em<Tab> \\[2em\]!
-Done:  \\[1em] <paragraph> and use gw.
 ToDo:  why sometimes progress bar starts at [5] or sth like that.
-Done:  \overline{ / \overline
-Done:  nmap _f -> Select frame environment
-       vmap _f -> \usefont{}{}{}{} 	/this map isn't useful, I think/
 ToDo:  vae commented evironment inside another environment will match the
        outer one: do we want that, note that the inner, commented one can be
        marked with _c.
 ToDo:  biber log messages /I didn't get a replay from biblatex mailing list/
 ToDo:  Why :InputFiles works so slow in seminar.tex (Almeria)
-Done:  Add count to >F (next/previous frame)
-Done:  write completion for \renewcommand{\rmdefault}{} see texdoc fontguide ...
-Done:  \renewcommand{\fmailyd<TAB>} (the closing } is importand
-	\renewcommand{\rmdefa<TAB>} (the closing } is importand
-       This is because LocalCommands is run and it adds a command, though it is not yet written.  
-       LocalCommand should not look for \renewcommand - now it is and it also
-       is not looking for \renewenvironment and \renewtheorem - this is the
-       original behaviour of LocalCommands_vim 
-Done:  Check when LocalCommands is fired at startup - just added in options.vim when g:atp_ProjectLocalVariables is set (needed in almeria/seminar.tex)
 ToDo:  webpage rssreader (see the 9.6.7 message in it and in news - what is
 	after <CR> is not showing up - check what is in the xml file.
 ToDo:  make >e, >E, >f, >F maps work in vmode (but it might not make much sense)
 ToDo:  search for commands (LocalCommands), inside packages which are installed
 	under local texmf or which are in the current directory
 	/this feature should be optional/
-Done:  \medskip might end the line (it usually is after \\ , the safest way is to add optional match after \\.
-Done:  :Dsearch \\lmonoir only shows the first line of this definition.
-Done:  RemoveFromToC -- if TOC is not opened in this window, do not leave an open TOC (but if it is open leave it).
 ToDo:  :Wrap \begin{proof} \end{proof} 1 1 around another evnironment.
 ToDo:  vie \centerline{...} the end should stop the line. \\ is not well recognized.
-Done:  ]I insert item works strange when inserting before sth.
 ToDo:  TOC should work in a different way in beamer class - should search for
 	frame environment, and inside it search for a title.
 ToDo:  s:maketoc join lines if title is spanned in more than one line.
-ToDo:  disable :YankSection ... commands in beamer! or adapt them.
 ToDo:  \times map
-Done:  add g:atp_imap_tilde_braces to g:atp_ProjectLocalVariables. /only in my atprc file/
 ToDo:  add g:atp_package_..._environments to abbreviations
 	add completion for command options:
 	g:atp_package_PNAME_command_CNAME_options
@@ -429,7 +398,6 @@ ToDo: \thref in ntheorem.sty page 11 - LaTeX needs to be run twice.
 ToDo: amsthm is loaded by ntheorem with option amsmath
 NEW FEATURE: DICTIONARY!!!
 ToDo: tikzpicture keyword completion is not working.
-Done: closing bracktes inside tikzpicture is not working.
 ToDo: \a with \matrix in tikzpicture is not working.
 
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
@@ -439,3 +407,5 @@ Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should n
 ToDo: w b are not stopping at \
 ToDo: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
 ToDo: Thinks if not restore the tikzpicture keyword completion mode.
+ToDo: <S-Tab> when closing brackets: put the cursor before the bracket, environment (leave the cursor where it was :)
+	This is done but only for closing brackets, not for closing \(:\), ... and envs.

@@ -201,8 +201,13 @@ function! atplib#IsInMath(...)
     else
 	let atp_MathZones=copy(g:atp_MathZones)
     endif
-    return atplib#CheckSyntaxGroups(atp_MathZones, line, col) && 
+    call filter(atp_MathZones, 'v:val !~ ''\<texMathZone[VWXY]\>''')
+    if atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'])
+	return 1
+    else
+	return atplib#CheckSyntaxGroups(atp_MathZones, line, col) && 
 		    \ !atplib#CheckSyntaxGroups(['texMathText'], line, col)
+    endif
 endfunction
 function! atplib#MakeMaps(maps, ...)
     let aucmd = ( a:0 >= 1 ? a:1 : '' )
@@ -2111,6 +2116,7 @@ function! atplib#setwindow()
 " +setl\\ buftype=nofile\\ filetype=toc_atp\\ nowrap
 " +setl\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp
 	setlocal nonumber
+	setlocal norelativenumber
  	setlocal winfixwidth
 	setlocal noswapfile	
 	setlocal window
@@ -3537,7 +3543,8 @@ function! atplib#CheckBracket(bracket_dict)
 " 	let time_{i}	= reltime()
 	if search('\\\@<!'.escape(ket,'\[]'), 'bnW', limit_line)
 " 	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
-	    let pair_{i}	= searchpairpos('\\\@<!'.escape(ket,'\[]'),'', '\\\@<!'.escape(a:bracket_dict[ket], '\[]'). 
+	    let bslash = ( ket != '{' ? '\\\@<!' : '' )
+	    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]'). 
 		    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
 	else
 " 	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
@@ -3649,6 +3656,7 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
        call atplib#Log("CloseLastBracket.log", "open_col=".open_col)
    endif
     "}}}3
+    "
     " {{{3 main if statements
    if getline(open_line)[open_col-3] . getline(open_line)[open_col-2] . getline(open_line)[open_col-1] =~ '\\\@<!\\\%((\|\[\)$'
        call atplib#CloseLastEnvironment('i', 'math', '', [ open_line, open_col ])
@@ -4021,7 +4029,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let bracket=atplib#GetBracket(append)
 	    let g:bracket=bracket
 	    let g:time_TabCompletion=reltimestr(reltime(time))
-	    return bracket
+	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
+	    return bracket.move
 	endif
     "{{{3 --------- package options values
     elseif l =~ '\\usepackage\[[^\]]*=\%([^\],]*\|{\([^}]\+,\)\?[^}]*\)$' &&
@@ -4150,7 +4159,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	    let b:comp_method='brackets'
 	    let bracket=atplib#GetBracket(append, 0, begParen)
 	    let g:time_TabCompletion=reltimestr(reltime(time))
-	    return bracket
+	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
+	    return bracket.move
 	"{{{4 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[1] != 0 && 
 		    \ atplib#CheckSyntaxGroups(['texMathZoneALG']) && 
