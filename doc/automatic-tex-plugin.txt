@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 27 July 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.5)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -167,6 +167,9 @@ NEWS							*atp-news*
  a bracket, it will be put after the cursor, allowing you to write inside
  brackets. This doesn't work with \(:\) and other math pairs and closing
  environments.
+
+ cmap <M-c> ^\%([^%]\|\\%\)*	- useful when searching for sth which
+				  is not in a commented out.
 >
  ======================
  Changes in version 9.7.4
@@ -2649,7 +2652,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		\end{tikzpicture}. The completion works for both commands and
 		keywords. The pull of them is enlarged if you add tikz
 		libraries. Normal commands are added if you are inside {:}.
-		Keyword completion is only active in non expert mode
+		NOTE!: Keyword completion is only active in non expert mode
 		(|atp-completion-non-expert-mode|).
 
 							*atp-completion-ref*

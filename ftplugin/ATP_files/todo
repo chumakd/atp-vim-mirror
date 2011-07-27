@@ -391,7 +391,6 @@ ToDo: in options.vim where package files are loaded:
 ToDo: _aux file is not working, adding label + 1compile => \ref{1.2<Tab> is
 	not found, but found when there are no compilation errors.
 ToDo: \usepackage[font={small,<tab> is not working, yet :)
-ToDo: \leq<tab> => \leqslant.
 ToDo: __ and ^^ imaps where sometimes not working when I was typing project.tex file.
 ToDo: add good log info for TabCompletion: commands values, etc ... and instruct users how to use it.
 ToDo: \thref in ntheorem.sty page 11 - LaTeX needs to be run twice.
@@ -405,7 +404,16 @@ ToDo: \a with \matrix in tikzpicture is not working.
 ToDo: there are to imap for \times.
 Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
 ToDo: w b are not stopping at \
-ToDo: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
-ToDo: Thinks if not restore the tikzpicture keyword completion mode.
-ToDo: <S-Tab> when closing brackets: put the cursor before the bracket, environment (leave the cursor where it was :)
+	iskeyword is set somewhere after my options.vim script.
+Done: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
+Done: Thinks if not restore the tikzpicture keyword completion mode.
+	I forgot that it is working but only in non expert mode!
+Done: <S-Tab> when closing brackets: put the cursor before the bracket, environment (leave the cursor where it was :)
 	This is done but only for closing brackets, not for closing \(:\), ... and envs.
+NOTE: b:atp_ProgressBar if is nonempty, the number start not from 1 (this was after using the :Kill command).
+Note: \refstepcounter is not handled well by syntax.vim \ref has syntax group texRefZone, while stepcounter not.
+Done: after :ReloadATP ]i, ]I and ]ite are  mixed, probably a problem with g:atp_imap_ShortEnvIMaps 
+	solution: entirely removed g:atp_imap_reload_variables
+Done: atplib#CheckBracket line 365 of hgt.tex:
+		\end{array}\right\}\label{eq:oz-1}\hypertarget{eq:oz-1}{<Tab> (is not closing!)
+		counting brackets might not always work! we should always stop counting on openning bracket.

@@ -560,6 +560,9 @@ function! <SID>Kill(bang)
     if len(b:atp_PythonPIDs)
 	call atplib#KillPIDs(b:atp_PythonPIDs)
     endif
+    unlockvar b:atp_ProgressBar
+    let b:atp_ProgressBar={}
+    lockvar 3 b:atp_ProgressBar
 endfunction
 
 "}}}

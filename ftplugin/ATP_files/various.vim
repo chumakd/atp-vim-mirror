@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Jul 04 09:00  2011 C
+" Last Change: Mon Jul 25 07:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1629,7 +1629,6 @@ function! <SID>ReloadATP(bang)
     let common_file	= globpath(&rtp, 'ftplugin/ATP_files/common.vim')
     let options_file	= globpath(&rtp, 'ftplugin/ATP_files/options.vim')
     let g:atp_reload_functions = ( a:bang == "!" ? 1 : 0 ) 
-    let g:atp_reload_variables = 1
     if a:bang == ""
 	execute "source " . common_file
 	execute "source " . options_file 
@@ -1667,7 +1666,6 @@ function! <SID>ReloadATP(bang)
 	endfor
     endif
     let g:atp_reload_functions 	= 0
-    let g:atp_reload_variables  = 0
 endfunction
 catch /E127:/
     " Cannot redefine function, function is in use.

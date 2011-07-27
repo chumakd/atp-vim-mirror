@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Jul 22 09:00  2011 W
+" Last Change: Mon Jul 25 12:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -29,6 +29,8 @@ let g:backslash=s:backslash
 if g:atp_IMapCC
     imap <silent> <buffer> <C-c> <C-[>
 endif
+
+exe "cmap <buffer> <M-c> ^".s:backslash."%([^%]".s:bbackslash."|".s:bbackslash."%".s:backslash.")*".backslash."zs"
 
 if has("gui")
     if &l:cpoptions =~# "B"
