@@ -1098,7 +1098,7 @@ if !exists("t:atp_labels_window_width")
     endif
 endif
 if !exists("g:atp_completion_limits")
-    let g:atp_completion_limits	= [40,60,80,120]
+    let g:atp_completion_limits	= [40,60,80,120,20]
 endif
 if !exists("g:atp_long_environments")
     let g:atp_long_environments	= []

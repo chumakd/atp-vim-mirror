@@ -335,7 +335,7 @@ ToDo:	Make better accent maps which takes the letter as an argument and returns 
 ToDo:   How to solve the problem \{:\. (it seems to be not solved) or mayby I just don't remember how to do that in LaTeX.
 ToDo:   \wedge map #& should be defined with a space after wedge, and some other maps as well \partial (`6)
 	Maybe make an option with list of commands to which TabCompletion will append a space.
-(I had problem implementing this as a configurable feature)
+    (I had problem implementing this as a configurable feature)
 ToDo: (IDEA) make C_M inside align inteligent ( put & if first column is empty ) 
 ToDo:  inside tikzpicture \beg<Tab>, \begin{slo<Tab> are not working! node[...]{\(d<Tab> => ) should \)
 	in my test file it works...
@@ -344,7 +344,6 @@ ToDo:  gw mis behaves when it is near \todo{}
 ToDo:  #ve -> \vee colides with #v -> \vartheta (imaps)
 	#Z -> \mathrm ?
 ToDo:  YankSection, DeleteSection, should not yank sections which are commeted out.
-ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
 ToDo:  put all the leader variables in doc (g:atp_infty_leader might not be documented -- check this).
 ToDo:  add \forall \exists maps - I don't know the right keays to use: <C-a> and <C-m>?
 ToDo:  recover.vim plugin fails with my settings when openinig a file from other directory than its base directory!
@@ -378,7 +377,6 @@ ToDo:  vie \centerline{...} the end should stop the line. \\ is not well recogni
 ToDo:  TOC should work in a different way in beamer class - should search for
 	frame environment, and inside it search for a title.
 ToDo:  s:maketoc join lines if title is spanned in more than one line.
-ToDo:  \times map
 ToDo:  add g:atp_package_..._environments to abbreviations
 	add completion for command options:
 	g:atp_package_PNAME_command_CNAME_options
@@ -388,20 +386,14 @@ ToDo: in options.vim where package files are loaded:
     " variables might be needed later. I need to find another way of using this files
     " as additional scripts running syntax ... commands for example only if the
     " packages are defined.
-ToDo: _aux file is not working, adding label + 1compile => \ref{1.2<Tab> is
-	not found, but found when there are no compilation errors.
-ToDo: \usepackage[font={small,<tab> is not working, yet :)
-ToDo: __ and ^^ imaps where sometimes not working when I was typing project.tex file.
 ToDo: add good log info for TabCompletion: commands values, etc ... and instruct users how to use it.
 ToDo: \thref in ntheorem.sty page 11 - LaTeX needs to be run twice.
 ToDo: amsthm is loaded by ntheorem with option amsmath
 NEW FEATURE: DICTIONARY!!!
-ToDo: tikzpicture keyword completion is not working.
-ToDo: \a with \matrix in tikzpicture is not working.
 
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
 
-ToDo: there are to imap for \times.
+ToDo: there is no imap for \times.
 Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
 ToDo: w b are not stopping at \
 	iskeyword is set somewhere after my options.vim script.
@@ -417,3 +409,7 @@ Done: after :ReloadATP ]i, ]I and ]ite are  mixed, probably a problem with g:atp
 Done: atplib#CheckBracket line 365 of hgt.tex:
 		\end{array}\right\}\label{eq:oz-1}\hypertarget{eq:oz-1}{<Tab> (is not closing!)
 		counting brackets might not always work! we should always stop counting on openning bracket.
+ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
+ToDo:  vmap _ov and imap 'o to \overline 
+		(_ov should be 'o aswell)
+ToDo:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?

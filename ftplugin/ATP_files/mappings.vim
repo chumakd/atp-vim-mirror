@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Jul 25 12:00  2011 W
+" Last Change: Fri Jul 29 07:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -358,10 +358,10 @@ if !hasmapto(":<C-U>Wrap ".s:backslash."textmd{<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>Wrap ".s:backslash."textmd{<CR>"
 endif
 if !hasmapto(":<C-U>Wrap ".s:backslash."underline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>Wrap ".s:backslash."underline{<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."un	:<C-U>Wrap ".s:backslash."underline{<CR>"
 endif
 if !hasmapto(":<C-U>Wrap ".s:backslash."overline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>Wrap ".s:backslash."overline{<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."ov	:<C-U>Wrap ".s:backslash."overline{<CR>"
 endif
 if !hasmapto(":<C-U>InteligentWrapSelection ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."no	:<C-U>InteligentWrapSelection ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>"

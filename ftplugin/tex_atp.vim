@@ -2,7 +2,7 @@
 " Author:		Marcin Szamotulski
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 27-07-11_11-09
+" Time Stamp: 29-07-11_08-56
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
 " Last Change: Wed Jul 27 11:00  2011 W

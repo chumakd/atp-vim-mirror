@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 9.7.6
+VERSION = 9.7.7
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -49,6 +49,7 @@ SOURCE += ftplugin/ATP_files/packages/mathdesign.vim
 SOURCE += ftplugin/ATP_files/packages/mathtools.vim
 SOURCE += ftplugin/ATP_files/packages/ntheorem.vim
 SOURCE += ftplugin/ATP_files/packages/standard_classes.vim
+SOURCE += ftplugin/ATP_files/packages/stmaryrd.vim
 SOURCE += ftplugin/ATP_files/packages/textcmds.vim
 SOURCE += ftplugin/ATP_files/packages/xcolor.vim
 SOURCE += ftplugin/bibsearch_atp.vim
