@@ -2148,7 +2148,7 @@ function! atplib#count(line, keyword,...)
     elseif method==1
 	let pat = a:keyword.'\zs'
 	while line =~ pat
-	    let line	= strpart(line, match(line, pat)+1)
+	    let line	= strpart(line, match(line, pat))
 	    let i +=1
 	endwhile
     endif
@@ -2184,7 +2184,7 @@ endfun
 " environments in the same name.
 " Method 1 doesn't make mistakes and thus is preferable.
 " after testing I shall remove method 0
-function! atplib#CheckClosed(bpat, epat, line, limit,...)
+function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 
 "     NOTE: THIS IS MUCH FASTER !!! or SLOWER !!! ???            
 "
@@ -2212,10 +2212,13 @@ function! atplib#CheckClosed(bpat, epat, line, limit,...)
 	let l:limit=a:limit
     endif
 
+   call atplib#Log("CheckClosed.log","", "init")
+
     if l:method==0
 	while l:nr <= a:line+l:limit
 	    let l:line=getline(l:nr)
-	" Check if Closed
+	    " Remove comments:
+	    let l:line=substitute(l:line, '\(\\\@<!\|\\\@<!\%(\\\\\)*\)\zs%.*')
 	    if l:nr == a:line
 		if strpart(l:line,getpos(".")[2]-1) =~ '\%(' . a:bpat . '.*\)\@<!' . a:epat
 		    return l:nr
@@ -2232,19 +2235,25 @@ function! atplib#CheckClosed(bpat, epat, line, limit,...)
 
     elseif l:method==1
 
-	let l:bpat_count=0
-	let l:epat_count=0
-	let l:begin_line=getline(a:line)
-	let l:begin_line_nr=line(a:line)
+	let l:bpat_count	=0
+	let l:epat_count	=0
+	let l:begin_line	=getline(a:line)
+	let l:begin_line_nr	=line(a:line)
 	while l:nr <= a:line+l:limit
-	    let l:line=getline(l:nr)
-	    " I assume that the env is opened in the line before!
+	    let l:line	=getline(l:nr)
+	    if l:nr == a:line+l:limit
+		let l:col	= match(l:line, '^.*'.a:epat.'\zs')
+		if l:col != -1
+		    let l:line	=strpart(l:line,0, l:col+1)
+		endif
+	    endif
 	    let l:bpat_count+=atplib#count(l:line,a:bpat, 1)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
-	    if (l:bpat_count+1) == l:epat_count && l:begin_line !~ a:bpat
+	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    if (l:bpat_count+1) == l:epat_count
 		return l:nr
-	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat
-		return l:nr
+" 	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat
+" 		return l:nr
 	    endif 
 	    let l:nr+=1
 	endwhile
@@ -2268,20 +2277,12 @@ endfunction
 
 " Todo: write a faster function using searchpairpos() which returns correct
 " values.
-function! atplib#CheckOpened(bpat,epat,line,limit,...)
+function! atplib#CheckOpened(bpat,epat,line,limit)
 
 
 "     this is almost good:    
 "     let l:line=searchpair(a:bpat,'',a:epat,'bnWr','',max([(a:line-a:limit),1]))
 "     return l:line
-
-    if a:0 == 0 || a:1 == 0
-	let l:check_mode = 0
-    elseif a:1 == 1
-	let l:check_mode = 1
-    elseif a:1 == 2
-	let l:check_mode = 2
-    endif
 
     let l:len=len(getbufline(bufname("%"),1,'$'))
     let l:nr=a:line
@@ -2292,66 +2293,40 @@ function! atplib#CheckOpened(bpat,epat,line,limit,...)
 	let l:limit=a:limit
     endif
 
-    if l:check_mode == 0 || l:check_mode == 1
-	while l:nr >= a:line-l:limit && l:nr >= 1
-	    let l:line=getline(l:nr)
-		if l:nr == a:line
-			if substitute(strpart(l:line,0,getpos(".")[2]), a:bpat . '.\{-}' . a:epat,'','g')
-				    \ =~ a:bpat
+    while l:nr >= a:line-l:limit && l:nr >= 1
+	let l:line=getline(l:nr)
+	    if l:nr == a:line
+		    if substitute(strpart(l:line,0,getpos(".")[2]), a:bpat . '.\{-}' . a:epat,'','g')
+				\ =~ a:bpat
+			return l:nr
+		    endif
+	    else
+" 		if l:check_mode == 0
+" 		    if substitute(l:line, a:bpat . '.\{-}' . a:epat,'','g')
+" 				\ =~ a:bpat
+" 			" check if it is closed up to the place where we start. (There
+" 			" is no need to check after, it will be checked anyway
+" 			" b a serrate call in TabCompletion.
+" 			if !atplib#CheckClosed(a:bpat,a:epat,l:nr,0,a:limit,0)
+" 				" LAST CHANGE 1->0 above
+" " 				let b:cifo_return=2 . " " . l:nr 
+" 			    return l:nr
+" 			endif
+" 		    endif
+" 		elseif l:check_mode == 1
+		    if substitute(l:line, a:bpat . '.\{-}' . a:epat,'','g')
+				\ =~ '\%(\\def\|\%(re\)\?newcommand\)\@<!' . a:bpat
+			let l:check=atplib#CheckClosed(a:bpat,a:epat,l:nr,0,a:limit,1)
+			" if env is not closed or is closed after a:line
+			if  l:check == 0 || l:check >= a:line
+" 				let b:cifo_return=2 . " " . l:nr 
 			    return l:nr
 			endif
-		else
-		    if l:check_mode == 0
-			if substitute(l:line, a:bpat . '.\{-}' . a:epat,'','g')
-				    \ =~ a:bpat
-			    " check if it is closed up to the place where we start. (There
-			    " is no need to check after, it will be checked anyway
-			    " b a serrate call in TabCompletion.
-			    if !atplib#CheckClosed(a:bpat,a:epat,l:nr,a:limit,0)
-					    " LAST CHANGE 1->0 above
-" 				let b:cifo_return=2 . " " . l:nr 
-				return l:nr
-			    endif
-			endif
-		    elseif l:check_mode == 1
-			if substitute(l:line, a:bpat . '.\{-}' . a:epat,'','g')
-				    \ =~ '\%(\\def\|\%(re\)\?newcommand\)\@<!' . a:bpat
-			    let l:check=atplib#CheckClosed(a:bpat,a:epat,l:nr,a:limit,1)
-			    " if env is not closed or is closed after a:line
-			    if  l:check == 0 || l:check >= a:line
-" 				let b:cifo_return=2 . " " . l:nr 
-				return l:nr
-			    endif
-			endif
 		    endif
-		endif
-	    let l:nr-=1
-	endwhile
-    elseif l:check_mode == 2
-	let l:bpat_count=0
-	let l:epat_count=0
-	let l:begin_line=getline(".")
-	let l:c=0
-	while l:nr >= a:line-l:limit  && l:nr >= 1
-	    let l:line=getline(l:nr)
-	" I assume that the env is opened in line before!
-" 		let l:line=strpart(l:line,getpos(".")[2])
-	    let l:bpat_count+=atplib#count(l:line,a:bpat,1)
-	    let l:epat_count+=atplib#count(l:line,a:epat,1)
-	    if l:bpat_count == (l:epat_count+1+l:c) && l:begin_line != line(".") 
-		let l:env_name=matchstr(getline(l:nr),'\\begin{\zs[^}]*\ze}')
-		let l:check=atplib#CheckClosed('\\begin{' . l:env_name . '}', '\\end{' . l:env_name . '}',1,a:limit,1)
-		if !l:check
-		    return l:nr
-		else
-		    let l:c+=1
-		endif
-	    elseif l:bpat_count == l:epat_count && l:begin_line == line(".")
-		return l:nr
-	    endif 
-	    let l:nr-=1
-	endwhile
-    endif
+" 		endif
+	    endif
+	let l:nr-=1
+    endwhile
     return 0 
 endfunction
 " }}}1
@@ -3134,7 +3109,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 " 		return b:cle_return
 " 	    endif
 	    if index(g:atp_no_complete, l:env) == '-1' &&
-		\ !atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env,'\%(%.*\)\@<!\\end\s*{' . l:env,line("."),g:atp_completion_limits[2])
+		\ !atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env,'\%(%.*\)\@<!\\end\s*{' . l:env,line("."),col("."),g:atp_completion_limits[2])
 		if l:com == 'a'  
 		    call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\end{'.l:env.'}' . strpart(l:cline,getpos(".")[2]))
 		    let l:pos=getpos(".")
@@ -3174,7 +3149,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		endif
 
 		while l:line_nr >= 0
-			let l:line_nr=search('\%(%.*\)\@<!\\begin\s*{','bW')
+		    let [ l:line_nr, l:col_nr ]=searchpos('\%(%.*\)\@<!\\begin\s*{\zs','bW')
 		    " match last environment openned in this line.
 		    " ToDo: afterwards we can make it works for multiple openned
 		    " envs.
@@ -3186,7 +3161,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    endif
 		    let l:close_line_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env_name, 
 				\ '\%(%.*\)\@<!\\end\s*{' . l:env_name,
-				\ l:line_nr,g:atp_completion_limits[l:limit],1)
+				\ l:line_nr, l:col_nr, g:atp_completion_limits[l:limit], 1)
 
 		    if l:close_line_nr != 0
 			call add(l:cenv_lines,l:close_line_nr)
@@ -3234,7 +3209,8 @@ let l:eindent=atplib#CopyIndentation(l:line)
 
 		for l:uenv in l:env_names
 		    let l:uline_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:uenv . '}', 
-				\ '\%(%.*\)\@<!\\end\s*{' . l:uenv . '}', l:line_nr, g:atp_completion_limits[2])
+				\ '\%(%.*\)\@<!\\end\s*{' . l:uenv . '}',
+				\ l:line_nr, l:col_nr, g:atp_completion_limits[2])
 		    call extend(l:env_dict,[ l:uenv, l:uline_nr])
 		    if l:uline_nr != '0'
 			call add(l:cenv_names,l:uenv)
@@ -3272,7 +3248,8 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			" find the first closed item below the last closed
 			" pair (below l:pos[1]). (I assume every env is in
 			" a seprate line!
-			let l:end=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{','\%(%.*\)\@<!\\end\s*{',l:line_nr,g:atp_completion_limits[2],1)
+			let l:end=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{','\%(%.*\)\@<!\\end\s*{',
+				    \ l:line_nr, l:col_nr, g:atp_completion_limits[2], 1)
 			if g:atp_debugCloseLastEnvironment
 			    let g:info= " l:max=".l:max." l:end=".l:end." line('.')=".line(".")." l:line_nr=".l:line_nr
 			endif
@@ -3569,13 +3546,15 @@ function! atplib#CheckBracket(bracket_dict)
 	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', limit_line)
 "      	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
 		let bslash = ( ket != '{' ? '\\\@<!' : '' )
-		let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]'). 
+		let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
 			\ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
 	    else
 "      	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
 		let pair_{i}	= [0, 0]
 	    endif
 	else
+" 	    This is only for brackets: (:), {:} and [:].
+
 " 	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', limit_line)
 " 	    Without this if ~17s with ~19s (100 times), when this code is used
 " 	    also for '[' the time was ~16.5s with '<' : ~17s (this bracket is
@@ -3584,12 +3563,22 @@ function! atplib#CheckBracket(bracket_dict)
 		let ob=0
 		let cb=0
 		for lnr in range(limit_line, line("."))
-		    let line_list = split(getline(lnr), '\zs')
+		    if lnr == line(".")
+			let line_str=strpart(getline(lnr), 0, pos_saved[1])
+		    else
+			let line_str=getline(lnr)
+		    endif
+		    " Remove comments:
+		    let line_str	= substitute(line_str, '\(\\\@<!\|\\\@<!\%(\\\\\)*\)\zs%.*$', '', '')
+		    " Remove \input[...] and \(:\), \[:\]:
+		    let line_str 	= substitute(line_str, '\\input\s*\[[^\]]*\]\|\\\@<!\\\%((\|)\|\[\|\]\)', '', 'g') 
+		    let line_list 	= split(line_str, '\zs')
+
 		    let ob+=count(line_list, ket)
 		    let cb+=count(line_list, a:bracket_dict[ket])
 		endfor
 		call cursor(limit_line, 1)
-		let first_ket_pos	= searchpos(escape(ket,'\[]').'\|'.escape(a:bracket_dict[ket],']'), 'W', pos_saved[1])
+		let first_ket_pos	= searchpos(escape(ket,'\[]').'\|'.escape(a:bracket_dict[ket],'\[]'), 'W', pos_saved[1])
 		call cursor(pos_saved[1], pos_saved[2])
 		let first_ket		= ( first_ket_pos[1] ? getline(first_ket_pos[0])[first_ket_pos[1]-1] : '{' )
 
@@ -3599,7 +3588,7 @@ function! atplib#CheckBracket(bracket_dict)
 		endif
 		if ( ob != cb && first_ket == ket ) || ( ob != cb-1 && first_ket != ket )
 		    let bslash = ( ket != '{' ? '\\\@<!' : '' )
-		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]'). 
+		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
 			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
 		else
 		    let pair_{i}	= [0, 0]
@@ -3620,7 +3609,9 @@ function! atplib#CheckBracket(bracket_dict)
 	let pos[2]	= pair_{i}[1]
 	" check_{i} is 1 if the bracket is closed
 " 	let bslash = ( ket != '{' ? '\\\@<!' : '' )
-	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', pos[1], g:atp_completion_limits[4],1) == '0'
+	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
+		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
+		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
 	if g:atp_debugCheckBracket >= 1
 	    call atplib#Log("CheckBracket.log", ket." check_".i."=".string(check_{i}))
 	endif
@@ -3707,6 +3698,7 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
    
     let [ open_line, open_col, opening_bracket ] = ( tab_completion ? 
 		\ deepcopy([ s:open_line, s:open_col, s:opening_bracket ]) : atplib#CheckBracket(a:bracket_dict) )
+    let open_col = ( open_col > 1 ? open_col-1 : open_col )
 
     " Check and Close Environment:
 	for env_name in g:atp_closebracket_checkenv
@@ -3751,7 +3743,7 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 	endif
 
 	let opening_size=matchstr(bline,'\zs'.pattern_b.'\ze\s*$')
-	let closing_size=get(g:atp_sizes_of_brackets,opening_size,"")
+	let closing_size=get(g:atp_sizes_of_brackets, opening_size, "")
 " 	let opening_bracket=matchstr(eline,'^'.pattern_o)
 " 	let opening_bracket=bracket_list[open_bracket_nr]
 

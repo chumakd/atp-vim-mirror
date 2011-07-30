@@ -413,3 +413,6 @@ ToDo:  diacrtics maps could be defined only after certain letters - and the lett
 ToDo:  vmap _ov and imap 'o to \overline 
 		(_ov should be 'o aswell)
 ToDo:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?
+ToDo: Closing Brackets:
+    \[M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)\eir \im(M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)<TAB>\ir \bigcap_{\alpha\in I}\im(M\otimes_R N_\alpha)\] 
+ToDo: ( (   <TAB> ) will not close ) as it seems to be closed but ( (  ) <TAB> will do!
