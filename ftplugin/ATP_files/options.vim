@@ -2222,23 +2222,23 @@ endif
 		    \ "\\pgfextra", "\\endpgfextra", "\\verb", "\\coordinate", 
 		    \ "\\pattern", "\\shade", "\\shadedraw", "\\colorlet", "\\definecolor",
 		    \ "\\pgfmatrixnextcell" ]
-	let g:atp_tikz_keywords=[ 'draw', 'node', 'matrix', 'anchor', 'top', 'bottom',  
+	let g:atp_tikz_keywords=[ 'draw', 'node', 'matrix', 'anchor=', 'top', 'bottom',  
 		    \ 'west', 'east', 'north', 'south', 'at', 'thin', 'thick', 'semithick', 'rounded', 'corners',
 		    \ 'controls', 'and', 'circle', 'step', 'grid', 'very', 'style', 'line', 'help',
 		    \ 'color', 'arc', 'curve', 'scale', 'parabola', 'line', 'ellipse', 'bend', 'sin', 'rectangle', 'ultra', 
-		    \ 'right', 'left', 'intersection', 'xshift', 'yshift', 'shift', 'near', 'start', 'above', 'below', 
-		    \ 'end', 'sloped', 'coordinate', 'cap', 'shape', 'label', 'every', 
-		    \ 'edge', 'point', 'loop', 'join', 'distance', 'sharp', 'rotate', 'blue', 'red', 'green', 'yellow', 
-		    \ 'black', 'white', 'gray',
-		    \ 'text', 'width', 'inner', 'sep', 'baseline', 'current', 'bounding', 'box', 
-		    \ 'canvas', 'polar', 'radius', 'barycentric', 'angle', 'opacity', 
+		    \ 'right', 'left', 'intersection', 'xshift=', 'yshift=', 'shift', 'near', 'start', 'above', 'below', 
+		    \ 'end', 'sloped', 'coordinate', 'cap', 'shape=', 'label=', 'every', 
+		    \ 'edge', 'point=', 'loop', 'join', 'distance', 'sharp', 'rotate=', 'blue', 'red', 'green', 'yellow', 
+		    \ 'black', 'white', 'gray', 'name',
+		    \ 'text', 'width=', 'inner', 'sep=', 'baseline', 'current', 'bounding', 'box', 
+		    \ 'canvas', 'polar', 'radius', 'barycentric', 'angle=', 'opacity', 
 		    \ 'solid', 'phase', 'loosly', 'dashed', 'dotted' , 'densly', 
 		    \ 'latex', 'diamond', 'double', 'smooth', 'cycle', 'coordinates', 'distance',
 		    \ 'even', 'odd', 'rule', 'pattern', 
 		    \ 'stars', 'shading', 'ball', 'axis', 'middle', 'outer', 'transorm',
 		    \ 'fading', 'horizontal', 'vertical', 'light', 'dark', 'button', 'postaction', 'out',
 		    \ 'circular', 'shadow', 'scope', 'borders', 'spreading', 'false', 'position', 'midway',
-		    \ 'paint', 'from', 'to' ]
+		    \ 'paint', 'from', 'to', 'solution=', 'global', 'delta' ]
 	let g:atp_tikz_library_arrows_keywords	= [ 'reversed', 'stealth', 'triangle', 'open', 
 		    \ 'hooks', 'round', 'fast', 'cap', 'butt'] 
 	let g:atp_tikz_library_automata_keywords=[ 'state', 'accepting', 'initial', 'swap', 
@@ -2256,11 +2256,11 @@ endif
 	let g:atp_tikz_library_decorations_keywords=[ 'decorate', 'decoration', 'lineto', 'straight', 'zigzag',
 		    \ 'saw', 'random steps', 'bent', 'aspect', 'bumps', 'coil', 'curveto', 'snake', 
 		    \ 'border', 'brace', 'segment lenght', 'waves', 'ticks', 'expanding', 
-		    \ 'crosses', 'triangles', 'dart', 'shape', 'width', 'size', 'sep', 'shape backgrounds', 
+		    \ 'crosses', 'triangles', 'dart', 'shape', 'width=', 'size', 'sep', 'shape backgrounds', 
 		    \ 'between', 'along', 'path', 
 		    \ 'Koch curve type 1', 'Koch curve type 1', 'Koch snowflake', 'Cantor set', 'footprints',
 		    \ 'foot',  'stride lenght', 'foot', 'foot', 'foot of', 'gnome', 'human', 
-		    \ 'bird', 'felis silvestris', 'evenly', 'spread', 'scaled', 'star', 'height', 'text',
+		    \ 'bird', 'felis silvestris', 'evenly', 'spread', 'scaled', 'star', 'height=', 'text',
 		    \ 'mark', 'reset', 'marks' ]
 	let g:atp_tikz_library_er_keywords	= [ 'entity', 'relationship', 'attribute', 'key']
 	let g:atp_tikz_library_fadings_keywords	= [ 'with', 'fuzzy', 'percent', 'ring' ]
@@ -2285,7 +2285,7 @@ endif
         let g:atp_tikz_library_plotmarks_keywords	= [ 'asterisk', 'star', 'oplus', 'oplus*', 'otimes', 'otimes*', 
 		    \ 'square', 'square*', 'triangle', 'triangle*', 'diamond*', 'pentagon', 'pentagon*']
 	let g:atp_tikz_library_shadow_keywords 	= ['general shadow', 'shadow', 'drop shadow', 'copy shadow', 'glow' ]
-	let g:atp_tikz_library_shapes_keywords 	= ['shape', 'center', 'base', 'mid', 'trapezium', 'semicircle', 'chord', 'regular polygon', 'corner', 'star', 'isoscales triangle', 'border', 'stretches', 'kite', 'vertex', 'side', 'dart', 'tip', 'tail', 'circular', 'sector', 'cylinder', 'minimum', 'height', 'width', 'aspect', 'uses', 'custom', 'body', 'forbidden sign', 'cloud', 'puffs', 'ignores', 'starburst', 'random', 'signal', 'pointer', 'tape', 
+	let g:atp_tikz_library_shapes_keywords 	= ['shape', 'center', 'base', 'mid', 'trapezium', 'semicircle', 'chord', 'regular polygon', 'corner', 'star', 'isoscales triangle', 'border', 'stretches', 'kite', 'vertex', 'side', 'dart', 'tip', 'tail', 'circular', 'sector', 'cylinder', 'minimum', 'height=', 'width=', 'aspect', 'uses', 'custom', 'body', 'forbidden sign', 'cloud', 'puffs', 'ignores', 'starburst', 'random', 'signal', 'pointer', 'tape', 
 		    \ 'single', 'arrow', 'head', 'extend', 'indent', 'after', 'before', 'arrow box', 'shaft', 
 		    \ 'lower', 'upper', 'split', 'empty', 'part', 
 		    \ 'callout', 'relative', 'absolute', 'shorten',

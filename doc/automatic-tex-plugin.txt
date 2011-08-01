@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 30 July 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 01 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.8)
 			by Marcin Szamotulski
@@ -203,6 +203,9 @@ NEWS							*atp-news*
 
   g:atp_no_python -- set this to one if you want to switch off python. (This
   is not yet well integrrated but might help).
+
+  New imap
+  	t*	\times
 >
  ======================
  Changes in version 9.7
@@ -802,9 +805,12 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	that you loaded in the preamble.
 >
  b:atp_ProgressBar
-<       This is a read only variable. It is equal to empty string '' if
-	compilation is not going on, and while compilation it stores the page
-	number which LaTeX is processing.
+<	It is equal to empty dictionary {} if compilation is not going on, and
+	while compilation it contains the PID number and page number where
+	this compelation is.
+	Note: If you compile and the progress bar starts at some page > 1, and
+	you can use 'let b:atp_ProgressBar={}'. You should also check if there
+	is any LaTeX process in the system.
 
 						    	*g:atp_DebugModeQuickFixHeight*
 >
@@ -4299,6 +4305,7 @@ imap o.		\odot
 imap O.		\bigodot
 imap o*		\otimes
 imap O*		\bigotimes
+imap t*		\times
 imap s+		\cup		[    set +]		/set = set theoretic/
 imap s-		\setminus	[    set -]
 imap S+		\bigcup		[big set +]

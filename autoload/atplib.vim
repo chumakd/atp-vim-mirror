@@ -549,13 +549,11 @@ EOL
 endfunction "}}}
 "{{{ ProgressBar
 function! atplib#ProgressBar(value,pid)
-    unlockvar b:atp_ProgressBar
     if a:value != 'end'
 	let b:atp_ProgressBar[a:pid]=a:value
     else
 	call remove(b:atp_ProgressBar, a:pid)
     endif
-    lockvar b:atp_ProgressBar
     redrawstatus
 "     redraw
 "     echomsg a:value
@@ -1263,7 +1261,7 @@ endfunction
 "}}}1
 
 " BIB SEARCH:
-" These are all bibsearch realted variables and functions.
+" These are all bibsearch related variables and functions.
 "{{{ BIBSEARCH
 "{{{ atplib#variables
 let atplib#bibflagsdict={ 
@@ -2161,7 +2159,7 @@ fun! atplib#append(where, what)
     return substitute(a:where, a:what . '\s*$', '', '') . a:what
 endfun
 " }}}1
-" Used to append extension to a filename (if there is no extension).
+" Used to append extension to a file name (if there is no extension).
 " {{{1 atplib#append_ext 
 " extension has to be with a dot.
 fun! atplib#append_ext(fname, ext)
@@ -2170,7 +2168,7 @@ endfun
 " }}}1
 
 " Check If Closed:
-" This functions cheks if an environment is closed/opened.
+" This functions checks if an environment is closed/opened.
 " atplib#CheckClosed {{{1
 " check if last bpat is closed.
 " starting from the current line, limits the number of
@@ -2212,13 +2210,13 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	let l:limit=a:limit
     endif
 
-   call atplib#Log("CheckClosed.log","", "init")
+    call atplib#Log("CheckClosed.log","", "init")
 
     if l:method==0
 	while l:nr <= a:line+l:limit
 	    let l:line=getline(l:nr)
 	    " Remove comments:
-	    let l:line=substitute(l:line, '\(\\\@<!\|\\\@<!\%(\\\\\)*\)\zs%.*')
+	    let l:line=substitute(l:line, '\(\\\@<!\|\\\@<!\%(\\\\\)*\)\zs%.*', '', '')
 	    if l:nr == a:line
 		if strpart(l:line,getpos(".")[2]-1) =~ '\%(' . a:bpat . '.*\)\@<!' . a:epat
 		    return l:nr
@@ -2252,8 +2250,8 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
 	    if (l:bpat_count+1) == l:epat_count
 		return l:nr
-" 	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat
-" 		return l:nr
+	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat
+		return l:nr
 	    endif 
 	    let l:nr+=1
 	endwhile
@@ -2330,7 +2328,7 @@ function! atplib#CheckOpened(bpat,epat,line,limit)
     return 0 
 endfunction
 " }}}1
-" This functions makes a test if inline math is closed. This works well with
+" This functions makes a test if in line math is closed. This works well with
 " \(:\) and \[:\] but not yet with $:$ and $$:$$.  
 " {{{1 atplib#CheckInlineMath
 " a:mathZone	= texMathZoneV or texMathZoneW or texMathZoneX or texMathZoneY
@@ -2825,13 +2823,14 @@ function! atplib#CloseLastEnvironment(...)
     let return_only	= ( a:0 >= 5 ? a:5 : 0 )
 
     if g:atp_debugCloseLastEnvironment
-	exe "redir! > " . g:atp_TempDir."/CloseLastEnvironment.log"
+	call atplib#Log('CloseLastEnvironment.log', '', 'init')
 	let g:CLEargs 	= l:com . " " . l:close . " " . l:env_name . " " . string(l:bpos_env)
 	silent echo "args=".g:CLEargs
 	let g:com	= l:com
 	let g:close 	= l:close
 	let g:env_name	= l:env_name
 	let g:bpos_env	= l:bpos_env
+	call atplib#Log('CloseLastEnvironment.log', 'ARGS = '.g:CLEargs)
     endif
 
 "   {{{2 find the begining line of environment to close (if we are closing
@@ -2870,8 +2869,8 @@ function! atplib#CloseLastEnvironment(...)
 	if g:atp_debugCloseLastEnvironment
 	    let g:synstackCLE	= deepcopy(synstack)
 	    let g:openCLE	= getline(".")[col(".")-1] . getline(".")[col(".")]
-	    silent echo "synstack=".string(synstack)
-	    silent echo "g:openCLE=".string(g:openCLE)
+	    call atplib#Log('CloseLastEnvironment.log', "g:openCLE=".string(g:openCLE))
+	    call atplib#Log('CloseLastEnvironment.log', 'synstack='.string(synstack))
 	endif
 	let bound_1		= getline(".")[col(".")-1] . getline(".")[col(".")] =~ '^\\\%((\|)\)$'
 	let math_1		= (index(synstack, 'texMathZoneV') != -1 && !bound_1 ? 1  : 0 )   
@@ -2930,10 +2929,10 @@ function! atplib#CloseLastEnvironment(...)
 		let g:math_{i} = math_{i}
 		call add(g:math, math_{i})
 	    endfor
-	    silent echo "g:begin_line=".g:begin_line
-	    silent echo "g:bound=".string(g:bound)
-	    silent echo "g:math=".string(g:math)
-	    silent echo "math_mode=".( exists("math_mode") ? math_mode : "None" )
+	    call atplib#Log('CloseLastEnvironment.log', "g:begin_line=".g:begin_line)
+	    call atplib#Log('CloseLastEnvironment.log', "g:bound=".string(g:bound))
+	    call atplib#Log('CloseLastEnvironment.log', "g:math=".string(g:math))
+	    call atplib#Log('CloseLastEnvironment.log', "math_mode=".( exists("math_mode") ? math_mode : "None" ))
 	endif
     elseif ( l:close == "0" || l:close == "math" )
 	let string = getline(l:bpos_env[0])[l:bpos_env[1]-2] . getline(l:bpos_env[0])[l:bpos_env[1]-1] . getline(l:bpos_env[0])[l:bpos_env[1]]
@@ -2967,7 +2966,7 @@ function! atplib#CloseLastEnvironment(...)
 	if g:atp_debugCloseLastEnvironment
 	    if exists("math_mode")
 		let g:math_mode  	= math_mode
-		silent echo "math_mode=".math_mode
+		call atplib#Log('CloseLastEnvironment.log', "math_mode=".math_mode)
 	    endif
 	    let g:math 	= []
 	    let g:string = string
@@ -2976,19 +2975,18 @@ function! atplib#CloseLastEnvironment(...)
 		let g:math_{i} = math_{i}
 		call add(g:math, math_{i})
 	    endfor
-	    silent echo "g:begin_line".g:begin_line
-	    silent echo "g:math=".string(g:math)
+	    call atplib#Log('CloseLastEnvironment.log', "g:begin_line".g:begin_line)
+	    call atplib#Log('CloseLastEnvironment.log', "g:math=".string(g:math))
 	endif
 	if exists("math_mode")
 	    let l:begin_line 	= l:bpos_env[0]
 	    if g:atp_debugCloseLastEnvironment
-		silent echo "math_mode=".math_mode
-		silent echo "l:begin_line=".l:begin_line
-		redir END
+		call atplib#Log('CloseLastEnvironment.log', "math_mode=".math_mode)
+		call atplib#Log('CloseLastEnvironment.log', "l:begin_line=".l:begin_line)
 	    endif
 	else
 	    if g:atp_debugCloseLastEnvironment
-		silent echo "Given coordinates are closed."
+		call atplib#Log('CloseLastEnvironment.log', "Given coordinates are closed.")
 		redir END
 	    endif
 	    let g:time_CloseLastEnvironment = reltimestr(reltime(time))
@@ -3008,8 +3006,7 @@ if a:0 <= 1
 	let l:close = 'environment'
     else
 	if g:atp_debugCloseLastEnvironment
-	    silent echo "return: l:env_name=".string(l:env_name)." && math_1+...+math_4=".string(math_1+math_2+math_3+math_4)
-	    redir END
+	    call atplib#Log('CloseLastEnvironment.log', "return: l:env_name=".string(l:env_name)." && math_1+...+math_4=".string(math_1+math_2+math_3+math_4))
 	endif
 	let g:time_CloseLastEnvironment = reltimestr(reltime(time))
 	return ''
@@ -3017,16 +3014,15 @@ if a:0 <= 1
 endif
 if g:atp_debugCloseLastEnvironment
     let g:close = l:close
-    silent echo "g:close=".string(l:close)
-    silent echo "l:env_name=".l:env_name
+    call atplib#Log('CloseLastEnvironment.log', 'l:close='.l:close)
+    call atplib#Log('CloseLastEnvironment.log', 'l:env_name='.l:env_name)
 endif
 let l:env=l:env_name
 "}}}2
 
 if l:close == "0" || l:close == 'math' && !exists("begin_line")
     if g:atp_debugCloseLastEnvironment
-	silent echo "there was nothing to close"
-	redir END
+	call atplib#Log('CloseLastEnvironment.log', 'there was nothing to close')
     endif
     let g:time_CloseLastEnvironment = reltimestr(reltime(time))
     return ''
@@ -3037,16 +3033,14 @@ if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4"
     echomsg "       You can set b:atp_TexFlavor = 'plaintex', and ATP will ignore this. "
     echohl Normal
     if g:atp_debugCloseLastEnvironment
-	silent echo "return A"
-	redir END
+	call atplib#Log('CloseLastEnvironment.log', "return A")
     endif
     let g:time_CloseLastEnvironment = reltimestr(reltime(time))
     return  ''
 endif
 if l:env_name =~ '^\s*document\s*$'
     if g:atp_debugCloseLastEnvironment
-	silent echo "return B"
-	redir END
+	call atplib#Log('CloseLastEnvironment.log', "return B")
     endif
     let g:time_CloseLastEnvironment = reltimestr(reltime(time))
     return ''
@@ -3061,7 +3055,7 @@ endif
 
     if g:atp_debugCloseLastEnvironment
 	let g:line = exists("l:line") ? l:line : 0
-	silent echo "g:line=".g:line
+	call atplib#Log('CloseLastEnvironment.log', "g:line=".g:line)
     endif
 
 " Copy the indentation of what we are closing.
@@ -3130,6 +3124,10 @@ let l:eindent=atplib#CopyIndentation(l:line)
 	"{{{3 close environment in a new line 
 	else 
 
+		if g:atp_debugCloseLastEnvironment
+		    call atplib#Log('CloseLastEnvironment.log', 'close environment in a new line')
+		endif
+
 		" do not complete environments which starts in a definition.
 
 		let l:error=0
@@ -3138,6 +3136,10 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		let l:nr=line(".")
 		
 		let l:line_nr=line(".")
+		if g:atp_debugCloseLastEnvironment
+		    call atplib#Log('CloseLastEnvironment.log', 'l:line_nr='.l:line_nr)
+		endif
+
 		" l:line_nr number of line which we complete
 		" l:cenv_lines list of closed environments (we complete after
 		" line number maximum of these numbers.
@@ -3149,12 +3151,15 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		endif
 
 		while l:line_nr >= 0
-		    let [ l:line_nr, l:col_nr ]=searchpos('\%(%.*\)\@<!\\begin\s*{\zs','bW')
+		    let [ l:line_nr, l:col_nr ]=searchpos('\%(%.*\)\@<!\\begin\s*{\zs', 'bW')
 		    " match last environment openned in this line.
 		    " ToDo: afterwards we can make it works for multiple openned
 		    " envs.
 		    let l:env_name=matchstr(getline(l:line_nr),'\%(%.*\)\@<!\\begin\s*{\zs[^}]*\ze}\%(.*\\begin\s*{[^}]*}\)\@!')
-		    if index(g:atp_long_environments,l:env_name) != -1
+		    if g:atp_debugCloseLastEnvironment
+			call atplib#Log('CloseLastEnvironment.log', 'WHILE l:env_name='.l:env_name)
+		    endif
+		    if index(g:atp_long_environments, l:env_name) != -1
 			let l:limit=3
 		    else
 			let l:limit=2
@@ -3162,11 +3167,18 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    let l:close_line_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env_name, 
 				\ '\%(%.*\)\@<!\\end\s*{' . l:env_name,
 				\ l:line_nr, l:col_nr, g:atp_completion_limits[l:limit], 1)
+		    if g:atp_debugCloseLastEnvironment
+			call atplib#Log('CloseLastEnvironment.log', 'WHILE l:close_line_nr='.l:close_line_nr)
+			call atplib#Log('CloseLastEnvironment.log', 'WHILE atplib#CheckClosed args ='.l:line_nr.', '.l:col_nr.', '.g:atp_completion_limits[l:limit].', 1')
+		    endif
 
 		    if l:close_line_nr != 0
-			call add(l:cenv_lines,l:close_line_nr)
+			call add(l:cenv_lines, l:close_line_nr)
 		    else
 			break
+		    endif
+		    if g:atp_debugCloseLastEnvironment
+			call atplib#Log('CloseLastEnvironment.log', 'WHILE l:line_nr='.l:line_nr)
 		    endif
 		    let l:line_nr-=1
 		endwhile
@@ -3176,8 +3188,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		if getline(l:line_nr) =~ '\%(%.*\)\@<!\%(\\def\|\%(re\)\?newcommand\)' && l:line_nr != line(".")
 " 		    let b:cle_return="def"
 		    if g:atp_debugCloseLastEnvironment
-			silent echo "return C"
-			redir END
+			call atplib#Log('CloseLastEnvironmemt.log', 'return C')
 		    endif
 		    let g:time_CloseLastEnvironment = reltimestr(reltime(time))
 		    return ''
@@ -3192,11 +3203,6 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    let l:cenv_len=len(l:cenv_name)
 		    let l:line=strpart(l:line,l:cenv_begins+l:cenv_len)
 		    call add(l:env_names,l:cenv_name)
-			" DEBUG:
-" 			let g:env_names=l:env_names
-" 			let g:line=l:line
-" 			let g:cenv_begins=l:cenv_begins
-" 			let g:cenv_name=l:cenv_name
 		endwhile
 		" thus we have a list of env names.
 		
@@ -3207,6 +3213,10 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		" list of closed environments
 		let l:cenv_names=[]
 
+		if g:atp_debugCloseLastEnvironment
+		    call atplib#Log('CloseLastEnvironment.log', 'l:env_names='.string(l:env_names))
+		endif
+
 		for l:uenv in l:env_names
 		    let l:uline_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:uenv . '}', 
 				\ '\%(%.*\)\@<!\\end\s*{' . l:uenv . '}',
@@ -3216,6 +3226,10 @@ let l:eindent=atplib#CopyIndentation(l:line)
 			call add(l:cenv_names,l:uenv)
 		    endif
 		endfor
+
+		if g:atp_debugCloseLastEnvironment
+		    call atplib#Log('CloseLastEnvironment.log', 'l:cenv_names='.string(l:cenv_names))
+		endif
 		
 		" close unclosed environment
 
@@ -3252,6 +3266,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 				    \ l:line_nr, l:col_nr, g:atp_completion_limits[2], 1)
 			if g:atp_debugCloseLastEnvironment
 			    let g:info= " l:max=".l:max." l:end=".l:end." line('.')=".line(".")." l:line_nr=".l:line_nr
+			    call atplib#Log('CloseLastEnvironmemt.log', g:info)
 			endif
 			" if the line was found append just befor it.
 			if l:end != 0 
@@ -4258,7 +4273,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	"}}}3
     endif
 "}}}2
-
+let b:completion_method = completion_method
 " if the \[ is not closed, first close it and then complete the commands, it
 " is better as then automatic tex will have better file to operate on.
 " {{{2 close environments
@@ -5286,18 +5301,18 @@ function! atplib#TabCompletion(expert_mode,...)
 		let b:comp_method=' close_env end'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    endif
-	elseif ( completion_method != 'brackets' &&
-		    \ completion_method != 'close environments' &&
-		    \ completion_method != 'algorithmic' &&
-		    \ completion_method != 'abbreviations' &&
-		    \ completion_method != 'command' &&
-		    \ completion_method != 'command values' &&
-		    \ completion_method != 'tkizpicture' &&
-		    \ completion_method != 'tkizpicture commands' &&
-		    \ completion_method != 'tkizpicture keywords' &&
-		    \ completion_method != 'package options' &&
-		    \ completion_method != 'documentclass options' &&
-		    \ completion_method != 'environment options' ) || len == 0
+	elseif completion_method != 'brackets' &&
+		\ completion_method != 'close environments' &&
+		\ completion_method != 'algorithmic' &&
+		\ completion_method != 'abbreviations' &&
+		\ completion_method != 'command' &&
+		\ completion_method != 'command values' &&
+		\ completion_method != 'tikzpicture' &&
+		\ completion_method != 'tikzpicture commands' &&
+		\ completion_method != 'tikzpicture keywords' &&
+		\ completion_method != 'package options' &&
+		\ completion_method != 'documentclass options' &&
+		\ completion_method != 'environment options'
 " 	elseif completion_method == 'package' || 
 " 		    \  completion_method == 'environment_names' || 
 " 		    \  completion_method == 'font encoding' || 
@@ -5312,8 +5327,8 @@ function! atplib#TabCompletion(expert_mode,...)
 	endif
     endif
     "}}}3
-""}}}2
-"
+"}}}2
+
     " unlet variables if there were defined.
     if exists("completion_list")
 	unlet completion_list

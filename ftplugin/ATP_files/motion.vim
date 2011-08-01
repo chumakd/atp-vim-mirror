@@ -1492,12 +1492,8 @@ function! GotoFile(bang,file,...)
 	endif
 	let b:atp_ErrorFormat	= atp_ErrorFormat
 	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]	= deepcopy([tree_d, file_l_orig, type_d, level_d ])
-	if exists("b:atp_ProgressBar")
-	    unlockvar b:atp_ProgressBar
-	endif
 	let [ b:atp_LastLatexPID, b:atp_LatexPIDs, b:atp_ProgressBar ] = [ atp_LastLatexPID, atp_LatexPIDs, atp_ProgressBar ]
 	let [ b:atp_BibtexPIDs, b:atp_MakeindexPIDs ] = [ atp_BibtexPIDs, atp_MakeindexPIDs ]
-	lockvar b:atp_ProgressBar
 	if !&l:autochdir
 	    exe "lcd " . fnameescape(cwd)
 	endif

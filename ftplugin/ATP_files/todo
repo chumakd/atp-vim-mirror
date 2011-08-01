@@ -410,9 +410,13 @@ Done: atplib#CheckBracket line 365 of hgt.tex:
 		\end{array}\right\}\label{eq:oz-1}\hypertarget{eq:oz-1}{<Tab> (is not closing!)
 		counting brackets might not always work! we should always stop counting on openning bracket.
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
-ToDo:  vmap _ov and imap 'o to \overline 
+ToDo:  ++ map could work only if _ or ^ are not just before, unless there are \^ or \_
+Done:  vmap _ov and imap 'o to \overline 
 		(_ov should be 'o aswell)
-ToDo:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?
-ToDo: Closing Brackets:
+NOTE:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?
+	This is because atplib#LocalCommands is run python version saves the file, why vim version is not - doesn't need to - operate on the buffers!
+Done: Closing Brackets:
     \[M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)\eir \im(M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)<TAB>\ir \bigcap_{\alpha\in I}\im(M\otimes_R N_\alpha)\] 
-ToDo: ( (   <TAB> ) will not close ) as it seems to be closed but ( (  ) <TAB> will do!
+Done: ( (   <TAB> ) will not close ) as it seems to be closed but ( (  ) <TAB> will do!
+ToDo: $:$ are closed when they are closed.
+ToDo: TabCompletion: tikz keywords are closing ] also.
