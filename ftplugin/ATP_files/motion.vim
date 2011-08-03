@@ -1543,19 +1543,19 @@ function! <SID>SkipComment(flag, mode, ...)
     " find previous line
     let pline_nr=min([line("$"), max([1,line(".")+nr])])
     let pline	= getline(pline_nr) 
-    " This code find previous non empty line    
-"     while pline =~ '^\s*$' && pline_nr > 1 && pline_nr < line("$")
-" 	let pline_nr += nr
-" 	let pline=getline(pline_nr)
-"     endwhile
 
-"     while line =~ '^\s*%' || ( line =~ '^\s*$' && pline =~ '^\s*%' )
     while pline =~ '^\s*%'
 	call cursor(line(".")+nr, ( nr == -1 ? 1 : len(getline(line(".")+nr))))
-" 	let line=getline(line("."))
 	let pline_nr=min([line("$"), max([1,line(".")+nr])])
 	let pline	= getline(pline_nr) 
     endwhile
+    if a:mode == 'n' && !g:atp_VimCompatible
+	if a:flag =~# 'b'
+	    call cursor(line(".")-1,1)
+	else
+	    call cursor(line(".")+1,1)
+	endif
+    endif
     if a:mode == 'v'
 	let end_pos = [ line("."), col(".") ]
 	" Go where visual mode started

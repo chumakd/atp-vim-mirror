@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Jul 31 09:00  2011 W
+" Last Change: Wed Aug 03 09:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -108,30 +108,37 @@ if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
     nmap <buffer> <silent> <S-LeftMouse> 	<LeftMouse><Plug>SyncTexMouse
 endif
 
+" Move Around Comments:
 if !hasmapto(":SkipCommentForward<CR>", 'n')
-    nmap <buffer> <silent> ]*	:SkipCommentForward<CR> 
+    nmap <buffer> <silent> ]*	:SkipCommentForward<CR>
+    nmap <buffer> <silent> ]%	:SkipCommentForward<CR>
     nmap <buffer> <silent> gc	:SkipCommentForward<CR>
 endif
 if !hasmapto(":SkipCommentForward<CR>", 'o')
-    omap <buffer> <silent> ]*	:SkipCommentForward<CR> 
+    omap <buffer> <silent> ]*	:SkipCommentForward<CR>
+    omap <buffer> <silent> ]%	:SkipCommentForward<CR>
     omap <buffer> <silent> gc	:SkipCommentForward<CR>
 endif
 if !hasmapto("<Plug>SkipCommentForward", 'v')
     vmap <buffer> <silent> ]*	<Plug>SkipCommentForward
+    vmap <buffer> <silent> ]%	<Plug>SkipCommentForward
     vmap <buffer> <silent> gc	<Plug>SkipCommentForward
 endif
 
 if !hasmapto("<Plug>SkipCommentBackward<CR>", 'n')
-    nmap <buffer> <silent> [*	:SkipCommentBackward<CR> 
+    nmap <buffer> <silent> [*	:SkipCommentBackward<CR>
+    nmap <buffer> <silent> [%	:SkipCommentBackward<CR>
     nmap <buffer> <silent> gC	:SkipCommentBackward<CR>
 endif
 if !hasmapto("<Plug>SkipCommentBackward<CR>", 'o')
-    omap <buffer> <silent> [*	:SkipCommentBackward<CR> 
+    omap <buffer> <silent> [*	:SkipCommentBackward<CR>
+    omap <buffer> <silent> [%	:SkipCommentBackward<CR>
     omap <buffer> <silent> gC	:SkipCommentBackward<CR>
 endif
 if !hasmapto("<Plug>SkipCommentBackward", 'v')
-    vmap <buffer> <silent> gC	<Plug>SkipCommentBackward
     vmap <buffer> <silent> [*	<Plug>SkipCommentBackward
+    vmap <buffer> <silent> [%	<Plug>SkipCommentBackward
+    vmap <buffer> <silent> gC	<Plug>SkipCommentBackward
 endif
 
 if !hasmapto(":NInput<CR>")
@@ -142,16 +149,6 @@ endif
 if !hasmapto(":PInput<CR>")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."i	:PInput<CR>"
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf	:PInput<CR>"
-endif
-
-if atplib#DocumentClass("b:atp_MainFile") == "beamer"
-    " >f, <f
-    exe "nmap <buffer> <silent> <expr> ".g:atp_map_forward_motion_leader."f ':<C-U>'.v:count1.'F frame<CR>'"
-    exe "nmap <buffer> <silent> <expr> ".g:atp_map_backward_motion_leader."f ':<C-U>'.v:count1.'B frame<CR>'"
-
-    " >F, <F
-    exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."F <Plug>NextFrame"
-    exe "nmap <buffer> <silent> ".g:atp_map_backward_motion_leader."F <Plug>PreviousFrame"
 endif
 
 " Syntax motions:
@@ -565,36 +562,35 @@ if !hasmapto("<Plug>vEndNextEnvironment", "v")
     vmap <silent> <buffer> ][ <Plug>vEndNextEnvironment
 endif
 
-" Move Around Comments:
-exe "nnoremap <silent> <buffer> <Plug>BegNextComment :call search('^".s:backslash."(".s:backslash."s*%.*".s:backslash."n".s:backslash.")".s:backslash."@<!".s:backslash."(".s:backslash."s*%".s:backslash.")', 'W')<CR>"
-if !hasmapto("<Plug>BegNextComment", "n")
-    nmap <silent> <buffer> ]% <Plug>BegNextComment
-endif
-exe "vnoremap <silent> <buffer> <Plug>vBegNextComment :<C-U>exe \"normal! gv\"<Bar>call search('^".s:backslash."(".s:backslash."s*%.*".s:backslash."n".s:backslash.")".s:backslash."@<!".s:backslash."(".s:backslash."s*%".s:backslash.")', 'W')<CR>"
-if !hasmapto("<Plug>vBegNextComment", "v")
-    vmap <silent> <buffer> ]% <Plug>vBegNextComment
-endif
-exe "nnoremap <silent> <buffer> <Plug>EndPrevComment 0<Bar>:call search('".s:backslash."%(^".s:backslash."s*%.*".s:backslash."n".s:backslash.")".s:backslash."%(^".s:backslash."s*%".s:backslash.")".s:backslash."@!', 'bW')<CR>"
-if !hasmapto("<Plug>EndPrevComment", "n")
-    nmap <silent> <buffer> [% <Plug>EndPrevComment
-endif
-exe "vnoremap <silent> <buffer> <Plug>vEndPrevComment :<C-U>exe \"normal! gv0\"<Bar>call search('".s:backslash."%(^".s:backslash."s*%.*".s:backslash."n".s:backslash.")".s:backslash."%(^".s:backslash."s*%".s:backslash.")".s:backslash."@!', 'bW')<CR>"
-if !hasmapto("<Plug>vEndPrevComment", "v")
-    vmap <silent> <buffer> [% <Plug>vEndPrevComment
-endif
-
 " Select Comment:
 if !hasmapto("v<Plug>vSelectComment", "n")
     exe "nmap <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
 endif
 " Select Frame: (beamer)
-if atplib#DocumentClass(b:atp_MainFile) == "beamer"
-    let g:atp_MapSelectFrame = "_f"
-    if !hasmapto("v<Plug>vSelectFrameEnvironment", "n")
-	exe "nmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>SelectFrameEnvironment"
-" 	exe "vmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>vSelectFrameEnvironment"
+" This is done by a function, because it has to be run through an autocommand
+" otherwise atplib#DocumentClass is not working.
+function! <SID>BeamerOptions()
+    if atplib#DocumentClass(b:atp_MainFile) == "beamer"
+	
+	" _f
+	if !exists("g:atp_MapSelectFrame")
+	    let g:atp_MapSelectFrame = "=f"
+	endif
+	if !hasmapto("v<Plug>vSelectFrameEnvironment", "n")
+	    exe "nmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>SelectFrameEnvironment"
+" 	    exe "vmap <silent> <buffer> ".g:atp_MapSelectFrame." <Plug>vSelectFrameEnvironment"
+	endif
+
+	" >f, <f
+	exe "nmap <buffer> <silent> <expr> ".g:atp_map_forward_motion_leader."f ':<C-U>'.v:count1.'F frame<CR>'"
+	exe "nmap <buffer> <silent> <expr> ".g:atp_map_backward_motion_leader."f ':<C-U>'.v:count1.'B frame<CR>'"
+
+	" >F, <F
+	exe "nmap <buffer> <silent> ".g:atp_map_forward_motion_leader."F <Plug>NextFrame"
+	exe "nmap <buffer> <silent> ".g:atp_map_backward_motion_leader."F <Plug>PreviousFrame"
     endif
-endif
+endfunction
+au BufEnter *.tex 	call <SID>BeamerOptions()
 
 " Normal Mode Maps: (most of them)
 if mapcheck('<LocalLeader>v') == "" && !hasmapto("<Plug>ATP_ViewOutput", "n")

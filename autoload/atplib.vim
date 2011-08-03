@@ -3529,8 +3529,7 @@ function! atplib#CheckBracket(bracket_dict)
     let time		= reltime()
     
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[4])])
-"     let limit_line	= 0
-    let g:limit_line	= limit_line
+"     let g:limit_line	= limit_line
     let pos_saved 	= getpos(".")
 
     " Bracket sizes:
@@ -3579,7 +3578,7 @@ function! atplib#CheckBracket(bracket_dict)
 		let cb=0
 		for lnr in range(limit_line, line("."))
 		    if lnr == line(".")
-			let line_str=strpart(getline(lnr), 0, pos_saved[1])
+			let line_str=strpart(getline(lnr), 0, pos_saved[2])
 		    else
 			let line_str=getline(lnr)
 		    endif
@@ -3604,7 +3603,7 @@ function! atplib#CheckBracket(bracket_dict)
 		if ( ob != cb && first_ket == ket ) || ( ob != cb-1 && first_ket != ket )
 		    let bslash = ( ket != '{' ? '\\\@<!' : '' )
 		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
-			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
+			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bcnW', "", limit_line)
 		else
 		    let pair_{i}	= [0, 0]
 		endif
@@ -4233,7 +4232,14 @@ function! atplib#TabCompletion(expert_mode,...)
     else
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
 " 	let g:time_B = reltimestr(reltime(time))
-	if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
+	"{{{4 --------- abbreviations
+	if l =~ '=\w\+\*\=$' &&
+		\ index(g:atp_completion_active_modes, 'abbreviations') != -1
+	    let completion_method='abbreviations' 
+	    let b:comp_method='abbreviations'
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+	"{{{4 --------- brackets
+	elseif begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 
@@ -4252,12 +4258,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
 		let g:time_TabCompletion=reltimestr(reltime(time))
 		return '' 
-	"{{{4 --------- abbreviations
-	elseif l =~ '=\w\+\*\=$' &&
-		\ index(g:atp_completion_active_modes, 'abbreviations') != -1
-	    let completion_method='abbreviations' 
-	    let b:comp_method='abbreviations'
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	"{{{4 --------- close environments
 	elseif (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
@@ -4441,6 +4441,7 @@ let b:completion_method = completion_method
 	   endfor
        else
 	   let g:time_TabCompletion=reltimestr(reltime(time))
+	   call atplib#Log("TabCompletion.log", 'package options return')
 	   return ""
        endif
     "{{{3 ------------ PACKAGE OPTIONS
@@ -4707,9 +4708,13 @@ let b:completion_method = completion_method
 	for package in g:atp_packages
 	    if exists("g:atp_package_".package."_command_values") && ( atplib#SearchPackage(package) || atplib#DocumentClass(b:atp_MainFile) == package )
 		for key in keys({"g:atp_package_".package."_command_values"})
+" 		    echomsg package " uncomment this to debug in which package file there is a mistake.
 		    if command =~ key
 			let command_pat = key
 			let val={"g:atp_package_".package."_command_values"}[key]
+			if g:atp_debugTabCompletion
+			    call atplib#Log("TabCompletion.log", 'command_pat='.command_pat." package=".package)
+			endif
 			if type(val) == 3
 			    call extend(completion_list, val)
 			elseif type(val) == 1 && exists("*".val)
@@ -5168,7 +5173,6 @@ let b:completion_method = completion_method
 		\ completion_method == 'environment options' ||
 		\ completion_method == 'tikz libraries' || 
 		\ completion_method == 'environment_names' ||
-		\ completion_method == 'abbreviations'  ||
 		\ completion_method == 'pagestyle'	||
 		\ completion_method == 'pagenumbering'	||
 		\ completion_method == 'bibfiles' 	|| 
@@ -5182,19 +5186,28 @@ let b:completion_method = completion_method
 		\ completion_method == 'missingfigure options' ||
 		\ completion_method == 'inputfiles' 	||
 		\ completion_method == 'includegraphics' 
-	call complete(nr+2,completions)
+	let column = nr+2
+	call complete(column,completions)
+    "{{{3 abbreviations
+    elseif completion_method == 'abbreviations'
+	let col=match(l, '^.*\zs=')+1
+	call complete(col, completions)
+	let column=col
     "{{{3 labels
     elseif completion_method == 'labels'
 	let col=match(l, '\%(.\|\\\%(eq\)\=ref\)*\\\(eq\)\=ref\s*{\zs\S*$')+1
 	call complete(col, completion_dict)
+	let column=col
     " {{{3 bibitems
     elseif !normal_mode && completion_method == 'bibitems'
         if exists("completion_dict")
             " for bibtex, biblatex
             call complete(col+1,completion_dict)
+	    let column=col+1
         else
             " for thebibliography environment
             call complete(col+1,completion_list)
+	    let column=col+1
         endif
     " {{{3 command, tikzcpicture commands
     elseif !normal_mode && (completion_method == 'command' || completion_method == 'tikzpicture commands')
@@ -5216,6 +5229,7 @@ let b:completion_method = completion_method
 	    call add(completions, cbegin)
 	endif
 	call complete(o+1,completions)
+	let column=o+1
     " {{{3 tikzpicture keywords
     elseif !normal_mode && (completion_method == 'tikzpicture keywords')
 	let t=match(l,'\zs\<\w*$')
@@ -5224,15 +5238,17 @@ let b:completion_method = completion_method
 	    let t=col(".")
 	endif
 	call complete(t+1,completions)
+	let column=t+1
 	let b:tc_return="tikzpicture keywords"
     " {{{3 package and document class options
     elseif !normal_mode && ( completion_method == 'package options' || completion_method == 'documentclass options' 
 		\ || completion_method == 'environment options' )
-	let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[.*,\ze'))
+	let col=len(matchstr(l,'^.*\\\%(documentclass\|usepackage\)\[.*,\ze'))
 	if col==0
-	    let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[\ze'))
+	    let col=len(matchstr(l,'^.*\\\%(documentclass\|usepackage\)\[\ze'))
 	endif
 	call complete(col+1, completions)
+	let column = col+1
     " {{{3 command values
     elseif  !normal_mode && ( completion_method == 'command values' )
 	let g:command_pat=command_pat
@@ -5244,6 +5260,7 @@ let b:completion_method = completion_method
 	endif
 	let g:col = col
 	call complete(col+1, completions)
+	let column = col+1
     " {{{3 package and document class options values
     elseif !normal_mode && (completion_method == 'package options values')
 	let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[.*=\%({[^}]*,\|{\)\?\ze'))
@@ -5251,11 +5268,15 @@ let b:completion_method = completion_method
 	    let col=len(matchstr(l,'\\\%(documentclass\|usepackage\)\[\ze'))
 	endif
 	call complete(col+1, completions)
+	let column = col+1
     endif
     " If the completion method was a command (probably in a math mode) and
     " there was no completion, check if environments are closed.
-    " {{{ 3 Final call of CloseLastEnvrionment / CloseLastBracket
+    " {{{3 Final call of CloseLastEnvrionment / CloseLastBracket
     let len=len(completions)
+    let matched_word = strpart(getline(line(".")), column-1, pos_saved[2]-column)
+"     let g:column=column
+"     let g:matched_word = matched_word
     if len == 0 && (!count(['package', 'bibfiles', 'bibstyles', 'inputfiles'], completion_method) || a:expert_mode == 1 ) || len == 1
 	let b:comp_method .= " final"
 	if count(['command', 'tikzpicture commands', 'tikzpicture keywords', 'command values'], completion_method) && 
@@ -5301,18 +5322,29 @@ let b:completion_method = completion_method
 		let b:comp_method=' close_env end'
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	    endif
-	elseif completion_method != 'brackets' &&
-		\ completion_method != 'close environments' &&
-		\ completion_method != 'algorithmic' &&
-		\ completion_method != 'abbreviations' &&
-		\ completion_method != 'command' &&
-		\ completion_method != 'command values' &&
-		\ completion_method != 'tikzpicture' &&
-		\ completion_method != 'tikzpicture commands' &&
-		\ completion_method != 'tikzpicture keywords' &&
-		\ completion_method != 'package options' &&
-		\ completion_method != 'documentclass options' &&
-		\ completion_method != 'environment options'
+	elseif len == 0 && 
+		    \ completion_method != 'labels' && 
+		    \ completion_method != 'bibitems' 
+		\ || len == 1 && get(completions, 0, "") == matched_word || 
+		    \ completion_method != 'brackets' &&
+		    \ completion_method != 'labels' &&
+		    \ completion_method != 'bibitems' &&
+		    \ completion_method != 'bibfiles' &&
+		    \ completion_method != 'close environments' &&
+		    \ completion_method != 'algorithmic' &&
+		    \ completion_method != 'abbreviations' &&
+		    \ completion_method != 'command' &&
+		    \ completion_method != 'command values' &&
+		    \ completion_method != 'tikzpicture' &&
+		    \ completion_method != 'tikzpicture commands' &&
+		    \ completion_method != 'tikzpicture keywords' &&
+		    \ completion_method != 'package options' &&
+		    \ completion_method != 'documentclass' &&
+		    \ completion_method != 'documentclass options' &&
+		    \ completion_method != 'environment_names' &&
+		    \ completion_method != 'environment options' &&
+		    \ completion_method != 'todo options' &&
+		    \ completion_method != 'missingfigure options'
 " 	elseif completion_method == 'package' || 
 " 		    \  completion_method == 'environment_names' || 
 " 		    \  completion_method == 'font encoding' || 

@@ -667,7 +667,7 @@ if !exists("g:atp_autex_wait")
     let g:atp_autex_wait = ""
 endif
 if !exists("g:atp_MapSelectComment")
-    let g:atp_MapSelectComment = "_c"
+    let g:atp_MapSelectComment = "=c"
 endif
 if exists("g:atp_latexpackages")
     " Transition to nicer name:

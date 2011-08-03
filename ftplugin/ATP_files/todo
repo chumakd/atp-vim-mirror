@@ -393,7 +393,7 @@ NEW FEATURE: DICTIONARY!!!
 
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
 
-ToDo: there is no imap for \times.
+Done: there is no imap for \times.
 Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
 ToDo: w b are not stopping at \
 	iskeyword is set somewhere after my options.vim script.
@@ -419,4 +419,13 @@ Done: Closing Brackets:
     \[M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)\eir \im(M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)<TAB>\ir \bigcap_{\alpha\in I}\im(M\otimes_R N_\alpha)\] 
 Done: ( (   <TAB> ) will not close ) as it seems to be closed but ( (  ) <TAB> will do!
 ToDo: $:$ are closed when they are closed.
-ToDo: TabCompletion: tikz keywords are closing ] also.
+Done: TabCompletion: tikz keywords are closing ] also.
+ToDo: \begin{env}\label{LABEL}\hypertarget{LABEL}{} aaa vip \end{env}
+	in normal mode is highlighting \hyperref command while it should not.
+ToDo: \cite completion shows ligatures like Gr"atzer.
+Check: the last tab completions    "{{{3 --------- brackets, algorithmic, abbreviations, close environments
+ToDo: abbreviations should complete before brackets
+ToDo: add to doc: tab completion for abbreviations works only when ending with <space> and not <c-y>.
+	It also doesn't work just after { and (, i.e {=theorem=<space> will not
+	work, but this is the case for abbreviations, it is not related to tab
+	completion.
