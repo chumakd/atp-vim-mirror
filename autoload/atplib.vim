@@ -2182,6 +2182,8 @@ endfun
 " environments in the same name.
 " Method 1 doesn't make mistakes and thus is preferable.
 " after testing I shall remove method 0
+" Method 2 doesn't makes less mistakes than method 1 (which makes them :/) but it is only for
+" brackets, returns >0 if the bracket is closed 0 if it is not. 
 function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 
 "     NOTE: THIS IS MUCH FASTER !!! or SLOWER !!! ???            
@@ -2238,9 +2240,9 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	let l:begin_line	=getline(a:line)
 	let l:begin_line_nr	=line(a:line)
 	while l:nr <= a:line+l:limit
-	    let l:line	=getline(l:nr)
+	    let l:line		=getline(l:nr)
 	    if l:nr == a:line+l:limit
-		let l:col	= match(l:line, '^.*'.a:epat.'\zs')
+		let l:col	=match(l:line, '^.*'.a:epat.'\zs')
 		if l:col != -1
 		    let l:line	=strpart(l:line,0, l:col+1)
 		endif
@@ -2256,6 +2258,78 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let l:nr+=1
 	endwhile
 	return 0
+
+    elseif l:method==2
+	" This is a special method for brackets.
+
+	let l:bpat_count	=0
+	let l:epat_count	=0
+	let l:begin_line	=getline(a:line)
+	let l:begin_line_nr	=line(a:line)
+	while l:nr <= a:line+l:limit
+	    let l:line		=getline(l:nr)
+	    if l:nr == a:line+l:limit
+		let l:col	=match(l:line, '^.*'.a:epat.'\zs')
+		if l:col != -1
+		    let l:line	=strpart(l:line,0, l:col+1)
+		endif
+	    elseif l:nr == a:line
+		let saved_pos = getpos(".")
+		call cursor(l:nr, 1)
+		let [l:nr, l:col]=searchpos(a:bpat, 'cn')
+		let l:line	= strpart(getline(l:nr), l:col-1)
+		call cursor(saved_pos[1], saved_pos[2])
+" 		echomsg l:nr." X ".l:line
+	    endif
+	    call cursor(saved_pos[1], saved_pos[2])
+	    let l:bpat_count+=atplib#count(l:line,a:bpat, 1)
+	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
+	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    if (l:bpat_count+1) == l:epat_count
+		return l:nr
+	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat && l:nr>=line(".")
+		return l:nr
+	    endif
+	    let l:nr+=1
+	endwhile
+	if l:bpat_count > l:epat_count
+	    return 0
+	else
+	    return 1
+	endif
+    elseif l:method==3
+	" This is a special method for brackets.
+	" But it is too slow!
+
+" 	silent echomsg "***************"
+	let saved_pos 	= getpos(".")
+	call cursor(a:line, a:col)
+	let c_pos	= [a:line, a:col]
+	let line	= a:line
+" 	silent echomsg "a:line=".a:line." c_pos=".string(c_pos)." a:limit=".a:limit." cond=".string(a:line-c_pos[0] <= a:limit)
+	while a:line-c_pos[0] <= a:limit
+	    let pos=searchpairpos(a:bpat, '', a:epat, 'b')
+" 	    silent echomsg string(pos)
+	    if pos == [0, 0]
+" 		silent echomsg "C1"
+		call cursor(saved_pos[1], saved_pos[2])
+		return c_pos[0]
+	    endif
+	    if pos == c_pos
+" 		silent echomsg "C2"
+		call cursor(saved_pos[1], saved_pos[2])
+		return 0
+	    endif
+	    if atplib#CompareCoordinates(c_pos, pos)
+" 		silent echomsg "C3"
+		call cursor(saved_pos[1], saved_pos[2])
+		return 0
+	    endif
+	    let c_pos = copy(pos)
+	endwhile
+" 	silent echomsg "C4"
+	call cursor(saved_pos[1], saved_pos[2])
+	return 1
     endif
 endfunction
 " }}}1
@@ -3529,7 +3603,9 @@ function! atplib#CheckBracket(bracket_dict)
     let time		= reltime()
     
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[4])])
-"     let g:limit_line	= limit_line
+    if g:atp_debugCheckBracket
+	let g:limit_line	= limit_line
+    endif
     let pos_saved 	= getpos(".")
 
     " Bracket sizes:
@@ -3599,11 +3675,12 @@ function! atplib#CheckBracket(bracket_dict)
 	        if g:atp_debugCheckBracket
 		    call atplib#Log("CheckBracket.log",ket." ob=".ob." cb=".cb." first_ket=".first_ket)
 		    call atplib#Log("CheckBracket.log",ket." first_ket_pos=".string(first_ket_pos))
+		    call atplib#Log("CheckBracket.log",ket." pos=".string(getpos(".")))
 		endif
 		if ( ob != cb && first_ket == ket ) || ( ob != cb-1 && first_ket != ket )
 		    let bslash = ( ket != '{' ? '\\\@<!' : '' )
-		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
-			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bcnW', "", limit_line)
+		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]') , 'bcnW', "", limit_line)
+		    let pair_{i}[1]	+= ( pair_{i}[1] != 0 ? 1 : 0 )
 		else
 		    let pair_{i}	= [0, 0]
 		endif
@@ -3623,9 +3700,15 @@ function! atplib#CheckBracket(bracket_dict)
 	let pos[2]	= pair_{i}[1]
 	" check_{i} is 1 if the bracket is closed
 " 	let bslash = ( ket != '{' ? '\\\@<!' : '' )
+" 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
+" 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
+" 		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
+		    \ pos[1]-g:atp_completion_limits[4], 1, 2*g:atp_completion_limits[4],2) == '0'
+" 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
+" 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
+" 		    \ pos[1], 1, 2*g:atp_completion_limits[4],2) == '0'
 	if g:atp_debugCheckBracket >= 1
 	    call atplib#Log("CheckBracket.log", ket." check_".i."=".string(check_{i}))
 	endif
@@ -4018,7 +4101,6 @@ function! atplib#TabCompletion(expert_mode,...)
     endif
 
 
-
 " {{{2 SET COMPLETION METHOD
     " {{{3 --------- command
     if o > n && o > s && 
@@ -4088,6 +4170,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	\ !normal_mode &&
 	\ ( search('\%(\\def\>.*\|\\\%(re\)\?newcommand\>.*\|%.*\)\@<!\\begin{tikzpicture}','bnW') > search('[^%]*\\end{tikzpicture}','bnW') ||
 	\ !atplib#CompareCoordinates(searchpos('[^%]*\zs\\tikz{','bnw'),searchpos('}','bnw')) )
+	let g:debug = 1
 	"{{{4 ----------- tikzpicture keywords
 	if l =~ '\%(\s\|\[\|{\|}\|,\|\.\|=\|:\)' . tbegin . '$' &&
 		    \ !a:expert_mode
@@ -4102,14 +4185,37 @@ function! atplib#TabCompletion(expert_mode,...)
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 		let completion_method="tikzpicture commands"
 	"{{{4 ----------- close_env tikzpicture
+" 	else
+" 	    let b:comp_method = "close_env tikzpicture"
+" 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+" 	    let bracket=atplib#GetBracket(append)
+" 	    let g:bracket=bracket
+" 	    let g:time_TabCompletion=reltimestr(reltime(time))
+" 	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
+" 	    return bracket.move
+	"{{{4 --------- brackets
 	else
-	    let b:comp_method = "close_env tikzpicture"
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
-	    let bracket=atplib#GetBracket(append)
-	    let g:bracket=bracket
-	    let g:time_TabCompletion=reltimestr(reltime(time))
-	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
-	    return bracket.move
+	    let begParen = atplib#CheckBracket(g:atp_bracket_dict)
+	    if begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
+		    \ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
+		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
+
+		let b:comp_method='brackets tikzpicture'
+		let completion_method = 'brackets'
+		let bracket=atplib#GetBracket(append, 0, begParen)
+		let g:time_TabCompletion=reltimestr(reltime(time))
+		let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
+		return bracket.move
+	    "{{{4 --------- close environments
+	    elseif (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
+			\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
+		let completion_method='close_env'
+		" DEBUG:
+		let b:comp_method='close_env tikzpicture' 
+		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+	    else
+		return ''
+	    endif
 	endif
     "{{{3 --------- package options values
     elseif l =~ '\\usepackage\[[^\]]*=\%([^\],]*\|{\([^}]\+,\)\?[^}]*\)$' &&
@@ -4242,7 +4348,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	elseif begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
-
+	    let completion_method = 'brackets'
 	    let b:comp_method='brackets'
 	    let bracket=atplib#GetBracket(append, 0, begParen)
 	    let g:time_TabCompletion=reltimestr(reltime(time))
@@ -4273,7 +4379,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	"}}}3
     endif
 "}}}2
-let b:completion_method = completion_method
+let b:completion_method = ( exists("completion_method") ? completion_method : 'completion_method does not exists' )
 " if the \[ is not closed, first close it and then complete the commands, it
 " is better as then automatic tex will have better file to operate on.
 " {{{2 close environments

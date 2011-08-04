@@ -429,3 +429,5 @@ ToDo: add to doc: tab completion for abbreviations works only when ending with <
 	It also doesn't work just after { and (, i.e {=theorem=<space> will not
 	work, but this is the case for abbreviations, it is not related to tab
 	completion.
+ToDo: \cite{Schneider<Tab>  'Lecture Notes' doesn't have a date.
+ToDo: if inside tikz env move tikz keywords/commands to the beginning

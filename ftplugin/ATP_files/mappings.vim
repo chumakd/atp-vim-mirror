@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Aug 03 09:00  2011 W
+" Last Change: Wed Aug 03 04:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -906,8 +906,13 @@ if !exists("g:atp_imap_math_misc") || g:atp_reload_variables
 	let g:atp_infty_leader = (g:atp_imap_leader_1 == '#' ? '`' : g:atp_imap_leader_1 ) 
     endif
 let g:atp_imap_math_misc = [
-\ [ 'inoremap', '<silent> <buffer>', '+',		      '+', s:backslash.'sum',
+\ [ 'inoremap', '<silent> <buffer> <expr>', '+',	      '+', 
+	\ '!atplib#IsLeft("^")&&!atplib#IsLeft("_") ? '''.s:backslash.'sum'' : "++"',
 	\ "g:atp_imap_define_math_misc", '\sum' ],
+\ [ 'inoremap', '<silent> <buffer>', '<bar>', 		      '-', s:backslash.'vdash',
+	\ "g:atp_imap_define_math_misc", '\vdash' ],
+\ [ 'inoremap', '<silent> <buffer>', '-', 		      '<bar>', s:backslash.'dashv',
+	\ "g:atp_imap_define_math_misc", '\dashv' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_infty_leader,      '8', s:backslash.'infty', 	
 	\ "g:atp_imap_define_math_misc", '\infty' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_infty_leader,      '6', s:backslash.'partial',	

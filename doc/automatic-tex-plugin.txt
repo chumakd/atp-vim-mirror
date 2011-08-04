@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.9)
 			by Marcin Szamotulski
@@ -172,7 +172,11 @@ NEWS							*atp-news*
 				  is not in a commented out.
 
  Both vmap and imap for \overline and \underline are using
- g:atp_imap_over_leader
+ |g:atp_imap_over_leader|.
+
+ New math imaps: (|atp-imaps-math|)
+ |-	\vdash
+ -|	\dashv
 >
  ======================
  Changes in version 9.7.4
@@ -4297,7 +4301,7 @@ imap ==		&=
 imap =~		\cong
 imap ~~		\approx
 
-imap ++		\sum
+imap ++		\sum		/ but not if before stand ^ or _ - this allows to type X_++ X^++/
 imap o+		\oplus
 imap O+		\bigoplus
 imap o-		\ominus
@@ -4319,6 +4323,8 @@ imap ->		\rightarrow
 imap <-		\leftarrow
 imap _>		\Rightarrow
 imap <_		\Leftarrow
+imap |-		\vdash
+imap -|		\dashv
 imap t<		\triangleleft
 imap t>		\triangleright
 imap s<		\subseteq	[    set <]
