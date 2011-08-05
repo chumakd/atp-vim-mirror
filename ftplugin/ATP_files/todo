@@ -329,7 +329,6 @@ ToDo: \todo[inline]{ todo keywords are completing here, they shoud not, I think}
 ToDo: \partial \overline \overline{
 ToDo: python compiler should make g:atp_TempDir if it doesn't exists (I deleted it and there was an error).
 ToDo: test b:atp_updatetime_ variables when they are set to 0, test &l:updatetime setting in options.vim (line 920).
-ToDo:   Tikz Completion for -> <-, etc. : no its too short!
 ToDo:	Make better accent maps which takes the letter as an argument and returns accented one.
 	`"a -> \"{a} it would be nice to make it without asking in the command line maybe using ? 
 ToDo:   How to solve the problem \{:\. (it seems to be not solved) or mayby I just don't remember how to do that in LaTeX.
