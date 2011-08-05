@@ -350,12 +350,13 @@ ToDo:  recover.vim plugin fails with my settings when openinig a file from other
 ToDo:  HelpIMathIMaps add all math imaps, make it like ShowOptions, allow for patterns.
 	Maybe make a HelpMap command to search for a map - just one command.
 	:HelpMap [pattern] [mode]
-ToDo:  Why texMathZoneT (tikz) is in g:atp_MathZones (atplib#IsInMath() function,
+Done:  Why texMathZoneT (tikz) is in g:atp_MathZones (atplib#IsInMath() function,
        it can filter it if invoked with bang atplib#IsInMath("!").  If because
        of \matrix[matrix of math nodes, it can be matched sepretaly] (this
        will be slower, but first we can check if we are in tikzpicture and
        where it starts/ends
-ToDo:  closing \(:\) when \(\s*$ and cursor is in the same line close this env in the same line not next one!
+Done:  closing \(:\) when \(\s*$ and cursor is in the same line close this env in the same line not next one!
+	done but only for \(:\) and $:$.
 ToDo:  I think my changes are such that one cannot turn off 'tikzpicture
 	keywords' from completion - this should be ended and tested ...
 ToDo:  TOC with two files one beamer (press <Enter> on beamer document)
@@ -394,7 +395,6 @@ NEW FEATURE: DICTIONARY!!!
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
 
 Done: there is no imap for \times.
-Bug: \begin{equation}<Tab>\end{equation}closing equation ... (this text should not be added to the inserted stuff)
 ToDo: w b are not stopping at \
 	iskeyword is set somewhere after my options.vim script.
 Done: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
@@ -410,24 +410,12 @@ Done: atplib#CheckBracket line 365 of hgt.tex:
 		\end{array}\right\}\label{eq:oz-1}\hypertarget{eq:oz-1}{<Tab> (is not closing!)
 		counting brackets might not always work! we should always stop counting on openning bracket.
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
-ToDo:  ++ map could work only if _ or ^ are not just before, unless there are \^ or \_
-Done:  vmap _ov and imap 'o to \overline 
-		(_ov should be 'o aswell)
 NOTE:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?
 	This is because atplib#LocalCommands is run python version saves the file, why vim version is not - doesn't need to - operate on the buffers!
-Done: Closing Brackets:
-    \[M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)\eir \im(M\otimes_R(\bigcap_{\alpha\in I}N_\alpha)<TAB>\ir \bigcap_{\alpha\in I}\im(M\otimes_R N_\alpha)\] 
-Done: ( (   <TAB> ) will not close ) as it seems to be closed but ( (  ) <TAB> will do!
 ToDo: $:$ are closed when they are closed.
-Done: TabCompletion: tikz keywords are closing ] also.
 ToDo: \begin{env}\label{LABEL}\hypertarget{LABEL}{} aaa vip \end{env}
 	in normal mode is highlighting \hyperref command while it should not.
-ToDo: \cite completion shows ligatures like Gr"atzer.
 Check: the last tab completions    "{{{3 --------- brackets, algorithmic, abbreviations, close environments
-ToDo: abbreviations should complete before brackets
-ToDo: add to doc: tab completion for abbreviations works only when ending with <space> and not <c-y>.
-	It also doesn't work just after { and (, i.e {=theorem=<space> will not
-	work, but this is the case for abbreviations, it is not related to tab
-	completion.
-ToDo: \cite{Schneider<Tab>  'Lecture Notes' doesn't have a date.
+Done: abbreviations should complete before brackets
 ToDo: if inside tikz env move tikz keywords/commands to the beginning
+Bug:  sometimes when using <Tab> the letter just before is put after completion. I have to restart vim.

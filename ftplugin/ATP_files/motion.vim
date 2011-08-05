@@ -321,7 +321,13 @@ function! s:showtoc(toc)
 	if !exists("t:toc_window_width")
 	    let t:toc_window_width = g:atp_toc_window_width
 	endif
-	let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	let toc_winnr=bufwinnr(bufnr("__Labels__"))
+	if toc_winnr == -1
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	else
+	    exe toc_winnr."wincmd w"
+	    let l:openbuffer= "keepalt above split +setl\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	endif
 	keepalt silent exe  openbuffer
 	" We are setting the address from which we have come.
 	silent call atplib#setwindow()

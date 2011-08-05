@@ -1081,7 +1081,13 @@ function! atplib#showlabels(labels)
 
 	" tabstop option is set to be the longest counter number + 1
 	redraw
-	let l:openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
+	let toc_winnr=bufwinnr(bufnr("__ToC__"))
+	if toc_winnr == -1
+	    let l:openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
+	else
+	    exe toc_winnr."wincmd w"
+	    let l:openbuffer= "keepalt below split +setl\\ tabstop=".tabstop."\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
+	endif
 	silent exe l:openbuffer
 	silent call atplib#setwindow()
 	let t:atp_labelsbufnr=bufnr("")
@@ -1089,7 +1095,7 @@ function! atplib#showlabels(labels)
     unlockvar b:atp_Labels
     let b:atp_Labels	= {}
 
-    let g:labels=copy(a:labels)
+"     let g:labels=copy(a:labels)
 
     let line_nr	= 2
     for file in a:labels[1]
@@ -3449,10 +3455,14 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		echomsg "[ATP:] closing math from line " . l:begin_line
 	    endif
 	endif
-	if    math_mode == 'texMathZoneV' && l:line !~ '^\s*\\(\s*$' 	||
-	    \ math_mode == 'texMathZoneW' && l:line !~ '^\s*\\\[\s*$' 	||
-	    \ math_mode == 'texMathZoneX' && l:line !~ '^\s*\$\s*$' 	||
-	    \ math_mode == 'texMathZoneY' && l:line !~ '^\s*\$\{2,2}\s*$'
+	if 
+	    \ math_mode == 'texMathZoneV' && ( l:line !~ '^\s*\\(\s*$'	|| line(".") == l:begin_line )	|| 
+	    \ math_mode == 'texMathZoneW' && ( l:line !~ '^\s*\\\[\s*$' )				||
+	    \ math_mode == 'texMathZoneX' && ( l:line !~ '^\s*\$\s*$' 	|| line(".") == l:begin_line ) 	||
+	    \ math_mode == 'texMathZoneY' && ( l:line !~ '^\s*\$\{2,2}\s*$' )
+	    if g:atp_debugCloseLastEnvironment
+		call atplib#Log('CloseLastEnvironment.log', 'inline math')
+	    endif
 	    if math_mode == "texMathZoneW"
 		if !return_only
 		    if l:com == 'a' 
@@ -4598,8 +4608,8 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	" TODO: add support for all tikz libraries 
 	let tikz_libraries	= atplib#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
 	call map(tikz_libraries, "substitute(v:val, '\\..*$', '', '')")
-	let g:tikz_libraries  	= tikz_libraries
-	let g:tikz_libs = []
+" 	let g:tikz_libraries  	= tikz_libraries
+" 	let g:tikz_libs = []
 	for lib in tikz_libraries  
 	    if exists("g:atp_tikz_library_".lib."_keywords")
 		call add(g:tikz_libs, lib)
@@ -4608,7 +4618,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	endfor
     " {{{3 ------------ TIKZ COMMANDS
     elseif completion_method	== 'tikzpicture commands'
-	let completion_list = []
+	let completion_list 	= []
 	" if tikz is declared and we are in tikz environment.
 	let tikz_libraries	= atplib#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
 	for lib in tikz_libraries  

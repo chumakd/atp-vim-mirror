@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Aug 03 04:00  2011 W
+" Last Change: Thu Aug 04 11:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1083,35 +1083,35 @@ endif
 " Mathematical Maps:
 if !exists("g:atp_imap_math") || g:atp_reload_variables
     let g:atp_imap_math= [ 
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "( g:atp_imap_subscript == '_' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('_') <bar><bar> g:atp_imap_subscript != '_' ) && atplib#IsInMath() ? (g:atp_imap_subscript == '_' ? '<BS>' : '' ).'_{}<Left>' : '_' ", "g:atp_imap_define_math", 	'_{}'], 
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_supscript, "( g:atp_imap_supscript == '^' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('^') <bar><bar> g:atp_imap_supscript != '^' ) && atplib#IsInMath() ? (g:atp_imap_supscript == '^' ? '<BS>' : '' ).'^{}<Left>' : (atplib#IsLeft('~') ? '<BS>".s:backslash."=(g:atp_imap_wide ? ''wide'' : '''' )<CR>hat{}<Left>' : '^') ", "g:atp_imap_define_math", 	'^{}'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "( g:atp_imap_subscript == '_' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('_') <bar><bar> g:atp_imap_subscript != '_' ) && atplib#IsInMath() ? (g:atp_imap_subscript == '_' ? '<BS>' : '' ).'_{}<Left>' : '_'", "g:atp_imap_define_math", 	'_{}'], 
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_supscript, "( g:atp_imap_supscript == '^' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('^') <bar><bar> g:atp_imap_supscript != '^' ) && atplib#IsInMath() ? (g:atp_imap_supscript == '^' ? '<BS>' : '' ).'^{}<Left>' : (atplib#IsLeft('~') ? '<BS>".s:backslash."=(g:atp_imap_wide ? ''wide'' : '''' )<CR>hat{}<Left>' : '^')", "g:atp_imap_define_math", 	'^{}'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "~", "atplib#IsLeft('~') && atplib#IsInMath() ? '<BS>".s:backslash."=(g:atp_imap_wide ? \"wide\" : \"\" ) <CR>tilde=(g:atp_imap_tilde_braces ? \"{}\" : \"\")<CR>'.(g:atp_imap_tilde_braces ? '<Left>' : '') : '~' " , "g:atp_imap_define_math", 	'\\(wide)tilde({})'], 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=", "atplib#IsInMath() && atplib#IsLeft('=') && !atplib#IsLeft('&',1) ? '<BS>&=' : '='", "g:atp_imap_define_math",	'&=' ],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o+", "atplib#IsInMath() ? '".s:backslash."oplus' 	: 'o+' ", "g:atp_imap_define_math", 		'\\oplus' ],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O+", "atplib#IsInMath() ? '".s:backslash."bigoplus' 	: 'O+' ", "g:atp_imap_define_math",		'\\bigoplus'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o-", "atplib#IsInMath() ? '".s:backslash."ominus' 	: 'o-' ", "g:atp_imap_define_math",		'\\ominus'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o.", "atplib#IsInMath() ? '".s:backslash."odot' 	: 'o.' ", "g:atp_imap_define_math",		'\\odot'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O.", "atplib#IsInMath() ? '".s:backslash."bigodot' 	: 'O.' ", "g:atp_imap_define_math",		'\\bigodot'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o*", "atplib#IsInMath() ? '".s:backslash."otimes' 	: 'o*' ", "g:atp_imap_define_math",		'\\otimes'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O*", "atplib#IsInMath() ? '".s:backslash."bigotimes' 	: 'O*' ", "g:atp_imap_define_math",		'\\bigotimes'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t*", "atplib#IsInMath() ? '".s:backslash."times' 	: 't*' ", "g:atp_imap_define_math",		'\\otimes'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s+", "atplib#IsInMath() ? '".s:backslash."cup' 	: 's+' ", "g:atp_imap_define_math",		'\\cup'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s-", "atplib#IsInMath() ? '".s:backslash."setminus' 	: 's-' ", "g:atp_imap_define_math",		'\\cup'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S+", "atplib#IsInMath() ? '".s:backslash."bigcup' 	: 'S+' ", "g:atp_imap_define_math",		'\\bigcup'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s*", "atplib#IsInMath() ? '".s:backslash."cap' 	: 's*' ", "g:atp_imap_define_math",		'\\cap'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S*", "atplib#IsInMath() ? '".s:backslash."bigcap' 	: 'S*' ", "g:atp_imap_define_math",		'\\bigcap'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c*", "atplib#IsInMath() ? '".s:backslash."prod' 	: 'c*' ", "g:atp_imap_define_math",		'\\prod'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c+", "atplib#IsInMath() ? '".s:backslash."coprod' 	: 'c+' ", "g:atp_imap_define_math",		'\\coprod'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t<", "atplib#IsInMath() ? '".s:backslash."triangleleft' : 't<' ", "g:atp_imap_define_math",		'\\triangleleft'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t>", "atplib#IsInMath() ? '".s:backslash."triangleright' : 't>' ", "g:atp_imap_define_math",		'\\triangleright'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s<", "atplib#IsInMath() ? '".s:backslash."subseteq' 	: 's<' ", "g:atp_imap_define_math",		'\\subseteq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>' ", "g:atp_imap_define_math",		'\\supseteq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<=' ", "g:atp_imap_define_math",		'\\leq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>=' ", "g:atp_imap_define_math",		'\\geq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-' ", "g:atp_imap_define_math",		'\\leftarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->' ", "g:atp_imap_define_math",		'\\rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o+", "atplib#IsInMath() ? '".s:backslash."oplus' 	: 'o+'", "g:atp_imap_define_math", 		'\\oplus' ],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O+", "atplib#IsInMath() ? '".s:backslash."bigoplus' 	: 'O+'", "g:atp_imap_define_math",		'\\bigoplus'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o-", "atplib#IsInMath() ? '".s:backslash."ominus' 	: 'o-'", "g:atp_imap_define_math",		'\\ominus'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o.", "atplib#IsInMath() ? '".s:backslash."odot' 	: 'o.'", "g:atp_imap_define_math",		'\\odot'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O.", "atplib#IsInMath() ? '".s:backslash."bigodot' 	: 'O.'", "g:atp_imap_define_math",		'\\bigodot'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "o*", "atplib#IsInMath() ? '".s:backslash."otimes' 	: 'o*'", "g:atp_imap_define_math",		'\\otimes'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "O*", "atplib#IsInMath() ? '".s:backslash."bigotimes' 	: 'O*'", "g:atp_imap_define_math",		'\\bigotimes'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t*", "atplib#IsInMath() ? '".s:backslash."times' 	: 't*'", "g:atp_imap_define_math",		'\\otimes'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s+", "atplib#IsInMath() ? '".s:backslash."cup' 	: 's+'", "g:atp_imap_define_math",		'\\cup'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s-", "atplib#IsInMath() ? '".s:backslash."setminus' 	: 's-'", "g:atp_imap_define_math",		'\\cup'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S+", "atplib#IsInMath() ? '".s:backslash."bigcup' 	: 'S+'", "g:atp_imap_define_math",		'\\bigcup'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s*", "atplib#IsInMath() ? '".s:backslash."cap' 	: 's*'", "g:atp_imap_define_math",		'\\cap'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "S*", "atplib#IsInMath() ? '".s:backslash."bigcap' 	: 'S*'", "g:atp_imap_define_math",		'\\bigcap'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c*", "atplib#IsInMath() ? '".s:backslash."prod' 	: 'c*'", "g:atp_imap_define_math",		'\\prod'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "c+", "atplib#IsInMath() ? '".s:backslash."coprod' 	: 'c+'", "g:atp_imap_define_math",		'\\coprod'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t<", "atplib#IsInMath() ? '".s:backslash."triangleleft' : 't<'", "g:atp_imap_define_math",		'\\triangleleft'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "t>", "atplib#IsInMath() ? '".s:backslash."triangleright' : 't>'", "g:atp_imap_define_math",		'\\triangleright'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s<", "atplib#IsInMath() ? '".s:backslash."subseteq' 	: 's<'", "g:atp_imap_define_math",		'\\subseteq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>'", "g:atp_imap_define_math",		'\\supseteq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<='", "g:atp_imap_define_math",		'\\leq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>='", "g:atp_imap_define_math",		'\\geq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\rightarrow'],
 	\ ]
 endif
 

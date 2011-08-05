@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 04 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 05 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.9)
 			by Marcin Szamotulski
@@ -2746,6 +2746,14 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		which contains all the sizes of brackets in latex plus a pair
 		'\' : '\', for closing the math modes: \(:\), \[:\] and the
 		brackets \{:\}.
+	
+							*atp-closing-math*
+							*atp-completion-math*
+	math modes ~
+		\(:\), \[:\], $:$ and $$:$$ will be closed when all brackets
+		after the opening \(, \[, $ or $$ are closed. If \[ or $$ is
+		in line which matches '^\s*\(\\[\|\$\$\)\s*$' it will be
+		closed in a following line.
 							*atp-closing-environments*
 							*atp-completion-env*
 	environments ~

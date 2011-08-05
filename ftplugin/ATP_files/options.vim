@@ -2124,17 +2124,6 @@ endif
 
 	let g:atp_greek_letters = ['\alpha', '\beta', '\chi', '\delta', '\epsilon', '\phi', '\gamma', '\eta', '\iota', '\kappa', '\lambda', '\mu', '\nu', '\theta', '\pi', '\rho', '\sigma', '\tau', '\upsilon', '\vartheta', '\xi', '\psi', '\zeta', '\Delta', '\Phi', '\Gamma', '\Lambda', '\Mu', '\Theta', '\Pi', '\Sigma', '\Tau', '\Upsilon', '\Omega', '\Psi']
 
-	" commands defined by the user in input files.
-	" ToDo: to doc.
-	" ToDo: this doesn't work with input files well enough. 
-	
-	" Returns a list of two lists:  [ commanad_names, enironment_names ]
-
-	" The BufEnter augroup doesn't work with EditInputFile, but at least it works
-	" when entering. Debuging shows that when entering new buffer it uses
-	" wrong b:atp_MainFile, it is still equal to the bufername and not the
-	" real main file. Maybe it is better to use s:mainfile variable.
-
 	if !exists("g:atp_local_completion")
 	    " if has("python") then fire LocalCommands on startup (BufEnter) if not
 	    " when needed.
@@ -2212,7 +2201,7 @@ endif
 		    \ 'shapes.gates.logic.IEC', 'shapes.gates.logic.US', 'shapes.misc', 
 		    \ 'shapes.multipart', 'shapes.symbols', 'topaths', 'through', 'trees' ])
 	" tikz keywords = begin without '\'!
-	" ToDo: add mote keywords: done until page 145.
+	" ToDo: add more keywords: done until page 145.
 	" ToDo: put them in a correct order!!!
 	" ToDo: completion for arguments in brackets [] for tikz commands.
 	let g:atp_tikz_commands=[ "\\begin", "\\end", "\\matrix", "\\node", "\\shadedraw", 
