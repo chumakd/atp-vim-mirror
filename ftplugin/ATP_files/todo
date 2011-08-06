@@ -360,7 +360,8 @@ ToDo:  I think my changes are such that one cannot turn off 'tikzpicture
 	keywords' from completion - this should be ended and tested ...
 ToDo:  TOC with two files one beamer (press <Enter> on beamer document)
 ToDo:  \\[2em<Tab> \\[2em\]!
-ToDo:  why sometimes progress bar starts at [5] or sth like that.
+Done:  why sometimes progress bar starts at [5] or sth like that.
+	Anwser: b:atp_ProgressBar variable has to be reset.
 ToDo:  vae commented evironment inside another environment will match the
        outer one: do we want that, note that the inner, commented one can be
        marked with _c.
@@ -418,3 +419,6 @@ Check: the last tab completions    "{{{3 --------- brackets, algorithmic, abbrev
 Done: abbreviations should complete before brackets
 ToDo: if inside tikz env move tikz keywords/commands to the beginning
 Bug:  sometimes when using <Tab> the letter just before is put after completion. I have to restart vim.
+
+# Note: vim gonna have ]h, [h motions to next highlight group, can be used to
+# go to errors, todo's, ... - there's discussion on vim_dev: started on 1 Aug 2011.

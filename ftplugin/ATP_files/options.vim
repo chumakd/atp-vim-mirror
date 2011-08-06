@@ -241,6 +241,11 @@ endif
     " TODO set define and work on the above settings, these settings work with [i
     " command but not with [d, [D and [+CTRL D (jump to first macro definition)
     
+    " AlignPlugin settings
+    if !exists("g:Align_xstrlen") && &conceallevel 
+	let g:Align_xstrlen="ATP_strlen"
+    endif
+    
 " This was throwing all autocommand groups to the command line on startup.
 " Anyway this is not very good.
 "     augroup ATP_makeprg

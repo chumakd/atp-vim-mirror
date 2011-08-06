@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 05 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.9)
 			by Marcin Szamotulski
@@ -177,6 +177,10 @@ NEWS							*atp-news*
  New math imaps: (|atp-imaps-math|)
  |-	\vdash
  -|	\dashv
+
+ The command :Align (and thus also :TexAlign) are using ATP_strlen function to
+ measure the string length. ATP sets g:Align_xstrlen="ATP_strlen" if
+ 'conceallevel' option is >0. 
 >
  ======================
  Changes in version 9.7.4

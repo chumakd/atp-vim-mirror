@@ -4609,10 +4609,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	let tikz_libraries	= atplib#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
 	call map(tikz_libraries, "substitute(v:val, '\\..*$', '', '')")
 " 	let g:tikz_libraries  	= tikz_libraries
-" 	let g:tikz_libs = []
+" 	let tikz_libs = []
 	for lib in tikz_libraries  
 	    if exists("g:atp_tikz_library_".lib."_keywords")
-		call add(g:tikz_libs, lib)
+" 		call add(g:tikz_libs, lib)
 		call extend(completion_list,g:atp_tikz_library_{lib}_keywords)
 	    endif   
 	endfor
