@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 08 August 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 9.7.9)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -161,26 +161,43 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 9.8
+ Changes in version 10
 <
- If you use <Shift-Tab> (i.e. non-expert mode for completion) to close
- a bracket, it will be put after the cursor, allowing you to write inside
- brackets. This doesn't work with \(:\) and other math pairs and closing
- environments.
+  If you use <Shift-Tab> (i.e. non-expert mode for completion) to close
+  a bracket, it will be put after the cursor, allowing you to write inside
+  brackets. This doesn't work with \(:\) and other math pairs and closing
+  environments.
 
- cmap <M-c> ^\%([^%]\|\\%\)*	- useful when searching for sth which
+  Closing brackets with <Tab> is much faster now.
+
+  cmap <M-c> ^\%([^%]\|\\%\)*	- useful when searching for sth which
 				  is not in a commented out.
 
- Both vmap and imap for \overline and \underline are using
- |g:atp_imap_over_leader|.
+  Both vmap and imap for \overline and \underline are using
+  |g:atp_imap_over_leader|.
 
- New math imaps: (|atp-imaps-math|)
- |-	\vdash
- -|	\dashv
+  The value of |g:atp_MapSelectComment| is now |=c| (it used to be _c)
+  You can also use v|ip| over commented lines to select them.
 
- The command :Align (and thus also :TexAlign) are using ATP_strlen function to
- measure the string length. ATP sets g:Align_xstrlen="ATP_strlen" if
- 'conceallevel' option is >0. 
+  New math imaps: (|atp-imaps-math|)
+  |-	\vdash
+  -|	\dashv
+  ++ 	\sum	(it is disabled now when typing X_++ or X^++)
+
+  The command :Align (and thus also :TexAlign) are using ATP_strlen function to
+  measure the string length. ATP sets g:Align_xstrlen="ATP_strlen" if
+  'conceallevel' option is >0. if 'conceallevel' is reset to 0 ATP_strlen
+  behaves like g:Align_xstrlen=2.
+
+  :TOC and :Labels commands when open together will be in one column wtith
+  table of contents at the top.
+
+  ]*, ]%, [*, [%  - skip comment maps, all works now in the same way. If 
+  |g:atp_VimCompatible| is 1 they go to where comment statrs/ends, if it is
+  0 they go one line above/below. 
+
+  cmap <M-c> will insert a pattern which match lines which are not a comment.
+
 >
  ======================
  Changes in version 9.7.4
@@ -214,6 +231,7 @@ NEWS							*atp-news*
 
   New imap
   	t*	\times
+
 >
  ======================
  Changes in version 9.7
@@ -484,7 +502,7 @@ EasyMotion and ATP ~
     EasyMotion. For example "-" might be a good choice.  You can also try to
     change |maplocalleader| which is heavily used by ATP.
 
-    Select Comments nmap and vmap is now |_c| (previously \sc was
+    Select Comments nmap and vmap is now |=c| (previously \sc was
     interfering with an ATP font map).
 
     (Almost all) maps became |:map-silent|.   
@@ -805,19 +823,19 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	in Vim).
 
 	If there are many background processes the number which is shown
-	belongs to the oldest process. (b:atp_ProgressBar is a dictionary
+	belongs to the oldest process. (|b:atp_ProgressBar| is a dictionary
 	{ 'pid' : 'pagenr' } - status line shows max of pagenr's).
 
-	Note: the time between you start to compile and [1] appears in the
-	status line is mostly the time when LaTeX is reading all the packages
-	that you loaded in the preamble.
+	Note: the time between you start to compile and when [1] appears in
+	the status line is mostly the time when LaTeX is reading all the
+	packages loaded in the preamble.
 >
  b:atp_ProgressBar
 <	It is equal to empty dictionary {} if compilation is not going on, and
 	while compilation it contains the PID number and page number where
 	this compelation is.
 	Note: If you compile and the progress bar starts at some page > 1, and
-	you can use 'let b:atp_ProgressBar={}'. You should also check if there
+	you can use 'let |b:atp_ProgressBar|={}'. You should also check if there
 	is any LaTeX process in the system.
 
 						    	*g:atp_DebugModeQuickFixHeight*
@@ -1489,6 +1507,11 @@ map \a
 	syntax, tabular environment is checked using searchpair() function,
 	the |g:atp_completion_limits|[2] applies.
 
+	The command :Align (and thus also :TexAlign) are using ATP_strlen
+	function to measure the string length. ATP sets
+	g:Align_xstrlen="ATP_strlen" if 'conceallevel' option is >0. if
+	'conceallevel' is reset to 0 ATP_strlen behaves like
+	g:Align_xstrlen=2.
     							*atp-:LatexTags*
 							*atp-:Tags*
 :Tags[!]
@@ -1815,16 +1838,21 @@ nmap -p
 
 
     							*atp-:SkipCommentForward*
-							*atp-]star* *atp-gc*
+							*atp-]star* *atp-]%* *atp-gc*
 :SkipCommentForward 
-nmap ]* gc
+nmap ]* ]% gc
 	Go to end of current/next comment group.
+
+	Note: if |g:atp_VimCompatible|=1 (the default) it goes one line below
+	the last commented line, if it is 0 it goes to the end of the comment.
     							*atp-:SkipCommentBackward*
-							*atp-[star* *atp-gC*
+							*atp-[star* *atp-[%* *atp-gC*
 :SkipCommentBackward 
-nmap [* gC
+nmap [* p% gC
 	Go to begining of current/previous comment group
 
+	Note: if |g:atp_VimCompatible|=1 (the default) it goes one line above
+	the last commented line, if it is 0 it goes to the begin of the comment.
 							*atp-:ToggleStar*
 :ToggleStar 	 	 
 map |<LocalLeader>|s	  
@@ -3578,9 +3606,12 @@ s:notreadablebibfiles
 >
  g:atp_VimCompatible variable
 <   	with default value 0 ("no"). Its values are 0/1 or yes/no. It changes 
-	the behaviour of '%'. In nocomatible mode it gen go to matching pair
-	in a different line in compatible mode it find the matching pair only
+	the behaviour of '%'. In nocomatible mode it goes to matching pair
+	in a different line in compatible mode it finds the matching pair only
 	if the ending bracket is in the same line.
+	See also how it changes the behaviour of |atp-]%| and |atp-[%|.
+
+
 
 ================================================================================
 WRITING PROJECTS					*atp-ProjectFiles*
@@ -4569,15 +4600,18 @@ EDITING TOOLS							*atp-editing*
 	im, am	selects mathematics.
 								*atp-vip* *atp-vap*
 	ip, ap  selects paragraph. 
-		In inner mode: from the nearest >
-			\begin, \end, \par, \newline or empty line (top) 
+		In inner mode (ip): from the nearest >
+			\begin, \end, \par, \newline, ^\s*% (comment) or empty line (top) 
 <		to the nearest >
-			\begin, \end, \par, \newline or empty line (bottom).
-<		in outer mode: from the nearest >
+			\begin, \end, \par, \newline,  ^\s*% (comment)or empty line (bottom).
+<		in outer mode (ap): from the nearest >
 			\par or empty line (top) 
 <		to the nearest >
 			\par or empty line (bottom).
-<								*atp-viS* *atp-vaS*
+<						
+	ip over a commented line will match all the comment like =c
+
+								*atp-viS* *atp-vaS*
 	iS, aS	selects using syntax stack (see |synstack()|), inner is the
 		top element in the syntax stack (the highlighted area will be
 		small) and outer uses the most bottom element in the syntax
@@ -4585,8 +4619,9 @@ EDITING TOOLS							*atp-editing*
 		filtered out (like 'texDocZone') which not always are
 		synchronised.
 								*atp-select-comments*
-								*atp-_c*
-	_c	
+								*g:atp_MapSelectComment*
+								*atp-=c*
+	=c	
 		select comment lines which begin with '^\s*%'. If not in
 		comment line, end visual mode. You can change this map with
 		variables g:atp_MapSelectComment (this can be only changed in

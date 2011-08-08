@@ -1555,7 +1555,7 @@ function! <SID>SkipComment(flag, mode, ...)
 	let pline_nr=min([line("$"), max([1,line(".")+nr])])
 	let pline	= getline(pline_nr) 
     endwhile
-    if a:mode == 'n' && !g:atp_VimCompatible
+    if a:mode == 'n' && ( !g:atp_VimCompatible || g:atp_VimCompatible =~? '\<no\>' )
 	if a:flag =~# 'b'
 	    call cursor(line(".")-1,1)
 	else

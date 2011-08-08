@@ -422,3 +422,6 @@ Bug:  sometimes when using <Tab> the letter just before is put after completion.
 
 # Note: vim gonna have ]h, [h motions to next highlight group, can be used to
 # go to errors, todo's, ... - there's discussion on vim_dev: started on 1 Aug 2011.
+
+Todo: completion for :EditInputFile shows twice xcolors.tex file. Makethe command short, like :Edit if it doesn't exists.
+Todo: vim \[...\] when acts on ] markes the next inner paragraph.

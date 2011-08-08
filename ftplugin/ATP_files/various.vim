@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Aug 06 07:00  2011 W
+" Last Change: Sat Aug 06 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -391,6 +391,9 @@ endfunction
 " This function is used to measure lenght of a string using :Align, :TexAlign
 " commads. See help file of AlignPlugin for g:Align_xstrlen variable.
 function! ATP_strlen(x)
+    if !&conceallevel 
+	return strlen(substitute(a:x, '.\Z', 'x', 'g'))
+    endif
     let x=a:x
     let hide = ( &conceallevel < 3 ? 'x' : '' )
     let greek=[ 

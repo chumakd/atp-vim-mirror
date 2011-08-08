@@ -791,7 +791,7 @@ if !exists("g:atp_EnvOptions_itemize")
 endif
 if !exists("g:atp_VimCompatible")
     " Used by: % (s:JumpToMatch in LatexBox_motion.vim).
-    let g:atp_VimCompatible = "no"
+    let g:atp_VimCompatible = 0
     " It can be 0/1 or yes/no.
 endif 
 if !exists("g:atp_CupsOptions")
