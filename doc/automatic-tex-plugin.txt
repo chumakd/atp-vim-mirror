@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 08 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 09 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10)
 			by Marcin Szamotulski
@@ -159,6 +159,13 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 10.1
+<
+  :Dictionary [word]		-- an interface to http://www.impan.pl/Dictionary/.
+  					see |atp-:Dictionary|.
+
 >
  ======================
  Changes in version 10
@@ -1395,6 +1402,14 @@ map <F1>, imap <F1>
 	You can use {bang} "!" to regenerate the library if it has changed.
 	This is particularly useful as by default ATP remembers g:atp_Library in
 	the common project script (see |atp-ProjectScript|).
+
+							*atp-:Dictionary*
+:Dictionary [word]
+	This is an interface to http://www.impan.pl/Dictionary/. Type a [word]
+	and you will get quotes from mathematical articles or books written by
+	native speakers of English. The command has a completion for words.
+	List of words is hardcoded in ATP (it is too slow to get it), since the
+	dictionary evolves it might contain new entries.
 
 :Delete[!]						*atp-:Delete*
 map <F6>d
@@ -4997,5 +5012,4 @@ COPY RIGHTS							*atp-copy-rights*
 <   where taken from latex-suite Vim plugin and are under Vim charity
     |license|.
 
-
-" vim:tw=75:ts=8:ft=help:norl:
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.1)

@@ -425,3 +425,6 @@ Bug:  sometimes when using <Tab> the letter just before is put after completion.
 
 Todo: completion for :EditInputFile shows twice xcolors.tex file. Makethe command short, like :Edit if it doesn't exists.
 Todo: vim \[...\] when acts on ] markes the next inner paragraph.
+
+Todo: vip \section[...]{...} .... <vip>  
+	is not stopped before the section command end.

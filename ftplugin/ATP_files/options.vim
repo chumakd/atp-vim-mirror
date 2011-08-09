@@ -242,7 +242,7 @@ endif
     " command but not with [d, [D and [+CTRL D (jump to first macro definition)
     
     " AlignPlugin settings
-    if !exists("g:Align_xstrlen") && &conceallevel 
+    if !exists("g:Align_xstrlen") && v:version >= 703 && &conceallevel 
 	let g:Align_xstrlen="ATP_strlen"
     endif
     
