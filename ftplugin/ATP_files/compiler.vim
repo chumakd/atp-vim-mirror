@@ -1583,28 +1583,27 @@ function! <SID>SetErrorFormat(...)
 	let pm = '+'
 
 	let &l:errorformat = &l:errorformat.",
-		    	    \%Cl.%l\ %m,
-			    \%-ZI've inserted%.%#,
-			    \%-ZThe control sequence%.%#,
-			    \%-ZYour command was ignored%\\%.,
-			    \%-ZYou've closed more groups than you opened%\\%.,
-			    \%-ZThe `$' that I just saw%.%#,
-			    \%".pm."C\ \ %m,
+		    	    \%Zl.%l\ %m,
+			    \%".pm."C\\s%#%m,
 			    \%".pm."C%.%#-%.%#,
 			    \%".pm."C%.%#[]%.%#,
 			    \%".pm."C[]%.%#,
 			    \%".pm."C%.%#%[{}\\]%.%#,
 			    \%".pm."C<%.%#>%.%#,
-			    \%-GSee\ the\ LaTeX%m,
-			    \%-GType\ \ H\ <return>%m,
+			    \%-ZI've inserted%.%#,
+			    \%-ZThe control sequence%.%#,
+			    \%-ZYour command was ignored%.%#,
+			    \%-ZYou've closed more groups than you opened%.%#,
+			    \%-ZThe `$' that I just saw%.%#,
+			    \%-ZSee LaTeX%.%#,
+			    \%-ZA number should have been here%.%#,
+			    \%-ZI'm ignoring this;%.%#,
+			    \%-ZType\ \ H\ <return>%m,
 			    \%-G ...%.%#,
 			    \%-G%.%#\ (C)\ %.%#,
 			    \%-G(see\ the\ transcript%.%#),
-			    \%-G\\s%#"
-" 	if (g:atp_ignore_unmatched && !g:atp_show_all_lines)
-" 	elseif l:dont_ignore
-	    exec 'setlocal efm+=%-G%.%#' 
-" 	endif
+			    \%-G\\s%#,
+			    \%-G%.%#"
 	let &l:errorformat = &l:errorformat.",
 			    \%".pm."O(%*[^()])%r,
 			    \%".pm."O%*[^()](%*[^()])%r,
@@ -1612,23 +1611,10 @@ function! <SID>SetErrorFormat(...)
 			    \%".pm."P\ %\\=(%f%r,
 			    \%".pm."P%*[^()](%f%r,
 			    \%".pm."P[%\\d%[^()]%#(%f%r"
-" 	if g:atp_ignore_unmatched && !g:atp_show_all_lines
-" 	    exec 'setlocal efm+=%-P%*[^()]' 
-" 	elseif l:dont_ignore
-" 	    exec 'setlocal efm+=%-P%*[^()]' 
-" 	endif
 	let &l:errorformat = &l:errorformat.",
 			    \%".pm."Q)%r,
 			    \%".pm."Q%*[^()])%r,
 			    \%".pm."Q[%\\d%*[^()])%r"
-" 	if g:atp_ignore_unmatched && !g:atp_show_all_lines
-" 	    let &l:errorformat = &l:errorformat.",%-Q%*[^()]"
-" 	elseif l:dont_ignore
-" 	    let &l:errorformat = &l:errorformat.",%+Q%*[^()]"
-" 	endif
-
-" 			    removed after GType
-" 			    \%-G\ ...%.%#,
     endif
     if l:cgetfile
 	try
