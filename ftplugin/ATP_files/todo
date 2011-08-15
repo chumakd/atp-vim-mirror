@@ -394,37 +394,30 @@ NEW FEATURE: DICTIONARY!!!
 
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
 
-Done: there is no imap for \times.
 ToDo: w b are not stopping at \
 	iskeyword is set somewhere after my options.vim script.
-Done: look at the note befor atplib#CheckBracket -> this might speed up closing brackets in atplib#TabCompletion.
-Done: Thinks if not restore the tikzpicture keyword completion mode.
-	I forgot that it is working but only in non expert mode!
-Done: <S-Tab> when closing brackets: put the cursor before the bracket, environment (leave the cursor where it was :)
-	This is done but only for closing brackets, not for closing \(:\), ... and envs.
 NOTE: b:atp_ProgressBar if is nonempty, the number start not from 1 (this was after using the :Kill command).
 Note: \refstepcounter is not handled well by syntax.vim \ref has syntax group texRefZone, while stepcounter not.
-Done: after :ReloadATP ]i, ]I and ]ite are  mixed, probably a problem with g:atp_imap_ShortEnvIMaps 
-	solution: entirely removed g:atp_imap_reload_variables
-Done: atplib#CheckBracket line 365 of hgt.tex:
-		\end{array}\right\}\label{eq:oz-1}\hypertarget{eq:oz-1}{<Tab> (is not closing!)
-		counting brackets might not always work! we should always stop counting on openning bracket.
 ToDo:  diacrtics maps could be defined only after certain letters - and the letters might be given in a variable.
 NOTE:  \({\lfoor X\rfloor<Tab> -- will close as should but also saves the file, why?
-	This is because atplib#LocalCommands is run python version saves the file, why vim version is not - doesn't need to - operate on the buffers!
-ToDo: $:$ are closed when they are closed.
-ToDo: \begin{env}\label{LABEL}\hypertarget{LABEL}{} aaa vip \end{env}
-	in normal mode is highlighting \hyperref command while it should not.
+	This is because atplib#LocalCommands is run python version saves the
+	file, why vim version is not - doesn't need to - operate on the
+	buffers!
+ToDo: $:$ are closed when they are already closed.
 Check: the last tab completions    "{{{3 --------- brackets, algorithmic, abbreviations, close environments
-Done: abbreviations should complete before brackets
 ToDo: if inside tikz env move tikz keywords/commands to the beginning
-Bug:  sometimes when using <Tab> the letter just before is put after completion. I have to restart vim.
+# Bug:  sometimes when using <Tab> the letter just before is put after completion. I have to restart vim.
 
-# Note: vim gonna have ]h, [h motions to next highlight group, can be used to
+# Note: vim will have ]h, [h motions to next highlight group, can be used to
 # go to errors, todo's, ... - there's discussion on vim_dev: started on 1 Aug 2011.
 
 Todo: completion for :EditInputFile shows twice xcolors.tex file. Makethe command short, like :Edit if it doesn't exists.
 Todo: vim \[...\] when acts on ] markes the next inner paragraph.
 
-Todo: vip \section[...]{...} .... <vip>  
-	is not stopped before the section command end.
+Todo: \section when spread along at least two lines.
+
+Todo: if there are no errors, efm should not show any line. Now it shows almost every line of the log file (but not all)
+	I need a good test that there are no errors!
+
+# Note: when a line in tikzpicture env is not ending with ; even if
+# nonstopmode switch is use pdflatex stops.

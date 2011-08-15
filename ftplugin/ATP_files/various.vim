@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Aug 09 11:00  2011 W
+" Last Change: Sat Aug 13 08:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -364,6 +364,11 @@ function! TexAlign()
 	let epat = '\\end\s*{\s*tabular\*\=\s*}' 
 	let AlignCtr = 'jl+ &'
 	let env = "tabular"
+    elseif searchpair('\\begin\s*{\s*table\s*\}', '', '\\end\s*{\s*table\s*}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
+	let bpat = '\\begin\s*{\s*table\*\=\s*}' 
+	let epat = '\\end\s*{\s*table\*\=\s*}' 
+	let AlignCtr = 'jl+ &'
+	let env = "table"
     else
 	return
     endif
@@ -378,6 +383,19 @@ function! TexAlign()
 	call cursor(bmatrix, bmatrix_col)
 	let eline = searchpair('{', '', '}', 'n')  - 1
 	call cursor(saved_pos[1], saved_pos[2])
+    endif
+
+    if g:atp_TexAlign_join_lines
+    " Join lines
+	execute bline . ',' . eline . 's/\(\\\\\s*\)\@<!\n//g'
+	if env != "matrix"
+	    let eline = searchpair(bpat, '', epat, 'cn')  - 1
+	else
+	    let saved_pos = getpos(".")
+	    call cursor(bmatrix, bmatrix_col)
+	    let eline = searchpair('{', '', '}', 'n')  - 1
+	    call cursor(saved_pos[1], saved_pos[2])
+	endif
     endif
 
     if bline <= eline
@@ -1987,6 +2005,7 @@ function! <SID>Dictionary(word)
 	let entry		= substitute(entry, '&#8805;', '≥', 'g')
 	let entry		= substitute(entry, '&#8804;', '≤', 'g')
 	let entry		= substitute(entry, '&#8721;\s*', '∑', 'g')
+	let entry		= substitute(entry, '&#960;', '⊓', 'g')
     else
 	let entry		= substitute(entry, '&#8594;', '->', 'g')
 	let entry		= substitute(entry, '&#8734;', '\infty ', 'g')
@@ -2001,6 +2020,7 @@ function! <SID>Dictionary(word)
     let g:entry=entry
     let entry_list	= split(entry, "\n")
     let i=0
+    redraw
     for line in entry_list
 	if i == 0
 	    echoh Title
@@ -2018,8 +2038,9 @@ function! <SID>Dictionary(word)
 "     let g:url		= url
     let g:wget_file 	= wget_file
 endfunction
+
 function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
-    let word_list = ['A', 'a,', 'an', 'across', 'afford', 'alternative', 'appear',
+    let word_list = [ 'across', 'afford', 'alternative', 'appear',
 \ 'ask', 'abbreviate', 'act', 'afield', 'alternatively', 'appearance', 'aspect',
 \ 'abbreviation', 'action', 'aforementioned', 'although', 'applicability', 'assert', 'able',
 \ 'actual', 'after', 'altogether', 'applicable', 'assertion', 'abound', 'actually',
@@ -2039,7 +2060,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'already', 'apart', 'arrangement', 'avoid', 'achieve', 'advantageous', 'also',
 \ 'apparatus', 'arrive', 'await', 'achievement', 'advent', 'alter', 'apparent',
 \ 'article', 'aware', 'acknowledge', 'affect', 'alternate', 'apparently', 'artificial',
-\ 'away', 'acquire', 'affirmative', 'alternately', 'appeal', 'as', 'B',
+\ 'away', 'acquire', 'affirmative', 'alternately', 'appeal', 'as', 
 \ 'back', 'be', 'behave', 'besides', 'bottom', 
 \ 'bring', 'background', 'bear', 'behaviour', 'best', 'bound', 'broad',
 \ 'backward(s)', 'because', 'behind', 'better', 'boundary', 'broadly', 'ball',
@@ -2047,7 +2068,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'believe', 'beware', 'break', 'but', 'basic', 'beforehand', 'belong',
 \ 'beyond', 'brevity', 'by', 'basically', 'begin', 'below', 'borrow',
 \ 'brief', 'bypass', 'basis', 'beginning', 'benefit', 'both', 'briefly',
-\ 'by-product', 'C', 'calculate', 'choose', 'commonly', 'concisely', 'constantly',
+\ 'by-product', 'calculate', 'choose', 'commonly', 'concisely', 'constantly',
 \ 'convert', 'calculation', 'circle', 'companion', 'conclude', 'constitute', 'convey',
 \ 'call', 'circumstances', 'compare', 'conclusion', 
 \ 'constraint', 'convince', 'can', 'circumvent', 'comparison', 'concrete', 'construct',
@@ -2071,7 +2092,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'convention', 'crucially', 'characterization', 'come', 'concept', 'considerably', 'converge',
 \ 'cumbersome', 'characterize', 'commence', 'conceptually', 'consideration', 'convergence', 'curiously',
 \ 'check', 'comment', 'concern', 'consist', 'converse', 'customary', 'choice',
-\ 'common', 'concise', 'constant', 'conversely', 'cut', 'D', 'data',
+\ 'common', 'concise', 'constant', 'conversely', 'cut', 'data',
 \ 'definiteness', 'derive', 'differ', 'discussion', 'dominate', 'date', 'definition',
 \ 'describe', 'difference', 'disjoint', 'doomed', 'deal', 'degree', 'description',
 \ 'different', 'disparate', 'double', 'decay', 'delete', 'deserve', 'differently',
@@ -2085,7 +2106,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'due', 'deep', 'dependent', 'development', 'disadvantage', 'distribution', 'duration',
 \ 'default', 'depict', 'device', 'disappear', 'divide', 'during', 'defer',
 \ 'depth', 'devote', 'discover', 'do', 'define', 'derivation', 'diameter',
-\ 'discuss', 'document', 'E', 'each', 'embrace', 'entirely', 'establish',
+\ 'discuss', 'document', 'each', 'embrace', 'entirely', 'establish',
 \ 'exception', 'explicit', 'ease', 'emerge', 'entry', 'establishment', 'exceptional',
 \ 'explicitly', 'easily', 'emphasis', 'enumerate', 'estimate', 'exercise', 'exploit',
 \ 'easy', 'emphasize', 'enumeration', 'estimation', 'exchange', 'exploration', 'effect',
@@ -2102,7 +2123,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'ensure', 'especially', 'examine', 'expense', 'extract', 'elsewhere', 'entail',
 \ 'essence', 'example', 'explain', 'extreme', 'embed', 'enter', 'essential',
 \ 'exceed', 'explanation', 'embedding', 'entire', 'essentially', 'except', 'explication',
-\ 'F', 'fact', 'fashion', 'finally', 'follow', 'formulation', 'from',
+\ 'fact', 'fashion', 'finally', 'follow', 'formulation', 'from',
 \ 'factor', 'fast', 'find', 'for', 'fortunately', 'fulfil', 'fail',
 \ 'feasible', 'fine', 'force', 'forward', 'full', 'fairly', 'feature',
 \ 'finish', 'foregoing', 'foundation', 'fully', 'fall', 'fellowship', 'first',
@@ -2110,15 +2131,15 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'framework', 'further', 'false', 'field', 'fix', 'formally', 'free',
 \ 'furthermore', 'familiar', 'figure', 'focus', 'former', 'freedom', 'futile',
 \ 'family', 'fill', '-fold', 'formula', 'freely', 'future', 'far',
-\ 'final', 'folklore', 'formulate', 'frequently', 'G', 'gain', 'generality',
+\ 'final', 'folklore', 'formulate', 'frequently', 'gain', 'generality',
 \ 'generate', 'glue', 'grasp', 'ground', 'gap', 'generalization', 'get',
 \ 'go', 'grateful', 'grow', 'gather', 'generalize', 'give', 'good',
 \ 'gratefully', 'growth', 'general', 'generally', 'glance', 'grant', 'great',
-\ 'guarantee', 'H', 'half', 'hardly', 'heavy', 'here', 'hinder',
+\ 'guarantee', 'half', 'hardly', 'heavy', 'here', 'hinder',
 \ 'hospitality', 'hand', 'harm', 'help', 'hereafter', 'hold', 'how',
 \ 'handle', 'have', 'helpful', 'heuristic', 'hope', 'however', 'happen',
 \ 'heart', 'hence', 'high', 'hopeless', 'hypothesis', 'hard', 'heavily',
-\ 'henceforth', 'highly', 'hopelessly', 'I', 'idea', 'importance', 'independence',
+\ 'henceforth', 'highly', 'hopelessly', 'idea', 'importance', 'independence',
 \ 'informally', 'integrate', 'introduction', 'identical', 'important', 'independent', 'information',
 \ 'integration', 'intuition', 'identify', 'impose', 'independently', 'informative', 'intend',
 \ 'intuitively', 'identity', 'impossible', 'indeterminate', 'ingredient', 'intention', 'invalid',
@@ -2135,16 +2156,16 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'intimately', 'issue', 'implementation', 'increase', 'infinite', 'institution', 'into',
 \ 'it', 'implication', 'indebt', 'infinitely', 'integer', 'intricate', 'item',
 \ 'implicit', 'indeed', 'infinity', 'integrable', 'intrinsic', 'iterate', 'imply',
-\ 'indefinitely', 'influence', 'integral', 'introduce', 'itself', 'J', 'job',
-\ 'join', 'just', 'justify', 'juxtaposition', 'K', 'keep', 'key',
-\ 'kind', 'know', 'knowledge', 'L', 'label', 'latter', 'lemma',
+\ 'indefinitely', 'influence', 'integral', 'introduce', 'itself', 'job',
+\ 'join', 'just', 'justify', 'juxtaposition', 'keep', 'key',
+\ 'kind', 'know', 'knowledge', 'label', 'latter', 'lemma',
 \ 'lie', 'link', 'lose', 'lack', 'lay', 'lend', 'light',
 \ 'list', 'loss', 'language', 'lead', 'length', 'like', 'literature',
 \ 'lot', 'large', 'learn', 'lengthy', 'likely', 'little', 'low',
 \ 'largely', 'least', 'less', 'likewise', 'locate', 'lower', 'last',
 \ 'leave', 'let', 'limit', 'location', 'lastly', 'left', 'letter',
 \ 'limitation', 'long', 'late', 'legitimate', 'level', 'line', 'look',
-\ 'M', 'machinery', 'many', 'meaningful', 'middle', 'model', 'most',
+\ 'machinery', 'many', 'meaningful', 'middle', 'model', 'most',
 \ 'magnitude', 'map', 'meaningless', 'might', 'moderate', '-most', 'main',
 \ 'mark', 'means', 'mild', 'modification', 'mostly', 'mainly', 'match',
 \ 'measure', 'mimic', 'modify', 'motivate', 'maintain', 'material', 'meet',
@@ -2155,13 +2176,13 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'may', 'merely', 'miss', '-morphic', 'multiply', 'manipulate', 'mean',
 \ 'merit', 'mistake', '-morphically', 'must', 'manner', 'meaning', 'method',
 \ 'mnemonic', '-morphism', 
-\ 'mutatis', 'mutandis', 'N', 'name', 'nearby', 'need', 'next',
+\ 'mutatis', 'mutandis', 'name', 'nearby', 'need', 'next',
 \ 'norm', 'notice', 'namely', 'nearly', 'negative', 'nice', 'normally',
 \ 'notion', 'narrowly', 'neat', 'neglect', 'nicety', 'not', 'novelty',
 \ 'natural', 'necessarily', 'negligible', 'no', 'notably', 'now', 'naturally',
 \ 'necessary', 'neither', 'non-', 'notation', 'nowhere', 'nature', 'necessitate',
 \ 'never', 'none', 'note', 'number', 'near', 'necessity', 'nevertheless',
-\ 'nor', 'nothing', 'numerous', 'O', 'obey', 'occasion', 'omission',
+\ 'nor', 'nothing', 'numerous', 'obey', 'occasion', 'omission',
 \ 'opposite', 'ought', 'overall', 'object', 'occasionally', 'omit', 'or',
 \ 'out', 'overcome', 'objective', 'occur', 'on', 'order', 'outcome',
 \ 'overlap', 'obscure', 'occurrence', 'once', 'organization', 'outline', 'overlook',
@@ -2170,7 +2191,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'onwards', 'original', 'outset', 'own', 'obstruction', 'offer', 'open',
 \ 'originally', 'outside', 'obtain', 'offset', 'operate', 'originate', 'outstanding',
 \ 'obvious', 'often', 'opportunity', 'other', 'outward(s)', 'obviously', 'old',
-\ 'oppose', 'otherwise', 'over', 'P', 'page', 'penultimate', 'plain',
+\ 'oppose', 'otherwise', 'over', 'page', 'penultimate', 'plain',
 \ 'preassign', 'previous', 'project', 
 \ 'pair', 'percent', 'plausible', 'precede', 'previously', 'promise', 'paper',
 \ 'percentage', 'play', 'precise', 'price', 'prompt', 'paragraph', 'perform',
@@ -2188,8 +2209,8 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'pick', 'potential', 'presentation', 'professor', 'pursue', 'path', 'picture',
 \ 'power', 'preserve', 'profound', 'push', 'pattern', 'piece', 'practically',
 \ 'presume', 'profusion', 'put', 'peculiar', 'place', 'practice', 'prevent',
-\ 'progress', 'Q', 'quality', 'quantity', 'quickly', 'quote', 'quantitative',
-\ 'question', 'quite', 'R', 'radius', 'rearrangement', 'referee', 'remainder',
+\ 'progress', 'quality', 'quantity', 'quickly', 'quote', 'quantitative',
+\ 'question', 'quite', 'radius', 'rearrangement', 'referee', 'remainder',
 \ 'requirement', 'reverse', 'raise', 'reason', 'reference', 'remark', 'requisite',
 \ 'revert', 'random', 'reasonable', 'refine', 'remarkable', 'research', 'review',
 \ 'range', 'reasonably', 'refinement', 'remarkably', 'resemblance', 'revise',
@@ -2209,7 +2230,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'relevant', 'report', 'retain', 'rudimentary', 'realize', 'reduction', 'reliance',
 \ 'represent', 'retrieve', 'rule', 'really', 'redundant', 'rely', 'representative',
 \ 'return', 'run', 'rearrange', 'refer', 'remain', 'require', 'reveal',
-\ 'S', '''s', 'sequence', 'simplicity', 'specify', 'study', 'suggest',
+\ 'sequence', 'simplicity', 'specify', 'study', 'suggest',
 \ 'sacrifice', 'serious', 'simplify', 'spirit', 'subdivide', 'suggestion', 'sake',
 \ 'serve', 'simply', 'split', 'subject', 'suit', 'same', 'set',
 \ 'simultaneously', 'square', 'subordinate', 'suitable', 'satisfactory', 'setting', 'since',
@@ -2235,7 +2256,7 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'such', 'systematically', 'sensitive', 'similar', 'special', 'strive', 'suffice',
 \ 'separate', 'similarity', 'specialize', 'stroke', 'sufficiency', 'separately', 'similarly',
 \ 'specific', 'strong', 'sufficient', 'sequel', 'simple', 'specifically', 
-\ 'structure', 'sufficiently', 'T', 'table', 'tempt', 'theorem', 'three',
+\ 'structure', 'sufficiently', 'table', 'tempt', 'theorem', 'three',
 \ 'towards', 'truncate', 'tabulate', 'tend', 'theory', 'through', 'tractable',
 \ 'truth', 'tacit', 'tentative', 'there', 'throughout', 'transfer', 'try',
 \ 'tacitly', 'term', 'thereafter', 'thus', 'transform', 'turn', 'take',
@@ -2247,27 +2268,28 @@ function! Complete_Dictionary(ArgLead, CmdLine, CursorPos)
 \ 'technology', 'thanks', 'third', 'tool', 'trivial', 'typically', 'tedious',
 \ 'that', 'this', 'top', 'triviality', 'tell', 'the', 'thorough',
 \ 'topic', 'trivially', 'temporarily', 'theme', 'those', 'total', 'trouble',
-\ 'temporary', 'then', 'though', 'touch', 'true', 'U', 'ultimate',
+\ 'temporary', 'then', 'though', 'touch', 'true', 'ultimate',
 \ 'underlie', 'uniformly', 'unity', 'unresolved', 'useful', 'unaffected', 'underline',
 \ 'unify', 'university', 'until', 'usefulness', 'unaware', 'understand', 'unimportant',
 \ 'unless', 'unusual', 'usual', 'unchanged', 'undertake', 'union', 'unlike',
 \ 'up', 'usually', 'unclear', 'undesirable', 'unique', 'unlikely', 'upon',
 \ 'utility', 'under', 'unfortunately', 'uniquely', 'unnecessarily', 'upper', 'utilize',
-\ 'undergo', 'uniform', 'unit', 'unnecessary', 'use', 'V', 'vacuous',
+\ 'undergo', 'uniform', 'unit', 'unnecessary', 'use', 'vacuous',
 \ 'valuable', 'variation', 'verification', 'view', 'vacuously', 'value', 'variety',
 \ 'verify', 'viewpoint', 'valid', 'vanish', 'various', 'version', 'violate',
 \ 'validate', 'variable', 'variously', 'very', 'visit', 'validity', 'variant',
-\ 'vary', 'via', 'visualize', 'W', 'want', 'well', 'whenever',
+\ 'vary', 'via', 'visualize', 'want', 'well', 'whenever',
 \ 'while', '-wise', 'word', 'warrant', 'were', 'where', 'whole',
 \ 'wish', 'work', 'way', 'what', 'whereas', 'wholly', 'with',
 \ 'worth', 'weak', 'whatever', 'wherever', 'whose', 'within', 'would',
 \ 'weaken', 'whatsoever', 'whether', 'why', 'without', 'write', 'weakness',
 \ 'when', 'which', 'wide', 'witness', 'wealth', 'whence', 'whichever',
-\ 'widely', 'wonder', 'Y', 'year', 'yet', 'yield', 'Z', 'zero']
+\ 'widely', 'wonder', 'year', 'yet', 'yield', 'zero']
     return join(word_list, "\n")
 endfunction
 
-function! <SID>MakeListofWords(ArgLead, CmdLine, CursorPos)
+function! MakeListOfWords()
+    echo "[ATP:] This takes a while ..."
     let word_list 	= []
     let loclist		= getloclist(0)
     let wget_file 	= tempname()
@@ -2287,15 +2309,11 @@ function! <SID>MakeListofWords(ArgLead, CmdLine, CursorPos)
 	for line in file
 	    call extend(word_list, split(line, '\s\+'))
 	endfor
-" 	let g:file		= file
 
     endfor
 
     let g:word_list		= word_list
-    let g:url		= url
-    let g:wget_file 	= wget_file
-    let g:cmd		= cmd
-    return 
+    return word_list
 endfunction
 "}}}
 
@@ -2825,6 +2843,7 @@ endif "}}}
 
 " COMMANDS AND MAPS:
 " Maps: "{{{1
+nmap <buffer> <silent> <Plug>Dictionary				:call <SID>Dictionary(expand("<cword>"))<CR>
 map <buffer> <Plug>CommentLines					:call Comment(1)<CR>
 map <buffer> <Plug>UnCommentLines 				:call Comment(0)<CR>
 vmap <buffer> 	<Plug>WrapSelection				:<C-U>call <SID>WrapSelection('')<CR>i
