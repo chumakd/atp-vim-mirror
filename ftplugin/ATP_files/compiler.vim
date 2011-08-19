@@ -269,6 +269,16 @@ function! <SID>SyncTex(bang, mouse, ...)
 	if g:atp_debugSyncTex
 	    silent echo "sync_cmd=".sync_cmd
 	endif
+    elseif b:atp_Viewer == "skim"
+	let [ page_nr, y_coord, x_coord ] = <SID>GetSyncData(line, col)
+	let sync_cmd = "displayline ".line." ".shellescape(expand("%:p:r")).".pdf ".shellescape(expand("%:p"))." &"
+	if !dryrun
+	    call system(sync_cmd)
+	    call <SID>SyncShow(page_nr, y_coord)
+	endif
+	if g:atp_debugSyncTex
+	    silent echo "sync_cmd=".sync_cmd
+	endif
 "     elseif b:atp_Viewer == "evince"
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
@@ -328,7 +338,9 @@ for pr in ps_list:
 			latex_pid=pr
 			latex_running=True
 			break
-	except psutil.NoSuchProcess:
+	except psutil.error.NoSuchProcess:
+		pass
+	except psutil.error.AccessDenied:
 		pass
 
 if latex_running:
@@ -601,6 +613,8 @@ for pid in psutil.get_pid_list():
         if x:
             break
     except psutil.error.NoSuchProcess:
+        pass
+    except psutil.error.AccessDenied:
         pass
 vim.command("let s:running="+str(x))
 EOF
@@ -1584,12 +1598,6 @@ function! <SID>SetErrorFormat(...)
 
 	let &l:errorformat = &l:errorformat.",
 		    	    \%Zl.%l\ %m,
-			    \%".pm."C\\s%#%m,
-			    \%".pm."C%.%#-%.%#,
-			    \%".pm."C%.%#[]%.%#,
-			    \%".pm."C[]%.%#,
-			    \%".pm."C%.%#%[{}\\]%.%#,
-			    \%".pm."C<%.%#>%.%#,
 			    \%-ZI've inserted%.%#,
 			    \%-ZThe control sequence%.%#,
 			    \%-ZYour command was ignored%.%#,
@@ -1598,7 +1606,14 @@ function! <SID>SetErrorFormat(...)
 			    \%-ZSee LaTeX%.%#,
 			    \%-ZA number should have been here%.%#,
 			    \%-ZI'm ignoring this;%.%#,
+			    \%-ZI suspect you've forgotten%.%#,
 			    \%-ZType\ \ H\ <return>%m,
+			    \%".pm."C\\s%#%m,
+			    \%".pm."C%.%#-%.%#,
+			    \%".pm."C%.%#[]%.%#,
+			    \%".pm."C[]%.%#,
+			    \%".pm."C%.%#%[{}\\]%.%#,
+			    \%".pm."C<%.%#>%.%#,
 			    \%-G ...%.%#,
 			    \%-G%.%#\ (C)\ %.%#,
 			    \%-G(see\ the\ transcript%.%#),

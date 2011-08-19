@@ -285,7 +285,6 @@ function! RemoveFromToC(file)
     else
 	let which = fnamemodify(a:file, ":p")
     endif
-    let g:which = which
 
     if which != ""
 	silent! call remove(t:atp_toc_buflist,index(t:atp_toc_buflist, which))

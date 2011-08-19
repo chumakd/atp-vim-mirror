@@ -1,5 +1,5 @@
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.2
+VERSION = 10.3
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
@@ -34,6 +34,7 @@ SOURCE += ftplugin/ATP_files/packages/amsmath.vim
 SOURCE += ftplugin/ATP_files/packages/babel.vim
 SOURCE += ftplugin/ATP_files/packages/beamer.vim
 SOURCE += ftplugin/ATP_files/packages/biblatex.vim
+SOURCE += ftplugin/ATP_files/packages/bibunits.vim
 SOURCE += ftplugin/ATP_files/packages/caption.vim
 SOURCE += ftplugin/ATP_files/packages/cancel.vim
 SOURCE += ftplugin/ATP_files/packages/cite.vim

@@ -954,6 +954,7 @@ if !exists("g:ViewerMsg_Dict")
 		\ 'xdvi'		: 'Xdvi',
 		\ 'kpdf'		: 'Kpdf',
 		\ 'okular'		: 'Okular', 
+		\ 'skim'		: 'Skim', 
 		\ 'evince'		: 'Evince',
 		\ 'acroread'		: 'AcroRead',
 		\ 'epdfview'		: 'epdfView' }
@@ -2485,6 +2486,9 @@ endfunction
     augroup END
 
     function! <SID>BufEnterCgetfile()
+	if !exists("b:atp_ErrorFormat")
+	    return
+	endif
 	if g:atp_cgetfile 
 	    try
 		cgetfile
@@ -2745,7 +2749,7 @@ function! <SID>Viewer(...)
 endfunction
 command! -buffer -nargs=? -complete=customlist,ViewerComp Viewer	:call <SID>Viewer(<q-args>)
 function! ViewerComp(A,L,P)
-    let view = [ 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
+    let view = [ 'skim', 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
 		\  'AcroRd32.exe', 'sumatrapdf.exe' ]
     " The names of Windows programs (second line) might be not right [sumatrapdf.exe (?)].
     call filter(view, "v:val =~ '^' . a:A")

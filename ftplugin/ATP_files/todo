@@ -411,7 +411,7 @@ ToDo: if inside tikz env move tikz keywords/commands to the beginning
 # Note: vim will have ]h, [h motions to next highlight group, can be used to
 # go to errors, todo's, ... - there's discussion on vim_dev: started on 1 Aug 2011.
 
-Todo: completion for :EditInputFile shows twice xcolors.tex file. Makethe command short, like :Edit if it doesn't exists.
+Todo: completion for :EditInputFile shows twice xcolors.tex file.
 Todo: vim \[...\] when acts on ] markes the next inner paragraph.
 
 Todo: \section when spread along at least two lines.
@@ -421,3 +421,17 @@ Todo: if there are no errors, efm should not show any line. Now it shows almost 
 
 # Note: when a line in tikzpicture env is not ending with ; even if
 # nonstopmode switch is use pdflatex stops.
+
+Add support for bibunits package in makelatex.py and also for its options.
+
+GotoFile should check if the file type is set or set it: apv.tex GotoFile input/inputlast.tex
+	(this was not reproduced. Should be tested.)
+
+Done: :S should set alternate file if it was not set.
+Bug:	When :S enters new buffer an error appears: E15: Invalid expression:
+	(even twice, the invalid expression is not written).
+	this is not autocommand problem (eventignore=all is not solving the problem)
+
+Done: disable #a after \,i.e. \#a
+Todo: _bf map when applied in first column (with some white spaces before! the space is lost - virtual column)
+Todo: there is no \varepsilon map (used to be #ve - interfering with \vee )

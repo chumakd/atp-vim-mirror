@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 15 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 19 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10)
 			by Marcin Szamotulski
@@ -163,6 +163,11 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.2
 <
+  Skim (MacOS)                  -- support for "Skim" added (forward search)
+                                   [thanks to Florian Heiderich].
+                                   Read the necessary steps in |atp-Viewers-Skim|.
+
+
   :Dictionary {word}		-- an interface to http://www.impan.pl/Dictionary/.
   					see |atp-:Dictionary| (with map =d
 					using |<cword>| under the cursor).
@@ -1232,7 +1237,7 @@ map t, map <S-LeftMouse>
 	Xpdf and Xdvi with this feature (Evince is not yet supported).
 
 	Note: you can also set reverse search for Okular and Xdvi, see
-	|atp-viewers-Okular| and |atp-viewers-Xdvi| for an instruction how to
+	|atp-Viewers-Okular| and |atp-Viewers-Xdvi| for an instruction how to
 	do that. Xpdf doesn't support reverse searching.
 
 							*atp-:SyncTex_Xpdf-hack*
@@ -4780,6 +4785,14 @@ Okular
 	The project files which are split into many input files are not yet
 	supported.
 	
+                                                                *atp-Viewers-Skim*
+Skim
+        To enable forward searching (vim --> Skim) you need to:
+        (1) download the skript: http://links.tedpavlic.com/shell_scripts/skim
+            put it somewhere in your $PATH and make executable.
+        (2) make a symbolic link of:
+            /Applications/Skim.app/Contents/SharedSupport/displayline
+            (or whereever Skim is installed) somewhere in the $PATH.
 
 Kpdf
 	Works fine (moves page a little bit when updates a file).
@@ -5049,4 +5062,4 @@ COPY RIGHTS							*atp-copy-rights*
 <   where taken from latex-suite Vim plugin and are under Vim charity
     |license|.
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.2)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
