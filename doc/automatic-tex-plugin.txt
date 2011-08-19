@@ -4741,6 +4741,11 @@ Okular
 		map t
 		map <S-LeftMouse>
 <	Here is how to CONFIGURE REVERSE SEARCHING (Okular->Vim): 
+
+								*atp_RevSearch.py*
+						    This section desribes how to set atp_RevSearch for Okular,
+						    but similar steps will work for other viewers as well.
+								 
 	open Okular and go to >
 		settings>Configure Okular>Editor
 <	and set >
@@ -4756,6 +4761,14 @@ Okular
 	Note, that otherwise whenever you update ATP you will have to make the
 	script executable!
 
+	|atp_RevSearch.py| can also handle column argument. If your viewer
+	support it (Okular does not) you can pass it as a third argument, i.e. >
+	atp_RevSearch.py '%f' '%l' '%c'
+<
+	By default |atp_RevSearch.py| will use gvim, if you prefer to use vim
+	instead you can add "--vim" switch: i.e. set >
+		Command		python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --vim '%f' '%l'
+<
 	If it is not working for you, please report it, you can also
 	use: >
 	    gvim --remote-wait +%l "+normal %c|" %f

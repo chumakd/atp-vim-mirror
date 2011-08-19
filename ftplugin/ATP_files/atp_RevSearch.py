@@ -22,33 +22,44 @@
 # DEBUG:
 # debug file : /tmp/atp_RevSearch.debug
 
-import subprocess, sys, re
+import subprocess, sys, re, optparse
+from optparse import OptionParser
+
+usage   = "usage: %prog [options]"
+parser  = OptionParser(usage=usage)
+parser.add_option("--vim", dest="vim", action="store_false", default=True)
+(options, args) = parser.parse_args()
+if options.vim:
+    progname = "gvim"
+else:
+    progname = "vim"
 
 f = open('/tmp/atp_RevSearch.debug', 'w')
 
 # Get list of vim servers.
-output = subprocess.Popen(["gvim", "--serverlist"], stdout=subprocess.PIPE)
+output = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
 servers = output.stdout.read().decode()
 match=re.match('(.*)(\\\\n)?', servers)
 # Get the column (it is an optional argument)
-if (len(sys.argv) >= 4 and int(sys.argv[3]) > 0):
-	column = str(sys.argv[3])
+if (len(args) >= 3 and int(args[2]) > 0):
+	column = str(args[2])
 else:
 	column = str(1)
 
-f.write(">>> args "+sys.argv[1]+":"+sys.argv[2]+":"+column+"\n")
+f.write(">>> args "+args[0]+":"+args[1]+":"+column+"\n")
 
 if match != None:
 	servers=match.group(1)
 	server_list=servers.split('\\n')
 	server = server_list[0]
 	# Call atplib#FindAndOpen()     
-	cmd="gvim --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+sys.argv[1]+"','"+sys.argv[2]+"','"+column+"')\""
+	cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+args[0]+"','"+args[1]+"','"+column+"')\""
+        print(cmd)
 	subprocess.call(cmd, shell=True)
 # Debug:
 f.write(">>> output      "+str(servers)+"\n")
 if match != None:
-	f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
+	f.write(">>> file        "+args[0]+"\n>>> line        "+args[1]+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
 else:
-	f.write(">>> file        "+sys.argv[1]+"\n>>> line        "+sys.argv[2]+"\n>>> column      "+column+"\n>>> server       not found\n")
+	f.write(">>> file        "+args[0]+"\n>>> line        "+args[1]+"\n>>> column      "+column+"\n>>> server       not found\n")
 f.close()
