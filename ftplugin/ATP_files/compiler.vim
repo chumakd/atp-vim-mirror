@@ -242,6 +242,7 @@ function! <SID>SyncTex(bang, mouse, ...)
 	    return
 	endif
     endif
+
     if b:atp_Viewer == "xpdf"
 	let [ page_nr, y_coord, x_coord ] = <SID>GetSyncData(line, col)
 	let sync_cmd_page = "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
@@ -595,6 +596,13 @@ endfunction
 " a:file should be full path to the file.
 " {{{ IsRunning
 function! <SID>IsRunning(program, file, ...)
+    " Since there is an issue in psutil on OS X, we cannot run this function:
+    " http://code.google.com/p/psutil/issues/detail?id=173
+    " Reported by F.Heiderich.
+    if has("mac") || has("gui_mac")
+	let s:running=1
+	return s:running
+    endif
 python << EOF
 import vim, psutil, os, pwd
 from psutil import NoSuchProcess
@@ -607,7 +615,7 @@ for pid in psutil.get_pid_list():
         p=psutil.Process(pid)
         if p.username == pwd.getpwuid(os.getuid())[0] and re.search(program, p.cmdline[0]):
             for arg in p.cmdline:
-                if arg == f or re.search(pat, arg) :
+                if arg == f or re.search(pat, arg):
                     x=1
                     break
         if x:
