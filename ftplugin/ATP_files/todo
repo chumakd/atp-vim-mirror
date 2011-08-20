@@ -435,3 +435,7 @@ Bug:	When :S enters new buffer an error appears: E15: Invalid expression:
 Done: disable #a after \,i.e. \#a
 Todo: _bf map when applied in first column (with some white spaces before! the space is lost - virtual column)
 Todo: there is no \varepsilon map (used to be #ve - interfering with \vee )
+Todo: \(\Sub(V={V^*}^*<Tab>)\) -> \(\Sub(V={V^*}^*\))\)
+
+Todo: there are now two function which check if math is closed: atplib#CheckClosed_syntax() and atplib#CheckInlineMath()
+    I should compare them and use the faster and more accurate one.

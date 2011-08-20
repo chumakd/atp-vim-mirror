@@ -2339,6 +2339,23 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
     endif
 endfunction
 " }}}1
+" atplib#CheckClosed_syntax {{{1
+" This function checks if a syntax group ends.
+" Returns 1 if the syntax group ends before a:limit_line, a:limit_col line (last character is included).
+function! atplib#CheckClosed_syntax(syntax,limit_line, limit_col)
+    let whichwrap	= &whichwrap
+    setl whichwrap+=l
+    let line		= line(".")
+    let col		= col(".")
+    let test		= atplib#CheckSyntaxGroups(a:syntax)
+    while ( line(".") < a:limit_line || line(".") == a:limit_line && col(".") <= a:limit_col ) && test
+	normal! l
+	let test	= atplib#CheckSyntaxGroups(a:syntax)
+    endwhile
+    call cursor(line, col)
+    return !test
+endfunction
+" }}}1
 " atplib#CheckOpened {{{1
 " Usage: By default (a:0 == 0 || a:1 == 0 ) it returns line number where the
 " environment is opened if the environment is opened and is not closed (for
@@ -3971,26 +3988,47 @@ function! atplib#GetBracket(append,...)
     let time=reltime()
     let pos=getpos(".")
     let begParen = ( a:0 >=2 ? a:2 : atplib#CheckBracket(g:atp_bracket_dict) )
-    if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) || ( a:0 >= 1 && a:1 )
+    if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY', 'texMathZoneV', 'texMathZoneW']) || ( a:0 >= 1 && a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
+	    let syntax	= ['texMathZoneV']
+	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
 	    let pattern = '\\\@<!\\\[\zs'
+	    let syntax	= ['texMathZoneW']
+	    let limit	= g:atp_completion_limits[1]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
 	    let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
+	    let syntax	= ['texMathZoneX']
+	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
 	    let pattern = '\\\@<!\$\$\zs'
+	    let syntax	= ['texMathZoneY']
+	    let limit	= g:atp_completion_limits[1]
 	else
 	    let pattern = ''
 	endif
+	let g:pattern = pattern
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
-	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone)
+	    let closed_syntax	= !atplib#CheckClosed_syntax(syntax, begMathZone[0], begMathZone[1]-1)
+" 	    let g:closed_syntax	= closed_syntax
+" 	    let g:debug=-1
+" 	    let g:begMathZone = begMathZone
+" 	    let g:begParen_2=begParen
+	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && !closed_syntax
+" 		let g:debug=1
+		" I should close it if math is not closed.
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
-	    else
+	    elseif atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
+" 		let g:debug=2
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
+	    else
+" 		let g:debug=3
+		let bracket = "0"
 	    endif
 	else
+" 	    let g:debug=4
 	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	endif
 	call setpos(".", pos)
@@ -4180,7 +4218,6 @@ function! atplib#TabCompletion(expert_mode,...)
 	\ !normal_mode &&
 	\ ( search('\%(\\def\>.*\|\\\%(re\)\?newcommand\>.*\|%.*\)\@<!\\begin{tikzpicture}','bnW') > search('[^%]*\\end{tikzpicture}','bnW') ||
 	\ !atplib#CompareCoordinates(searchpos('[^%]*\zs\\tikz{','bnw'),searchpos('}','bnw')) )
-	let g:debug = 1
 	"{{{4 ----------- tikzpicture keywords
 	if l =~ '\%(\s\|\[\|{\|}\|,\|\.\|=\|:\)' . tbegin . '$' &&
 		    \ !a:expert_mode
@@ -4359,8 +4396,11 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 	    let completion_method = 'brackets'
-	    let b:comp_method='brackets'
+	    let b:comp_method='brackets X'
+	    let g:begParen=begParen
+	    let g:append=append
 	    let bracket=atplib#GetBracket(append, 0, begParen)
+	    let g:bracket_tc=bracket
 	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
 	    return bracket.move
@@ -4411,8 +4451,9 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    let stopline_backward	= max([ 1, line(".") - g:atp_completion_limits[2]])
 
 	    let line_nr=line(".")
+	    let pos_saved=getpos(".")
 	    while line_nr >= stopline_backward
-		let line_nr 		= searchpair('\\begin\s*{', '', '\\end\s*{', 'bnW', 'strpart(getline("."), 0, col(".")-1) =~ "\\\\\\@<!%"', stopline_backward)
+		let [ line_nr, col_nr ] = searchpairpos('\\begin\s*{', '', '\\end\s*{', 'bW', 'strpart(getline("."), 0, col(".")-1) =~ "\\\\\\@<!%"', stopline_backward)
 		if line_nr >= stopline_backward
 		    let env_name	= matchstr(getline(line_nr), '\\begin\s*{\zs[^}]*}\ze}')
 		    if env_name		=~# '^\s*document\s*$' 
@@ -4423,11 +4464,12 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 		    if line_forward == 0
 			break
 		    endif
-			
 		else
 		    let line_nr = 0
+		    break
 		endif
 	    endwhile
+	    call cursor(pos_saved[1], pos_saved[2])
 
 	    if line_nr
 	    " the env_name variable might have wrong value as it is
