@@ -3732,7 +3732,7 @@ function! atplib#CheckBracket(bracket_dict)
 " 		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-		    \ pos[1]-g:atp_completion_limits[4], 1, 2*g:atp_completion_limits[4],2) == '0'
+		    \ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2) == '0'
 " 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
 " 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 " 		    \ pos[1], 1, 2*g:atp_completion_limits[4],2) == '0'
@@ -4396,7 +4396,7 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 	    let completion_method = 'brackets'
-	    let b:comp_method='brackets X'
+	    let b:comp_method='brackets'
 	    let g:begParen=begParen
 	    let g:append=append
 	    let bracket=atplib#GetBracket(append, 0, begParen)
