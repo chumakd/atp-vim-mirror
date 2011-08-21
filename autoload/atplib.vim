@@ -2339,21 +2339,83 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
     endif
 endfunction
 " }}}1
+" {{{1 atplib#CheckClosed_math
+" This functions makes a test if in line math is closed. This works well with
+" \(:\) and \[:\] but not yet with $:$ and $$:$$.  
+" a:mathZone	= texMathZoneV or texMathZoneW or texMathZoneX or texMathZoneY
+" The function return 1 if the mathZone is not closed 
+function! atplib#CheckClosed_math(mathZone)
+    let time 		= reltime()
+    let synstack	= map(synstack(line("."), max([1, col(".")-1])), "synIDattr( v:val, 'name')")
+    let check		= 0
+    let patterns 	= { 
+		\ 'texMathZoneV' : [ '\\\@<!\\(', 	'\\\@<!\\)' 	], 
+		\ 'texMathZoneW' : [ '\\\@<!\\\[', 	'\\\@<!\\\]'	]}
+    " Limit the search to the first \par or a blank line, if not then search
+    " until the end of document:
+    let stop_line	= search('\\par\|^\s*$', 'nW') - 1
+    let stop_line	= ( stop_line == -1 ? line('$') : stop_line )
+
+    " \(:\), \[:\], $:$ and $$:$$ do not accept blank lines, thus we can limit
+    " searching/counting.
+    
+    " For \(:\) and \[:\] we use searchpair function to test if it is closed or
+    " not.
+    if (a:mathZone == 'texMathZoneV' || a:mathZone == 'texMathZoneW') && atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW'])
+	if index(synstack, a:mathZone) != -1
+	    let condition = searchpair( patterns[a:mathZone][0], '', patterns[a:mathZone][1], 'cnW', '', stop_line)
+	    let check 	  = ( !condition ? 1 : check )
+	else
+	    if g:atp_debugCheckClosed_math
+		echoerr "[ATP:] synstack() error"
+	    endif
+	    let check	  = 1
+	endif
+
+    " $:$ and $$:$$ we are counting $ untill blank line or \par
+    " to test if it is closed or not, 
+    " then we return the number of $ modulo 2.
+    elseif ( a:mathZone == 'texMathZoneX' || a:mathZone == 'texMathZoneY' ) && atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
+	let saved_pos	= getpos(".")
+	let line	= line(".")	
+	let l:count	= 0
+	" count \$ if it is under the cursor
+	if search('\\\@<!\$', 'Wc', stop_line)
+	    let l:count += 1
+	endif
+	while line <= stop_line && line != 0
+	    keepjumps let line	= search('\\\@<!\$', 'W', stop_line)
+	    let l:count += 1
+	endwhile
+	keepjumps call setpos(".", saved_pos)
+	let check	= l:count%2
+    endif
+
+    let g:time_CheckClosed_math=reltimestr(reltime(time))
+    return check
+endfunction
 " atplib#CheckClosed_syntax {{{1
 " This function checks if a syntax group ends.
-" Returns 1 if the syntax group ends before a:limit_line, a:limit_col line (last character is included).
+" Returns 1 if the syntax group doesn't ends before a:limit_line, a:limit_col line (last character is included).
+"
+" Note, this function is slower than atplib#CheckClosed_math, which is designed
+" for texMathZone[VWXY]. (call synstack(...) inside atplib#CheckSyntaxGroups()
+" is slow) - thus it is not used anymore.
 function! atplib#CheckClosed_syntax(syntax,limit_line, limit_col)
-    let whichwrap	= &whichwrap
-    setl whichwrap+=l
+    let time		= reltime()
+"     let whichwrap	= &whichwrap
+"     setl whichwrap+=l
     let line		= line(".")
     let col		= col(".")
     let test		= atplib#CheckSyntaxGroups(a:syntax)
     while ( line(".") < a:limit_line || line(".") == a:limit_line && col(".") <= a:limit_col ) && test
-	normal! l
+	normal! W
 	let test	= atplib#CheckSyntaxGroups(a:syntax)
     endwhile
     call cursor(line, col)
-    return !test
+"     let &whichwrap	= whichwrap
+    let g:time_CheckClosed_syntax=reltimestr(reltime(time))
+    return test
 endfunction
 " }}}1
 " atplib#CheckOpened {{{1
@@ -2425,54 +2487,6 @@ function! atplib#CheckOpened(bpat,epat,line,limit)
     return 0 
 endfunction
 " }}}1
-" This functions makes a test if in line math is closed. This works well with
-" \(:\) and \[:\] but not yet with $:$ and $$:$$.  
-" {{{1 atplib#CheckInlineMath
-" a:mathZone	= texMathZoneV or texMathZoneW or texMathZoneX or texMathZoneY
-" The function return 1 if the mathZone is not closed 
-function! atplib#CheckInlineMath(mathZone)
-    let synstack	= map(synstack(line("."), max([1, col(".")-1])), "synIDattr( v:val, 'name')")
-    let check		= 0
-    let patterns 	= { 
-		\ 'texMathZoneV' : [ '\\\@<!\\(', 	'\\\@<!\\)' 	], 
-		\ 'texMathZoneW' : [ '\\\@<!\\\[', 	'\\\@<!\\\]'	]}
-    " Limit the search to the first \par or a blank line, if not then search
-    " until the end of document:
-    let stop_line	= search('\\par\|^\s*$', 'nW') - 1
-    let stop_line	= ( stop_line == -1 ? line('$') : stop_line )
-
-    " \(:\), \[:\], $:$ and $$:$$ do not accept blank lines, thus we can limit
-    " searching/counting.
-    
-    " For \(:\) and \[:\] we use searchpair function to test if it is closed or
-    " not.
-    if (a:mathZone == 'texMathZoneV' || a:mathZone == 'texMathZoneW') && atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW'])
-	if index(synstack, a:mathZone) != -1
-	    let condition = searchpair( patterns[a:mathZone][0], '', patterns[a:mathZone][1], 'cnW', '', stop_line)
-	    let check 	  = ( !condition ? 1 : check )
-	endif
-
-    " $:$ and $$:$$ we are counting $ untill blank line or \par
-    " to test if it is closed or not, 
-    " then we return the number of $ modulo 2.
-    elseif ( a:mathZone == 'texMathZoneX' || a:mathZone == 'texMathZoneY' ) && atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY'])
-	let saved_pos	= getpos(".")
-	let line	= line(".")	
-	let l:count	= 0
-	" count \$ if it is under the cursor
-	if search('\\\@<!\$', 'Wc', stop_line)
-	    let l:count += 1
-	endif
-	while line <= stop_line && line != 0
-	    keepjumps let line	= search('\\\@<!\$', 'W', stop_line)
-	    let l:count += 1
-	endwhile
-	keepjumps call setpos(".", saved_pos)
-	let check	= l:count%2
-    endif
-
-    return check
-endfunction
 " {{{1 atplib#CheckSyntaxGroups
 " This functions returns one if one of the environment given in the list
 " a:zones is present in they syntax stack at line a:1 and column a:0.
@@ -2482,6 +2496,7 @@ endfunction
 " The function doesn't make any checks if the line and column supplied are
 " valid /synstack() function returns 0 rather than [] in such a case/.
 function! atplib#CheckSyntaxGroups(zones,...)
+    let time		= reltime()
     let line		= a:0 >= 1 ? a:1 : line(".")
     let col		= a:0 >= 2 ? a:2 : col(".")-1
     let col		= max([1, col])
@@ -2495,6 +2510,7 @@ function! atplib#CheckSyntaxGroups(zones,...)
 
     let synstack	= map(synstack_raw, 'synIDattr(v:val, "name")') 
 
+    let g:time_CheckSyntaxGroups=reltimestr(reltime(time))
     return max(map(zones, "count(synstack, v:val)"))
 endfunction
 " atplib#CopyIndentation {{{1
@@ -4008,27 +4024,19 @@ function! atplib#GetBracket(append,...)
 	else
 	    let pattern = ''
 	endif
-	let g:pattern = pattern
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
-	    let closed_syntax	= !atplib#CheckClosed_syntax(syntax, begMathZone[0], begMathZone[1]-1)
-" 	    let g:closed_syntax	= closed_syntax
-" 	    let g:debug=-1
-" 	    let g:begMathZone = begMathZone
-" 	    let g:begParen_2=begParen
+	    let closed_syntax	= atplib#CheckClosed_math(syntax)
+	    let g:closed_syntax	= closed_syntax
 	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && !closed_syntax
-" 		let g:debug=1
 		" I should close it if math is not closed.
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
 	    elseif atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
-" 		let g:debug=2
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	    else
-" 		let g:debug=3
 		let bracket = "0"
 	    endif
 	else
-" 	    let g:debug=4
 	    let bracket =  atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	endif
 	call setpos(".", pos)
@@ -4438,10 +4446,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 " 	let g:time_A=reltimestr(reltime(time))
 
 	" Close one line math
-	if atplib#CheckInlineMath('texMathZoneV') || 
-		\ atplib#CheckInlineMath('texMathZoneW') ||
-		\ atplib#CheckInlineMath('texMathZoneX') ||
-		\ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
+	if atplib#CheckClosed_math('texMathZoneV') || 
+		\ atplib#CheckClosed_math('texMathZoneW') ||
+		\ atplib#CheckClosed_math('texMathZoneX') ||
+		\ b:atp_TexFlavor == 'plaintex' && atplib#CheckClosed_math('texMathZoneY')
 	    let b:tc_return = "close_env math"
 	    call atplib#CloseLastEnvironment(append, 'math')
 	" Close environments
@@ -5454,10 +5462,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    endif
 
 	    " Check inline math:
-	    if atplib#CheckInlineMath('texMathZoneV') || 
-			\ atplib#CheckInlineMath('texMathZoneW') ||
-			\ atplib#CheckInlineMath('texMathZoneX') ||
-			\ b:atp_TexFlavor == 'plaintex' && atplib#CheckInlineMath('texMathZoneY')
+	    if atplib#CheckClosed_math('texMathZoneV') || 
+			\ atplib#CheckClosed_math('texMathZoneW') ||
+			\ atplib#CheckClosed_math('texMathZoneX') ||
+			\ b:atp_TexFlavor == 'plaintex' && atplib#CheckClosed_math('texMathZoneY')
 		let zone = 'texMathZoneVWXY' 	" DEBUG
 		call atplib#CloseLastEnvironment(append, 'math')
 

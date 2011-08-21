@@ -1,6 +1,6 @@
 *automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 August 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -5074,6 +5074,5 @@ COPY RIGHTS							*atp-copy-rights*
 	"ftplugin/ATP_files/dictionaries/dictionary",
 	"ftplugin/ATP_files/dictionaries/SIunits" 
 <   where taken from latex-suite Vim plugin and are under Vim charity
-    |license|.
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
+ vim:tw=78:ts=8:ft=help:norl:

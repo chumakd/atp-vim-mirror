@@ -394,7 +394,7 @@ NEW FEATURE: DICTIONARY!!!
 
 # IMPORTANT ToDo:  :ShowErrors actully the error format: only first message contains detailed info about the error.
 
-ToDo: w b are not stopping at \
+Done: w b are not stopping at \
 	iskeyword is set somewhere after my options.vim script.
 NOTE: b:atp_ProgressBar if is nonempty, the number start not from 1 (this was after using the :Kill command).
 Note: \refstepcounter is not handled well by syntax.vim \ref has syntax group texRefZone, while stepcounter not.
@@ -437,5 +437,5 @@ Todo: _bf map when applied in first column (with some white spaces before! the s
 Todo: there is no \varepsilon map (used to be #ve - interfering with \vee )
 Done: \(\Sub(V={V^*}^*<Tab>)\) -> \(\Sub(V={V^*}^*\))\)
 
-Todo: there are now two function which check if math is closed: atplib#CheckClosed_syntax() and atplib#CheckInlineMath()
+Done: there are now two function which check if math is closed: atplib#CheckClosed_syntax() and atplib#CheckInlineMath()
     I should compare them and use the faster and more accurate one.

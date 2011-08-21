@@ -17,10 +17,10 @@ file_l=file_o.readlines()
 i=0
 for line in file_l:
     i+=1
-    if re.match('\s+An Introduction to AUTOMATIC \(La\)TeX PLUGIN \(ver(.|sion)?\s+\d+(\.\d+)+\)',line):
+    if re.match('\s+An Introduction to AUTOMATIC \(La\)TeX PLUGIN',line):
         break
 # Change version number:
-file_l[i-1]='	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. '+newversion+")\n"
+file_l[i-1]="	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. "+str(newversion)+")\n"
 # Change date stamp:
 file_l[0]="*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: "+date+"\n"
 file_o.close()

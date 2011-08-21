@@ -40,6 +40,11 @@ endif
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
 if !exists("g:atp_debugMapFile")
+    " debug of atplib#CheckClosed_math function
+    " (issues errormsg when synstack() failed).
+    let g:atp_debugCheckClosed_math	= 0
+endif
+if !exists("g:atp_debugMapFile")
     " debug mappings.vim file (show which maps will not be defined).
     let g:atp_debugMapFile	= 0
 endif
