@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Aug 19 07:00  2011 W
+" Last Change: Sun Aug 21 06:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -494,7 +494,7 @@ execute "vnoremap <silent> <buffer> <expr>".g:atp_imap_over_leader."~		':<C-U>Wr
 
 " Tex Align:
 if !hasmapto(":TexAlign<CR>", 'n')
-    nmap <silent> <buffer> <Localleader>a	:TexAlign<CR>
+    nmap <silent> <buffer> <Localleader>a	<Plug>TexAlign
 endif
 
 " Paragraph Selection:

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Fri Aug 19 02:00  2011 W
+" Last Change: Sun Aug 21 06:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -299,7 +299,7 @@ endfunction
 " Inteligent Aling
 " TexAlign {{{
 " This needs Aling vim plugin.
-function! TexAlign()
+function! TexAlign(bang)
     let save_pos = getpos(".")
     let synstack = map(synstack(line("."), col(".")), 'synIDattr( v:val, "name")')
 
@@ -374,7 +374,6 @@ function! TexAlign()
 	return
     endif
 
-"     let g:env=env
     if !exists("bline")
 	let bline = search(bpat, 'cnb') + 1
     endif
@@ -387,9 +386,9 @@ function! TexAlign()
 	call cursor(saved_pos[1], saved_pos[2])
     endif
 
-    if g:atp_TexAlign_join_lines
+    if a:bang == "!" && eline-1 > bline
     " Join lines
-	execute 'silent! '. bline . ',' . eline . 's/\(\\\\\s*\)\@<!\n//g'
+    execute 'silent! '.(bline).','.(eline-1).'g/\%(\\\\\s*\)\@<!\n/s/\n//'
 	if env != "matrix"
 	    let eline = searchpair(bpat, '', epat, 'cn')  - 1
 	else
@@ -406,6 +405,7 @@ function! TexAlign()
 
     call setpos(".", save_pos) 
 endfunction
+nmap <Plug>TexAlign		:call TexAlign(( g:atp_TexAlign_join_lines ? "!" : "" ))<CR>
 "}}}
 "{{{ ATP_strlen
 " This function is used to measure lenght of a string using :Align, :TexAlign
@@ -2864,7 +2864,7 @@ command! -buffer -nargs=* -complete=file Wdiff			:call <SID>Wdiff(<f-args>)
 command! -buffer -nargs=* -complete=custom,WrapSelection_compl -range Wrap			:call <SID>WrapSelection(<f-args>)
 command! -buffer -nargs=? -complete=customlist,EnvCompletion -range WrapEnvironment		:call <SID>WrapEnvironment(<f-args>)
 command! -buffer -nargs=? -range InteligentWrapSelection	:call <SID>InteligentWrapSelection(<args>)
-command! -buffer	TexAlign				:call TexAlign()
+command! -buffer -bang	TexAlign				:call TexAlign(<q-bang>)
 command! -buffer 	ToggleStar   				:call <SID>ToggleStar()<CR>
 command! -buffer -nargs=? ToggleEnv	   			:call <SID>ToggleEnvironment(0, <f-args>)
 command! -buffer -nargs=* -complete=customlist,EnvCompletion ChangeEnv				:call <SID>ToggleEnvironment(1, <f-args>)

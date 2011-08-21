@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 20 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10)
 			by Marcin Szamotulski
@@ -182,6 +182,7 @@ NEWS							*atp-news*
   'iskeyword'			-- is set using g:tex_isk variable. This is
 				   compatible with the standard tex syntax
 				   file.
+  :TexAlign!			-- bang added+some fixes, see |atp-:TexAlign|.
 >
  ======================
  Changes in version 10
@@ -1530,7 +1531,7 @@ map <F6>d
 	use this command (but not the maps)!
 
 							*atp-:TexAlign*
-:TexAlign
+:TexAlign[!]
 map \a 
 	This is a wrapper around Align command of the great AutoAlign Vim plugin:
 	    http://www.vim.org/scripts/script.php?script_id=884. 
@@ -1547,9 +1548,9 @@ map \a
 	'conceallevel' is reset to 0 ATP_strlen behaves like
 	g:Align_xstrlen=2.
 
-	If *g:atp_TexAlign_join_lines* =1 then |atp-:TexAlign| will also join
-	all the lines which do not ends with \\. By default it is equal to
-	0.
+	With bang "!", |atp-:TexAlign| will join lines which do not ends with
+	'\\'. if *g:atp_TexAlign_join_lines* = 1 then the map \a will use the
+	bang.
     							*atp-:LatexTags*
 							*atp-:Tags*
 :Tags[!]
