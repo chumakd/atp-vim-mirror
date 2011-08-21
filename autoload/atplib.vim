@@ -2937,9 +2937,9 @@ function! atplib#CloseLastEnvironment(...)
 
     if g:atp_debugCloseLastEnvironment
 	call atplib#Log('CloseLastEnvironment.log', '', 'init')
-	let g:CLEargs 	= l:com . " " . l:close . " " . l:env_name . " " . string(l:bpos_env)
+	let g:CLEargs 	= string(l:com) . " " . string(l:close) . " " . string(l:env_name) . " " . string(l:bpos_env)
 	silent echo "args=".g:CLEargs
-	let g:com	= l:com
+	let g:CLE_com	= l:com
 	let g:close 	= l:close
 	let g:env_name	= l:env_name
 	let g:bpos_env	= l:bpos_env
@@ -4007,19 +4007,19 @@ function! atplib#GetBracket(append,...)
     if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY', 'texMathZoneV', 'texMathZoneW']) || ( a:0 >= 1 && a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
-	    let syntax	= ['texMathZoneV']
+	    let syntax	= 'texMathZoneV'
 	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneW'])
 	    let pattern = '\\\@<!\\\[\zs'
-	    let syntax	= ['texMathZoneW']
+	    let syntax	= 'texMathZoneW'
 	    let limit	= g:atp_completion_limits[1]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneX'])
 	    let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
-	    let syntax	= ['texMathZoneX']
+	    let syntax	= 'texMathZoneX'
 	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#CheckSyntaxGroups(['texMathZoneY'])
 	    let pattern = '\\\@<!\$\$\zs'
-	    let syntax	= ['texMathZoneY']
+	    let syntax	= 'texMathZoneY'
 	    let limit	= g:atp_completion_limits[1]
 	else
 	    let pattern = ''
@@ -4027,7 +4027,6 @@ function! atplib#GetBracket(append,...)
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
 	    let closed_syntax	= atplib#CheckClosed_math(syntax)
-	    let g:closed_syntax	= closed_syntax
 	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && !closed_syntax
 		" I should close it if math is not closed.
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
