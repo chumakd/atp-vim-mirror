@@ -55,10 +55,10 @@ else:
     x=args[2]
     y=args[3]
     if x=="0" and y == "0":
-        print("Coordinates out of range")
         sys.exit("-1")
     y=float(791.333)-float(y)
-    synctex=subprocess.Popen(["synctex", "edit", "-o", str(page)+":"+str(x)+":"+str(y)+":"+str(file)], stdout=subprocess.PIPE)
+    synctex_cmd=["synctex", "edit", "-o", str(page)+":"+str(x)+":"+str(y)+":"+str(file)]
+    synctex=subprocess.Popen(synctex_cmd, stdout=subprocess.PIPE)
     synctex.wait()
     synctex_output=synctex.stdout.read()
     match_pos=re.findall("(?:Line:(-?\d+)|Column:(-?\d+))",synctex_output)
@@ -67,7 +67,6 @@ else:
     if column == "-1":
         column = "1"
 
-print("Line="+line+" Column="+column)
 f.write(">>> args "+file+":"+line+":"+column+"\n")
 
 if match != None:

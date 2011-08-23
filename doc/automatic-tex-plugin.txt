@@ -167,7 +167,7 @@ NEWS							*atp-news*
                                    [thanks to Florian Heiderich].
                                    Read the necessary steps in |atp-Viewers-Skim|.
 
-  Xpdf				-- support for inverse searching added (xpdf -> vim)
+  Xpdf				-- support for inverse searching added (Xpdf -> vim)
 				   thus both inverse and forward searching
 				   works for Xpdf (and Okular). See
 				   |atp-Viewers-Xpdf| how to set it.
@@ -4728,7 +4728,8 @@ NOTES ON VIEWERS                          			*atp-Viewers*
 
 See the section |atp-Viewers_Options| how to set options for viewer programs.
 
-Xpdf								*atp-Viewers-Xpdf*
+ 								*atp-Viewers-Xpdf*
+Xpdf ~
 	It is supported. It is configured in the way that when your tex file
 	have errors, Xpdf viewer will not reload your file, which I found
 	useful. Xpdf supports forward searching (vim->Xpdf) with command:
@@ -4751,8 +4752,9 @@ Xpdf								*atp-Viewers-Xpdf*
 	You can set forward searching for Xpdf (from version 3.03, already
 	available here: http://foolabs.com/xpdf/download.html):
 
-	Add this to your $HOME/.xpdfrc file: >
-	bind t any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  %f %i %j %k)'
+Xpdf inverse search ~
+	Add this line to your $HOME/.xpdfrc file: >
+	    bind t any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  "%f" %i %j %k)'
 <	Then pressing t will do forward search, i.e. it will set vim according
 	to mouse cursor position over Xpdf. See manpage of xpdf how to bind other keys.
 
@@ -4765,17 +4767,19 @@ Xpdf								*atp-Viewers-Xpdf*
 	path and make in exec utable and change the run() comman to
 	'run(atp_RevSearch.py --synctex %f %i %j %k)'. This is not tested solution.
 
-Evince
+Evince ~
 	Works fine.
 								*atp-Viewers-Okular*
-Okular
+Okular ~
 	Works fine. It supports both forward (Vim->Okular) and inverse
 	(Okular->Vim) searches. Okular supports forward searching (vim->Okular)
 	with command: |atp-:SyncTex| >
 		:SyncTex
 		map t
 		map <S-LeftMouse>
-<	Here is how to CONFIGURE REVERSE SEARCHING (Okular->Vim): 
+
+Okular inverse search ~
+<	Here is how to configure inverse searching (Okular->Vim): 
 
 								*atp_RevSearch.py*
 						    This section desribes how to set atp_RevSearch for Okular,
@@ -4791,6 +4795,14 @@ Okular
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again. 
 
+	Note: |atp_RevSearch.py| scirpt has an option switch --synctex. When
+	it is present |atp_RevSearch.py| will run synctex to get the line
+	number. The syntax is: 
+	    atp_Revsearch --synctex {file} {page} {x-coord} {y-coord}
+	({x-coord} and {y-coord} counts from top left corner in big points
+	(72dpi), for example Xpdf (ver. 3.03) gives escapes for x,
+	y coordinates counting from bottom left corner)
+
 	If you set the command as above (with python before the path to
 	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
 	Note, that otherwise whenever you update ATP you will have to make the
@@ -4798,11 +4810,11 @@ Okular
 
 	|atp_RevSearch.py| can also handle column argument. If your viewer
 	support it (Okular does not) you can pass it as a third argument, i.e. >
-	atp_RevSearch.py '%f' '%l' '%c'
+	    atp_RevSearch.py '%f' '%l' '%c'
 <
 	By default |atp_RevSearch.py| will use gvim, if you prefer to use vim
 	instead you can add "--vim" switch: i.e. set >
-		Command		python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --vim '%f' '%l'
+	    Command	python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --vim '%f' '%l'
 <
 	If it is not working for you, please report it, you can also
 	use: >
@@ -4834,7 +4846,7 @@ Okular
 	supported.
 	
                                                                 *atp-Viewers-Skim*
-Skim
+Skim ~
         To enable forward searching (vim --> Skim) you need to:
         (1) download the skript: http://links.tedpavlic.com/shell_scripts/skim
             put it somewhere in your $PATH and make executable.
@@ -4842,21 +4854,21 @@ Skim
             /Applications/Skim.app/Contents/SharedSupport/displayline
             (or whereever Skim is installed) somewhere in the $PATH.
 
-Kpdf
+Kpdf ~
 	Works fine (moves page a little bit when updates a file).
 
-EpdfView
+EpdfView ~
 	This viewer does not support automatic reloads when the file changes
 	(but it seems that the work is in progress). You have to issue CTRL-R
 	yourself when the file is changed.
 
-AcroRead
+AcroRead ~
 	As with epdfview (with the difference that it supports automatic
 	updates, but it do not works somehow). There is a way to configure
 	forward searching (Vim->AcroRead)! but it is not supported yet, if you
 	really want it, write to me.
-
-Xdvi								*atp-Viewers-Xdvi*
+							*atp-Viewers-Xdvi*
+Xdvi ~
 	Works fine. The file will be updated after a click (or use the xdvi
 	options '-watchfile 1' see man xdvi for explanations). You can set
 	forward/reverse searching by the command |SetXdvi| then use
@@ -4883,10 +4895,10 @@ Xdvi								*atp-Viewers-Xdvi*
 	Note the watchfile switch for xdvi: with it xdvi will reload the file,
 	if needed, every second.
 
-Zathura							
+Zathura	~
 	Perfectly works (but there is no reverse/inverse searching).
 
-Mupdf
+Mupdf ~
 	It is the fastest pdf viewer program ever made, why? because it
 	renders only one page :). But it can be nicly set with ATP: via
 	autocommands and :SyncTex you can load a page where the cursor is
