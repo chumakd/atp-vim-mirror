@@ -316,8 +316,10 @@ let s:optionsDict= {
 		\ "atp_LastPythonPID"		: 0,
 		\ "atp_VerboseLatexInteractionMode" : "errorstopmode",
 		\ "atp_BibtexReturnCode"	: 0,
-		\ "atp_ProgressBar"		: {},
-		\ "atp_BibtexOutput"		: ""}
+		\ "atp_MakeidxReturnCode"	: 0,
+		\ "atp_BibtexOutput"		: "",
+		\ "atp_MakeidxOutput"		: "",
+		\ "atp_ProgressBar"		: {}}
 
 " 		\ "atp_BibCompiler"		: ( getline(atplib#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 " 		\ "atp_TexCompilerVariable"	: "",
@@ -718,7 +720,7 @@ if !exists("g:atp_MapCommentLines")
     let g:atp_MapCommentLines = 1
 endif
 if !exists("g:atp_XpdfSleepTime")
-    let g:atp_XpdfSleepTime = "0.2"
+    let g:atp_XpdfSleepTime = "0"
 endif
 if !exists("g:atp_IMapCC")
     let g:atp_IMapCC = 0
@@ -1295,7 +1297,7 @@ if !s:did_options
 	au FileType qf 	let t:atp_QuickFixOpen=1
 	" When closing the quickfix error buffer (:close, :q) also end the Debug Mode.
 	au FileType qf 	au BufUnload <buffer> let t:atp_DebugMode = g:atp_DefaultDebugMode | let t:atp_QuickFixOpen = 0
-	au FileType qf	setl nospell
+	au FileType qf	setl nospell norelativenumber nonumber
     augroup END
 endif
 "}}}

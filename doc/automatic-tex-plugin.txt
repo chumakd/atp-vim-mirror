@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 21 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
 			by Marcin Szamotulski
@@ -167,6 +167,11 @@ NEWS							*atp-news*
                                    [thanks to Florian Heiderich].
                                    Read the necessary steps in |atp-Viewers-Skim|.
 
+  Xpdf				-- support for inverse searching added (xpdf -> vim)
+				   thus both inverse and forward searching
+				   works for Xpdf (and Okular). See
+				   |atp-Viewers-Xpdf| how to set it.
+
 
   :Dictionary {word}		-- an interface to http://www.impan.pl/Dictionary/.
   					see |atp-:Dictionary| (with map =d
@@ -183,6 +188,13 @@ NEWS							*atp-news*
 				   compatible with the standard tex syntax
 				   file.
   :TexAlign!			-- bang added+some fixes, see |atp-:TexAlign|.
+
+  New imaps:
+  l*, L*	\wedge, \bigwedge (l = lattice theoretic, meet)
+  l+, L+	\vee,	\bigvee   (join)
+  wedge is also under #& but #ve (for \vee) and #V (for \bigvee) are removed,
+  since they were interfering with #ve for \varepsilon.
+
 >
  ======================
  Changes in version 10
@@ -2061,13 +2073,13 @@ vmap <F4>
 (:ATPStatus[!])						*atp-:ATPStatus*
 	This comman sets the status line, which include: the name of currently
 	edited chapter (or section) the value of |b:atp_OutDir| (unless used
-	with bang!) and it will warn you if |b:atp_OutDir| variable is not
-	set. The status line will also contain the information about
-	processing compelation: see |atp-status-line-notification|,
-	|g:atp_ProgressBar|. This function is called at startup unless the
-	variable '|g:atp_statusline|=0' is set. The status is set by the
-	autocommand: >
-		au BufWinEnter *.tex :call Status()
+	with bang "!") and it will warn you if |b:atp_OutDir| variable is not
+	set. Note: this command will set the variable |g:atp_statusOutDir|.
+	The status line will also contain the information about processing
+	compelation: see |atp-status-line-notification|, |g:atp_ProgressBar|.
+	This function is called at startup unless the variable
+	'|g:atp_statusline|=0' is set. The status is set by the autocommand: >
+		au BufWinEnter *.tex :call ATPStatus()
 <	In this way every opened window with a '*.tex' file will get the correct
 	status line.
 
@@ -2076,7 +2088,9 @@ vmap <F4>
 
 							*g:atp_statusOutDir*
 	Note: if you set g:atp_statusOutDir=0 (the default is 1) then the
-	output directory will be not seen in the statusline.
+	output directory will be not seen in the statusline. This variable
+	only controls the status line at startup. If you want to remove/add
+	output directory rather use |atp-:Status| command.
 
 ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 :ToDo[!] [bufname]					*atp-:ToDo*
@@ -4327,8 +4341,6 @@ imap ]M 	\[\]<Left><Left>
 imap #\		\setminus
 imap #/		\frac{}{}
 imap #&		\wedge
-imap #ve	\vee
-imap #V		\Vee
 imap #N		\Nabla
 imap #=		\equiv
 imap `8		\infty		[the default '#' is not working, ` is used intead, 
@@ -4399,6 +4411,10 @@ imap s*		\cap		[    set *]
 imap S*		\bigcap		[big set *]
 imap c*		\prod		[    cat *]		/cat = categorical/
 imap c+		\coprod		[    cat +]
+imap l*		\wedge		[    lat *, meet]	/lat = lattice theoretic/ 
+imap L*		\bigwedge	[big lat *]
+imap l+		\vee		[    lat +, join]
+imap L+		\bigvee		[big lat +]
 imap <=		\leq
 imap >=		\geq
 imap ->		\rightarrow
@@ -4731,6 +4747,24 @@ Xpdf								*atp-Viewers-Xpdf*
 >
 	    let b:atp_xpdfOptions="-bg Grey30 -mattecolor SlateBlue2 -papercolor White"
 <
+
+	You can set forward searching for Xpdf (from version 3.03, already
+	available here: http://foolabs.com/xpdf/download.html):
+
+	Add this to your $HOME/.xpdfrc file: >
+	bind t any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  %f %i %j %k)'
+<	Then pressing t will do forward search, i.e. it will set vim according
+	to mouse cursor position over Xpdf. See manpage of xpdf how to bind other keys.
+
+	Note: to use this xpdf have to be opened giving fullpath to the file.
+	This is important when you open a file from a terminal. Ohterwise
+	atp_RevSearch.py as invoked above by the run() command will look for
+	the tex file in the directory: '$HOME/.vim/ftplugin/ATP_files'.
+	Furthermore, it will make new file there whic ATP will try to process.
+	A workaround this should be to place atp_RevSearch somewhere in your
+	path and make in exec utable and change the run() comman to
+	'run(atp_RevSearch.py --synctex %f %i %j %k)'. This is not tested solution.
+
 Evince
 	Works fine.
 								*atp-Viewers-Okular*

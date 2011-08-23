@@ -71,7 +71,7 @@ debug_file      = open(script_logfile, 'w')
 # Cleanup on exit:
 def cleanup(debug_file):
     debug_file.close()
-#     shutil.rmtree(tmpdir)
+    shutil.rmtree(tmpdir)
 atexit.register(cleanup, debug_file)
 
 command         = options.command

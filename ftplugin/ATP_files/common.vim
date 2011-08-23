@@ -961,6 +961,7 @@ function! ATPStatus(...) "{{{
     endif
 
     if a:0 >= 1 
+	" This is run be the command :Status (:ATPStatus)
 	if a:1 == ""
 	    let g:status_OutDir = s:StatusOutDir()
 	    let g:atp_statusOutDir = 1
@@ -969,6 +970,7 @@ function! ATPStatus(...) "{{{
 	    let g:atp_statusOutDir = 0
 	endif
     else
+	" This is run by the autocommand group ATP_Status
 	if g:atp_statusOutDir
 	    let g:status_OutDir = s:StatusOutDir()
 	else

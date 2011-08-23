@@ -279,6 +279,12 @@ function! atplib#BibtexReturnCode(returncode,...)
 	let b:atp_BibtexOutput= ( a:0 >= 1 ? a:1 : "" )
 endfunction
 " }}}
+" MakeidxReturnCode {{{
+function! atplib#MakeidxReturnCode(returncode,...)
+	let b:atp_MakeidxReturnCode=a:returncode
+	let b:atp_MakeidxOutput= ( a:0 >= 1 ? a:1 : "" )
+endfunction
+" }}}
 " Callback {{{
 " a:mode 	= a:verbose 	of s:compiler ( one of 'default', 'silent',
 " 				'debug', 'verbose')
@@ -290,10 +296,13 @@ endfunction
 function! atplib#CallBack(mode,...)
 
     " If the compiler was called by autocommand.
-    let AU = ( a:0 >= 1 ? a:1 : 'COM' )
+    let AU 	= ( a:0 >= 1 ? a:1 : 'COM' )
     " Was compiler called to make bibtex
-    let BIBTEX = ( a:0 >= 2 ? a:2 : "False" )
-    let BIBTEX = ( BIBTEX == "True" || BIBTEX == 1 ? 1 : 0 )
+    let BIBTEX 	= ( a:0 >= 2 ? a:2 : "False" )
+    let BIBTEX 	= ( BIBTEX == "True" || BIBTEX == 1 ? 1 : 0 )
+    let MAKEIDX	= ( a:0 >= 3 ? a:3 : "False" )
+    let MAKEIDX = ( MAKEIDX == "TRUE" || MAKEIDX == 1 ? 1 : 0 )
+
     if g:atp_debugCallBack
 	exe "redir! > ".g:atp_TempDir."/CallBack.log"
     endif
@@ -335,7 +344,7 @@ function! atplib#CallBack(mode,...)
     "  i.e. redraw at the end of function (this is done to not redraw twice in
     "  this function)
     let l:clist 	= 0
-    let atp_DebugMode = t:atp_DebugMode
+    let atp_DebugMode 	= t:atp_DebugMode
 
     if b:atp_TexReturnCode == 0 && ( a:mode == 'silent' || atp_DebugMode == 'silent' ) && g:atp_DebugMode_AU_change_cmdheight 
 	let &l:cmdheight=g:atp_cmdheight
@@ -361,6 +370,20 @@ function! atplib#CallBack(mode,...)
 
 	    cclose
 	    call add(msg_list, ["[ATP:] no errors, closing quick fix window.", "Normal"])
+	endif
+
+    elseif a:mode == "silent" && AU == "COM"
+	if b:atp_TexReturnCode
+	    let showed_message		= 1
+	    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code ".b:atp_TexReturnCode.".", 'ErrorMsg', 'after'])
+	endif
+	if BIBTEX && b:atp_BibtexReturnCode
+	    let showed_message		= 1
+	    call add(msg_list, ["[ATP:] ".b:atp_BibCompiler." returned with exit code ".b:atp_BibtexReturnCode.".", 'ErrorMsg', 'after'])
+	endif
+	if MAKEIDX && b:atp_Makeindex
+	    let showed_message		= 1
+	    call add(msg_list, ["[ATP:] makeidx returned with exit code ".b:atp_MakeidxReturnCode.".", 'ErrorMsg', 'after'])
 	endif
     endif
 
@@ -401,15 +424,15 @@ function! atplib#CallBack(mode,...)
 	endif
 
 	if BIBTEX && b:atp_BibtexReturnCode
-
-	    if g:atp_debugCallBack
-		let g:debugCB .= 8
-	    endif
-
 	    let l:clist		= 1
-	    call add(msg_list, [ "[Bib:] BibTeX returned with exit code ".b:atp_BibtexReturnCode .".", "ErrorMsg", "after"])
+	    call add(msg_list, [ "[Bib:] ".b:atp_BibtexCompiler." returned with exit code ".b:atp_BibtexReturnCode .".", "ErrorMsg", "after"])
 	    call add(msg_list, [ "BIBTEX_OUTPUT" , "Normal", "after"])
+	endif
 
+	if MAKEIDX && b:atp_MakeidxReturnCode
+	    let l:clist		= 1
+	    call add(msg_list, [ "[Bib:] makeidx returned with exit code ".b:atp_MakeidxReturnCode .".", "ErrorMsg", "after"])
+	    call add(msg_list, [ "MAKEIDX_OUTPUT" , "Normal", "after"])
 	endif
 
 	" In debug mode, go to first error. 
@@ -432,10 +455,14 @@ function! atplib#CallBack(mode,...)
 
     " Count length of the message:
     let msg_len		= len(msg_list)
-    if len(map(copy(msg_list), "v:val[0] == 'BIBTEX_OUTPUT'")) 
-	let msg_len += (BIBTEX ? len(split(b:atp_BibtexOutput, "\\n")) - 1 : - 1 )
+    if len(filter(copy(msg_list), "v:val[0] == 'BIBTEX_OUTPUT'")) 
+	let msg_len 	+= (BIBTEX ? len(split(b:atp_BibtexOutput, "\\n")) - 1 : - 1 )
     endif
-    let msg_len		+= ((len(getqflist()) <= 7 && !t:atp_QuickFixOpen) ? len(getqflist()) : 0 )
+    if len(filter(copy(msg_list), "v:val[0] == 'MAKEIDX_OUTPUT'")) 
+	let msg_len 	+= (MAKEIDX ? len(split(b:atp_MakeidxOutput, "\\n")) - 1 : - 1 )
+    endif
+    " We never show qflist: (that's why it is commented out)
+"     let msg_len		+= ((len(getqflist()) <= 7 && !t:atp_QuickFixOpen) ? len(getqflist()) : 0 )
 
     " Show messages/clist
     
@@ -447,7 +474,15 @@ function! atplib#CallBack(mode,...)
     endif
 
     let cmdheight = &l:cmdheight
-    let &l:cmdheight	= msg_len+2
+    if msg_len <= 2
+	let add=0
+    elseif msg_len <= 7
+	let add=1
+    else
+	let add=2
+    endif
+    let &l:cmdheight	= max([cmdheight, msg_len+add])
+    let g:msg_len=msg_len
     if l:clist && len(getqflist()) > 7 && !t:atp_QuickFixOpen
 	let winnr = winnr()
 	copen
@@ -479,6 +514,17 @@ function! atplib#CallBack(mode,...)
 	    echo msg[0]
 	else
 	    echo "       ".substitute(b:atp_BibtexOutput, "\n", "\n       ", "g")
+" 	    let bib_output=split(b:atp_BibtexOutput, "\n")
+" 	    let len=max([10,len(bib_output)])
+" 	    below split +setl\ buftype=nofile\ noswapfile Bibtex\ Output
+" 	    setl nospell
+" 	    setl nonumber
+" 	    setl norelativenumber
+" 	    call append(0,bib_output)
+" 	    resize 10
+" 	    redraw!
+" 	    normal gg
+" 	    nmap q :bd<CR>
 	    let g:debugCB .=" BIBTEX_output "
 	endif
     endfor
@@ -2123,7 +2169,6 @@ function! atplib#setwindow()
 	setlocal norelativenumber
  	setlocal winfixwidth
 	setlocal noswapfile	
-	setlocal window
 	setlocal nobuflisted
 	if &filetype == "bibsearch_atp"
 " 	    setlocal winwidth=30
@@ -2343,7 +2388,7 @@ endfunction
 " This functions makes a test if in line math is closed. This works well with
 " \(:\) and \[:\] but not yet with $:$ and $$:$$.  
 " a:mathZone	= texMathZoneV or texMathZoneW or texMathZoneX or texMathZoneY
-" The function return 1 if the mathZone is not closed 
+" The function return 1 if the mathZone is to be closed (i.e. it is not closed).
 function! atplib#CheckClosed_math(mathZone)
     let time 		= reltime()
     let synstack	= map(synstack(line("."), max([1, col(".")-1])), "synIDattr( v:val, 'name')")
@@ -2366,10 +2411,7 @@ function! atplib#CheckClosed_math(mathZone)
 	    let condition = searchpair( patterns[a:mathZone][0], '', patterns[a:mathZone][1], 'cnW', '', stop_line)
 	    let check 	  = ( !condition ? 1 : check )
 	else
-	    if g:atp_debugCheckClosed_math
-		echoerr "[ATP:] synstack() error"
-	    endif
-	    let check	  = 1
+	    let check	  = 0
 	endif
 
     " $:$ and $$:$$ we are counting $ untill blank line or \par
@@ -2939,7 +2981,6 @@ function! atplib#CloseLastEnvironment(...)
 	call atplib#Log('CloseLastEnvironment.log', '', 'init')
 	let g:CLEargs 	= string(l:com) . " " . string(l:close) . " " . string(l:env_name) . " " . string(l:bpos_env)
 	silent echo "args=".g:CLEargs
-	let g:CLE_com	= l:com
 	let g:close 	= l:close
 	let g:env_name	= l:env_name
 	let g:bpos_env	= l:bpos_env
@@ -3746,9 +3787,14 @@ function! atplib#CheckBracket(bracket_dict)
 " 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
 " 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 " 		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
-	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
-		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-		    \ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2) == '0'
+
+	let no_backslash = ( i == 0 || i == 2 ? '\\\@<!' : '' )
+	let check_{i}	= atplib#CheckClosed(no_backslash.escape(ket,'\[]'),
+		    \ '\%('.no_backslash.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
+		    \ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2)
+	let check_{i} = ( check_{i} == 0 )
+" 	let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2]
+
 " 	let check_{i}	= atplib#CheckClosed(escape(ket,'\[]'),
 " 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 " 		    \ pos[1], 1, 2*g:atp_completion_limits[4],2) == '0'
@@ -4024,13 +4070,14 @@ function! atplib#GetBracket(append,...)
 	else
 	    let pattern = ''
 	endif
+
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
-	    let closed_syntax	= atplib#CheckClosed_math(syntax)
-	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && !closed_syntax
+	    let closed_math	= atplib#CheckClosed_math(syntax)
+	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && closed_math
 		" I should close it if math is not closed.
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
-	    elseif atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
+	    elseif (begParen[0] != 0 && begParen[1] !=0) && atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	    else
 		let bracket = "0"
@@ -4393,7 +4440,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
 " 	let g:time_B = reltimestr(reltime(time))
 	"{{{4 --------- abbreviations
-	if l =~ '=\w\+\*\=$' &&
+	if l =~ '=[a-zA-Z]\+\*\=$' &&
 		\ index(g:atp_completion_active_modes, 'abbreviations') != -1
 	    let completion_method='abbreviations' 
 	    let b:comp_method='abbreviations'
@@ -5332,6 +5379,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
     " DEBUG
     let b:completions=completions 
     " {{{2 COMPLETE 
+    call cursor(pos_saved[1], pos_saved[2])
     " {{{3 package, tikz libraries, environment_names, colors, bibfiles, bibstyles, documentclass, font family, font series, font shape font encoding, input files, includegraphics
     if
 		\ completion_method == 'package' 	|| 
@@ -5452,12 +5500,12 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 
 	    " Check Brackets 
 	    let b:comp_method   = "brackets: 1"
-	    let cl_return 	= atplib#CloseLastBracket(g:atp_bracket_dict)
+	    let cl_return 	= atplib#GetBracket(g:atp_bracket_dict)
 
 	    " If the bracket was closed return.
 	    if cl_return != "0"
 	        let g:time_TabCompletion=reltimestr(reltime(time))
-		return ""
+		return cl_return
 	    endif
 
 	    " Check inline math:
@@ -5520,19 +5568,13 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 " 		    \ completion_method == 'bibfiles'
 	    let b:tc_return='close_bracket end'
 	    let b:comp_method .= " brackets: 2"
-	    call atplib#CloseLastBracket(g:atp_bracket_dict)
+	    let g:time_TabCompletion=reltimestr(reltime(time))
+	    return atplib#GetBracket(g:atp_bracket_dict)
 	endif
     endif
     "}}}3
 "}}}2
 
-    " unlet variables if there were defined.
-    if exists("completion_list")
-	unlet completion_list
-    endif
-    if exists("completions")
-	unlet completions
-    endif
     let g:time_TabCompletion=reltimestr(reltime(time))
     return ''
     "}}}2

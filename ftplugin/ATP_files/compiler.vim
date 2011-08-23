@@ -250,7 +250,8 @@ function! <SID>SyncTex(bang, mouse, ...)
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
 	"There is a bug in xpdf. We need to sleep between sending commands to it.:
 	let sleep    = ( g:atp_XpdfSleepTime ? 'sleep '.string(g:atp_XpdfSleepTime).'s;' : '' )
-	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x.")&"
+" 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x.")&"
+	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.")&"
 	if !dryrun
 	    call system(sync_cmd)
 	    call <SID>SyncShow(page_nr, y_coord)
@@ -498,11 +499,23 @@ endfunction "}}}
 " Makes references and bibliographies (supports bibtex), indexes.  
 "{{{ MakeLatex
 " Function Arguments:
-function! <SID>MakeLatex(bang, verbose, start)
+function! <SID>MakeLatex(bang, mode, start)
 
-    " a:verbose and a:bang are not yet used by makelatex.py
+    if a:mode =~# '^s\%[ilent]$'
+	let mode = 'silent'
+    elseif a:mode =~# '^d\%[ebug]$'
+	let mode = 'debug'
+    elseif a:mode =~# 'D\%[ebug]$'
+	let mode = 'Debug'
+    elseif a:mode =~#  '^v\%[erbose]$'
+	let mode = 'debug'
+    else
+	let mode = t:atp_DebugMode
+    endif
+
+    " and a:bang are not yet used by makelatex.py
     let PythonMakeLatexPath = globpath(&rtp, "ftplugin/ATP_files/makelatex.py")
-    let interaction 	    = ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
+    let interaction 	    = ( mode=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
     let tex_options	    = shellescape(b:atp_TexOptions.',-interaction='.interaction)
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
@@ -521,6 +534,7 @@ function! <SID>MakeLatex(bang, verbose, start)
 		\ " --texfile ".shellescape(atplib#FullPath(b:atp_MainFile)).
 		\ " --start ".a:start.
 		\ " --output-format ".ext.
+		\ " --verbose ".mode.
 		\ " --cmd ".b:atp_TexCompiler.
 		\ " --bibcmd ".b:atp_BibCompiler.
 		\ " --bibliographies ".shellescape(bibliographies).
@@ -533,7 +547,7 @@ function! <SID>MakeLatex(bang, verbose, start)
 		\ " --viewer-options ".shellescape(viewer_options).
 		\ " --progname ".v:progname.
 		\ " --tempdir ".shellescape(g:atp_TempDir).
-		\ (t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
+		\ (t:atp_DebugMode=='verbose'||mode=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
 		\ reload_viewer . reload_on_error
     unlockvar g:atp_TexCommand
     let g:atp_TexCommand=cmd
@@ -542,7 +556,7 @@ function! <SID>MakeLatex(bang, verbose, start)
     " Write file
     call atplib#write("silent")
 
-    if a:verbose == "verbose"
+    if mode == "verbose"
 	exe ":!".cmd
     elseif has("win16") || has("win32") || has("win64")
 	let output=system(cmd)
@@ -603,13 +617,15 @@ function! <SID>IsRunning(program, file, ...)
 	let s:running=1
 	return s:running
     endif
+
+let s:running=0
 python << EOF
 import vim, psutil, os, pwd
 from psutil import NoSuchProcess
 x=0
-program	=vim.eval("a:program")
-f	=vim.eval("a:file")
-pat	="|".join(vim.eval("a:000"))
+program =vim.eval("a:program")
+f       =vim.eval("a:file")
+pat     ="|".join(vim.eval("a:000"))
 for pid in psutil.get_pid_list():
     try:
         p=psutil.Process(pid)
@@ -623,6 +639,8 @@ for pid in psutil.get_pid_list():
     except psutil.error.NoSuchProcess:
         pass
     except psutil.error.AccessDenied:
+        pass
+    except IndexError:
         pass
 vim.command("let s:running="+str(x))
 EOF
@@ -1605,28 +1623,32 @@ function! <SID>SetErrorFormat(...)
 	let pm = '+'
 
 	let &l:errorformat = &l:errorformat.",
-		    	    \%Zl.%l\ %m,
+			    \%-C<%.%#>%.%#,
+			    \%-Zl.%l\ ,
+		    	    \%-Zl.%l\ %m,
 			    \%-ZI've inserted%.%#,
 			    \%-ZThe control sequence%.%#,
 			    \%-ZYour command was ignored%.%#,
 			    \%-ZYou've closed more groups than you opened%.%#,
 			    \%-ZThe `$' that I just saw%.%#,
-			    \%-ZSee LaTeX%.%#,
 			    \%-ZA number should have been here%.%#,
 			    \%-ZI'm ignoring this;%.%#,
 			    \%-ZI suspect you've forgotten%.%#,
-			    \%-ZType\ \ H\ <return>%m,
-			    \%".pm."C\\s%#%m,
-			    \%".pm."C%.%#-%.%#,
-			    \%".pm."C%.%#[]%.%#,
-			    \%".pm."C[]%.%#,
-			    \%".pm."C%.%#%[{}\\]%.%#,
-			    \%".pm."C<%.%#>%.%#,
+			    \%-GSee LaTeX%.%#,
+			    \%-GType\ \ H\ <return>%m,
+			    \%-C\\s%#%m,
+			    \%-C%.%#-%.%#,
+			    \%-C%.%#[]%.%#,
+			    \%-C[]%.%#,
+			    \%-C%.%#%[{}\\]%.%#,
 			    \%-G ...%.%#,
 			    \%-G%.%#\ (C)\ %.%#,
 			    \%-G(see\ the\ transcript%.%#),
 			    \%-G\\s%#,
 			    \%-G%.%#"
+" These two appeared before l.%l (cannot be -Z):
+" 			    \%-GSee LaTeX%.%#,
+" 			    \%-GType\ \ H\ <return>%m,
 	let &l:errorformat = &l:errorformat.",
 			    \%".pm."O(%*[^()])%r,
 			    \%".pm."O%*[^()](%*[^()])%r,
@@ -1751,11 +1773,13 @@ command! -buffer -bang 		Kill			:call <SID>Kill(<q-bang>)
 command! -buffer -nargs=? 	ViewOutput		:call <SID>ViewOutput(<f-args>)
 command! -buffer -bang 		SyncTex			:call <SID>SyncTex(<q-bang>, 0)
 command! -buffer 		PID			:call <SID>GetPID()
-command! -buffer -bang 		MakeLatex		:call <SID>SetBiberSettings() | call <SID>MakeLatex(<q-bang>, 'silent', 0)
+command! -buffer -nargs=? -bang -complete=custom,DebugComp MakeLatex		:call <SID>SetBiberSettings() | call <SID>MakeLatex(<q-bang>, <q-args>, 0)
 nmap <buffer> <Plug>ATP_MakeLatex		:MakeLatex<CR>
 command! -buffer -nargs=? -bang -count=1 -complete=custom,DebugComp TEX	:call <SID>TeX(<count>, <q-bang>, <f-args>)
 command! -buffer -count=1	DTEX			:call <SID>TeX(<count>, <q-bang>, 'debug') 
 command! -buffer -bang -nargs=? -complete=custom,BibtexComp Bibtex		:call <SID>Bibtex(<q-bang>, <f-args>)
+" command! -buffer BibtexOutput	:echo b:atp_BibtexOutput
+" command! -buffer MakeidxOutput 	:echo b:atp_MakeidxOutput
 command! -buffer -nargs=? -complete=custom,ListErrorsFlags_A SetErrorFormat 	:call <SID>SetErrorFormat(<f-args>,1)
 
 augroup ATP_QuickFix_1
