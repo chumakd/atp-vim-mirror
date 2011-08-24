@@ -58,16 +58,20 @@ else:
         sys.exit("-1")
     y=float(791.333)-float(y)
     synctex_cmd=["synctex", "edit", "-o", str(page)+":"+str(x)+":"+str(y)+":"+str(file)]
+    f.write('>>> synctex     '+' '.join(synctex_cmd)+"\n")
     synctex=subprocess.Popen(synctex_cmd, stdout=subprocess.PIPE)
     synctex.wait()
     synctex_output=synctex.stdout.read()
+    if synctex.returncode != 0:
+        f.write(">>> synctex return with exit code: "+str(synctex.returncode)+"\n")
+        sys.exit(synctex.returncode)
     match_pos=re.findall("(?:Line:(-?\d+)|Column:(-?\d+))",synctex_output)
     line=match_pos[0][0]
     column=match_pos[1][1]
     if column == "-1":
         column = "1"
 
-f.write(">>> args "+file+":"+line+":"+column+"\n")
+f.write(">>> args        "+file+":"+line+":"+column+"\n")
 
 if match != None:
 	servers=match.group(1)

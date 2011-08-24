@@ -783,18 +783,16 @@ function! atplib#ServerListOfFiles()
     return file_list
 endfunction
 function! atplib#FindAndOpen(file, line, ...)
-    let col		= ( a:0 >= 1 ? a:1 : 1 )
+    let col		= ( a:0 >= 1 && a:1 > 0 ? a:1 : 1 )
     let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
     let server_list	= split(serverlist(), "\n")
-    exe "redir! >".g:atp_TempDir."/FindAndOpen.log"
-    echo "server list=".string(server_list)
+"     exe "redir! >".g:atp_TempDir."/FindAndOpen.log"
     if len(server_list) == 0
 	return 1
     endif
     let use_server	= "no_server"
     for server in server_list
 	let file_list=split(remote_expr(server, 'atplib#ServerListOfFiles()'), "\n")
-	echo "server " .server . " " . string(file_list)
 	if index(file_list, file) != -1
 	    let use_server	= server
 	    break
@@ -803,14 +801,14 @@ function! atplib#FindAndOpen(file, line, ...)
     if use_server == "no_server"
 	let use_server=server_list[0]
     endif
-    echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
+"     silent echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
     call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
     call remote_expr(use_server, 'cursor('.a:line.','.col.')')
     call remote_expr(use_server, 'redraw!')
 "   call system(v:progname." --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
 "   This line is not working in DWM, but it might work in KDE (to be tested):
 "     call system(v:progname." --servername ".use_server." --remote-exprt foreground\(\)")
-    redir end
+"     redir END
     return "File:".file." line:".a:line." col:".col." server name:".use_server." Hitch-hiking server:".v:servername 
 endfunction
 "}}}1

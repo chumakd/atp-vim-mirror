@@ -172,6 +172,9 @@ NEWS							*atp-news*
 				   works for Xpdf (and Okular). See
 				   |atp-Viewers-Xpdf| how to set it.
 
+  :MakeLatex [mode]		-- mode is one of silent/debug/Debug. Will
+				   also show bibtex/biber/makeidx error
+				   code/debug info.
 
   :Dictionary {word}		-- an interface to http://www.impan.pl/Dictionary/.
   					see |atp-:Dictionary| (with map =d
@@ -4634,15 +4637,15 @@ EDITING TOOLS							*atp-editing*
 	and mode: <LocalLeader>sc. 
 
 	They select the current environment in two ways: >
-				i 	- inner
-				a 	- outer
-				e 	- environment 
-				p	- paragraph	  
-				m	- math zones: \(:\), $:$, \[:\], $$:$$, 
-					  or math environment \begin:\end.ard
-					  search is set by ATP
-				)	- bracket
-				s	- syntax
+	    i 	- inner
+	    a 	- outer
+	    e 	- environment 
+	    p	- paragraph	  
+	    m	- math zones: \(:\), $:$, \[:\], $$:$$, 
+		      or math environment \begin:\end.ard
+		      search is set by ATP
+	    )	- bracket
+	    s	- syntax
 <								*atp-vie* *atp-viE* *atp-vae*
 	ie, iE, ae select environment: from the nearest \begin (top) to the nearest \end (bottom).	
 
@@ -4752,11 +4755,13 @@ Xpdf ~
 	You can set forward searching for Xpdf (from version 3.03, already
 	available here: http://foolabs.com/xpdf/download.html):
 
-Xpdf inverse search ~
+Xpdf: inverse search ~
+							(see also |atp_inverse_search|)
 	Add this line to your $HOME/.xpdfrc file: >
-	    bind t any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  "%f" %i %j %k)'
-<	Then pressing t will do forward search, i.e. it will set vim according
-	to mouse cursor position over Xpdf. See manpage of xpdf how to bind other keys.
+	    bind shift-mousePress1 any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  "%f" %i %j %k)'
+<	Then presing <Shift>+<Left_Mouse> will do forward search, i.e. 
+	it will set vim according to mouse cursor position over Xpdf. See
+	manpage of xpdf how to bind other keys.
 
 	Note: to use this xpdf have to be opened giving fullpath to the file.
 	This is important when you open a file from a terminal. Ohterwise
@@ -4777,14 +4782,11 @@ Okular ~
 		:SyncTex
 		map t
 		map <S-LeftMouse>
+<
+Okular: inverse search ~
+	Here is how to configure inverse searching (Okular->Vim) with
+	|atp_RevSearch.py| python script shifted with ATP: 
 
-Okular inverse search ~
-<	Here is how to configure inverse searching (Okular->Vim): 
-
-								*atp_RevSearch.py*
-						    This section desribes how to set atp_RevSearch for Okular,
-						    but similar steps will work for other viewers as well.
-								 
 	open Okular and go to >
 		settings>Configure Okular>Editor
 <	and set >
@@ -4795,27 +4797,6 @@ Okular inverse search ~
 	$PATH but then when this script will change you have to keep in mind
 	to copy it again. 
 
-	Note: |atp_RevSearch.py| scirpt has an option switch --synctex. When
-	it is present |atp_RevSearch.py| will run synctex to get the line
-	number. The syntax is: 
-	    atp_Revsearch --synctex {file} {page} {x-coord} {y-coord}
-	({x-coord} and {y-coord} counts from top left corner in big points
-	(72dpi), for example Xpdf (ver. 3.03) gives escapes for x,
-	y coordinates counting from bottom left corner)
-
-	If you set the command as above (with python before the path to
-	atp_RevSearch.py) you do not need to make atp_RevSearch.py executable.
-	Note, that otherwise whenever you update ATP you will have to make the
-	script executable!
-
-	|atp_RevSearch.py| can also handle column argument. If your viewer
-	support it (Okular does not) you can pass it as a third argument, i.e. >
-	    atp_RevSearch.py '%f' '%l' '%c'
-<
-	By default |atp_RevSearch.py| will use gvim, if you prefer to use vim
-	instead you can add "--vim" switch: i.e. set >
-	    Command	python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --vim '%f' '%l'
-<
 	If it is not working for you, please report it, you can also
 	use: >
 	    gvim --remote-wait +%l "+normal %c|" %f
@@ -4833,21 +4814,10 @@ Okular inverse search ~
 	Then you can use <Shift>+<Left_Mouse> in Okular to synchronize the Vim
 	(gVim) with pdf. 
 
-								*atplib#FindAndOpen()*	
-	The function atplib#FindAndOpen() asks each running gvim server if is
-	is "hosting" source of the file %f. Then it uses this server to set
-	the line (but it doesn't check if the cursor is in the right window!).
-	Note: if you like command line Vim (which has its own beauty
-	- actually I'm just typing in it :) you need to set up Vim server
-	  option on startup: >
- 		vim --servername VIM <file>
-<	{LIMITATIONS}:
-	The project files which are split into many input files are not yet
-	supported.
-	
                                                                 *atp-Viewers-Skim*
 Skim ~
-        To enable forward searching (vim --> Skim) you need to:
+	Forward searching (vim -> Skim): ~
+        To enable forward searching you need to:
         (1) download the skript: http://links.tedpavlic.com/shell_scripts/skim
             put it somewhere in your $PATH and make executable.
         (2) make a symbolic link of:
@@ -4905,6 +4875,56 @@ Mupdf ~
 	located (for example with autocmd event |CursorHold|). This might be
 	nice on a big enough monitor on which you can see both vim and mupdf
 	on one screen.
+
+================================================================================
+INVERSE SEARCHING						*atp_inverse_search*
+
+								*atp_RevSearch.py*
+	ATP comes with a python script which can do inverse searching. It is
+	based on synctex and a vim function |atplib#FindAndOpen()|. The last
+	function searches which running vim/gvim instance holds the {file},
+	and updates the cursor location. The syntax is as follows:
+
+	    atp_RevSearch.py [--gvim] {file} {line} [column]
+	    atp_RevSearch.py [--gvim] --synctex {file} {page} {x-coord} {y-coord}
+
+	First syntax will work for viewers which calls synctex themselves
+	(like Okular) and has escapes for {line} (and [column]).  The second
+	syntax is for viewers which have ony escapes characters fo {page}
+	number and the coordinates {x-coord} and {y-coord} (for example Xpdf).
+
+	Note: {x-coord} and {y-coord} counts from top left corner in big
+	points (72dpi), for example Xpdf (ver. 3.03) gives escapes for x,
+	y coordinates counting from bottom left corner)
+
+	Preferably you should call this command with >
+	    python PATH/atp_RevSearch.py  {args}
+<	Then when you update ATP you will not miss updates of |atp_RevSearch.py|. 
+	Another good solution is to link |atp_RevSearch.py| somewhere in the
+	$PATH and make it executable. If you just copy it you might miss when
+	it will be updated. If you set the command as above (with python
+	before the path to atp_RevSearch.py) you do not need to make
+	atp_RevSearch.py executable.  Note, that otherwise whenever you update
+	ATP you will have to make the script executable!
+
+	By default, the script is using gvim. If you prefer to use vim add
+	[--vim] switch: >
+	    python PATH/atp_RevSearch --gvim --synctex {file} {page} {x-coord} {y-coord}
+<
+
+								*atplib#FindAndOpen()*	
+	The function atplib#FindAndOpen() asks each running gvim server if is
+	is "hosting" source of the file %f. Then it uses this server to set
+	the line (but it doesn't check if the cursor is in the right window!).
+
+	Note: if you like command line Vim (which has its own beauty
+	- actually I'm just typing in it :) you need to set up Vim server
+	  option on startup: >
+ 		vim --servername VIM <file>
+<	Limitations: ~
+	The project files which are split into many input files are not yet
+	supported.
+	
 
 ================================================================================
 TIPS                               				*atp-tips*
