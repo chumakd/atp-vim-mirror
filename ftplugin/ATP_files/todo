@@ -444,3 +444,4 @@ Done: there are now two function which check if math is closed: atplib#CheckClos
     I should compare them and use the faster and more accurate one.
 Todo: ( \(\Phi<Tab\) should not close ) like atplib#GetBracket() does.
 Todo: atplib#CallBack should also work with errors of makeidx.
+Todo: atplib#TabCompletion closeing \(:\) is again slow.

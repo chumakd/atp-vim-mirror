@@ -1827,7 +1827,7 @@ imap <Plug>TexJMotionBackward	<Esc>:call JMotion('b')<CR>a
 nmap <Plug>TexJMotionForward	:call JMotion('')<CR>
 nmap <Plug>TexJMotionBackward	:call JMotion('b')<CR>
 
-command! -buffer -nargs=1 -complete=buffer MakeToc	:echo s:maketoc(fnamemodify(<f-args>, ":p"))[fnamemodify(<f-args>, ":p")] 
+" command! -buffer -nargs=1 -complete=buffer MakeToc	:echo s:maketoc(fnamemodify(<f-args>, ":p"))[fnamemodify(<f-args>, ":p")] 
 command! -buffer -bang -nargs=? TOC	:call <SID>TOC(<q-bang>)
 command! -buffer CTOC			:call CTOC()
 command! -buffer -bang Labels		:call <SID>Labels(<q-bang>)

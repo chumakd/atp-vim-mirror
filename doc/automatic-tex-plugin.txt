@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 23 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 24 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
 			by Marcin Szamotulski
@@ -4759,9 +4759,10 @@ Xpdf: inverse search ~
 							(see also |atp_inverse_search|)
 	Add this line to your $HOME/.xpdfrc file: >
 	    bind shift-mousePress1 any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  "%f" %i %j %k)'
-<	Then presing <Shift>+<Left_Mouse> will do forward search, i.e. 
-	it will set vim according to mouse cursor position over Xpdf. See
-	manpage of xpdf how to bind other keys.
+<	Note: %i, %j, %k should not be quoted.
+	Presing <Shift>+<Left_Mouse> will do forward search, i.e. it will set
+	vim according to mouse cursor position over Xpdf. See man page of xpdf
+	how to bind other keys.
 
 	Note: to use this xpdf have to be opened giving fullpath to the file.
 	This is important when you open a file from a terminal. Ohterwise
@@ -4771,6 +4772,9 @@ Xpdf: inverse search ~
 	A workaround this should be to place atp_RevSearch somewhere in your
 	path and make in exec utable and change the run() comman to
 	'run(atp_RevSearch.py --synctex %f %i %j %k)'. This is not tested solution.
+
+	You can debug Xpdf if something doesn't work: open the file from terminal
+	with 'xpdf -cmd' see the man page of Xpdf.
 
 Evince ~
 	Works fine.
@@ -4911,6 +4915,13 @@ INVERSE SEARCHING						*atp_inverse_search*
 	[--vim] switch: >
 	    python PATH/atp_RevSearch --gvim --synctex {file} {page} {x-coord} {y-coord}
 <
+	Note: |atp_RevSearch.py| doesn't like when you susppend an instance of
+	vim (any).
+
+	|atp_RevSearch.py| write to a debug file /tmp/atp_RevSearch.py.
+
+	Note: if inverse searching stopped working for you, try to recompile
+	the document.
 
 								*atplib#FindAndOpen()*	
 	The function atplib#FindAndOpen() asks each running gvim server if is

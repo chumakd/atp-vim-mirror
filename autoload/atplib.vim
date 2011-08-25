@@ -4076,6 +4076,7 @@ function! atplib#GetBracket(append,...)
 		" I should close it if math is not closed.
 		let bracket = atplib#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
 	    elseif (begParen[0] != 0 && begParen[1] !=0) && atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
+		let [s:open_line, s:open_col, s:opening_bracket]=begParen
 		let bracket = atplib#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	    else
 		let bracket = "0"
@@ -4436,7 +4437,7 @@ function! atplib#TabCompletion(expert_mode,...)
     "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
-" 	let g:time_B = reltimestr(reltime(time))
+	let g:time_B = reltimestr(reltime(time))
 	"{{{4 --------- abbreviations
 	if l =~ '=[a-zA-Z]\+\*\=$' &&
 		\ index(g:atp_completion_active_modes, 'abbreviations') != -1
@@ -4449,13 +4450,17 @@ function! atplib#TabCompletion(expert_mode,...)
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 	    let completion_method = 'brackets'
 	    let b:comp_method='brackets'
-	    let g:begParen=begParen
-	    let g:append=append
 	    let bracket=atplib#GetBracket(append, 0, begParen)
-	    let g:bracket_tc=bracket
 	    let g:time_TabCompletion=reltimestr(reltime(time))
 	    let move = ( !a:expert_mode ? join(map(range(len(bracket)), '"\<Left>"'), '') : '' )
 	    return bracket.move
+	"{{{4 --------- close environments
+	elseif (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
+		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
+	    let completion_method='close_env'
+	    " DEBUG:
+	    let b:comp_method='close_env a' 
+	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	"{{{4 --------- algorithmic
 	elseif atplib#CheckBracket(g:atp_algorithmic_dict)[0] != 0 && 
 		    \ atplib#CheckSyntaxGroups(['texMathZoneALG']) && 
@@ -4466,13 +4471,6 @@ function! atplib#TabCompletion(expert_mode,...)
 		call atplib#CloseLastBracket(g:atp_algorithmic_dict, 0, 1)
 		let g:time_TabCompletion=reltimestr(reltime(time))
 		return '' 
-	"{{{4 --------- close environments
-	elseif (!normal_mode &&  index(g:atp_completion_active_modes, 'close environments') != '-1' ) ||
-		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'close environments') != '-1' )
-	    let completion_method='close_env'
-	    " DEBUG:
-	    let b:comp_method='close_env a' 
-	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	"}}}4
 	else
 	    let g:time_TabCompletion=reltimestr(reltime(time))

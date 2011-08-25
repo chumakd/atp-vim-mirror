@@ -22,8 +22,9 @@
 # DEBUG:
 # debug file : /tmp/atp_RevSearch.debug
 
-import subprocess, sys, re, optparse
+import subprocess, sys, re, optparse, os
 from optparse import OptionParser
+from os import devnull
 
 usage   = "usage: %prog [options]"
 parser  = OptionParser(usage=usage)
@@ -37,11 +38,21 @@ else:
 
 f = open('/tmp/atp_RevSearch.debug', 'w')
 
+def vim_remote_expr(servername, expr):
+# Send <expr> to vim server,
+
+# expr must be well quoted:
+#       vim_remote_expr('GVIM', "atplib#TexReturnCode()")
+    cmd=[progname, '--servername', servername, '--remote-expr', expr]
+    devnull=open(os.devnull, "w+")
+    subprocess.Popen(cmd, stdout=devnull, stderr=f).wait()
+    devnull.close()
+
 # Get list of vim servers.
-output = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
+output  = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
 servers = output.stdout.read().decode()
-match=re.match('(.*)(\\\\n)?', servers)
-file=args[0]
+match   = re.match('(.*)(\\\\n)?', servers)
+file    = args[0]
 if not options.synctex:
     line=args[1]
     # Get the column (it is an optional argument)
@@ -59,27 +70,44 @@ else:
     y=float(791.333)-float(y)
     synctex_cmd=["synctex", "edit", "-o", str(page)+":"+str(x)+":"+str(y)+":"+str(file)]
     f.write('>>> synctex     '+' '.join(synctex_cmd)+"\n")
-    synctex=subprocess.Popen(synctex_cmd, stdout=subprocess.PIPE)
+    synctex=subprocess.Popen(synctex_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     synctex.wait()
-    synctex_output=synctex.stdout.read()
-    if synctex.returncode != 0:
-        f.write(">>> synctex return with exit code: "+str(synctex.returncode)+"\n")
-        sys.exit(synctex.returncode)
-    match_pos=re.findall("(?:Line:(-?\d+)|Column:(-?\d+))",synctex_output)
-    line=match_pos[0][0]
-    column=match_pos[1][1]
-    if column == "-1":
-        column = "1"
+    synctex_output      = synctex.stdout.read()
+    synctex_error       = re.split('\n',synctex.stderr.read())
+    error               = ""
+    for error_line in synctex_error:
+        if re.match('SyncTeX ERROR', error_line):
+            error=error_line
+            print(error)
+            break
+    f.write('>>> synctex return code: '+str(synctex.returncode)+"\n")
+    if synctex.returncode == 0:
+        match_pos=re.findall("(?:Line:(-?\d+)|Column:(-?\d+))",synctex_output)
+        line=match_pos[0][0]
+        column=match_pos[1][1]
+        if column == "-1":
+            column = "1"
+    else:
+        print("synctex return code: "+str(synctex.returncode))
+        line    = "-1"
+        column  = "-1"
 
 f.write(">>> args        "+file+":"+line+":"+column+"\n")
 
 if match != None:
-	servers=match.group(1)
-	server_list=servers.split('\\n')
-	server = server_list[0]
-	# Call atplib#FindAndOpen()     
-	cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+line+"','"+column+"')\""
-	subprocess.call(cmd, shell=True)
+    servers=match.group(1)
+    server_list=servers.split('\\n')
+    server = server_list[0]
+    if synctex.returncode == 0:
+        # Call atplib#FindAndOpen()     
+        cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+line+"','"+column+"')\""
+        subprocess.call(cmd, shell=True)
+    else:
+        cmd=""
+        if error != "":
+            vim_remote_expr(server, "atplib#Echo(\"[ATP:] "+error+"\",'echo','WarninMsg')")
+        else:
+            vim_remote_expr(server, "atplib#Echo(\"[SyncTex:] synctex return with exit code: "+str(synctex.returncode)+"\",'echo','WarninMsg')")
 # Debug:
 f.write(">>> output      "+str(servers)+"\n")
 if match != None:
