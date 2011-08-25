@@ -768,6 +768,9 @@ function! atplib#ServerListOfFiles()
     exe "redir! > " . g:atp_TempDir."/ServerListOfFiles.log"
     let file_list = []
     for nr in range(1, bufnr('$')-1)
+	" map fnamemodify(v:val, ":p") is not working if we are in another
+	" window with file in another dir. So we are not using this (it might
+	" happen that we end up in a wrong server though).
 	let files 	= getbufvar(nr, "ListOfFiles")
 	let main_file 	= getbufvar(nr, "atp_MainFile")
 	if string(files) != "" 
@@ -778,38 +781,78 @@ function! atplib#ServerListOfFiles()
 	endif
     endfor
     call filter(file_list, 'v:val != ""')
-    call map(file_list, "fnamemodify(v:val, ':p')") 
     redir end
     return file_list
 endfunction
 function! atplib#FindAndOpen(file, line, ...)
     let col		= ( a:0 >= 1 && a:1 > 0 ? a:1 : 1 )
     let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
+    let g:file		= file
+    let file_t		= fnamemodify(file, ":t")
+    let g:file_t	= file_t
     let server_list	= split(serverlist(), "\n")
 "     exe "redir! >".g:atp_TempDir."/FindAndOpen.log"
+    exe "redir! > /tmp/FindAndOpen.log"
     if len(server_list) == 0
 	return 1
     endif
-    let use_server	= "no_server"
+    let use_server	= ""
+    let use_servers	= []
     for server in server_list
 	let file_list=split(remote_expr(server, 'atplib#ServerListOfFiles()'), "\n")
-	if index(file_list, file) != -1
+	let cond_1 = (index(file_list, file) != "-1")
+	let cond_2 = (index(file_list, file_t) != "-1")
+	if cond_1
 	    let use_server	= server
 	    break
+	elseif cond_2
+	    call add(use_servers, server)
 	endif
     endfor
-    if use_server == "no_server"
-	let use_server=server_list[0]
+    " If we could not find file name with full path in server list use the
+    " first server where is fnamemodify(file, ":t"). 
+    if use_server == ""
+	let use_server=get(use_servers, 0, "")
     endif
-"     silent echo "file:".file." line:".a:line. " col ".col." server name:".use_server." hitch-hiking server:".v:servername 
-    call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
-    call remote_expr(use_server, 'cursor('.a:line.','.col.')')
-    call remote_expr(use_server, 'redraw!')
-"   call system(v:progname." --servername ".use_server." --remote-exprt \"remote_foreground('".use_server."')\"")
-"   This line is not working in DWM, but it might work in KDE (to be tested):
-"     call system(v:progname." --servername ".use_server." --remote-exprt foreground\(\)")
-"     redir END
-    return "File:".file." line:".a:line." col:".col." server name:".use_server." Hitch-hiking server:".v:servername 
+    let g:use_server=use_server
+    if use_server != ""
+	call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
+	Test this for file names with spaces
+	let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
+	let g:use_server=use_server
+	let g:bufwinnr = bufwinnr
+	if bufwinnr 	== "-1"
+" 	    " The buffer is in a different tab page.
+	    let tabpage	= 1
+" 	    " Find the correct tabpage:
+	    for tabnr in range(1, remote_expr(use_server, 'tabpagenr("$")'))
+		let tabbuflist = split(remote_expr(use_server, 'tabpagebuflist("'.tabnr.'")'), "\n")
+		let tabbuflist_names = split(remote_expr(use_server, 'map(tabpagebuflist("'.tabnr.'"), "bufname(v:val)")'), "\n")
+		if count(tabbuflist_names, file) || count(tabfublist_names, file_t)
+		    let tabpage = tabnr
+		    break
+		endif
+	    endfor
+	    " Goto to the tabpage:
+	    if remote_expr(use_server, 'tabpagenr()') != tabpage
+		call remote_send(use_server, '<Esc>:tabnext '.tabpage.'<CR>')
+	    endif
+	    " Check the bufwinnr once again:
+	    let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
+	endif
+
+	let g:bufwinnr= bufwinnr
+
+" winnr() doesn't work remotely, this is a substitute:
+	let remote_file = remote_expr(use_server, 'expand("%:t")')
+	let g:remote_file = remote_file
+	if remote_file  != file_t
+	    call remote_send(use_server, "<Esc>:".bufwinnr."wincmd w<CR>")
+	else
+	call remote_expr(use_server, 'cursor('.a:line.','.col.')')
+	call remote_send(use_server, '<Esc>:redraw<CR>')
+    endif
+    return use_server
 endfunction
 "}}}1
 

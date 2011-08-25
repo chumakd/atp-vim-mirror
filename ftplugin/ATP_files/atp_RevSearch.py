@@ -73,14 +73,17 @@ else:
     synctex=subprocess.Popen(synctex_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     synctex.wait()
     synctex_output      = synctex.stdout.read()
-    synctex_error       = re.split('\n',synctex.stderr.read())
+    synctex_error       = synctex.stderr.read()
+#     f.write("SyncTex ERROR:\n"+synctex_error+"\n")
+    synctex_error_list  = re.split('\n',synctex_error)
     error               = ""
-    for error_line in synctex_error:
+    for error_line in synctex_error_list:
         if re.match('SyncTeX ERROR', error_line):
             error=error_line
             print(error)
             break
     f.write('>>> synctex return code: '+str(synctex.returncode)+"\n")
+    f.write(">>> synctex error      : "+error+"\n")
     if synctex.returncode == 0:
         match_pos=re.findall("(?:Line:(-?\d+)|Column:(-?\d+))",synctex_output)
         line=match_pos[0][0]
@@ -98,20 +101,21 @@ if match != None:
     servers=match.group(1)
     server_list=servers.split('\\n')
     server = server_list[0]
-    if synctex.returncode == 0:
-        # Call atplib#FindAndOpen()     
-        cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+line+"','"+column+"')\""
-        subprocess.call(cmd, shell=True)
-    else:
+    f.write(">>> server: "+server+"\n")
+    # Call atplib#FindAndOpen()     
+    cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+line+"','"+column+"')\""
+    findandopen=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    vim_server=re.split("\n",findandopen.stdout.read())[0]
+    f.write('>>> vim server: '+vim_server+"\n")
+    if synctex.returncode != 0 and vim_server != "":
         cmd=""
         if error != "":
-            vim_remote_expr(server, "atplib#Echo(\"[ATP:] "+error+"\",'echo','WarninMsg')")
+            vim_remote_expr(vim_server, "atplib#Echo('[ATP:] "+error+"','echomsg','WarninMsg', '1')")
         else:
-            vim_remote_expr(server, "atplib#Echo(\"[SyncTex:] synctex return with exit code: "+str(synctex.returncode)+"\",'echo','WarninMsg')")
+            vim_remote_expr(vim_server, "atplib#Echo(\"[SyncTex:] synctex return with exit code: "+str(synctex.returncode)+"\",'echo','WarninMsg', '1')")
 # Debug:
-f.write(">>> output      "+str(servers)+"\n")
 if match != None:
-	f.write(">>> file        "+file+"\n>>> line        "+line+"\n>>> column      "+column+"\n>>> server      "+server+"\n>>> server list "+str(server_list)+"\n>>> cmd         "+cmd+"\n")
+	f.write(">>> file        "+file+"\n>>> line        "+line+"\n>>> column      "+column+"\n>>> cmd         "+cmd+"\n")
 else:
 	f.write(">>> file        "+file+"\n>>> line        "+line+"\n>>> column      "+column+"\n>>> server       not found\n")
 f.close()

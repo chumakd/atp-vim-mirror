@@ -2537,7 +2537,7 @@ endfunction
     if (exists("g:atp_statusline") && g:atp_statusline == '1') || !exists("g:atp_statusline")
 	augroup ATP_Status
 	    au!
-	    au BufWinEnter 	*.tex 	call ATPStatus()
+	    au BufWinEnter,TabEnter 	*.tex 	call ATPStatus()
 	augroup END
     endif
 

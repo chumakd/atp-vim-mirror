@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 24 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 25 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
 			by Marcin Szamotulski
@@ -4915,13 +4915,17 @@ INVERSE SEARCHING						*atp_inverse_search*
 	[--vim] switch: >
 	    python PATH/atp_RevSearch --gvim --synctex {file} {page} {x-coord} {y-coord}
 <
-	Note: |atp_RevSearch.py| doesn't like when you susppend an instance of
+	Note: |atp_RevSearch.py| doesn't like when you suspend an instance of
 	vim (any).
 
 	|atp_RevSearch.py| write to a debug file /tmp/atp_RevSearch.py.
 
 	Note: if inverse searching stopped working for you, try to recompile
 	the document.
+
+	Finally, |atp_RevSearch.py| will forward error messages (or error code
+	if error message was not found) back to vim. This is only possible if
+	|atp_RevSearch.py| found the correct vim server.
 
 								*atplib#FindAndOpen()*	
 	The function atplib#FindAndOpen() asks each running gvim server if is
@@ -4932,7 +4936,10 @@ INVERSE SEARCHING						*atp_inverse_search*
 	- actually I'm just typing in it :) you need to set up Vim server
 	  option on startup: >
  		vim --servername VIM <file>
-<	Limitations: ~
+
+<	|atplib#FindAndOpen()| will find a correct tabpage and window if
+	necessary and focus vim in the right one.
+	Limitations: ~
 	The project files which are split into many input files are not yet
 	supported.
 	

@@ -953,6 +953,7 @@ endfunction
 
 " The main status function, it is called via autocommand defined in 'options.vim'.
 let s:errormsg = 0
+let g:i=0
 function! ATPStatus(...) "{{{
 
     if expand("%") == "[Command Line]" || &l:filetype == "qf"
@@ -960,7 +961,7 @@ function! ATPStatus(...) "{{{
 	return
     endif
 
-    if a:0 >= 1 
+    if a:0 >= 1 && a:1 != -1
 	" This is run be the command :Status (:ATPStatus)
 	if a:1 == ""
 	    let g:status_OutDir = s:StatusOutDir()
