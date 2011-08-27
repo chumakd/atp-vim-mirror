@@ -445,5 +445,5 @@ Done: atplib#CallBack should also work with errors of makeidx.
 Done: atplib#TabCompletion closeing \(:\) is again slow.
 Done: end the atplib#FindAndOpen find the correct tabpage.
 Todo: add support for htlatex: http://www.tug.org/applications/tex4ht/mn.html
-Todo: make closing brackets fast!
+Done: make closing brackets fast!
 Todo: FoldClose()  when closeing subsection inside section - this is not working

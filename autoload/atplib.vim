@@ -3729,8 +3729,8 @@ function! atplib#CheckBracket(bracket_dict)
     
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[4])])
 
-    let begin_line	= max([search('\\\%(begin\|end\|par\)\|^\s*$', 'bcnW'), limit_line])
-    let end_line	= min([search('\\\%(begin\|end\|par\)\|^\s*$', 'cnW'), min([line('$'), line(".")+g:atp_completion_limits[4]])]) 
+    let begin_line	= max([search('\\\%(begin\|end\|par\)\>', 'bnW'), limit_line])
+    let end_line	= min([search('\\\%(begin\|end\|par\)\>', 'nW'), min([line('$'), line(".")+g:atp_completion_limits[4]])]) 
 
 
     if g:atp_debugCheckBracket

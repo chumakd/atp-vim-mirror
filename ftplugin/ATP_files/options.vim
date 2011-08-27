@@ -802,6 +802,7 @@ if !exists("g:atp_EnvOptions_itemize")
 endif
 if !exists("g:atp_VimCompatible")
     " Used by: % (s:JumpToMatch in LatexBox_motion.vim).
+    " Remap :normal! r to <SID>Replace() (various.vim)
     let g:atp_VimCompatible = 0
     " It can be 0/1 or yes/no.
 endif 

@@ -2,12 +2,51 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Aug 27 10:00  2011 W
+" Last Change: Sat Aug 27 08:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
 " FUNCTIONS: (source once)
 if !s:sourced || g:atp_reload_functions "{{{
+" Replace function (like :normal! r)
+function! <SID>Replace() "{{{
+    " It will not work with <:> since with the default settings "normal %" is not
+    " working with <:>, possibly because g:atp_bracket_dict doesn't contain this
+    " pair.
+    let char =  nr2char(getchar())
+    let g:char = char
+    let f_char = getline(line("."))[col(".")-1]
+    if f_char =~ '^[(){}\[\]]$'
+	if f_char =~ '^[({\[]$'
+	    let bracket_dict = { '{' : '}',
+			\  '(' : ')',
+			\  '[' : ']',}
+	else
+	    let bracket_dict = { '}' : '{',
+			\  ')' : '(',
+			\  ']' : '[',}
+	endif
+	let c_bracket = get(bracket_dict,char, "")
+	if c_bracket == ""
+	    exe "normal! r".char
+	    return
+	endif
+	let [b_line, b_col] = [line("."), col(".")]
+	exe "normal %"
+	let [e_line, e_col] = [line("."), col(".")]
+	call cursor(b_line, b_col)
+	exe "normal! r".char
+	call cursor(e_line, e_col)
+	exe "normal! r".c_bracket
+	call cursor(b_line, b_col)
+	return
+    else
+	exe "normal! r".char
+    endif
+endfunction 
+nnoremap <Plug>Replace	:call <SID>Replace()<CR>
+"}}}
+
 " This is the wrap selection function.
 " {{{ WrapSelection
 function! s:WrapSelection(...)

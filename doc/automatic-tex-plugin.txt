@@ -192,6 +192,19 @@ NEWS							*atp-news*
 				   file.
   :TexAlign!			-- bang added+some fixes, see |atp-:TexAlign|.
 
+								|atp-r|
+  Replace()			-- if |g:atp_VimCompatible| is 0 then the
+				   normal |r| will be overwritten with another
+				   function with the following feature:
+				   if you do |atp-r| over one of the brackets:
+				   (:), {:}, [:] then r(, r{, r[ (and r), r},
+				   r]) will change both: the opening and the
+				   closing bracket. Otherwise, i.e. over any
+				   other character, or rc where c is other
+				   than opening bracket at opening position or
+				   closing bracket at closing posistion,
+				   |atp-r| will work the same as |r|.
+
   New imaps:
   l*, L*	\wedge, \bigwedge (l = lattice theoretic, meet)
   l+, L+	\vee,	\bigvee   (join)
@@ -4730,7 +4743,16 @@ nmap gw
 								*atp-g>*	
 nmaps: g>, g<, 2g>, ..., 6g>  
 	A normal map to m`vipg>`` (or m`vip2g>``).
-
+								
+								*atp-r*
+nmap r   
+	If |g:atp_VimCompatible| is 0 then the normal command |r| will be over written
+	with an ATP function with the following feature: if you do |atp-r|
+	over one of the brackets: (:), {:}, [:] then r(, r{, r[ (and r), r},
+	r]) will change both: the opening and the closing bracket. Otherwise,
+	i.e. over any other character, or |atp-r| over a bracket with
+	replacing character other than opening bracket at opening position or
+	closing bracket at closing posistion, |atp-r| will work the same as |r|.
 	
 
 ================================================================================
