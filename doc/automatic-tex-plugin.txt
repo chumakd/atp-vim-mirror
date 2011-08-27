@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 25 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 27 August 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
 			by Marcin Szamotulski
@@ -197,6 +197,20 @@ NEWS							*atp-news*
   l+, L+	\vee,	\bigvee   (join)
   wedge is also under #& but #ve (for \vee) and #V (for \bigvee) are removed,
   since they were interfering with #ve for \varepsilon.
+
+  Greek Letter Maps: are disabled when the previous character is '\'. So you
+  can type '\#a' with the default value of |g:atp_imap_leader_1| and it will
+  not transform into '\\alpha'.
+
+  TOC:
+  map _				-- set section: focus main window on the
+				   section under cursor and jump back to TOC.
+  map & vmap zc			-- fold sections/chapters/... . Has one
+				   limitation: cannot fold subsection if
+				   section in which it sits is folded.
+				   You can fold several sections at once using
+				   visual mode (subsections will not be
+				   follded in right way though).
 
 >
  ======================
@@ -598,7 +612,9 @@ To get updates it is enought to use this command:
 	{UNSTABLE} snapshots contain small fixes, and rarely, major changes
 	of important parts of ATP (what can produce new bugs).  
 
-	Requires python.
+	|atp-:UpdateATP| works well with pathogen vim plugin.
+
+	Requires python (consult the |feature-list|).
 
 							*atp-:ATPversion*
 :ATPversion	
@@ -2200,10 +2216,20 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 	    's'		it splits the window with your tex source file and
 			    sets the current line to the beginning of the
 			    chapter/section under the cursor,
-	    'q' 	to quit, and finally, 
-	    <Enter> 	to go to the chapter under the cursor and close ToC.
-	    <space> 	to go to the chapter under the cursor but leave ToC
+	    'q' 	to quit, 
+	    <Enter> 	to go to the section under the cursor and close ToC.
+	    <space> 	to go to the section under the cursor but leave ToC
 			    open.
+	    '_' 	to go to the section under the cursor and return to 
+			ToC afterwards.
+	    'zc'	to fold section/chapter/... . You can mark several
+			lines in vusual mode and use 'zc' to fold them at
+			once. 
+			Limitation: ~
+			It cannot fold subsections in a right way when the
+			section is folded. In particular, this applies when
+			folding several sections with subsections in visual
+			mode.
 
 	There are also commands: ':C' and ':P', which do the same as 'c' and
 	'p' mappings. They all call the function 'Yank(<where>)', the argument
@@ -2257,8 +2283,8 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 	with the file name. 
 							*atp-:Undo*
 >
- :Undo 
- nnoremap u, nnoremap U, nnoremap g-, nnoremap g+ 
+     :Undo 
+     nnoremap u, nnoremap U, nnoremap g-, nnoremap g+ 
 <	You can use undo. The :Undo command will undo in the buffer under
 	the cursor (it switches to the correct window, using the Vim undo
 	function, and runs :TOC command - so after all your back in ToC.). The
@@ -2284,9 +2310,15 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 		You may want to have a map: >
 				:au FileType toc_atp nnoremap dd :DeleteSection<CR>
 <		this can be put in your '$HOME/.atp.vim' configuration file.
+							    *atp-:Fold*
+>
+    :Fold, :'<,'>Fold
+<	Fold section[s], works in the same way as 'zc' (as above) with the same
+	litmitations.
+
 
 ================================================================================
-SEARCHING IN BIB FILES 		                       		 *atp-bibsearch*
+SEARCHING IN BIB FILES						*atp-bibsearch*
 
 		___________________________
 		Table of Contents: ~
@@ -4182,7 +4214,10 @@ Note: You can list this mappings using the command |atp-:HelpMathIMaps|. You
       insert mode was inside mathematics.
 							*g:atp_imap_define_greek_letters*
 Note: If you do not want imaps for greek letters you can set
-      |g:atp_ima_define_greek_letters| = 0
+      |g:atp_imap_define_greek_letters| = 0
+Note: |g:atp_imap_leader_1| is used as a leader (with the defaul value '#').
+Note: if the previous character is '\' the mapping will not work which allows
+      writting '\#a', etc. However, there is no check for '\\'.
 imap #a 	\alpha
 imap #b 	\beta
 imap #c 	\chi

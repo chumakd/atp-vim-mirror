@@ -440,9 +440,10 @@ Todo: there is no \varepsilon map (used to be #ve - interfering with \vee )
 	\bigvee -> L+ 	\bigwedge -> L*
 Done: \(\Sub(V={V^*}^*<Tab>)\) -> \(\Sub(V={V^*}^*\))\)
 
-Done: there are now two function which check if math is closed: atplib#CheckClosed_syntax() and atplib#CheckInlineMath()
-    I should compare them and use the faster and more accurate one.
-Todo: ( \(\Phi<Tab\) should not close ) like atplib#GetBracket() does.
-Todo: atplib#CallBack should also work with errors of makeidx.
-Todo: atplib#TabCompletion closeing \(:\) is again slow.
-Todo: end the atplib#FindAndOpen find the correct tabpage.
+Done: ( \(\Phi<Tab\) should not close ) like atplib#GetBracket() does.
+Done: atplib#CallBack should also work with errors of makeidx.
+Done: atplib#TabCompletion closeing \(:\) is again slow.
+Done: end the atplib#FindAndOpen find the correct tabpage.
+Todo: add support for htlatex: http://www.tug.org/applications/tex4ht/mn.html
+Todo: make closing brackets fast!
+Todo: FoldClose()  when closeing subsection inside section - this is not working

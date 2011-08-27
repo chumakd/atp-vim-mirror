@@ -1,6 +1,20 @@
+# This is a Makefile for Automatic Tex Plugin project.
+# Written by Marcin Szamotulski.
+
+# Usage:
+# make 		-- will generate vbm as well as tar.gz file,
+# 		   it will also update time stamps in various places.
+# make test	-- will list files in *.tar.gz bundle
+# make install	-- will install it under ${INSTALL_DIR}
+# make upload	-- will upload new snaphot to SourceForge
+# make release	-- will upload new snaphot and new release to SourceForge
+# make clean	-- will delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
 VERSION = 10.3
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
+# The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
+# entries. I use pathogen, so my setting is more complicated:
+INSTALL_DIR = ${HOME}/.vim/vim-addons/atp
 
 SOURCE = ftplugin/ATP_files/LatexBox_common.vim
 SOURCE += ftplugin/ATP_files/LatexBox_complete.vim
@@ -77,8 +91,8 @@ ${Plugin}_${VERSION}.vmb: ${SOURCE}
 		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 
 install:
-		rsync -Rv ${SOURCE} ${HOME}/.vim/
-		vim --cmd :helptags\ ${HOME}/.vim/doc --cmd q!
+		rsync -Rv ${SOURCE} ${INSTALL_DIR}
+		vim --cmd :helptags\ ${INSTALL_DIR}/doc --cmd q!
 
 clean:		
 		rm ${PLUGIN}_[0-9.]*.*

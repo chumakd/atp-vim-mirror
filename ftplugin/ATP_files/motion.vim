@@ -521,12 +521,15 @@ function! s:showtoc(toc)
     " Help Lines:
     if search('<Enter> jump and close', 'nW') == 0
 	call append('$', [ '', 			
+		\ '_       set',
 		\ '<Space> jump', 
 		\ '<Enter> jump and close', 	
 		\ 's       jump and split', 
 		\ 'y or c  yank label', 	
 		\ 'p       paste label', 
 		\ 'q       close', 		
+		\ 'zc	     fold section[s]',
+		\ ":'<,'>Fold",
 		\ ':YankSection', 
 		\ ':DeleteSection', 
 		\ ':PasteSection', 		

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Aug 21 06:00  2011 W
+" Last Change: Sat Aug 27 10:00  2011 W
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1779,7 +1779,10 @@ function! <SID>ReloadATP(bang)
 	" delete functions from autoload/atplib.vim:
 	let atplib_file	= globpath(&rtp, 'autoload/atplib.vim')
 	let saved_loclist = getloclist(0)
-	exe 'lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_file
+	try
+	    exe 'silent! lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_file
+	catch E486:
+	endtry
 	let list=map(getloclist(0), 'v:val["text"]')
 	call setloclist(0,saved_loclist)
 	call map(list, 'matchstr(v:val, ''^\s*fun\%[ction]!\=\s\+\zsatplib#\S\+\ze\s*('')')
@@ -2570,7 +2573,7 @@ function! <SID>UpdateATP(bang)
 
 	let dir = fnamemodify(globpath(&rtp, "ftplugin/tex_atp.vim"), ":h:h")
 	if dir == ""
-	    echoerr "[ATP:] Cannot find local .vim directory."
+	    echoerr "[ATP:] Cannot find local ATP directory."
 	    if g:atp_debugUpdateATP
 		redir END
 	    endif

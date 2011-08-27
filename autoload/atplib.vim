@@ -3728,7 +3728,14 @@ function! atplib#CheckBracket(bracket_dict)
     let time		= reltime()
     
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[4])])
+
+    let begin_line	= max([search('\\\%(begin\|end\|par\)\|^\s*$', 'bcnW'), limit_line])
+    let end_line	= min([search('\\\%(begin\|end\|par\)\|^\s*$', 'cnW'), min([line('$'), line(".")+g:atp_completion_limits[4]])]) 
+
+
     if g:atp_debugCheckBracket
+	let g:begin_line	= begin_line
+	let g:end_line		= end_line
 	let g:limit_line	= limit_line
     endif
     let pos_saved 	= getpos(".")
@@ -3758,11 +3765,11 @@ function! atplib#CheckBracket(bracket_dict)
 	let pos		= deepcopy(pos_saved)
 	let time_{i}	= reltime()
 	if ket != '{' && ket != '(' && ket != '['
-	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', limit_line)
+	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', begin_line)
 "      	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
 		let bslash = ( ket != '{' ? '\\\@<!' : '' )
 		let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
-			\ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", limit_line)
+			\ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", begin_line)
 	    else
 "      	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
 		let pair_{i}	= [0, 0]
@@ -3777,7 +3784,7 @@ function! atplib#CheckBracket(bracket_dict)
 " 	    appearing)
 		let ob=0
 		let cb=0
-		for lnr in range(limit_line, line("."))
+		for lnr in range(begin_line, line("."))
 		    if lnr == line(".")
 			let line_str=strpart(getline(lnr), 0, pos_saved[2])
 		    else
@@ -3804,7 +3811,7 @@ function! atplib#CheckBracket(bracket_dict)
 		endif
 		if ( ob != cb && first_ket == ket ) || ( ob != cb-1 && first_ket != ket )
 		    let bslash = ( ket != '{' ? '\\\@<!' : '' )
-		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]') , 'bcnW', "", limit_line)
+		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]') , 'bcnW', "", begin_line)
 		    let pair_{i}[1]	+= ( pair_{i}[1] != 0 ? 1 : 0 )
 		else
 		    let pair_{i}	= [0, 0]
@@ -4479,6 +4486,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
+	let g:time_A = reltimestr(reltime(time))
 	let begParen = atplib#CheckBracket(g:atp_bracket_dict)
 	let g:time_B = reltimestr(reltime(time))
 	"{{{4 --------- abbreviations
@@ -4491,6 +4499,7 @@ function! atplib#TabCompletion(expert_mode,...)
 	elseif begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
+	    let g:time_C=reltimestr(reltime(time))
 	    let completion_method = 'brackets'
 	    let b:comp_method='brackets'
 	    let bracket=atplib#GetBracket(append, 0, begParen)
