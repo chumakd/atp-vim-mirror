@@ -7,7 +7,7 @@ let g:atp_package_enumitem_commands=[
 	    \ '\setitemize{', '\SetEnumerateShortLabel{', '\newlist{', 
 	    \ '\AddEnumerateCounter{', '\setdisplayed{' 
 	    \ ]
-let env_options = [ 'label=', 'label*=', 'start=', 'ref=', 'align=', 'font=',
+let s:env_options = [ 'label=', 'label*=', 'start=', 'ref=', 'align=', 'font=',
 	\ 'topsep=', 'partopsep=', 'parsep=', 'itemsep=', 'leftmargin=',
 	\ 'rightmargin=', 'listparindent=', 'labelwidth=', 'labelsep=', 'labelindent=', 'itemindent=',
 	\ 'resume=', 'resume*=', 'beginpenalty=', 'midpenalty=', 'endpenalty=',
@@ -15,8 +15,8 @@ let env_options = [ 'label=', 'label*=', 'start=', 'ref=', 'align=', 'font=',
 	\ 'fullwidth', 'widest=' ]
 
 let g:atp_package_enumitem_environment_options={
-    \ '\<\%(enumerate\|itemize\|description\)\>' : env_options
+    \ '\<\%(enumerate\|itemize\|description\)\>' : s:env_options
     \ }
 let g:atp_package_enumitem_command_values={
-    \ '\\set\%(list\|enumerate\|description\|itemize\){' : env_options
+    \ '\\set\%(list\|enumerate\|description\|itemize\){' : s:env_options
     \ }

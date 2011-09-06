@@ -14,10 +14,10 @@ let g:atp_package_ntheorem_commands	= [
 	    \ '\addtheoremline{', '\addtotheoremline{', '\newtheoremstyle{',
 	    \ '\qed', '\qedsymbol', '\NoEndMark', '\TheoremSymbol', '\thref'
 	    \ ]
-let colors = ( exists("b:atp_LocalColors") ? b:atp_LocalColors : [] )
+let s:colors = ( exists("b:atp_LocalColors") ? b:atp_LocalColors : [] )
 let g:atp_package_ntheorem_command_values = {
 	    \ '\\theoremstyle{' : [ 'plain', 'break', 'change', 'changebreak', 'margin',
 				\ 'marginbreak', 'nonumberplain', 'nonumberbreak', 'empty' ],
-	    \ '\\shadecolor{' : colors, 
+	    \ '\\shadecolor{' : s:colors, 
 	    \ '\\theoremlisttype{' : [ 'all', 'allname', 'opt', 'optname' ]
 	    \ }
