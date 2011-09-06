@@ -284,6 +284,8 @@ function! atplib_search#LocalCommands_py(write, ...)
     let bang	= a:0 >= 2 ? a:2 : '' 
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let pwd		= getcwd()
+    exe "cd ".fnameescape(b:atp_ProjectDir)
 
     if a:write
 	call atplib#write()
@@ -368,6 +370,7 @@ else
     let b:atp_LocalEnvironments=[]
 endif
 let g:time_LocalCommands_py=reltimestr(reltime(time))
+exe "cd ".fnameescape(pwd)
 return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
