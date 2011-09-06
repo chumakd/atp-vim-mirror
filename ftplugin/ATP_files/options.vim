@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change:
+" Last Change:Tue Sep 06, 2011 at 03:15  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -182,11 +182,13 @@ if g:atp_indentation
 "     let prefix = expand('<sfile>:p:h:h')
 "     exe 'so '.prefix.'/indent/tex_atp.vim'
     let prefix = expand('<sfile>:p:h')    
-    exe 'so '.prefix.'/LatexBox_indent.vim'
+    exe 'source '.prefix.'/LatexBox_indent.vim'
 endif
 " }}}
 
+" Make CTRL-A, CTRL-X work over alphabetic characters:
 setl nrformats=alpha
+
 " The vim option 'iskeyword' is adjust just after g:atp_separator and
 " g:atp_no_separator variables are defined.
 setl keywordprg=texdoc\ -m
@@ -756,11 +758,9 @@ if !exists("g:atp_ReloadViewers")
     let g:atp_ReloadViewers	= [ 'xpdf' ]
 endif
 if !exists("g:atp_PythonCompilerPath")
-    let g:atp_PythonCompilerPath=globpath(&rtp, 'ftplugin/ATP_files/compile.py')
+    let g:atp_PythonCompilerPath=split(globpath(&rtp, '**/ATP_files/compile.py'), "\n")[0]
 endif
 if !exists("g:atp_cpcmd")
-    " This will avoid using -i switch which might be defined in an alias file. 
-    " This doesn't make much harm, but it might be better. 
     let g:atp_cpcmd="/bin/cp"
 endif
 " Variables for imaps, standard environment names:
@@ -1293,9 +1293,10 @@ endif
 
 if !s:did_options
     augroup ATP_DebugMode
-	au FileType *.tex let t:atp_DebugMode	= g:atp_DefaultDebugMode
+	au BufEnter *.tex let t:atp_DebugMode	 = ( exists("t:atp_DebugMode") ? t:atp_DebugMode : g:atp_DefaultDebugMode )
+	au BufEnter *.tex let t:atp_QuickFixOpen = ( exists("t:atp_QuickFixOpen") ? t:atp_QuickFixOpen : 0 )
 	" When opening the quickfix error buffer:  
-	au FileType qf 	let t:atp_QuickFixOpen=1
+	au FileType qf 	let t:atp_QuickFixOpen 	 = 1
 	" When closing the quickfix error buffer (:close, :q) also end the Debug Mode.
 	au FileType qf 	au BufUnload <buffer> let t:atp_DebugMode = g:atp_DefaultDebugMode | let t:atp_QuickFixOpen = 0
 	au FileType qf	setl nospell norelativenumber nonumber
@@ -1331,7 +1332,7 @@ else "extend the existing dictionary with default values not ovverriding what is
     call extend(g:atp_keymaps, { 'ukrainian' 	: 'ukrainian-jcuken' },	'keep')
 endif
 
-" {{{1 function
+" {{{1 <SID>Babel
 function! <SID>Babel()
     " Todo: make notification.
     if &filetype != "tex" || !exists("b:atp_MainFile") || !has("keymap")
@@ -1359,7 +1360,7 @@ function! <SID>Babel()
     endif
     let default_language 	= get(languages, '-1', '') 
 	if g:atp_debugBabel
-	    echomsg "[Babel:] defualt language:" . default_language
+	    echomsg "[Babel:] defualt language: " . default_language
 	endif
     let keymap 			= get(g:atp_keymaps, default_language, '')
 
@@ -2410,7 +2411,7 @@ if !s:did_options
 
     augroup ATP_UpdateToCLine
 	au!
-	au CursorHold *.tex nested :call UpdateToCLine()
+	au CursorHold *.tex nested :call atplib_motion#UpdateToCLine()
     augroup END
 
     function! RedrawToC()
@@ -2984,4 +2985,16 @@ if g:atp_reload_functions == 0
     call atplib#TempDir()
 endif
 
+" Set vim path option: 
+" It would be better to include project dir and all its subdirectories. But
+" this might not work for all people ... . I can note how to set this, also
+" .project.vim file can be used.
+exe "setl path+=".escape(g:texmf, ' ')."/tex,".escape(b:atp_OutDir, ' ')
+
+" Some Commands:
+" {{{
+command! -buffer HelpMathIMaps 	:echo atplib_helpfunctions#HelpMathIMaps()
+command! -buffer HelpEnvIMaps 	:echo atplib_helpfunctions#HelpEnvIMaps()
+command! -buffer HelpVMaps 	:echo atplib_helpfunctions#HelpVMaps()
+" }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

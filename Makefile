@@ -10,40 +10,45 @@
 # make release	-- will upload new snaphot and new release to SourceForge
 # make clean	-- will delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.3
+VERSION = 10.4
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
-INSTALL_DIR = ${HOME}/.vim/vim-addons/atp
+INSTALL_DIR = ${HOME}/.vim/addons/AutomaticLaTexPlugin
 
-SOURCE = ftplugin/ATP_files/LatexBox_common.vim
+SOURCE =  autoload/atplib.vim
+SOURCE += autoload/atplib_common.vim
+SOURCE += autoload/atplib_compiler.vim
+SOURCE += autoload/atplib_helpfunctions.vim
+SOURCE += autoload/atplib_motion.vim
+SOURCE += autoload/atplib_search.vim
+SOURCE += autoload/atplib_various.vim
+SOURCE += colors/coots-beauty-256.vim
+SOURCE += doc/automatic-tex-plugin.txt
+SOURCE += doc/bibtex_atp.txt
+SOURCE += doc/latexhelp.txt
+SOURCE += ftplugin/ATP_files/LatexBox_common.vim
 SOURCE += ftplugin/ATP_files/LatexBox_complete.vim
 SOURCE += ftplugin/ATP_files/LatexBox_indent.vim
+SOURCE += ftplugin/ATP_files/LatexBox_latexmk.vim
 SOURCE += ftplugin/ATP_files/LatexBox_mappings.vim
 SOURCE += ftplugin/ATP_files/LatexBox_motion.vim
-SOURCE += ftplugin/ATP_files/LatexBox_latexmk.vim
-SOURCE += ftplugin/ATP_files/project.vim
-SOURCE += ftplugin/ATP_files/common.vim
-SOURCE += ftplugin/ATP_files/compiler.vim
-SOURCE += ftplugin/ATP_files/mappings.vim
 SOURCE += ftplugin/ATP_files/abbreviations.vim
+SOURCE += ftplugin/ATP_files/atp_RevSearch.py
+SOURCE += ftplugin/ATP_files/common.vim
+SOURCE += ftplugin/ATP_files/compile.py
+SOURCE += ftplugin/ATP_files/compiler.vim
+SOURCE += ftplugin/ATP_files/dictionaries/SIunits
+SOURCE += ftplugin/ATP_files/dictionaries/ams_dictionary
+SOURCE += ftplugin/ATP_files/dictionaries/dictionary
+SOURCE += ftplugin/ATP_files/dictionaries/greek
+SOURCE += ftplugin/ATP_files/dictionaries/tikz
+SOURCE += ftplugin/ATP_files/latextags.py
+SOURCE += ftplugin/ATP_files/makelatex.py
+SOURCE += ftplugin/ATP_files/mappings.vim
 SOURCE += ftplugin/ATP_files/menu.vim
 SOURCE += ftplugin/ATP_files/motion.vim
 SOURCE += ftplugin/ATP_files/options.vim
-SOURCE += ftplugin/ATP_files/search.vim
-SOURCE += ftplugin/ATP_files/various.vim
-SOURCE += ftplugin/ATP_files/helpfunctions.vim
-SOURCE += ftplugin/ATP_files/vimcomplete.bst
-SOURCE += ftplugin/ATP_files/atp_RevSearch.py
-SOURCE += ftplugin/ATP_files/compile.py
-SOURCE += ftplugin/ATP_files/makelatex.py
-SOURCE += ftplugin/ATP_files/latextags.py
-SOURCE += ftplugin/ATP_files/url_query.py
-SOURCE += ftplugin/ATP_files/dictionaries/dictionary
-SOURCE += ftplugin/ATP_files/dictionaries/ams_dictionary
-SOURCE += ftplugin/ATP_files/dictionaries/greek
-SOURCE += ftplugin/ATP_files/dictionaries/SIunits
-SOURCE += ftplugin/ATP_files/dictionaries/tikz
 SOURCE += ftplugin/ATP_files/packages/amsmath.vim
 SOURCE += ftplugin/ATP_files/packages/babel.vim
 SOURCE += ftplugin/ATP_files/packages/beamer.vim
@@ -68,21 +73,21 @@ SOURCE += ftplugin/ATP_files/packages/stmaryrd.vim
 SOURCE += ftplugin/ATP_files/packages/textcmds.vim
 SOURCE += ftplugin/ATP_files/packages/url.vim
 SOURCE += ftplugin/ATP_files/packages/xcolor.vim
+SOURCE += ftplugin/ATP_files/project.vim
+SOURCE += ftplugin/ATP_files/search.vim
+SOURCE += ftplugin/ATP_files/url_query.py
+SOURCE += ftplugin/ATP_files/various.vim
+SOURCE += ftplugin/ATP_files/vimcomplete.bst
+SOURCE += ftplugin/bib_atp.vim
 SOURCE += ftplugin/bibsearch_atp.vim
 SOURCE += ftplugin/fd_atp.vim
 SOURCE += ftplugin/plaintex_atp.vim
 SOURCE += ftplugin/tex_atp.vim
-SOURCE += ftplugin/bib_atp.vim
 SOURCE += ftplugin/toc_atp.vim
-SOURCE += autoload/atplib.vim
-SOURCE += doc/automatic-tex-plugin.txt
-SOURCE += doc/bibtex_atp.txt
-SOURCE += doc/latexhelp.txt
 SOURCE += syntax/bibsearch_atp.vim
 SOURCE += syntax/labels_atp.vim
 SOURCE += syntax/log_atp.vim
 SOURCE += syntax/toc_atp.vim
-SOURCE += colors/coots-beauty-256.vim
 
 ${Plugin}_${VERSION}.vmb: ${SOURCE}
 		python stamp.py ${DATE}

@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 27 August 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 03 September 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -161,6 +161,11 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
+ Changes in version 10.4
+<
+ :Unwrap			-- see |atp-:Unwrap| command (nmap \u).
+>
+ ======================
  Changes in version 10.2
 <
   Skim (MacOS)                  -- support for "Skim" added (forward search)
@@ -253,7 +258,8 @@ NEWS							*atp-news*
   The command :Align (and thus also :TexAlign) are using ATP_strlen function to
   measure the string length. ATP sets g:Align_xstrlen="ATP_strlen" if
   'conceallevel' option is >0. if 'conceallevel' is reset to 0 ATP_strlen
-  behaves like g:Align_xstrlen=2.
+  behaves like g:Align_xstrlen=2. (This needs Align plugin version higher than
+  36, available at: http://drchip.0sites.net/astronaut/vim/#ALIGN .
 
   :TOC and :Labels commands when open together will be in one column wtith
   table of contents at the top.
@@ -995,7 +1001,7 @@ There is also a variable which stores the last command which executed
 your tex compiler, see |g:atp_TexCommand|.   
 
 :{runs}TEX[!] [debug_mode]				*atp-:TEX*
-map \l, map \d
+map [runs]\l, map [runs]\d
 	If anyway you want to run TeX yourself but you do not want to see the
 	output this is the right tool. This runs TeX in 'nonstopmode'. You can
 	specify an argument {runs} which tells how many consecutive runs of
@@ -1033,8 +1039,8 @@ map \l, map \d
 	\d is mapped to :TEX debug and \l to :TEX (thus it uses your default
 	debug mode).
 
-:DTEX 							*atp-:DTEX*
-map \d 
+:{runs}DTEX 							*atp-:DTEX*
+map [runs]\d 
 	This is equivalent to ':TEX debug'.
 
 :MakeLatex[!]						*atp-:MakeLatex*
@@ -1285,7 +1291,7 @@ map t, map <S-LeftMouse>
 	|atp-Viewers-Okular| and |atp-Viewers-Xdvi| for an instruction how to
 	do that. Xpdf doesn't support reverse searching.
 
-							*atp-:SyncTex_Xpdf-hack*
+							    *atp-:SyncTex_Xpdf-hack*
 	Note: there is a bug in Xpdf, one canot sent commands to Xpdf to
 	quickly. If the |atp-:SyncTex| command only updates the page, but
 	doesn't shift it then you can try to set g:atp_XpdfSleepTime variable
@@ -1300,10 +1306,10 @@ map t, map <S-LeftMouse>
 
 	Read |atp-:SyncTex_with_Okular| if you use Okular.
 
-:Viewer {viewer-program}				*atp-:Viewer*
+:Viewer {viewer-program}				    *atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
 
-:SetXdvi						*atp-:SetXdvi*
+:SetXdvi						    *atp-:SetXdvi*
 	This command sets the options for xdvi viewer, which enables inverse
 	and reverse searching. You can use the command |atp-:SyncTex| for
 	forward searches (Vim->Xdvi) >
@@ -1321,8 +1327,8 @@ map t, map <S-LeftMouse>
 	defines only these two, watch file makes xdvi reload the file every
 	given interval)
 
-:SetXpdf						*atp-:SetXpdf*
-:SetOkular						*atp-SetOkular*
+:SetXpdf						    *atp-:SetXpdf*
+:SetOkular					            *atp-SetOkular*
 	This command sets options for Xpdf viewer. Xpdf supports forward
 	searching (vim->Xpdf) with command: |atp-:SyncTex|. It sets >
 	    let b:atp_TexOptions="-synctex=1"
@@ -1333,7 +1339,7 @@ map t, map <S-LeftMouse>
 	It reads the Xpdf viewer options from the variables
 	|b:atp_xpdfOptions| and g:atp_xpdfOptions. Similarly for Okular.
 						
-							*atp-:PdfFonts*
+							    *atp-:PdfFonts*
 :PdfFonts
 nmap <F6>g
 	Runs external program pdffonts on pdf output file.
@@ -1345,7 +1351,7 @@ nmap <F6>g
 	the [flag] argument, see |atp-bibflags|. By default the pattern is
 	case insensitive.
 
-  								*atp-:AMSRef*
+							    *atp-:AMSRef*
 :AMSRef[!] {bibdata}  
     A command to get bib data from AMSRef:
 		    http://www.ams.org/mathscinet-mref 
@@ -1356,9 +1362,10 @@ nmap <F6>g
     You will be also asked for the bib key, the default choice is to use the
     AMS bib key. 
 
+    							*g:atp_bibrefRegister*
     This command also works when you use \begin{bibliography} environment. But
     the default is to use a bib file.  The obtained bibliographic reference is
-    copied to the register g:atp_bibrefRegister (the default is "0" so you can
+    copied to the register |g:atp_bibrefRegister| (the default is "0" so you can
     paste it using Vim command 'p'). In addition, it is stored in the variable
     g:atp_bibref.
 
@@ -1383,7 +1390,7 @@ map c, map y, map p
 	as not readable.  
 							
 :GotoFile[!]						*atp-:GotoFile*
-:Edit[!]				 		*atp-:Edit*
+:Edit[!]				 		*atp-:Edit* *atp-gf*
 nmap gf
 	This command finds input files under b:atp_MainFile (it is recursive).
 	The nmap 'gf' checks first if there is a file under the cursor. If
@@ -1548,6 +1555,13 @@ map <F6>d
 	For the predefined maps which use WrapSelection see below
 	|atp-maps-WrapSelection| or use |atp-:HelpVMaps|.
 
+							*atp-:Unwrap*
+:Unwrap	
+nmap \u
+	If cursor is stending over a bracket it will remove both matching
+	brackets togetether with \left:\right, \bigl:\bigr, ... sizes. This
+	works for: (:), {:}, [:], \{:\}, \[:\] and \(:\).
+
 							*atp-:InteligentWrapSelection*
 :InteligentWrapSelection {mathWrapperPair}, {textWrapperPair}, [cursor_pos], [new_lines]
 
@@ -1593,7 +1607,7 @@ map \a
 	g:Align_xstrlen=2.
 
 	With bang "!", |atp-:TexAlign| will join lines which do not ends with
-	'\\'. if *g:atp_TexAlign_join_lines* = 1 then the map \a will use the
+	'\\'. If *g:atp_TexAlign_join_lines* =1 then the map \a will use the
 	bang.
     							*atp-:LatexTags*
 							*atp-:Tags*
@@ -2149,14 +2163,15 @@ ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
 	first save the file. 
 
 							*atp-:Babel*
+							*g:atp_babel*
 :Babel
-	If g:atp_babel variable is set on start up to 1 (however, the default
+	If |g:atp_babel| variable is set on start up to 1 (however, the default
 	value is 0, you can use |vimrc| or |atprc| file to switch it on) then
 	ATP will set the |'keymap'| option according to the default babel
 	language (which is the last language passed to babel as optional
 	argument [lang_list] in \usepackage[lang_list]{babel}). 
   
-	If g:atp_babel is set to 1 the keymap name is shown in the status
+	If |g:atp_babel| is set to 1 the keymap name is shown in the status
 	line (if you use the |atp-status-line|.
 							*g:atp_keymaps*
 	The |g:atp_kemaps| variable is used to translate babel language name

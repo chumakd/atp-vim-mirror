@@ -14,16 +14,11 @@ ToDo: Pattern not found should restore the window position
 ToDo: :2match (and :3match)  in HighlightMatchingPair and Search function - it
 is better to use matchadd().
 
-ToDo: Disable mapping # before \ (make an IMAP function)
-
     "THIS MIGHT BE USEFULL:
     The first column is 1.	0 is returned for an error.
     A more advanced example that echoes the maximum length of
     all lines:
     echo max(map(range(1, line('$')), "virtcol([v:val, '$'])"))
-
-MakeLatex	    
-	MakeLatex, Delete -> puts MakeLatex in an endless loop.
 
 TODO: make toc work with parts!
  		The work has started ...
@@ -41,25 +36,16 @@ In 'plaintex' MakeLatex results in an infinte loop.
 
 :S /{pattern}/ is not working in plain tex files.
 
-To do: add large delimiters to completion (Bracket closings: Table 3.9 in
-    lshort pdfpage: 80) but also \lceil:\rceil, \lfloor:\rfloor, \vert:\vert,
-    \Vert:\Vert (make this fast, count all $,\vert,\Vert at once)
-To do: completion: make the screen stable.
-
 To do: Make an if statement: write if the history is nonempty!
 #To do: \left\.:\right pair! (let the user write the closing bracket.
 	also \lvert:\rvert, \lVert:\rVert (only in amsmath)
-
-To do: Show History (at least the variables which are short)
  
 To do: Make Todo for project files.
 
-To doc: compare double empty lines, compare spaces.
 To do: test SyncXpdf when syncing the last page (boarder conditions).
 	It doesn't work as it should - this is a minor bug.
 
 NOTE: in aux file definitions are resolved (see \av)
-
 
 To do: :R Replace like :S  (project files). /there might be vim way to do that/.
 
@@ -70,14 +56,12 @@ Because he is in:
     MRREVIEWER
 The problem is that All flag doesn't show this entries.  
 
-
 Todo: Write searchpair function for log file which ignores bracketes in
 Overfull message (it happens that these brackets doesn't come in pairs!).
 
 Todo: SetProjectName should test project scripts, I think LoadProject has this code!
 	There are two function to implement this: FindProjectScripts() and GetProjectScript()
- 
-Todo: :S could be much faster using ijump.
+
 Todo: TexSyntaxMotion is not working on last H of: \mbox{$L(A,H)=(A\otimes A)^{co\,H}$}
 Todo: urlop.tex \includegraphics{...} -> error which is not seen by ':ShowErrors e' command.
 	The error was caused because the graphics file was empty.
@@ -97,13 +81,11 @@ To do:     au BufEnter *.tex.project.vim set nowrap textwidth=0
 To do: 	$i:\Sub_{\Alg^H}(A)\subseteq\Sub_\Alg(A)^\mathit{op<TAB HERE>$ preserves all
 	<Tab> doesn't close {! 
 
-To do: with j motion it can put \mathit{} not just \mathit{.	
+NOTE: with j motion it can put \mathit{} not just \mathit{.	
 To do: TOC when modifiable is set.
 
 To do: NEnv (hit bottom, cont at top) 
 To do: Check AMSRef, with xy-ks:galois-theory-of-skew-fields there was no comma after key.  
-To do: TabCompletion for \pagestyle command
-To do: xcolor package completion
 
 To do: add this error message.
 	    (/home/texmf/tex/settings-galois.tex) (./HopfGaloisTheory-field.aux
@@ -427,23 +409,27 @@ Add support for bibunits package in makelatex.py and also for its options.
 GotoFile should check if the file type is set or set it: apv.tex GotoFile input/inputlast.tex
 	(this was not reproduced. Should be tested.)
 
-Done: :S should set alternate file if it was not set.
 Bug:	When :S enters new buffer an error appears: E15: Invalid expression:
 	(even twice, the invalid expression is not written).
 	this is not autocommand problem (eventignore=all is not solving the problem)
 
-Done: disable #a after \,i.e. \#a
 Todo: _bf map when applied in first column (with some white spaces before! the space is lost - virtual column)
-Todo: there is no \varepsilon map (used to be #ve - interfering with \vee )
+Done: there is no \varepsilon map (used to be #ve - interfering with \vee )
 	Idea:
 	\vee 	-> l+ 	\wedge 	  -> l*
 	\bigvee -> L+ 	\bigwedge -> L*
-Done: \(\Sub(V={V^*}^*<Tab>)\) -> \(\Sub(V={V^*}^*\))\)
 
-Done: ( \(\Phi<Tab\) should not close ) like atplib#GetBracket() does.
-Done: atplib#CallBack should also work with errors of makeidx.
-Done: atplib#TabCompletion closeing \(:\) is again slow.
-Done: end the atplib#FindAndOpen find the correct tabpage.
 Todo: add support for htlatex: http://www.tug.org/applications/tex4ht/mn.html
-Done: make closing brackets fast!
-Todo: FoldClose()  when closeing subsection inside section - this is not working
+Todo: FoldClose()  when closing subsection inside section - this is not working
+Todo: :Edit +/<pattern> file   -- this should be added.
+	This works, but :Edit main_file will not working when invoked in input file (under different directory!)
+Todo: Write how to set 'path' in project files: see the note at the end of options.vim
+Check: TimeoutException of psutil lib.
+To doc: compare double empty lines, compare spaces.
+Todo: w, commands for motion which treats \ in a good way.
+Done: add \{, map to wrap with { in bib files.
+Todo: Make atplib_various#Unwrap work with $:$ and $$:$$.
+	the map \u might not be good if \u is used to uncomment!
+Todo: :Align command moves the code to the right.
+Todo: split and Toc: moving to wrong window, b:atp_Toc undefined.
+Todo: Add latex-errorfilter !

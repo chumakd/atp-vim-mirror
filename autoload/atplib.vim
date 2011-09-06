@@ -5,9 +5,33 @@
 " URL:		https://launchpad.net/automatictexplugin
 " Language:	tex
 
+" Source ATPRC File:
+function! atplib#ReadATPRC() "{{{
+    if ( has("unix") || has("max") || has("macunix") )
+	" Note: in $HOME/.atprc file the user can set all the local buffer
+	" variables without using autocommands
+	"
+	" Note: it must be sourced at the begining because some options handle
+	" how atp will load (for example if we load history or not)
+	" It also should be run at the end if the user defines mapping that
+	" should be overwrite the ATP settings (this is done via
+	" autocommand).
+	let atprc_file=globpath($HOME, '.atprc.vim', 1)
+	if !filereadable(atprc_file)
+	    let atprc_file = get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), '\n'), 0, "")
+	endif
+	if filereadable(atprc_file)
+	    execute 'source ' . fnameescape(atprc_file)
+	endif
+    else
+	let atprc_file = get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), '\n'), 0, "")
+	if filereadable(atprc_file)
+	    execute 'source ' . fnameescape(atprc_file)
+	endif
+    endif
+endfunction "}}}
 " Kill:
-" {{{
-function! atplib#KillPIDs(pids,...)
+function! atplib#KillPIDs(pids,...) "{{{
     if len(a:pids) == 0 && a:0 == 0
 	return
     endif
@@ -21,12 +45,16 @@ for pid in pids:
     except OSError:
         pass
 END
-endfunction " }}}
+endfunction "}}}
 " Write:
 function! atplib#write(...) "{{{
     let backup		= &backup
     let writebackup	= &writebackup
     let project		= b:atp_ProjectScript
+
+    " In this way lastchange plugin will work better (?):
+"     let eventignore 	= &eventignore
+"     setl eventigonre	+=BufWritePre
 
     " Disable WriteProjectScript
     let b:atp_ProjectScript = 0
@@ -42,6 +70,7 @@ function! atplib#write(...) "{{{
     let b:atp_ProjectScript = project
     let &backup		= backup
     let &writebackup	= writebackup
+"     let &eventignore	= eventignore
 endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1
@@ -4557,7 +4586,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    while line_nr >= stopline_backward
 		let [ line_nr, col_nr ] = searchpairpos('\\begin\s*{', '', '\\end\s*{', 'bW', 'strpart(getline("."), 0, col(".")-1) =~ "\\\\\\@<!%"', stopline_backward)
 		if line_nr >= stopline_backward
-		    let env_name	= matchstr(getline(line_nr), '\\begin\s*{\zs[^}]*}\ze}')
+		    let env_name	= matchstr(strpart(getline(line_nr), col_nr-1), '\\begin\s*{\zs[^}]*\ze}')
 		    if env_name		=~# '^\s*document\s*$' 
 			break
 		    endif

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Aug 27 08:00  2011 W
+" Last Change: Thu Sep 01 10:00  2011 W
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -22,11 +22,18 @@ endif
 let g:backslash=s:backslash
 
 " Dicronary map
-nmap <buffer> <silent> =d <Plug>Dictionary
+if !hasmapto("<Plug>Dictionray")
+    nmap <buffer> <silent> =d <Plug>Dictionary
+endif
 
 " Replace map
-if !g:atp_VimCompatible
+if !g:atp_VimCompatible && !hasmapto("<Plug>Replace")
     nmap <buffer> <silent> r <Plug>Replace
+endif
+
+" Unwrap map
+if !hasmapto("<Plug>Unwrap")
+    nmap <buffer> <silent> <LocalLeader>u <Plug>Unwrap
 endif
 
 " Commands to library functions (autoload/atplib.vim)
