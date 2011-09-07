@@ -1357,32 +1357,6 @@ endfunction
 " match, the pattern used to is a:keyword\zs.* to find the place where to cut.
 " DEBUG:
 " command -buffer -nargs=* Count :echo atplib#count(<args>)
-
-let g:bibentries=['article', 'book', 'booklet', 'conference', 'inbook', 'incollection', 'inproceedings', 'manual', 'mastertheosis', 'misc', 'phdthesis', 'proceedings', 'techreport', 'unpublished']
-
-
-"{{{ variables
-let g:bibmatchgroup		='String'
-let g:defaultbibflags		= 'tabejsyu'
-let g:defaultallbibflags	= 'tabejfsvnyPNSohiuHcp'
-let b:lastbibflags		= g:defaultbibflags	" Set the lastflags variable to the default value on the startup.
-let g:bibflagsdict=atplib#bibflagsdict
-" These two variables were s:... but I switched to atplib ...
-let g:bibflagslist		= keys(g:bibflagsdict)
-let g:bibflagsstring		= join(g:bibflagslist,'')
-let g:kwflagsdict={ 	  '@a' : '@article', 	
-	    		\ '@b' : '@book\%(let\)\@<!', 
-			\ '@B' : '@booklet', 	
-			\ '@c' : '@in\%(collection\|book\)', 
-			\ '@m' : '@misc', 	
-			\ '@M' : '@manual', 
-			\ '@p' : '@\%(conference\)\|\%(\%(in\)\?proceedings\)', 
-			\ '@t' : '@\%(\%(master)\|\%(phd\)\)thesis', 
-			\ '@T' : '@techreport', 
-			\ '@u' : '@unpublished' }    
-
-"}}}
-
 " Front End Function
 " {{{ BibSearch
 "  There are three arguments: {pattern}, [flags, [choose]]

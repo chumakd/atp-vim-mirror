@@ -903,6 +903,10 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	Note: the time between you start to compile and when [1] appears in
 	the status line is mostly the time when LaTeX is reading all the
 	packages loaded in the preamble.
+
+	Limitations ~
+	Progress Bar doesn't like when you switch windows while the
+	compelation takes time. You might need to use |atp-:Kill| command. 
 >
  b:atp_ProgressBar
 <	It is equal to empty dictionary {} if compilation is not going on, and

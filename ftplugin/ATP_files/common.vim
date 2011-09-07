@@ -1,7 +1,8 @@
-" Author: 	Marcin Szamotulski
-" Description: 	This script has functions which have to be called before ATP_files/options.vim 
-" Note:		This file is a part of Automatic Tex Plugin for Vim.
-" Language:	tex
+" Author:      Marcin Szamotulski
+" Description: This script has functions which have to be called before ATP_files/options.vim 
+" Note:	       This file is a part of Automatic Tex Plugin for Vim.
+" Language:    tex
+" Last Change: Wed Sep 07, 2011 at 10:20  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -12,14 +13,14 @@ let s:sourced 	= exists("s:sourced") ? 1 : 0
 if !exists("g:askfortheoutdir") || g:atp_reload_variables
     let g:askfortheoutdir = 0
 endif
-if !exists("g:atp_raw_texinputs")
-    let g:atp_raw_texinputs = substitute(substitute(substitute(system("kpsewhich -show-path tex"),'!!','','g'),'\/\/\+','\/','g'), ':\|\n', ',', 'g')
+if exists("g:atp_raw_texinputs")
+    let atplib_common#atp_raw_texinputs=g:atp_raw_texinputs
 "     lockvar g:atp_raw_texinputs
 endif
 
 " atp tex and bib inputs directories (kpsewhich)
 if !exists("g:atp_texinputs") || g:atp_reload_variables
-    let path_list	= split(g:atp_raw_texinputs, ',')
+    let path_list	= split(atplib_common#atp_raw_texinputs, ',')
     let idx		= index(path_list, '.')
     if idx != -1
 	let dot = remove(path_list, index(path_list,'.')) . ","
@@ -72,7 +73,6 @@ function! TreeOfFiles(main_file,...)
     endif
     " Notes: vim script avrage is 0.38s, python avrage is 0.28
     let g:time_TreeOfFiles=reltimestr(reltime(time))
-"     echomsg string(g:source_time_TreeOfFiles)
     return [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]
 endfunction
 
@@ -99,7 +99,7 @@ function! ATPRunning() "{{{
 	return ""
     endif
 
-    if g:atp_Compiler == "python" 
+    if g:atp_Compiler =~ '\<python' 
         " For python compiler
         for var in [ "Latex", "Bibtex", "Python" ] 
 	    if !exists("b:atp_".var."PIDs")
@@ -298,6 +298,7 @@ function! ATPStatus(...) "{{{
 								\ ? b:keymap_name 	: '' )
 
     let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) %=%{'.status_CTOC."} ".status_NotifHi.status_Notif.status_NotifHiPost.'%{g:status_OutDir} %-14.16(%l,%c%V%)%P'
+    let g:debug=CTOC("return")."Y".ATPRunning()."Y".g:status_OutDir
     set statusline=%!g:atp_StatusLine
 endfunction
 try
@@ -307,7 +308,6 @@ catch /E174:/
 endtry
 " }}}
 "}}}
-
 " The Script:
 " (includes commands, and maps - all the things 
 " 		that must be sources for each file
@@ -341,6 +341,7 @@ if expand("%:e") == "tex"
     " file for them.
     call atplib_common#SetErrorFile()
 endif
+
 
 command! -buffer -bang SetProjectName	:call atplib_common#SetProjectName(<q-bang>, 0)
 command! -buffer SetOutDir		:call atplib_common#SetOutDir(1)

@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change:Tue Sep 06, 2011 at 03:15  +0100
+" Last Change: Wed Sep 07, 2011 at 03:47  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -381,9 +381,7 @@ function! s:SetOptions()
     let g:source_time_TREE=reltimestr(reltime(time))
 endfunction
 "}}}
-let time=reltime()
 call s:SetOptions()
-let g:source_time_OPTIONS=reltimestr(reltime(time))
 lockvar b:atp_autex_wait
 
 "}}}
@@ -758,38 +756,38 @@ if !exists("g:atp_ReloadViewers")
     let g:atp_ReloadViewers	= [ 'xpdf' ]
 endif
 if !exists("g:atp_PythonCompilerPath")
-    let g:atp_PythonCompilerPath=split(globpath(&rtp, '**/ATP_files/compile.py'), "\n")[0]
+    let g:atp_PythonCompilerPath=fnamemodify(expand("<sfile>"), ":p:h")."/compile.py"
 endif
 if !exists("g:atp_cpcmd")
     let g:atp_cpcmd="/bin/cp"
 endif
 " Variables for imaps, standard environment names:
-    if !exists("g:atp_EnvNameTheorem")
-	let g:atp_EnvNameTheorem="theorem"
-    endif
-    if !exists("g:atp_EnvNameDefinition")
-	let g:atp_EnvNameDefinition="definition"
-    endif
-    if !exists("g:atp_EnvNameProposition")
-	let g:atp_EnvNameProposition="proposition"
-    endif
-    if !exists("g:atp_EnvNameObservation")
-	" This mapping is defined only in old layout:
-	" i.e. if g:atp_env_maps_old == 1
-	let g:atp_EnvNameObservation="observation"
-    endif
-    if !exists("g:atp_EnvNameLemma")
-	let g:atp_EnvNameLemma="lemma"
-    endif
-    if !exists("g:atp_EnvNameNote")
-	let g:atp_EnvNameNote="note"
-    endif
-    if !exists("g:atp_EnvNameCorollary")
-	let g:atp_EnvNameCorollary="corollary"
-    endif
-    if !exists("g:atp_EnvNameRemark")
-	let g:atp_EnvNameRemark="remark"
-    endif
+if !exists("g:atp_EnvNameTheorem")
+    let g:atp_EnvNameTheorem="theorem"
+endif
+if !exists("g:atp_EnvNameDefinition")
+    let g:atp_EnvNameDefinition="definition"
+endif
+if !exists("g:atp_EnvNameProposition")
+    let g:atp_EnvNameProposition="proposition"
+endif
+if !exists("g:atp_EnvNameObservation")
+    " This mapping is defined only in old layout:
+    " i.e. if g:atp_env_maps_old == 1
+    let g:atp_EnvNameObservation="observation"
+endif
+if !exists("g:atp_EnvNameLemma")
+    let g:atp_EnvNameLemma="lemma"
+endif
+if !exists("g:atp_EnvNameNote")
+    let g:atp_EnvNameNote="note"
+endif
+if !exists("g:atp_EnvNameCorollary")
+    let g:atp_EnvNameCorollary="corollary"
+endif
+if !exists("g:atp_EnvNameRemark")
+    let g:atp_EnvNameRemark="remark"
+endif
 if !exists("g:atp_EnvOptions_enumerate")
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
     " enumerate map <Leader>E will put \begin{enumerate}[topsep=0pt,noitemsep] Useful
@@ -868,21 +866,21 @@ if !exists("g:atp_LogSync")
     let g:atp_LogSync 		= 0
 endif
 
-	function! s:Sync(...)
-	    let arg = ( a:0 >=1 ? a:1 : "" )
-	    if arg == "on"
-		let g:atp_LogSync = 1
-	    elseif arg == "off"
-		let g:atp_LogSync = 0
-	    else
-		let g:atp_LogSync = !g:atp_LogSync
-	    endif
-	    echomsg "[ATP:] g:atp_LogSync = " . g:atp_LogSync
-	endfunction
-	command! -buffer -nargs=? -complete=customlist,s:SyncComp LogSync :call s:Sync(<f-args>)
-	function! s:SyncComp(ArgLead, CmdLine, CursorPos)
-	    return filter(['on', 'off'], "v:val =~ a:ArgLead") 
-	endfunction
+function! s:Sync(...)
+    let arg = ( a:0 >=1 ? a:1 : "" )
+    if arg == "on"
+	let g:atp_LogSync = 1
+    elseif arg == "off"
+	let g:atp_LogSync = 0
+    else
+	let g:atp_LogSync = !g:atp_LogSync
+    endif
+    echomsg "[ATP:] g:atp_LogSync = " . g:atp_LogSync
+endfunction
+command! -buffer -nargs=? -complete=customlist,s:SyncComp LogSync :call s:Sync(<f-args>)
+function! s:SyncComp(ArgLead, CmdLine, CursorPos)
+    return filter(['on', 'off'], "v:val =~ a:ArgLead") 
+endfunction
 
 if !exists("g:atp_Compare")
     " Use b:changedtick variable to run s:Compiler automatically.
@@ -1281,7 +1279,6 @@ function! s:ShowOptions(bang,...)
 endfunction
 command! -buffer -bang -nargs=* ShowOptions		:call <SID>ShowOptions(<q-bang>, <q-args>)
 "}}}
-
 " Debug Mode Variables:
 " {{{ Debug Mode
 let t:atp_DebugMode	= g:atp_DefaultDebugMode 
@@ -2536,10 +2533,10 @@ endfunction
 	au InsertLeave *.tex :call <SID>UpdateTime("Leave")
     augroup END
 
-    if (exists("g:atp_statusline") && g:atp_statusline == '1') || !exists("g:atp_statusline")
+    if (exists("g:atp_StatusLine") && g:atp_StatusLine == '1') || !exists("g:atp_StatusLine")
 	augroup ATP_Status
 	    au!
-	    au BufWinEnter,TabEnter 	*.tex 	call ATPStatus()
+	    au BufEnter,BufWinEnter,TabEnter 	*.tex 	call ATPStatus()
 	augroup END
     endif
 
@@ -2920,8 +2917,10 @@ endfunction
 "}}}1
 
 " Python test if libraries are present
+" (TestPythoLibs() is not runnow, it was too slow)
 " {{{
 function! <SID>TestPythonLibs()
+let time=reltime()
 python << END
 import vim
 try:
@@ -2957,8 +2956,8 @@ if g:atp_Compiler == "python"
 	    endif
 	    sleep 2
 	endif
-    else
-	call <SID>TestPythonLibs()
+"     else
+" 	call <SID>TestPythonLibs()
     endif
 endif
 " }}}

@@ -30,6 +30,31 @@ function! LocalCommands(write, ...)
 endfunction
 " }}}
 
+" BibSearch:
+"{{{ variables
+let g:bibentries=['article', 'book', 'booklet', 'conference', 'inbook', 'incollection', 'inproceedings', 'manual', 'mastertheosis', 'misc', 'phdthesis', 'proceedings', 'techreport', 'unpublished']
+
+let g:bibmatchgroup		='String'
+let g:defaultbibflags		= 'tabejsyu'
+let g:defaultallbibflags	= 'tabejfsvnyPNSohiuHcp'
+let b:lastbibflags		= g:defaultbibflags	" Set the lastflags variable to the default value on the startup.
+let g:bibflagsdict=atplib#bibflagsdict
+" These two variables were s:... but I switched to atplib ...
+let g:bibflagslist		= keys(g:bibflagsdict)
+let g:bibflagsstring		= join(g:bibflagslist,'')
+let g:kwflagsdict={ 	  '@a' : '@article', 	
+	    		\ '@b' : '@book\%(let\)\@<!', 
+			\ '@B' : '@booklet', 	
+			\ '@c' : '@in\%(collection\|book\)', 
+			\ '@m' : '@misc', 	
+			\ '@M' : '@manual', 
+			\ '@p' : '@\%(conference\)\|\%(\%(in\)\?proceedings\)', 
+			\ '@t' : '@\%(\%(master)\|\%(phd\)\)thesis', 
+			\ '@T' : '@techreport', 
+			\ '@u' : '@unpublished' }    
+
+"}}}
+
 " Mappings:
 nnoremap <silent> <Plug>BibSearchLast		:call atplib_search#BibSearch("", b:atp_LastBibPattern, b:atp_LastBibFlags)<CR>
 "

@@ -95,7 +95,7 @@ function! ATP_SetTempDir(tmp)
     let g:atp_TempDir=a:tmp
 endfunction
 python << END
-import tempfile, os
+import vim, tempfile, os
 USER=os.getenv("USER")
 tmp=tempfile.mkdtemp(suffix="", prefix="atp_")
 vim.eval("ATP_SetTempDir('"+tmp+"')")
@@ -630,8 +630,6 @@ function! atplib#ProgressBar(value,pid)
 	call remove(b:atp_ProgressBar, a:pid)
     endif
     redrawstatus
-"     redraw
-"     echomsg a:value
 endfunction "}}}
 "{{{ redrawstatus
 function! atplib#redrawstatus()
