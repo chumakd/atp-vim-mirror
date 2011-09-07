@@ -657,8 +657,9 @@ function! atplib_common#FindInputFiles(MainFile,...)
     let AllInputFiles	= keys(filter(copy(DictOfFiles), " v:val == 'input' || v:val == 'preambule' "))
     let AllBibFiles	= keys(filter(copy(DictOfFiles), " v:val == 'bib' "))
 
-    let b:AllInputFiles		= deepcopy(AllInputFiles)
-    let b:AllBibFiles		= deepcopy(AllBibFiles)
+    let b:AllInputFiles	= deepcopy(AllInputFiles)
+    let b:AllBibFiles	= deepcopy(AllBibFiles)
+    let b:atp_BibFiles	= copy(b:AllBibFiles)
 
 
     " this variable will store unreadable bibfiles:    

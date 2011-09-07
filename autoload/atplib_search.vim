@@ -33,7 +33,7 @@ function! atplib_search#make_defi_dict_vim(bang,...)
 
     let defi_dict={}
 
-    let inputfiles=FindInputFiles(bufname)
+    let inputfiles=atplib_common#FindInputFiles(bufname)
     let input_files=[]
 
     " TeX: How this work in TeX files.
@@ -399,7 +399,7 @@ function! atplib_search#LocalAbbreviations()
     endfor
 endfunction "}}}
 
-" Search for Definition in the definition dictionary (s:make_defi_dict).
+" Search for Definition in the definition dictionary (atplib_search#make_defi_dict).
 "{{{ Dsearch
 function! atplib_search#Dsearch(bang,...)
 
@@ -413,9 +413,9 @@ function! atplib_search#Dsearch(bang,...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     if has("python")
-	let defi_dict	= s:make_defi_dict_py(a:bang, atp_MainFile, pattern)
+	let defi_dict	= atplib_search#make_defi_dict_py(a:bang, atp_MainFile, pattern)
     else
-	let defi_dict	= s:make_defi_dict_vim(a:bang, atp_MainFile, pattern)
+	let defi_dict	= atplib_search#make_defi_dict_vim(a:bang, atp_MainFile, pattern)
     endif
 
     if len(defi_dict) > 0

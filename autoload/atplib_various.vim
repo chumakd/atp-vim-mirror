@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Sep 07, 2011 at 04:58  +0100
+" Last Change: Wed Sep 07, 2011 at 06:03  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1657,7 +1657,7 @@ endtry
 
 function! atplib_various#AMSRef(bang, what)
     if !exists("b:AllBibFiles")
-	call FindInputFiles(b:atp_MainFile)
+	call atplib_common#FindInputFiles(b:atp_MainFile)
     endif
     if len(b:AllBibFiles) > 1
 	let bibfile = inputlist(extend("Which bib file to use?", b:AllBibFiles))
@@ -1668,8 +1668,6 @@ function! atplib_various#AMSRef(bang, what)
     endif
 
     let return=atplib_various#GetAMSRef(a:what, bibfile)
-"     let g:bang=a:bang
-"     let g:bibfile=bibfile
     if a:bang == "" && bibfile != "nobibfile" && return != [0] && return != ['NoUniqueMatch']
 	silent! w
 	silent! bd

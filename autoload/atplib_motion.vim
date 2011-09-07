@@ -1208,15 +1208,10 @@ try
     " buffer.
 function! GotoFile(bang,args,...)
 
-    let g:args=a:args
     let edit_args = matchstr(a:args, '\zs\%(++\=\%(\%(\\\@<!\s\)\@<!.\)*\s*\)\=')
     let find_args = matchstr(a:args, '+/\(\(\\\@<!\s\)\@<!.\)*')
     let edit_args = substitute(edit_args, '+/\(\(\\\@<!\s\)\@<!.\)*', '', 'g')
-"     let file 	= strpart(a:args,matchend(a:args, '\%(++\=\%(\%(\\\@<!\s\)\@<!.\)\+\s*\)*\zs\%(\%(\\\@<!\s\)\@<!.\)*\s*'))
     let file	= matchstr(matchstr(a:args, '\%(\\\@<!\s[^+]\)\=\%(\%(\\\@<!\s\)\@<!.\)*\s*'), '\s*\zs.*')
-    let g:edit_args=edit_args
-    let g:find_args = find_args
-    let g:file 	= file
     let cwd	= getcwd()
     exe "lcd " . fnameescape(b:atp_ProjectDir)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
@@ -1442,8 +1437,7 @@ function! GotoFile(bang,args,...)
 	let atp_BibtexPIDs	= ( exists("b:atp_BibtexPIDs") 		? b:atp_BibtexPIDs 	: [] )
 	let atp_MakeindexPIDs	= ( exists("b:atp_MakeindexPIDs") 	? b:atp_MakeindexPIDs 	: [] )
 	let atp_ProgressBar	= ( exists("b:atp_ProgressBar") 	? b:atp_ProgressBar 	: {} )
-	execute "edit ".edit_args." ".escape(find_args, '\')." ".file
-	let g:cmd="edit ".edit_args." ".escape(find_args, '\')." ".file
+	execute "edit ".edit_args." ".escape(find_args, '\')." ".fnameescape(file)
 	call RestoreProjectVariables(projectVarDict)
 	if &l:filetype =~ 'tex$' && file =~ '\.tex$' && &l:filetype != filetype  
 	    let &l:filetype	= filetype
