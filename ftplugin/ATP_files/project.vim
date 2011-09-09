@@ -71,7 +71,7 @@ let s:common_project_script	= s:windows ? g:atp_CommonScriptDirectory  . '\commo
 " b:atp_PackageList is another variable that could be put into project script.
 
 " This are common variable to all tex files.
-let g:atp_ProjectGlobalVariables = ['g:atp_LatexPackages', 'g:atp_LatexClasses', 'g:atp_Library']
+let g:atp_ProjectGlobalVariables = [ 'g:atp_LatexPackages', 'g:atp_LatexClasses', 'g:atp_Library' ]
 " }}}
 
 " Autocommands:

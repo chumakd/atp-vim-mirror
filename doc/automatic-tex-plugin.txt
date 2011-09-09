@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 06 September 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 09 September 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.4)
 			by Marcin Szamotulski
@@ -164,6 +164,8 @@ NEWS							*atp-news*
  Changes in version 10.4
 <
  :Unwrap			-- see |atp-:Unwrap| command (nmap \u).
+
+ See added note below |g:atp_texinputs|.
 >
  ======================
  Changes in version 10.2
@@ -275,7 +277,7 @@ NEWS							*atp-news*
  Changes in version 9.7.4
 <
   See |atp-completion-packages|: the variable
-  g:atp_package_{p_name}_command_values was added.
+  g:atp_{p_name}_command_values was added.
   Some new packages are now supported (for the completion).
 
   You can read now about imaps implementation: |atp-imaps|.  There are new
@@ -1094,6 +1096,7 @@ map \b
 
 	For the description of optional argument [debug_mode] see |atp-:TEX|.
 
+
 							*g:atp_raw_bibinputs*
     Tex is looking for the date base files in the path: `kpsewhich -show-path
     bib`. The variable g:atp_bibinputs contains these directories separated by
@@ -1108,6 +1111,10 @@ map \b
     This is a list of directories as g:atp_raw_texinputs with appended '**'
     see ':h file-searching'.
 
+    Note: The above four variables might be added to
+    |g:atp_ProjectGlobalVariables|. ATP will start faster, but remember to
+    unlet them and restart vim when you change your TeX distribution, so that
+    ATP will rebuild them.
 
 							*atplib-:Kill*
 :Kill							
@@ -3069,7 +3076,7 @@ COMPLETION MODES		                       	*atp-completion-modes*
 
 							*atp-completion-documentclass-options*
 							*atp-completion-package-options*
-							*atp-completion-package*
+							*atp-completion-packages*
 	documentclass options ~
 	package options ~
 		You can write your own scrip which will add support for
@@ -3077,30 +3084,37 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		'ftplugin/ATP_files/packages/' directory in your vim path.
 		Supported variables:
 >
-	    g:atp_documentclass_{dc_name}_options
-	    g:atp_package_{p_name}_options
-	    g:atp_package_{p_name}_commands
-	    g:atp_package_{p_name}_math_commands
+	    g:atp_{dc_name}_options
+	    g:atp_{p_name}_options
+	    g:atp_{p_name}_commands
+	    g:atp_{p_name}_math_commands
 <		These are just list of options/commands. math_commands will be
 		added to completion only in math mode.
 >
-	    g:atp_package_{p_name}_options_values
+	    g:atp_{p_name}_options_values
 <		This variable is a vim dictionary: keys are vim patterns which
 		should match a package option, values are lists of the option
 		values. See 'ftplugin/ATP_files/packages/caption.vim' for an
 		example. This was tested with the following option syntax: >
 		    option1=value1,option2={value1,value2}
 <		In a similar way works the variable: >
-	    g:atp_package_{p_name}_command_values
+	    g:atp_{p_name}_command_values
 <		See 'ftplugin/ATP_files/packages/enumitem.vim' for an example
-		(or use ':echo g:atp_package_enumitem_command_values').
+		(or use ':echo g:atp_enumitem_command_values').
 		or 'ftplugin/ATP_files/packages/xcolors.vim' 
 		The value of a key in this dictionary might be a string, which
 		is supposed to be a name of a function to get list of
 		completions. Afterwards this list will be filtered to get
 		only matching completions. It should return a vim list. An
 		example is in 'ftplugin/ATP_files/packages/xcolors.vim'.
-	
+>
+	g:atp_{p_name}_loading = { "package" : "option", ... }
+<		This variable is a dictionary { "package" : "option" } which
+		loads xcolor package, when option is empty means that the
+		package is always loading.  Both "package" and "option" are
+		vim patterns. See xcolor for an example. Loading through
+		document class is not yet supported, but might be added on
+		request.
 
 ------------------------------------------------------------------
 ATP COMPLETION VARIABLES				*atp-completion-variables*

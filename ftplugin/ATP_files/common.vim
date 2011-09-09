@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Sep 07, 2011 at 10:20  +0100
+" Last Change: Thu Sep 08, 2011 at 08:24  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -13,14 +13,14 @@ let s:sourced 	= exists("s:sourced") ? 1 : 0
 if !exists("g:askfortheoutdir") || g:atp_reload_variables
     let g:askfortheoutdir = 0
 endif
-if exists("g:atp_raw_texinputs")
-    let atplib_common#atp_raw_texinputs=g:atp_raw_texinputs
+if !exists("g:atp_raw_texinputs")
+    let g:atp_raw_texinputs = substitute(substitute(substitute(system("kpsewhich -show-path tex"),'!!','','g'),'\/\/\+','\/','g'), ':\|\n', ',', 'g')
 "     lockvar g:atp_raw_texinputs
 endif
 
 " atp tex and bib inputs directories (kpsewhich)
 if !exists("g:atp_texinputs") || g:atp_reload_variables
-    let path_list	= split(atplib_common#atp_raw_texinputs, ',')
+    let path_list	= split(g:atp_raw_texinputs, ',')
     let idx		= index(path_list, '.')
     if idx != -1
 	let dot = remove(path_list, index(path_list,'.')) . ","
@@ -34,6 +34,7 @@ endif
 " a list where tex looks for bib files
 " It must be defined before atplib_common#SetProjectName function.
 if !exists("g:atp_raw_bibinputs") || g:atp_reload_variables
+
     let g:atp_raw_bibinputs=substitute(substitute(substitute(
 		\ system("kpsewhich -show-path bib"),
 		\ '\/\/\+',	'\/',	'g'),	
@@ -72,7 +73,6 @@ function! TreeOfFiles(main_file,...)
 	call atplib_common#TreeOfFiles_vim(a:main_file, pattern, flat, run_nr)
     endif
     " Notes: vim script avrage is 0.38s, python avrage is 0.28
-    let g:time_TreeOfFiles=reltimestr(reltime(time))
     return [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]
 endfunction
 

@@ -6,8 +6,6 @@
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
 
-let atplib_common#atp_raw_texinputs = substitute(substitute(substitute(system("kpsewhich -show-path tex"),'!!','','g'),'\/\/\+','\/','g'), ':\|\n', ',', 'g')
-"     lockvar g:atp_raw_texinputs
 " Set the project name
 "{{{ atplib_common#SetProjectName (function and autocommands)
 " This function sets the main project name (b:atp_MainFile)
