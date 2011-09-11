@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Sep 07, 2011 at 04:58  +0100
+" Last Change: Sun Sep 11, 2011 at 06:56  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen
@@ -417,6 +417,8 @@ nnoremap <silent> <buffer> 	<Plug>ToggleEnvBackward	:call atplib_various#ToggleE
 nnoremap <silent> <buffer> 	<Plug>ChangeEnv		:call atplib_various#ToggleEnvironment(1)<CR>
 nnoremap <silent> <buffer> 	<Plug>TexDoc		:TexDoc 
 " Commands: "{{{1
+command! -nargs=? -bang -complete=file  Open call atplib#Open(<q-bang>, g:atp_LibraryPath, g:atp_OpenTypeDict, <q-args>)
+let g:atp_open_completion = []
 command! -buffer Unwrap	:call atplib_various#Unwrap()
 command! -buffer -nargs=1 -complete=custom,atplib_various#Complete_Dictionary Dictionary :call atplib_various#Dictionary(<f-args>)
 command! -buffer -nargs=* SetUpdateTime				:call atplib_various#UpdateTime(<f-args>)

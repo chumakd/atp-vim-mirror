@@ -164,7 +164,6 @@ function! atplib_common#SetErrorFile()
     let &l:errorfile	= errorfile
     return &l:errorfile
 endfunction
-command! -buffer SetErrorFile		:call atplib_common#SetErrorFile()
 "}}}
 
 "}}}

@@ -442,9 +442,8 @@ Todo: \pause not in completion \begin{frame>\pause<Tab> will not close frame.
 Todo: why \a also has the effect of zb?
 Todo: echohl ErrorMsg somewhere is not closed.
 Done: \draw[color=<S-Tab> ... make color completion for this case
-Todo: command to rescan package files (this might be importand after modyfying
-    package, this could be done after Insert->Normal mode while after \usepackage{[^}]*.
 Done: \textcolor{<Tab> ... nor working.
 	This is because xcolor package is not defined in the preambule, it is called by tikz.
 	(~line 5009 atplib.vim)
 	Solution: make dictionary of dependencies (or equivalences :) )
+look: ':help sign'.

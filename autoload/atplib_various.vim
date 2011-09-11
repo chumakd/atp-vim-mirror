@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Sep 07, 2011 at 06:03  +0100
+" Last Change: Sun Sep 11, 2011 at 06:56  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1435,8 +1435,6 @@ endfunction
 
 " Open Library Command
 " {{{ :Open
-command! -nargs=? -bang -complete=file  Open call atplib#Open(<q-bang>, g:atp_LibraryPath, g:atp_OpenTypeDict, <q-args>)
-let g:atp_open_completion = []
 " -complete=customlist,ATP_CompleteOpen
 " function! ATP_CompleteOpen(ArgLead, CmdLead, CurPos)
 "     return filter(deepcopy(g:atp_open_completion), "v:val =~ '^' . a:ArgLead")

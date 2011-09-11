@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Sep 08, 2011 at 08:24  +0100
+" Last Change: Sun Sep 11, 2011 at 06:54  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -296,9 +296,7 @@ function! ATPStatus(...) "{{{
     let status_Notif	= ( g:atp_statusNotif 			? '%{ATPRunning()}' 	: '' )
     let status_KeyMap	= ( has("keymap") && g:atp_babel && exists("b:keymap_name") 	
 								\ ? b:keymap_name 	: '' )
-
-    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) %=%{'.status_CTOC."} ".status_NotifHi.status_Notif.status_NotifHiPost.'%{g:status_OutDir} %-14.16(%l,%c%V%)%P'
-    let g:debug=CTOC("return")."Y".ATPRunning()."Y".g:status_OutDir
+    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) '.status_NotifHi.status_Notif.status_NotifHiPost.'%= %{'.status_CTOC.'} %{g:status_OutDir} %-14.16(%l,%c%V%)%P'
     set statusline=%!g:atp_StatusLine
 endfunction
 try
@@ -312,7 +310,7 @@ endtry
 " (includes commands, and maps - all the things 
 " 		that must be sources for each file
 " 		+ sets g:atp_inputfile_pattern variable)
-" {{{
+" {{{1
 call atplib_common#SetProjectName()
 
 " The pattern g:atp_inputfile_pattern should match till the begining of the file name
@@ -340,10 +338,12 @@ if expand("%:e") == "tex"
     " cls and sty files also have filetype 'tex', this prevents from setting the error
     " file for them.
     call atplib_common#SetErrorFile()
-endif
+endif "}}}1
 
-
+" Commands:
+"{{{1
 command! -buffer -bang SetProjectName	:call atplib_common#SetProjectName(<q-bang>, 0)
+command! -buffer SetErrorFile		:call atplib_common#SetErrorFile()
 command! -buffer SetOutDir		:call atplib_common#SetOutDir(1)
 command! -buffer InputFiles 		:call atplib_common#UpdateMainFile() | :call atplib_common#FindInputFiles(atplib#FullPath(b:atp_MainFile)) | echo join([b:atp_MainFile]+b:ListOfFiles, "\n")
 
@@ -356,5 +356,4 @@ augroup ATP_SetStatusLineNotificationColor
     au ColorScheme 	* 	:call s:SetNotificationColor()
 augroup END
 "}}}
-
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
