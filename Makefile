@@ -2,13 +2,13 @@
 # Written by Marcin Szamotulski.
 
 # Usage:
-# make 		-- will generate vbm as well as tar.gz file,
+# make 		-- generate vbm as well as tar.gz file,
 # 		   it will also update time stamps in various places.
-# make test	-- will list files in *.tar.gz bundle
-# make install	-- will install it under ${INSTALL_DIR}
-# make upload	-- will upload new snaphot to SourceForge
-# make release	-- will upload new snaphot and new release to SourceForge
-# make clean	-- will delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
+# make test	-- list files in *.tar.gz bundle
+# make install	-- install it under ${INSTALL_DIR}
+# make upload	-- upload new snaphot to SourceForge
+# make release	-- upload new snaphot and new release to SourceForge
+# make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
 VERSION = 10.4
 DATE	= $(shell date '+%d-%m-%y_%H-%M')

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Sep 08, 2011 at 09:01  +0100
+" Last Change: Sun Sep 11, 2011 at 09:58  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -298,10 +298,6 @@ if !exists("g:atp_no_tab_map") || g:atp_no_tab_map == 0
     if !hasmapto("atplib#TabCompletion(0,1)<CR>", 'i')
 	nnoremap <silent> <buffer> <S-Tab>	:call atplib#TabCompletion(0,1)<CR> 
     endif
-    if !hasmapto(":Wrap { } begin<CR>", 'v')
-	vnoremap <buffer> <silent> <F7> 	:Wrap { } begin<CR>
-	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
-    endif
 else 
     "Non Default Completion Maps:
     if !hasmapto("<C-R>=atplib#TabCompletion(1)<CR>", 'i')
@@ -316,9 +312,9 @@ else
     if !hasmapto(" atplib#TabCompletion(0,1)<CR>", 'n')
 	nnoremap <silent> <buffer> <S-F7>	:call atplib#TabCompletion(0,1)<CR> 
     endif
-    if !hasmapto(":Wrap { } begin<cr>", 'v')
-	execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
-    endif
+endif
+if !hasmapto(":Wrap { } begin<cr>", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 endif
 
 " Fonts:
@@ -425,7 +421,7 @@ endif
 if !hasmapto(":Wrap ".s:backslash."} ".s:backslash."} end<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader.s:backslash."}	:Wrap ".s:backslash."{ ".s:backslash."} end<CR>"
 endif
-" This is defined before (together with <F7> map.
+" This is defined before:
 " if !hasmapto(":Wrap { } begin<cr>", 'v')
 "     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 " endif

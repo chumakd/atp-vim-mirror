@@ -16,7 +16,7 @@ function! atplib#ReadATPRC() "{{{
 	" It also should be run at the end if the user defines mapping that
 	" should be overwrite the ATP settings (this is done via
 	" autocommand).
-	let atprc_file=globpath($HOME, '.atprc.vim', 1)
+	let atprc_file=split(globpath($HOME, '.atprc.vim', 1), "\n")[0]
 	if !filereadable(atprc_file)
 	    let atprc_file = get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), '\n'), 0, "")
 	endif
@@ -314,6 +314,33 @@ function! atplib#MakeidxReturnCode(returncode,...)
 	let b:atp_MakeidxOutput= ( a:0 >= 1 ? a:1 : "" )
 endfunction
 " }}}
+" PlaceSigns {{{
+function! atplib#Signs()
+    if has("signs")
+	sign unplace *
+	" There is no way of getting list of defined signs in the current buffer.
+	" Thus there is no proper way of deleting them. I overwrite them using
+	" numbers as names. The vim help tells that there might be at most 120
+	" signs put.
+	
+	" But this is not undefineing signs.
+	let qflist=getqflist()
+	let g:qflist=qflist
+	let i=1
+	for item in qflist
+	    if item['type'] == 'E'
+		let hl = 'ErrorMsg'
+	    elseif item['type'] == 'W'
+		let hl = 'WarningMsg'
+	    else
+		let hl = 'Normal'
+	    endif
+	    exe 'sign define '.i.' text='.item['type'].': texthl='.hl
+	    exe 'sign place '.i.' line='.item['lnum'].' name='.i.' file='.expand('%:p')
+	    let i+=1
+	endfor
+    endif
+endfunction "}}}
 " Callback {{{
 " a:mode 	= a:verbose 	of s:compiler ( one of 'default', 'silent',
 " 				'debug', 'verbose')
@@ -348,6 +375,12 @@ function! atplib#CallBack(mode,...)
 
     " Read the log file
     cgetfile
+
+    " signs
+    if g:atp_signs
+	call atplib#Signs()
+    endif
+
     if g:atp_debugCallBack
 	silent echo "file=".expand("%:p")
 	silent echo "g:atp_HighlightErrors=".g:atp_HighlightErrors
@@ -2907,7 +2940,7 @@ function! atplib#KpsewhichGlobPath(format, path, name, ...)
 	let path	= join(path_list, ',')
     endif
 
-    let list	= split(globpath(path, a:name),'\n') 
+    let list	= split(globpath(path, a:name),"\n") 
     call map(list, 'fnamemodify(v:val, modifiers)')
     return list
 endfunction
@@ -5812,7 +5845,7 @@ endif
 "     " Find all files
 "     let l:path=substitute(substitute(system("kpsewhich -show-path tex"),'!!','','g'),'\/\/\+','\/','g')
 "     let l:path=substitute(l:path,':\|\n',',','g')
-"     let l:fd=split(globpath(l:path,"**/*.fd"),'\n') 
+"     let l:fd=split(globpath(l:path,"**/*.fd"),"\n") 
 "     let l:fd=map(l:fd,'fnamemodify(v:val,":t:r")')
 " 
 "     let l:matches=[]
@@ -5830,7 +5863,7 @@ endif
 "     let l:path=substitute(substitute(system("kpsewhich -show-path tex"),'!!','','g'),'\/\/\+','\/','g')
 "     let l:path=substitute(l:path,':\|\n',',','g')
 "     let b:path=l:path
-"     let l:fd=split(globpath(l:path,"**/".a:name.".fd"),'\n') 
+"     let l:fd=split(globpath(l:path,"**/".a:name.".fd"),"\n") 
 "     let l:fd=map(l:fd,'fnamemodify(v:val,":t:r")')
 "     let b:fd=l:fd
 "     execute "split +setl\\ ft=fd_atp " . l:fd[0]

@@ -407,7 +407,6 @@ function! atplib_search#Dsearch(bang,...)
 
     let time		= reltime()
     let o_pattern	= a:0 >= 1 ? matchstr(a:1, '\/\=\zs.*[^\/]\ze\/\=') : ''
-    let g:o_pattern 	= o_pattern
     let pattern		= '\%(\\def\|\\\%(re\)\=newcommand\s*{\=\|\\providecommand\s*{\=\|\\\%(re\)\=newenvironment\s*{\|\\\%(re\)\=newtheorem\s*{\|\\definecolor\s*{\)\s*\\\=\w*\zs'.o_pattern
     let preambule_only	= ( a:bang == "!" ? 0 : 1 )
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
@@ -423,11 +422,17 @@ function! atplib_search#Dsearch(bang,...)
 	if bufloaded("DefiSearch")
 	    exe "silent bd! " . bufnr("DefiSearch") 
 	endif
-	let b:atp_MainFile	= expand("%")
-	let b:atp_ProjectDir	= expand("%:p:h")
+	if !exists("b:atp_MainFile") || !exists("b:atp_ProjectDir")
+	    " Note: I should write a function to read just one variable from
+	    " project file.
+	    LoadProjectScript
+	endif
 	setl syntax=tex
 
-	let defi_list = []
+	let defi_list 	= []
+	let g:defi_list	= defi_list
+	let signs	= []
+	let g:signs	= signs
 
 	for inputfile in keys(defi_dict)
 	    let ifile	= readfile(inputfile)
@@ -442,13 +447,14 @@ function! atplib_search#Dsearch(bang,...)
 		    " add an empty line if the definition is longer than one line
 		    if l:range[0] != l:range[1]
 			call add(defi_list, '')
-" 			call setline(line('$')+1,'')
 			let i+=1
 		    endif
 		    while c <= l:range[1]-l:range[0] 
 			let line=l:range[0]+c
 			call add(defi_list, ifile[line-1])
-" 			call setline(line('$')+1,ifile[line-1])
+			if c == 0 
+			    cal add(signs, len(defi_list))
+			endif
 			let i+=1
 			let c+=1
 		    endwhile
@@ -468,9 +474,9 @@ function! atplib_search#Dsearch(bang,...)
 	    return
 	endif
 
-	let window_height= min([g:atp_DsearchMaxWindowHeight, len(defi_list)])
 	" open new buffer
-	let openbuffer=" +setl\\ buftype=nofile\\ nospell " . fnameescape("DefiSearch")
+	let window_height= min([g:atp_DsearchMaxWindowHeight, len(defi_list)])
+	let openbuffer=" +setl\\ buftype=nofile\\ nospell\\ nornu\\ nonu " . fnameescape("DefiSearch")
 	if g:vertical == 1
 	    let openbuffer="keepalt vsplit " . openbuffer 
 	else
@@ -481,6 +487,7 @@ function! atplib_search#Dsearch(bang,...)
 	call setline(1, defi_list)
 	if getline(line(".")) =~ '^\s*$'
 	    normal! dd
+	    call map(signs, 'v:val-1')
 	endif
 	if o_pattern != ""
 	    call matchadd('Search', ( &l:ignorecase ? '\c' : '\C' ) .o_pattern)
@@ -489,6 +496,14 @@ function! atplib_search#Dsearch(bang,...)
 	setl syntax=tex
 	setl readonly
 	map <buffer> <silent> q	:bd<CR>
+	" Place signs:
+	if has("signs")
+	    sign unplace *
+	    for i in signs
+		exe 'sign define '.i.' text=>>'
+		exe 'sign place '.i.' line='.i.' name='.i.' file='.expand('%:p')
+	    endfor
+	endif
     else
 	redraw
 	echohl ErrorMsg

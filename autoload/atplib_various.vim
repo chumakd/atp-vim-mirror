@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Sep 11, 2011 at 06:56  +0100
+" Last Change: Mon Sep 12, 2011 at 10:19  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1448,34 +1448,34 @@ endfunction
 try
 function! atplib_various#ReloadATP(bang)
     " First source the option file
-    let common_file	= globpath(&rtp, 'ftplugin/ATP_files/common.vim')
-    let options_file	= globpath(&rtp, 'ftplugin/ATP_files/options.vim')
+    let common_file	= split(globpath(&rtp, 'ftplugin/ATP_files/common.vim'), "\n")[0]
+    let options_file	= split(globpath(&rtp, 'ftplugin/ATP_files/options.vim'), "\n")[0]
     let g:atp_reload_functions = ( a:bang == "!" ? 1 : 0 ) 
     if a:bang == ""
 	execute "source " . common_file
 	execute "source " . options_file 
 
 	" Then source atprc file
-	if filereadable(globpath($HOME, '/.atprc.vim', 1)) && has("unix")
+	if filereadable(split(globpath($HOME, '/.atprc.vim', 1), "\n")[0]) && has("unix")
 
 		" Note: in $HOME/.atprc file the user can set all the local buffer
 		" variables without using autocommands
-		let path = globpath($HOME, '/.atprc.vim', 1)
+		let path = split(globpath($HOME, '/.atprc.vim', 1), "\n")[0]
 		execute 'source ' . fnameescape(path)
 
 	else
-		let path	= get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), '\n'), 0, "")
+		let path	= get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), "\n"), 0, "")
 		if path != ""
 			execute 'source ' . fnameescape(path)
 		endif
 	endif
     else
 	" Reload all functions and variables, 
-	let tex_atp_file = globpath(&rtp, 'ftplugin/tex_atp.vim')
+	let tex_atp_file = split(globpath(&rtp, 'ftplugin/tex_atp.vim'), "\n")[0]
 	execute "source " . tex_atp_file
 
 	" delete functions from autoload/atplib.vim:
-	let atplib_file	= globpath(&rtp, 'autoload/atplib.vim')
+	let atplib_file	= split(globpath(&rtp, 'autoload/atplib.vim'), "\n")[0]
 	let saved_loclist = getloclist(0)
 	try
 	    exe 'silent! lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_file
@@ -1545,7 +1545,7 @@ function! atplib_various#GetAMSRef(what, bibfile)
     " Get data from AMS web site.
     let atpbib_WgetOutputFile = tempname()
     let g:atpbib_WgetOutputFile = atpbib_WgetOutputFile
-    let URLquery_path = globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
+    let URLquery_path = split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]
     if a:bibfile != "nobibfile"
 	let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=bibtex"
     else
@@ -1687,7 +1687,7 @@ endfunction
 "{{{ Dictionary
 function! atplib_various#Dictionary(word)
     redraw
-    let URLquery_path 	= globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
+    let URLquery_path 	= split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]
     let url		= "http://www.impan.pl/cgi-bin/dictsearch?q=".a:word
     let wget_file 	= tempname()
     let cmd=g:atp_Python." ".shellescape(URLquery_path)." ".shellescape(url)." ".shellescape(wget_file)
@@ -1996,7 +1996,7 @@ function! atplib_various#MakeListOfWords()
     let word_list 	= []
     let loclist		= getloclist(0)
     let wget_file 	= tempname()
-    let URLquery_path 	= globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
+    let URLquery_path 	= split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]
 
     for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x' , 'y', 'z' ]
 	let url		= "http://www.impan.pl/Dictionary/".letter.".html"
@@ -2203,7 +2203,7 @@ function! atplib_various#UpdateATP(bang)
 	else
 	    echo "[ATP:] getting list of available versions ..."
 	endif
-	let s:URLquery_path = globpath(&rtp, 'ftplugin/ATP_files/url_query.py')    
+	let s:URLquery_path = split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]    
 
 	if a:bang == "!"
 	    let url = "http://sourceforge.net/projects/atp-vim/files/snapshots/"
@@ -2267,7 +2267,7 @@ function! atplib_various#UpdateATP(bang)
 	"NOTE: this list might contain one item two times (I'm not filtering well the
 	" html sourcefore web page, but this is faster)
 
-	let dir = fnamemodify(globpath(&rtp, "ftplugin/tex_atp.vim"), ":h:h")
+	let dir = fnamemodify(split(globpath(&rtp, "ftplugin/tex_atp.vim"), "\n")[0], ":h:h")
 	if dir == ""
 	    echoerr "[ATP:] Cannot find local ATP directory."
 	    if g:atp_debugUpdateATP
@@ -2280,7 +2280,7 @@ function! atplib_various#UpdateATP(bang)
 	let saved_loclist = getloclist(0)
 	if a:bang == "!"
 	    try
-		exe '1lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+		exe '1lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. split(globpath(&rtp, "ftplugin/tex_atp.vim"), "\n")[0]
 		let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
 		call setloclist(0, saved_loclist) 
 		let old_stamp=matchstr(old_stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
@@ -2289,7 +2289,7 @@ function! atplib_various#UpdateATP(bang)
 	    endtry
 	else
 	    try
-		exe '1lvimgrep /(ver\.\=\%[sion]\s\+\d\+\%(\.\d\+\)*\s*)/gj ' . globpath(&rtp, "doc/automatic-tex-plugin.txt")
+		exe '1lvimgrep /(ver\.\=\%[sion]\s\+\d\+\%(\.\d\+\)*\s*)/gj ' . split(globpath(&rtp, "doc/automatic-tex-plugin.txt"), "\n")[0]
 		let old_stamp = get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
 		call setloclist(0, saved_loclist) 
 		let old_stamp=matchstr(old_stamp, '(ver\.\=\%[sion]\s\+\zs\d\+\%(\.\d\+\)*\ze')
@@ -2363,8 +2363,8 @@ function! atplib_various#UpdateATP(bang)
 	else
 	    echomsg "[ATP:] ".(l:return ? 'updated' : 'downgraded')." to release ".s:ATPversion
 	endif
-	if bufloaded(globpath(&rtp, "doc/automatic-tex-plugin.txt")) ||
-		    \ bufloaded(globpath(&rtp, "doc/bibtex_atp.txt"))
+	if bufloaded(split(globpath(&rtp, "doc/automatic-tex-plugin.txt"), "\n")[0]) ||
+		    \ bufloaded(split(globpath(&rtp, "doc/bibtex_atp.txt"), "\n")[0])
 	    echo "[ATP:] to reload the ATP help files (and see what's new!), close and reopen them."
 	endif
 endfunction 
@@ -2477,14 +2477,14 @@ function! atplib_various#ATPversion()
     " This function is used in opitons.vim
     let saved_loclist = getloclist(0)
     try
-	exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. globpath(&rtp, "ftplugin/tex_atp.vim")
+	exe 'lvimgrep /\C^"\s*Time\s\+Stamp:/gj '. split(globpath(&rtp, "ftplugin/tex_atp.vim"), "\n")[0]
 	let stamp 	= get(getloclist(0),0, {'text' : '00-00-00_00-00'})['text']
 	let stamp	= matchstr(stamp, '^"\s*Time\s\+Stamp:\s*\zs\%(\d\|_\|-\)*\ze')
     catch /E480:/
 	let stamp	= "(no stamp)"
     endtry
     try
-	exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\%(\.\|sion\)\=\s\+[0-9.]*)/gj '. globpath(&rtp, "doc/automatic-tex-plugin.txt")
+	exe 'lvimgrep /^\C\s*An\s\+Introduction\s\+to\s\+AUTOMATIC\s\+(La)TeX\s\+PLUGIN\s\+(ver\%(\.\|sion\)\=\s\+[0-9.]*)/gj '. split(globpath(&rtp, "doc/automatic-tex-plugin.txt"), "\n")[0]
 	let l:version = get(getloclist(0),0, {'text' : 'unknown'})['text']
 	let l:version = matchstr(l:version, '(ver\.\?\s\+\zs[0-9.]*\ze)')
     catch /E480:/

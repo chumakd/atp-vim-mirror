@@ -433,8 +433,10 @@ Todo: Make atplib_various#Unwrap work with $:$ and $$:$$.
 Todo: :Align command moves the code to the right.
 Todo: split and Toc: moving to wrong window, b:atp_Toc undefined.
 Todo: Add latex-errorfilter !
-Done: ProgressBar in project files. Works in input files only after opening the main file.
-	It is problem with statusline not being set because of 'Last set from error handler', see (:help :set-verbose, at the end). Something is evaluating and an error occurs.
+Done: ProgressBar in project files. Works in input files only after opening
+    the main file.  It is problem with statusline not being set because of
+    'Last set from error handler', see (:help :set-verbose, at the end).
+    Something is evaluating and an error occurs.
 Done: change packages/ files: from global variables!
 Done: g:atp_raw_texinputs, atplib_common#atp_raw_texinputs (common.vim, atplib_common.vim).
 Done: g:atp_PythonCompilerPath is set wrong.
@@ -447,3 +449,4 @@ Done: \textcolor{<Tab> ... nor working.
 	(~line 5009 atplib.vim)
 	Solution: make dictionary of dependencies (or equivalences :) )
 look: ':help sign'.
+Todo: Dsearch neads to have function which reads just one variable from project script.

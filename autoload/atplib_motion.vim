@@ -853,7 +853,7 @@ function! atplib_motion#LatexTags(bang)
     silent! write
     let b:atp_ProjectScript=project
 
-    let latextags=globpath(&rtp, "ftplugin/ATP_files/latextags.py")
+    let latextags=split(globpath(&rtp, "ftplugin/ATP_files/latextags.py"), "\n")[0]
     let files=join(
 		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"),
 		    \ 'atplib#FullPath(v:val)')

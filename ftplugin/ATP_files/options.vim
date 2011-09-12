@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Sep 08, 2011 at 09:01  +0100
+" Last Change: Mon Sep 12, 2011 at 10:10  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -201,10 +201,10 @@ if maparg("K", "n") != ""
 endif
 
 exe "setlocal complete+=".
-	    \ "k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/greek").
-	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary").
-	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits").
-	    \ ",k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/tikz")
+	    \ "k".split(globpath(&rtp, "ftplugin/ATP_files/dictionaries/greek"), "\n")[0].
+	    \ ",k".split(globpath(&rtp, "ftplugin/ATP_files/dictionaries/dictionary"), "\n")[0].
+	    \ ",k".split(globpath(&rtp, "ftplugin/ATP_files/dictionaries/SIunits"), "\n")[0].
+	    \ ",k".split(globpath(&rtp, "ftplugin/ATP_files/dictionaries/tikz"), "\n")[0]
 
 " The ams_dictionary is added after g:atp_amsmath variable is defined.
 
@@ -388,6 +388,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_signs")
+    let g:atp_signs = 1
+endif
 if !exists("g:atp_TexAlign_join_lines")
     let g:atp_TexAlign_join_lines = 0
 endif
@@ -2000,7 +2003,7 @@ endif
 	endif
 	if !g:atp_no_separator
 	    " This sets iskeyword vim option (see syntax/tex.vim file)
-	    let g:tex_isk ="48-57,a-z,A-Z,192-255,".g:atp_separator
+	    let g:tex_isk ="48-57,a-z,A-Z,179-218,".g:atp_separator
 	endif
 	if !exists("g:atp_no_short_names")
 	    let g:atp_env_short_names = 1

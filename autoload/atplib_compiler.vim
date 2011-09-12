@@ -503,7 +503,7 @@ function! atplib_compiler#MakeLatex(bang, mode, start)
     endif
 
     " and a:bang are not yet used by makelatex.py
-    let PythonMakeLatexPath = globpath(&rtp, "ftplugin/ATP_files/makelatex.py")
+    let PythonMakeLatexPath = split(globpath(&rtp, "ftplugin/ATP_files/makelatex.py"), "\n")[0]
     let interaction 	    = ( mode=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
     let tex_options	    = shellescape(b:atp_TexOptions.',-interaction='.interaction)
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
@@ -1705,7 +1705,12 @@ function! atplib_compiler#ShowErrors(...)
     let show_message = ( a:0 >= 2 ? a:2 : 1 )
 
     " read the log file
-    cg
+    cgetfile
+
+    " signs
+    if g:atp_signs
+	call atplib#Signs()
+    endif
 
     " final stuff
     if len(getqflist()) == 0 

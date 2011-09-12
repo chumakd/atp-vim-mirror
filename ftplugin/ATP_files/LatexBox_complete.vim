@@ -10,7 +10,7 @@ if s:sourced && !g:atp_reload_functions
     finish
 endif
 
-let s:atp_MainFile	= ( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile )
+let s:atp_MainFile	= ( g:atp_RelativePath ? split(globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")), "\n")[0] : b:atp_MainFile )
 
 " latex-box/complete.vim
 " <SID> Wrap {{{
@@ -135,7 +135,7 @@ endfunction
 function! s:FindBibData(...)
 
 	if a:0 == 0
-		let file = ( g:atp_RelativePath ? globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")) : b:atp_MainFile )
+		let file = ( g:atp_RelativePath ? split(globpath(b:atp_ProjectDir, fnamemodify(b:atp_MainFile, ":t")), "\n")[0] : b:atp_MainFile )
 	else
 		let file = a:1
 	endif
