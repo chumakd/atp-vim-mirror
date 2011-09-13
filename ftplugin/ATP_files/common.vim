@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Sep 11, 2011 at 06:54  +0100
+" Last Change: Tue Sep 13, 2011 at 10:22  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -257,22 +257,26 @@ endfunction
 
 " The main status function, it is called via autocommand defined in 'options.vim'.
 let s:errormsg = 0
-function! ATPStatus(...) "{{{
+" a:command = 1/0: 1 if run by a command, then a:1=bang, a:2=ctoc, 
+" if a:command = 0, then a:1=ctoc.
+function! ATPStatus(command,...) "{{{
 
     if expand("%") == "[Command Line]" || &l:filetype == "qf"
 	" If one uses q/ or q? this status function should not be used.
 	return
     endif
 
-    if a:0 >= 1 && a:1 != -1
+    if a:command >= 1
+"     if a:0 >= 1 && a:1 != -1
 	" This is run be the command :Status (:ATPStatus)
-	if a:1 == ""
+	if a:0 >= 1 && a:1 == ""
 	    let g:status_OutDir = s:StatusOutDir()
 	    let g:atp_statusOutDir = 1
 	else
 	    let g:status_OutDir = ""
 	    let g:atp_statusOutDir = 0
 	endif
+	let ctoc = ( a:0 >= 2 && a:2 ? 1 : 0 )
     else
 	" This is run by the autocommand group ATP_Status
 	if g:atp_statusOutDir
@@ -280,8 +284,9 @@ function! ATPStatus(...) "{{{
 	else
 	    let g:status_OutDir = ""
 	endif
+	let ctoc = ( a:0 >= 1 && a:1 ? 1 : 0 )
     endif
-    let status_CTOC	= &filetype =~ '^\(ams\)\=tex' ? 'CTOC("return")' : ''
+    let status_CTOC	= ( ctoc && &l:filetype =~ '^\(ams\)\=tex' ? '%{CTOC("return")}' : '' )
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0
 	let g:atp_statusNotifHi = 9
 	if !s:errormsg
@@ -296,13 +301,13 @@ function! ATPStatus(...) "{{{
     let status_Notif	= ( g:atp_statusNotif 			? '%{ATPRunning()}' 	: '' )
     let status_KeyMap	= ( has("keymap") && g:atp_babel && exists("b:keymap_name") 	
 								\ ? b:keymap_name 	: '' )
-    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) '.status_NotifHi.status_Notif.status_NotifHiPost.'%= %{'.status_CTOC.'} %{g:status_OutDir} %-14.16(%l,%c%V%)%P'
+    let g:atp_StatusLine= '%<%f '.status_KeyMap.'%(%h%m%r%) '.status_NotifHi.status_Notif.status_NotifHiPost.'%= '.status_CTOC.' %{g:status_OutDir} %-14.16(%l,%c%V%)%P'
     set statusline=%!g:atp_StatusLine
 endfunction
 try
-    command -buffer -bang Status	:call ATPStatus(<q-bang>) 
+    command -buffer -bang Status	:call ATPStatus(1,<q-bang>) 
 catch /E174:/
-    command! -buffer -bang ATPStatus	:call ATPStatus(<q-bang>) 
+    command! -buffer -bang ATPStatus	:call ATPStatus(1,<q-bang>) 
 endtry
 " }}}
 "}}}

@@ -10,7 +10,7 @@
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.4
+VERSION = 10.5.1
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
@@ -90,7 +90,7 @@ SOURCE += syntax/log_atp.vim
 SOURCE += syntax/toc_atp.vim
 
 ${Plugin}_${VERSION}.vmb: ${SOURCE}
-		python stamp.py ${DATE}
+		python stamp.py ${DATE} ${VERSION}
 		python version.py ${VERSION}
 		tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
 		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!

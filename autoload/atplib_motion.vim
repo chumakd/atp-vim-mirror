@@ -634,7 +634,7 @@ function! atplib_motion#ctoc()
 " 	    endif
 " 	endif
 	" Set the status line once more, to remove the CTOC() function.
-	call ATPStatus()
+	call ATPStatus(0,0)
 	return []
     endif
     " resolve the full path:

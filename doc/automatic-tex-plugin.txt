@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 12 September 2011
+*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: 13 September 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.4)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.1)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -163,10 +163,19 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.4
 <
+ Thanks for all the vim karma points: if you look at all ftplugin scripts ATP has 8th
+ rate and among ten most ratet plugins it has 2nd best avrage rate: 3.71, while the
+ first one has 3.73. If you find something in ATP which is not convienient, or
+ you think it might be done in a more friendly way, let me know, I'm open for
+ discussions :) 
+
+ Here are the recent changes (excluding bug fixes):
+
  Signs				-- see |atp-signs| (and |signs|).
  :Unwrap			-- see |atp-:Unwrap| command (nmap \u).
 
  See added note below |g:atp_texinputs|.
+ The package variable names are changed, see |atp-completion-packages|.
 >
  ======================
  Changes in version 10.2

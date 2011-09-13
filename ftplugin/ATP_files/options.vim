@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Sep 12, 2011 at 10:10  +0100
+" Last Change: Tue Sep 13, 2011 at 10:21  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2539,7 +2539,7 @@ endfunction
     if (exists("g:atp_StatusLine") && g:atp_StatusLine == '1') || !exists("g:atp_StatusLine")
 	augroup ATP_Status
 	    au!
-	    au BufEnter,BufWinEnter,TabEnter 	*.tex 	call ATPStatus()
+	    au BufEnter,BufWinEnter,TabEnter 	*.tex 	call ATPStatus(0,1)
 	augroup END
     endif
 

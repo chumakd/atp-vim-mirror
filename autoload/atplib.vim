@@ -16,7 +16,7 @@ function! atplib#ReadATPRC() "{{{
 	" It also should be run at the end if the user defines mapping that
 	" should be overwrite the ATP settings (this is done via
 	" autocommand).
-	let atprc_file=split(globpath($HOME, '.atprc.vim', 1), "\n")[0]
+	let atprc_file=get(split(globpath($HOME, '.atprc.vim', 1), "\n"), 0, "")
 	if !filereadable(atprc_file)
 	    let atprc_file = get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), '\n'), 0, "")
 	endif

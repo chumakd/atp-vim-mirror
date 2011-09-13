@@ -3,7 +3,7 @@
 " Email:       mszamot [AT] gmail [DOT] com
 " Mailing List: atp-vim-list [AT] lists.sourceforge.net
 " Language:    bib
-" Last Change: Sat Sep 03, 2011 at 05:34  +0100
+" Last Change: Tue Sep 13, 2011 at 10:51  +0100
 " Copyright Statement: 
 " 	  This file is part of Automatic Tex Plugin for Vim.
 "
@@ -178,7 +178,7 @@ function! <SID>GetAMSRef(what)
 
     " Get data from AMS web site.
     let atpbib_WgetOutputFile = tempname()
-    let URLquery_path = globpath(&rtp, 'ftplugin/ATP_files/url_query.py')
+    let URLquery_path = split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]
     let url="http://www.ams.org/mathscinet-mref?ref=".what."&dataType=bibtex"
     let cmd=g:atp_Python." ".URLquery_path." ".shellescape(url)." ".shellescape(atpbib_WgetOutputFile)
     call system(cmd)

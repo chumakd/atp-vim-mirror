@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Sep 12, 2011 at 10:19  +0100
+" Last Change: Tue Sep 13, 2011 at 10:51  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1456,18 +1456,16 @@ function! atplib_various#ReloadATP(bang)
 	execute "source " . options_file 
 
 	" Then source atprc file
-	if filereadable(split(globpath($HOME, '/.atprc.vim', 1), "\n")[0]) && has("unix")
-
-		" Note: in $HOME/.atprc file the user can set all the local buffer
-		" variables without using autocommands
-		let path = split(globpath($HOME, '/.atprc.vim', 1), "\n")[0]
-		execute 'source ' . fnameescape(path)
-
+	let path = get(split(globpath($HOME, '/.atprc.vim', 1), "\n"), 0, "")
+	if filereadable(path) && has("unix")
+	    " Note: in $HOME/.atprc file the user can set all the local buffer
+	    " variables without using autocommands
+	    execute 'source ' . fnameescape(path)
 	else
-		let path	= get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), "\n"), 0, "")
-		if path != ""
-			execute 'source ' . fnameescape(path)
-		endif
+	    let path	= get(split(globpath(&rtp, "**/ftplugin/ATP_files/atprc.vim"), "\n"), 0, "")
+	    if path != ""
+		execute 'source ' . fnameescape(path)
+	    endif
 	endif
     else
 	" Reload all functions and variables, 

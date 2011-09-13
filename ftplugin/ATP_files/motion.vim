@@ -14,7 +14,6 @@ function! CTOC(...)
     " title. It returns only the first b:atp_TruncateStatusSection
     " characters of the the whole titles.
     let names=atplib_motion#ctoc()
-    let g:names=names
     let chapter_name	= get(names, 0, '')
     let section_name	= get(names, 1, '')
     let subsection_name	= get(names, 2, '')
