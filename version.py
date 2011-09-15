@@ -22,7 +22,7 @@ for line in file_l:
 # Change version number:
 file_l[i-1]="	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. "+str(newversion)+")\n"
 # Change date stamp:
-file_l[0]="*automatic-tex-plugin.txt* 	For Vim version 7.3	Last change: "+date+"\n"
+file_l[0]="*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: "+date+"\n"
 file_o.close()
 # Write file (open for overwriting):
 file_o=open(file, "w")

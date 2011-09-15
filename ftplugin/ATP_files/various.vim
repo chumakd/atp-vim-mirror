@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Sep 11, 2011 at 06:56  +0100
+" Last Change: Fri Sep 16, 2011 at 12:11  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen
@@ -28,6 +28,7 @@ function! ATP_strlen(x)
 	    let x = substitute(x, gletter, hide, 'g')
 	endfor
     endif
+"     let g:x_1 = x
     let s:texMathList=[
         \ '|', 'angle', 'approx', 'ast', 'asymp', 'backepsilon', 'backsimeq', 'barwedge', 'because',
         \ 'between', 'bigcap', 'bigcup', 'bigodot', 'bigoplus', 'bigotimes', 'bigsqcup', 'bigtriangledown', 'bigvee',
@@ -67,43 +68,45 @@ function! ATP_strlen(x)
 	    " The pattern must end with '\>', since there are commands with
 	    " the same begining, for example \le and \left, etc...
 	endfor
-	let g:x = x
 	for symb in s:texMathDelimList
 	    let x=substitute(x, '\\[Bb]igg\=[lr]\>'.symb, hide, 'g') 
 	endfor
 	let x=substitute(x, '\\\%(left\|right\)\>', '', 'g')
     endif
+"     let g:x_2 = x
     if &enc == 'utf-8' && g:tex_conceal =~# 's'
 	let x=substitute(x, '\\\@<![_^]\%({.\)\=', '', 'g')
     endif
+"     let g:x_3 = x
     if &enc == 'utf-8' && g:tex_conceal =~# 'a'
 	for accent in [
-		    \ '\\[`''\^"~kruv]{\=[aA]}\=',
-		    \ '\\[`''\^"~kruv]{\=[aA]}\=',
-		    \ '\\[`\^.cv]{\=[cC]}\=',
-		    \ '\\[v]{\=[dD]}\=',
-		    \ '\\[`''\^"~.ckuv]{\=[eE]}\=',
-		    \ '\\[`.cu]{\=[gG]}\=',
-		    \ '\\[`''\^"~.u]{\=[iI]}\=',
-		    \ '\\[''\^"cv]{\=[lL]}\=',
-		    \ '\\[''~cv]{\=[nN]}\=',
-		    \ '\\[`''\^"~.Hku]{\=[oO]}\=',
-		    \ '\\[''cv]{\=[rR]}\=',
-		    \ '\\[''\^cv]{\=[sS]}\=',
-		    \ '\\[''cv]{\=[tT]}\=',
-		    \ '\\[`''\^"~Hru]{\=[uU]}\=',
-		    \ '\\[\^]{\=[wW]}\=',
-		    \ '\\[`''\^"~]{\=[yY]}\=',
-		    \ '\\[''.v]{\=[zZ]}\=',
-		    \ '\\[`''\^"~.cHkruv]{\=[aA]}\=',
-		    \ '\\[`''\^"~.u]{\=\\i}\=',
+		    \ '\\[`''\^"~kruv]{\=[aA]}\=\>',
+		    \ '\\[`''\^"~kruv]{\=[aA]}\=\>',
+		    \ '\\[`\^.cv]{\=[cC]}\=\>',
+		    \ '\\[v]{\=[dD]}\=\>',
+		    \ '\\[`''\^"~.ckuv]{\=[eE]}\=\>',
+		    \ '\\[`.cu]{\=[gG]}\=\>',
+		    \ '\\[`''\^"~.u]{\=[iI]}\=\>',
+		    \ '\\[''\^"cv]{\=[lL]}\=\>',
+		    \ '\\[''~cv]{\=[nN]}\=\>',
+		    \ '\\[`''\^"~.Hku]{\=[oO]}\=\>',
+		    \ '\\[''cv]{\=[rR]}\=\>',
+		    \ '\\[''\^cv]{\=[sS]}\=\>',
+		    \ '\\[''cv]{\=[tT]}\=\>',
+		    \ '\\[`''\^"~Hru]{\=[uU]}\=\>',
+		    \ '\\[\^]{\=[wW]}\=\>',
+		    \ '\\[`''\^"~]{\=[yY]}\=\>',
+		    \ '\\[''.v]{\=[zZ]}\=\>',
+		    \ '\\[`''\^"~.cHkruv]{\=[aA]}\=\>',
+		    \ '\\[`''\^"~.u]{\=\\i}\=\>',
 		    \ '\\AA\>', '\\[oO]\>', '\\AE\>', '\\ae\>', '\\OE\>', '\\ss\>' ]
 	    let x=substitute(x, accent, hide, 'g')
 	endfor
     endif
     " Add custom concealed symbols.
-    let g:x=x
+"     let g:x_4 = x
     let x=substitute(x,'.','x','g')
+"     let g:x=x
     return strlen(x)
 endfunction
 "}}}

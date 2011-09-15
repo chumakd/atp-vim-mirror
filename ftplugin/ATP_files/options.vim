@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Sep 13, 2011 at 10:21  +0100
+" Last Change: Fri Sep 16, 2011 at 12:07  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2243,7 +2243,7 @@ endif
 		    \ 'solid', 'phase', 'loosly', 'dashed', 'dotted' , 'densly', 
 		    \ 'latex', 'diamond', 'double', 'smooth', 'cycle', 'coordinates', 'distance',
 		    \ 'even', 'odd', 'rule', 'pattern', 
-		    \ 'stars', 'shading', 'ball', 'axis', 'middle', 'outer', 'transorm',
+		    \ 'stars', 'shading', 'ball', 'axis', 'middle', 'outer', 'transorm', 'fill',
 		    \ 'fading', 'horizontal', 'vertical', 'light', 'dark', 'button', 'postaction', 'out',
 		    \ 'circular', 'shadow', 'scope', 'borders', 'spreading', 'false', 'position', 'midway',
 		    \ 'paint', 'from', 'to', 'solution=', 'global', 'delta' ]
@@ -2988,10 +2988,7 @@ if g:atp_reload_functions == 0
 endif
 
 " Set vim path option: 
-" It would be better to include project dir and all its subdirectories. But
-" this might not work for all people ... . I can note how to set this, also
-" .project.vim file can be used.
-exe "setl path+=".escape(g:texmf, ' ')."/tex,".escape(b:atp_OutDir, ' ')
+exe "setlocal path+=".substitute(g:texmf."/tex,".join(filter(split(globpath(b:atp_ProjectDir, '**'), "\n"), "isdirectory(v:val)"), ","), ' ', '\\\\\\\ ', 'g')
 
 " Some Commands:
 " {{{

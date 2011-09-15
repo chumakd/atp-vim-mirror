@@ -2352,11 +2352,14 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 "     endif
 "     return l:line
 
+    let time = reltime()
 
     let l:method 		= ( a:0 >= 1 ? a:1 : 0 )
 "     let l:count_method		= ( a:0 >= 2 ? a:2 : 1 )
     let l:len=len(getbufline(bufname("%"),1,'$'))
     let l:nr=a:line
+    let cline = line(".")
+    let g:cline = cline
 
     if a:limit == "$" || a:limit == "-1"
 	let l:limit=l:len-a:line
@@ -2373,12 +2376,15 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let l:line=substitute(l:line, '\(\\\@<!\|\\\@<!\%(\\\\\)*\)\zs%.*', '', '')
 	    if l:nr == a:line
 		if strpart(l:line,getpos(".")[2]-1) =~ '\%(' . a:bpat . '.*\)\@<!' . a:epat
+		    let g:time_CheckClosed=reltimestr(reltime(time))
 		    return l:nr
 		endif
 	    else
 		if l:line =~ '\%(' . a:epat . '.*\)\@<!' . a:bpat
+		    let g:time_CheckClosed=reltimestr(reltime(time))
 		    return 0
 		elseif l:line =~ '\%(' . a:bpat . '.*\)\@<!' . a:epat 
+		    let g:time_CheckClosed=reltimestr(reltime(time))
 		    return l:nr
 		endif
 	    endif
@@ -2403,12 +2409,15 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
 	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
 	    if (l:bpat_count+1) == l:epat_count
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return l:nr
 	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return l:nr
 	    endif 
 	    let l:nr+=1
 	endwhile
+	let g:time_CheckClosed=reltimestr(reltime(time))
 	return 0
 
     elseif l:method==2
@@ -2421,14 +2430,17 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	while l:nr <= a:line+l:limit
 	    let l:line		=getline(l:nr)
 	    if l:nr == a:line+l:limit
+		call atplib#Log("CheckClosed.log", 'x1')
 		let l:col	=match(l:line, '^.*'.a:epat.'\zs')
 		if l:col != -1
 		    let l:line	=strpart(l:line,0, l:col+1)
 		endif
 	    elseif l:nr == a:line
+		call atplib#Log("CheckClosed.log", 'x2')
 		let saved_pos = getpos(".")
 		call cursor(l:nr, 1)
-		let [l:nr, l:col]=searchpos(a:bpat, 'cn')
+		let [l:nr, l:col]=searchpos('.*'.a:epat.'\zs', 'cn', cline)
+		let g:nr = l:nr
 		let l:line	= strpart(getline(l:nr), l:col-1)
 		call cursor(saved_pos[1], saved_pos[2])
 " 		echomsg l:nr." X ".l:line
@@ -2438,15 +2450,18 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
 	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
 	    if (l:bpat_count+1) == l:epat_count
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return l:nr
-	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat && l:nr>=line(".")
-		return l:nr
+" 	    elseif l:bpat_count == l:epat_count && l:begin_line =~ a:bpat && l:nr>=line(".")
+" 		return l:nr
 	    endif
 	    let l:nr+=1
 	endwhile
 	if l:bpat_count > l:epat_count
+	    let g:time_CheckClosed=reltimestr(reltime(time))
 	    return 0
 	else
+	    let g:time_CheckClosed=reltimestr(reltime(time))
 	    return 1
 	endif
     elseif l:method==3
@@ -2465,22 +2480,26 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    if pos == [0, 0]
 " 		silent echomsg "C1"
 		call cursor(saved_pos[1], saved_pos[2])
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return c_pos[0]
 	    endif
 	    if pos == c_pos
 " 		silent echomsg "C2"
 		call cursor(saved_pos[1], saved_pos[2])
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return 0
 	    endif
 	    if atplib#CompareCoordinates(c_pos, pos)
 " 		silent echomsg "C3"
 		call cursor(saved_pos[1], saved_pos[2])
+		let g:time_CheckClosed=reltimestr(reltime(time))
 		return 0
 	    endif
 	    let c_pos = copy(pos)
 	endwhile
 " 	silent echomsg "C4"
 	call cursor(saved_pos[1], saved_pos[2])
+	let g:time_CheckClosed=reltimestr(reltime(time))
 	return 1
     endif
 endfunction
@@ -3826,7 +3845,6 @@ function! atplib#CheckBracket(bracket_dict)
 	let time_{i}	= reltime()
 	if ket != '{' && ket != '(' && ket != '['
 	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', begin_line)
-"      	    let g:time_{i}_A  = reltimestr(reltime(time_{i}))
 		let bslash = ( ket != '{' ? '\\\@<!' : '' )
 		let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
 			\ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", begin_line)
@@ -3880,12 +3898,13 @@ function! atplib#CheckBracket(bracket_dict)
 " 		let pair_{i}	= [0, 0]
 " 	    endif
 	endif
-" 	let g:time_A_{i}  = reltimestr(reltime(time_{i}))
+	let g:time_A_{i}  = reltimestr(reltime(time_{i}))
 
 	if g:atp_debugCheckBracket >= 2
 	    echomsg escape(ket,'\[]') . " pair_".i."=".string(pair_{i}) . " limit_line=" . limit_line
 	endif
 	if g:atp_debugCheckBracket >= 1
+	    call atplib#Log("CheckBracket.log", "tim_A_".i."=".string(g:time_A_{i}))
 	    call atplib#Log("CheckBracket.log", ket." pair_".i."=".string(pair_{i}))
 	endif
 	let pos[1]	= pair_{i}[0]
@@ -3921,7 +3940,8 @@ function! atplib#CheckBracket(bracket_dict)
 	let check_{i}	= min([check_{i}, check_dot_{i}])
 	call add(check_list, [ pair_{i}[0], ((check_{i})*pair_{i}[1]), i ] ) 
 	keepjumps call setpos(".",pos_saved)
-" 	let g:time_B_{i}  = reltimestr(reltime(time_{i}))
+	let g:time_B_{i}  = reltimestr(reltime(time_{i}))
+	call atplib#Log("CheckBracket.log", "tim_B_".i."=".string(g:time_B_{i}))
 	let i+=1
     endfor
 "     let g:time_CheckBracket_A=reltimestr(reltime(time))
@@ -5031,7 +5051,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
     " {{{3 ------------ COMMAND VALUES
     elseif completion_method == 'command values'
 	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
-	    let command = matchstr(l, '\\\w\+\%({\%([^}]\|{[^}]*}}\)*}\)*{\ze\%([^}]\|{[^}]*}\)*$')
+	    let command = matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}}\)*}\)*{\ze\%([^}]\|{[^}]*}\)*$')
 	else
 	    let command = matchstr(l, '.*\\renewcommand{\s*\zs\\\?\w*\ze\s*}')
 	endif
