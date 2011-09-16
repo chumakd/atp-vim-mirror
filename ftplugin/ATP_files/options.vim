@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Sep 16, 2011 at 12:07  +0100
+" Last Change: Fri Sep 16, 2011 at 06:45  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -39,6 +39,9 @@ endif
 
 " ATP Debug Variables: (to debug atp behaviour)
 " {{{ debug variables
+if !exists("g:atp_debugCheckClosed")
+    let g:atp_debugCheckClosed = 0
+endif
 if !exists("g:atp_debugMapFile")
     " debug of atplib#CheckClosed_math function
     " (issues errormsg when synstack() failed).

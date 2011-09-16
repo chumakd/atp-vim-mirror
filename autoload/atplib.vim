@@ -2367,9 +2367,11 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	let l:limit=a:limit
     endif
 
-    call atplib#Log("CheckClosed.log","", "init")
+    if g:atp_debugCheckClosed == 1
+	call atplib#Log("CheckClosed.log","", "init")
+    endif
 
-    if l:method==0
+    if l:method==0 " {{{2
 	while l:nr <= a:line+l:limit
 	    let l:line=getline(l:nr)
 	    " Remove comments:
@@ -2391,7 +2393,7 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let l:nr+=1
 	endwhile
 
-    elseif l:method==1
+    elseif l:method==1 " {{{2
 
 	let l:bpat_count	=0
 	let l:epat_count	=0
@@ -2407,7 +2409,9 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    endif
 	    let l:bpat_count+=atplib#count(l:line,a:bpat, 1)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
-	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    if g:atp_debugCheckClosed
+		call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    endif
 	    if (l:bpat_count+1) == l:epat_count
 		let g:time_CheckClosed=reltimestr(reltime(time))
 		return l:nr
@@ -2420,7 +2424,7 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	let g:time_CheckClosed=reltimestr(reltime(time))
 	return 0
 
-    elseif l:method==2
+    elseif l:method==2 " {{{2
 	" This is a special method for brackets.
 
 	let l:bpat_count	=0
@@ -2430,15 +2434,21 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	while l:nr <= a:line+l:limit
 	    let l:line		=getline(l:nr)
 	    if l:nr == a:line+l:limit
-		call atplib#Log("CheckClosed.log", 'x1')
+		if g:atp_debugCheckClosed
+		    call atplib#Log("CheckClosed.log", 'x1')
+		endif
 		let l:col	=match(l:line, '^.*'.a:epat.'\zs')
 		if l:col != -1
 		    let l:line	=strpart(l:line,0, l:col+1)
 		endif
 	    elseif l:nr == a:line
-		call atplib#Log("CheckClosed.log", 'x2')
+		if g:atp_debugCheckClosed
+		    call atplib#Log("CheckClosed.log", 'x2')
+		endif
 		let saved_pos = getpos(".")
 		call cursor(l:nr, 1)
+		" The following motion should go out any opened bracket which
+		" is starts before a:line. It is far from perfect!
 		let [l:nr, l:col]=searchpos('.*'.a:epat.'\zs', 'cn', cline)
 		let g:nr = l:nr
 		let l:line	= strpart(getline(l:nr), l:col-1)
@@ -2448,7 +2458,9 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    call cursor(saved_pos[1], saved_pos[2])
 	    let l:bpat_count+=atplib#count(l:line,a:bpat, 1)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
-	    call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    if g:atp_debugCheckClosed
+		call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+	    endif
 	    if (l:bpat_count+1) == l:epat_count
 		let g:time_CheckClosed=reltimestr(reltime(time))
 		return l:nr
@@ -2464,7 +2476,8 @@ function! atplib#CheckClosed(bpat, epat, line, col, limit,...)
 	    let g:time_CheckClosed=reltimestr(reltime(time))
 	    return 1
 	endif
-    elseif l:method==3
+
+    elseif l:method==3 " {{{2
 	" This is a special method for brackets.
 	" But it is too slow!
 
@@ -3904,7 +3917,7 @@ function! atplib#CheckBracket(bracket_dict)
 	    echomsg escape(ket,'\[]') . " pair_".i."=".string(pair_{i}) . " limit_line=" . limit_line
 	endif
 	if g:atp_debugCheckBracket >= 1
-	    call atplib#Log("CheckBracket.log", "tim_A_".i."=".string(g:time_A_{i}))
+	    call atplib#Log("CheckBracket.log", ket." time_A_".i."=".string(g:time_A_{i}))
 	    call atplib#Log("CheckBracket.log", ket." pair_".i."=".string(pair_{i}))
 	endif
 	let pos[1]	= pair_{i}[0]
@@ -3916,6 +3929,11 @@ function! atplib#CheckBracket(bracket_dict)
 " 		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
 
 	let no_backslash = ( i == 0 || i == 2 ? '\\\@<!' : '' )
+	if i == 3
+	    let g:atp_debugCheckClosed = 1
+	else
+	    let g:atp_debugCheckClosed = 0
+	endif
 	let check_{i}	= atplib#CheckClosed(no_backslash.escape(ket,'\[]'),
 		    \ '\%('.no_backslash.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 		    \ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2)
@@ -3941,7 +3959,7 @@ function! atplib#CheckBracket(bracket_dict)
 	call add(check_list, [ pair_{i}[0], ((check_{i})*pair_{i}[1]), i ] ) 
 	keepjumps call setpos(".",pos_saved)
 	let g:time_B_{i}  = reltimestr(reltime(time_{i}))
-	call atplib#Log("CheckBracket.log", "tim_B_".i."=".string(g:time_B_{i}))
+	call atplib#Log("CheckBracket.log", ket." time_B_".i."=".string(g:time_B_{i}))
 	let i+=1
     endfor
 "     let g:time_CheckBracket_A=reltimestr(reltime(time))
@@ -4010,8 +4028,10 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
    " But maybe we shouldn't check if the bracket is closed sometimes one can
    " want to close closed bracket and delete the old one.
    
+    call cursor(line("."), col(".")-1)
     let [ open_line, open_col, opening_bracket ] = ( tab_completion ? 
 		\ deepcopy([ s:open_line, s:open_col, s:opening_bracket ]) : atplib#CheckBracket(a:bracket_dict) )
+    call cursor(line("."), pos_saved[2])
     let open_col = ( open_col > 1 ? open_col-1 : open_col )
 
     " Check and Close Environment:
@@ -4058,8 +4078,6 @@ function! atplib#CloseLastBracket(bracket_dict, ...)
 
 	let opening_size=matchstr(bline,'\zs'.pattern_b.'\ze\s*$')
 	let closing_size=get(g:atp_sizes_of_brackets, opening_size, "")
-" 	let opening_bracket=matchstr(eline,'^'.pattern_o)
-" 	let opening_bracket=bracket_list[open_bracket_nr]
 
 	if opening_size =~ '\\' && opening_bracket != '(' && opening_bracket != '['
 	    let bbline		= strpart(bline, 0, len(bline)-1)
@@ -4177,7 +4195,9 @@ function! atplib#GetBracket(append,...)
     " a:2 = atplib#CheckBracket(g:atp_bracket_dict)
     let time=reltime()
     let pos=getpos(".")
+    call cursor(line("."), col(".")-1)
     let begParen = ( a:0 >=2 ? a:2 : atplib#CheckBracket(g:atp_bracket_dict) )
+    call cursor(line("."), pos[2])
     if begParen[1] != 0  || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY', 'texMathZoneV', 'texMathZoneW']) || ( a:0 >= 1 && a:1 )
 	if atplib#CheckSyntaxGroups(['texMathZoneV'])
 	    let pattern = '\\\@<!\\(\zs'
@@ -5427,40 +5447,40 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 		    \ completion_method == 'pagenumbering'||
 		    \ completion_method == 'documentclass' )
 		if a:expert_mode
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? "^".begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? "^".begin') 
 		else
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? begin') 
 		endif
 	    " {{{4 --------- package options values
 	    elseif ( completion_method == 'package options values' )
 		if a:expert_mode
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? "^".ebegin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? "^".ebegin') 
 		else
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? ebegin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? ebegin') 
 		endif
 	    " {{{4 --------- environment names, bibfiles 
 	    elseif ( completion_method == 'environment_names'	||
 			\ completion_method == 'bibfiles' 	)
 		if a:expert_mode
-		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~# "^".begin') 
 		else
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? begin') 
 		endif
 	    " {{{4 --------- colors
 	    elseif completion_method == 'tikzpicture colors'
 		if a:expert_mode
-		    let completions	= filter(deepcopy(completion_list),' v:val =~# "^".color_begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~# "^".color_begin') 
 		else
-		    let completions	= filter(deepcopy(completion_list),' v:val =~? color_begin') 
+		    let completions	= filter(copy(completion_list),' v:val =~? color_begin') 
 		endif
 	    " {{{4 --------- tikzpictuer libraries, inputfiles 
 	    " match not only in the beginning
 	    elseif (completion_method == 'tikz libraries' ||
 			\ completion_method == 'inputfiles')
-		let completions	= filter(deepcopy(completion_list),' v:val =~? begin') 
-		if nchar != "}" && nchar != "," && completion_method != 'inputfiles'
-		    call map(completions,'v:val')
-		endif
+		let completions	= filter(copy(completion_list),' v:val =~? begin') 
+" 		if nchar != "}" && nchar != "," && completion_method != 'inputfiles'
+" 		    call map(completions,'v:val')
+" 		endif
 	    " {{{4 --------- Commands 
 	    " must match at the beginning (but in a different way)
 	    " (only in expert_mode).
@@ -5478,16 +5498,16 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 			\ completion_method == 'todo options' ||
 			\ completion_method == 'missingfigure options'
 		if a:expert_mode == 1 
-		    let completions	= filter(deepcopy(completion_list),'v:val =~# "^".tbegin') 
+		    let completions	= filter(copy(completion_list),'v:val =~# "^".tbegin') 
 		elseif a:expert_mode != 1 
-		    let completions	= filter(deepcopy(completion_list),'v:val =~? tbegin') 
+		    let completions	= filter(copy(completion_list),'v:val =~? tbegin') 
 		endif
 	    " {{{4 --------- Tikzpicture Commands
 	    elseif completion_method == 'tikzpicture commands'
 		if a:expert_mode == 1 
-		    let completions	= filter(deepcopy(completion_list),'v:val =~# "^".tbegin') 
+		    let completions	= filter(copy(completion_list),'v:val =~# "^".tbegin') 
 		elseif a:expert_mode != 1 
-		    let completions	= filter(deepcopy(completion_list),'v:val =~? tbegin') 
+		    let completions	= filter(copy(completion_list),'v:val =~? tbegin') 
 		endif
 	    " {{{4 --------- Labels
 	    elseif completion_method == 'labels'
@@ -5505,7 +5525,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 		endfor 
 	    " {{{4 --------- includegraphics
 	    elseif completion_method == 'includegraphics'
-		let completions=completion_list
+		let completions=copy(completion_list)
 	    endif
     "{{{3 --------- else: try to close environment
     else
@@ -5586,21 +5606,21 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
             call complete(col+1,completion_list)
 	    let column=col+1
         endif
-    " {{{3 command, tikzcpicture commands
+    " {{{3 commands, tikzcpicture commands
     elseif !normal_mode && (completion_method == 'command' || completion_method == 'tikzpicture commands')
 	" We are not completing greek letters, but we add them if cbegin is
 	" one. 
-	if count(g:atp_greek_letters, cbegin) >= 1
+	call extend(completion_list, g:atp_greek_letters)
+	if count(completion_list, cbegin) >= 1
 	    " Add here brackets - somebody might want to
 	    " close a bracket after \nu and not get \numberwithin{ (which is
 	    " rarely used).
-	    let b:comp_method = "greek letters"
+	    let b:comp_method = "brackets in commands"
 	    if (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		    \ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
-		let b:comp_method = "brackets in greek letters"
 		let bracket=atplib#GetBracket(append)
 		if bracket != "0" && bracket != ""
-		    call add(completions, cbegin.bracket)
+		    let completions = extend([cbegin.bracket], completions)
 		endif
 	    endif
 	    call add(completions, cbegin)
