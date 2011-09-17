@@ -847,11 +847,8 @@ endfunction
 function! atplib#FindAndOpen(file, line, ...)
     let col		= ( a:0 >= 1 && a:1 > 0 ? a:1 : 1 )
     let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
-    let g:file		= file
     let file_t		= fnamemodify(file, ":t")
-    let g:file_t	= file_t
     let server_list	= split(serverlist(), "\n")
-"     exe "redir! >".g:atp_TempDir."/FindAndOpen.log"
     exe "redir! > /tmp/FindAndOpen.log"
     if len(server_list) == 0
 	return 1
@@ -874,13 +871,10 @@ function! atplib#FindAndOpen(file, line, ...)
     if use_server == ""
 	let use_server=get(use_servers, 0, "")
     endif
-    let g:use_server=use_server
     if use_server != ""
 	call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
-	Test this for file names with spaces
+" 	Test this for file names with spaces
 	let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
-	let g:use_server=use_server
-	let g:bufwinnr = bufwinnr
 	if bufwinnr 	== "-1"
 " 	    " The buffer is in a different tab page.
 	    let tabpage	= 1
@@ -901,16 +895,14 @@ function! atplib#FindAndOpen(file, line, ...)
 	    let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
 	endif
 
-	let g:bufwinnr= bufwinnr
-
-" winnr() doesn't work remotely, this is a substitute:
+	" winnr() doesn't work remotely, this is a substitute:
 	let remote_file = remote_expr(use_server, 'expand("%:t")')
-	let g:remote_file = remote_file
 	if remote_file  != file_t
 	    call remote_send(use_server, "<Esc>:".bufwinnr."wincmd w<CR>")
 	else
-	call remote_expr(use_server, 'cursor('.a:line.','.col.')')
-	call remote_send(use_server, '<Esc>:redraw<CR>')
+
+	" Set the ' mark, cursor position and redraw:
+	call remote_send(use_server, "<Esc>:normal! 'm `'<CR>:call cursor(".a:line.",".a:col.")<CR>:redraw<CR>")
     endif
     return use_server
 endfunction
@@ -5497,9 +5489,9 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    elseif completion_method == 'tikzpicture keywords' || 
 			\ completion_method == 'todo options' ||
 			\ completion_method == 'missingfigure options'
-		if a:expert_mode == 1 
+		if g:atp_completion_tikz_expertmode
 		    let completions	= filter(copy(completion_list),'v:val =~# "^".tbegin') 
-		elseif a:expert_mode != 1 
+		else
 		    let completions	= filter(copy(completion_list),'v:val =~? tbegin') 
 		endif
 	    " {{{4 --------- Tikzpicture Commands

@@ -22,11 +22,11 @@ endtry
 " {{{ ViewOutput
 " a:1 == "RevSearch" 	if run from RevSearch() function and the output file doesn't
 " exsists call compiler and RevSearch().
-function! atplib_compiler#ViewOutput(...)
+function! atplib_compiler#ViewOutput(bang,...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    let fwd_search	= ( a:0 == 1 && a:1 =~? 'sync' ? 1 : 0 )
+    let fwd_search	= ( a:bang == "!" ? 1 : 0 )
 
     call atplib#outdir()
 
@@ -86,24 +86,24 @@ function! atplib_compiler#ViewOutput(...)
 	    endif
 	endif
     endif
-"     if fwd_search
-" 	let msg = "[SyncTex:] waiting for the viewer "
-" 	let i=1
-" 	while !atplib_compiler#IsRunning(viewer, outfile) && i<10
-" 	    echo msg
-" 	    sleep 100m
-" 	    redraw
-" 	    let msg.="."
-" 	    let i+=1
-" 	endwhile
-" 	if i<15
-" 	    call atplib_compiler#SyncTex(0)
-" 	else
-" 	    echohl WarningMsg
-" 	    echomsg "[SyncTex:] viewer is not running"
-" 	    echohl Normal
-" 	endif
-"     endif
+    if fwd_search
+	let msg = "[SyncTex:] waiting for the viewer "
+	let i=1
+	while !atplib_compiler#IsRunning(viewer, outfile) && i<10
+	    echo msg
+	    sleep 100m
+	    redraw
+	    let msg.="."
+	    let i+=1
+	endwhile
+	if i<15
+	    call atplib_compiler#SyncTex("", 0)
+	else
+	    echohl WarningMsg
+	    echomsg "[SyncTex:] viewer is not running"
+	    echohl Normal
+	endif
+    endif
 endfunction
 "}}}
 
@@ -243,16 +243,12 @@ function! atplib_compiler#SyncTex(bang, mouse, ...)
 	let sync_cmd_page = "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
 	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
         let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
-	"There is a bug in xpdf. We need to sleep between sending commands to it.:
+	" There is a bug in xpdf. We need to sleep between sending commands:
 	let sleep    = ( g:atp_XpdfSleepTime ? 'sleep '.string(g:atp_XpdfSleepTime).'s;' : '' )
-" 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.";".sleep.sync_cmd_x.")&"
 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.")&"
 	if !dryrun
 	    call system(sync_cmd)
 	    call atplib_compiler#SyncShow(page_nr, y_coord)
-	endif
-	if g:atp_debugSyncTex
-	    silent echo "sync_cmd=".sync_cmd
 	endif
     elseif b:atp_Viewer == "okular"
 	let [ page_nr, y_coord, x_coord ] = atplib_compiler#GetSyncData(line, col)
@@ -263,18 +259,12 @@ function! atplib_compiler#SyncTex(bang, mouse, ...)
 	    call system(sync_cmd)
 	    call atplib_compiler#SyncShow(page_nr, y_coord)
 	endif
-	if g:atp_debugSyncTex
-	    silent echo "sync_cmd=".sync_cmd
-	endif
     elseif b:atp_Viewer == "skim"
 	let [ page_nr, y_coord, x_coord ] = atplib_compiler#GetSyncData(line, col)
 	let sync_cmd = "displayline ".line." ".shellescape(expand("%:p:r")).".pdf ".shellescape(expand("%:p"))." &"
 	if !dryrun
 	    call system(sync_cmd)
 	    call atplib_compiler#SyncShow(page_nr, y_coord)
-	endif
-	if g:atp_debugSyncTex
-	    silent echo "sync_cmd=".sync_cmd
 	endif
 "     elseif b:atp_Viewer == "evince"
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
@@ -298,6 +288,9 @@ function! atplib_compiler#SyncTex(bang, mouse, ...)
 	if g:atp_debugSyncTex
 	    silent echo "sync_cmd=EMPTY"
 	endif
+    endif
+    if g:atp_debugSyncTex
+	let g:sync_cmd = sync_cmd
     endif
    if g:atp_debugSyncTex
        redir END

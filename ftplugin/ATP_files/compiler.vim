@@ -6,7 +6,8 @@
 
 " Maps:
 "{{{
-noremap <silent> <Plug>ATP_ViewOutput	:call atplib_compiler#ViewOutput()<CR>
+noremap <silent> <Plug>ATP_ViewOutput_sync	:call atplib_compiler#ViewOutput("!")<CR>
+noremap <silent> <Plug>ATP_ViewOutput_nosync	:call atplib_compiler#ViewOutput("")<CR>
 nmap <buffer> <Plug>SyncTexKeyStroke	:call atplib_compiler#SyncTex("", 0)<CR>
 nmap <buffer> <Plug>SyncTexMouse	:call atplib_compiler#SyncTex("", 1)<CR>
 noremap <silent> <Plug>ATP_TeXCurrent	:<C-U>call atplib_compiler#TeX(v:count1, "", t:atp_DebugMode)<CR>
@@ -29,7 +30,7 @@ nnoremap <silent> <Plug>BibtexVerbose	:call atplib_compiler#Bibtex("!", "verbose
 command! -buffer		HighlightErrors		:call atplib#HighlightErrors()
 command! -buffer		ClearHighlightErrors	:call atplib#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call atplib_compiler#Kill(<q-bang>)
-command! -buffer -nargs=? 	ViewOutput		:call atplib_compiler#ViewOutput(<f-args>)
+command! -buffer -bang -nargs=? ViewOutput		:call atplib_compiler#ViewOutput(<q-bang>,<f-args>)
 command! -buffer -bang 		SyncTex			:call atplib_compiler#SyncTex(<q-bang>, 0)
 command! -buffer 		PID			:call atplib_compiler#GetPID()
 command! -buffer -nargs=? -bang -complete=custom,atplib_compiler#DebugComp MakeLatex		:call atplib_compiler#SetBiberSettings() | call atplib_compiler#MakeLatex(<q-bang>, <q-args>, 0)

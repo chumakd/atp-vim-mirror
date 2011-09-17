@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Sep 16, 2011 at 06:45  +0100
+" Last Change: Fri Sep 16, 2011 at 01:33  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -391,6 +391,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_completion_tikz_expertmode")
+    let g:atp_completion_tikz_expertmode = 1
+endif
 if !exists("g:atp_signs")
     let g:atp_signs = 1
 endif

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 16 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 September 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.1)
 			by Marcin Szamotulski
@@ -163,10 +163,14 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.5.1
 <
- Some bug fixes.
+ The command |atp-:ViewOutput| with bang (also <F3> map) opens and makes forward search.
+ Reverse search (atplib#FindAndOpen() function) sets the "'" mark before
+ changing text position.
 
- Imaps:
- =>, <= instead of _> and <_ (\Rightarrow, \Leftarrow) 
+ Imaps
+ ->, <- in tikz picture environment (but not in math) puts \draw[->] or \draw[<-].
+
+ Some bug fixes.
 >
  ======================
  Changes in version 10.5
@@ -1307,13 +1311,17 @@ automatically using autocommand group |CursorMoved|.
 	autocommand group |CursorMoved|). You can also use the command
 	:SyncXpdf or :Xpdf in the log buffer which does the same.
 
-:ViewOutput 						*atp-:ViewOutput*
+:ViewOutput[!] 						*atp-:ViewOutput*
 map \v,map <F3>, imap <F3>  
 	You would like to see what you are editing use this function. It will
 	use the program defined in the variable b:atp_Viewer. See |b:atp_Viewer|,
 	|g:atp_XpdfServer|, |atp-xpdfOptions|. When there is no output file it will run
 	TeX and open the file. Read more about particular viewers
 	(inverse/reverse searching) in |atp-viewers|. 
+
+	With bang (and <F3> maps) opens viewer at the cursor position in vim
+	(forward search). This will only work for viewers that support forward
+	searching (xpdf, xdvi, okular, skim).
 
 :SyncTex[!]						*atp-:SyncTex*
 map t, map <S-LeftMouse>

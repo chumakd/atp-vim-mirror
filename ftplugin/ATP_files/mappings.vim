@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Sep 15, 2011 at 07:46  +0100
+" Last Change: Sat Sep 17, 2011 at 09:43  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -86,7 +86,6 @@ command! -buffer -nargs=* CloseLastEnvironment	:call atplib#CloseLastEnvironment
 command! -buffer 	  CloseLastBracket	:call atplib#CloseLastBracket()
 
 " MAPS:
-
 if !hasmapto("\"SSec") && !hasmapto("'SSec")
     exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."S		:<C-U>keepjumps exe v:count1.\"SSec\"<CR>"
 endif
@@ -165,7 +164,7 @@ if !hasmapto(":PInput<CR>")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf	:PInput<CR>"
 endif
 
-" Syntax motions:
+" Motions:
 " imap <C-j> <Plug>TexSyntaxMotionForward
 " imap <C-k> <Plug>TexSyntaxMotionBackward
 " nmap <C-j> <Plug>TexSyntaxMotionForward
@@ -402,7 +401,7 @@ if !hasmapto(':<C-U>Wrap '.s:backslash.'[ '.s:backslash.']<CR>', 'v')
     exe "vmap <silent> <buffer> M				:<C-U>Wrap ".s:backslash."[ ".s:backslash."]<CR>"
 endif
 
-    " Brackets:
+" Brackets:
 if !hasmapto(":Wrap ( ) begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."( 	:Wrap ( ) begin<CR>"
 endif
@@ -603,9 +602,6 @@ endfunction
 au BufEnter *.tex 	call <SID>BeamerOptions()
 
 " Normal Mode Maps: (most of them)
-if mapcheck('<LocalLeader>v') == "" && !hasmapto("<Plug>ATP_ViewOutput", "n")
-    nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput
-endif
 
 " Enabling this requires uncommenting augroup ATP_Cmdwin in options.vim
 " exe "nnoremap  <silent> <buffer> <Plug>QForwardSearch 	q".s:backslash.":call ATP_CmdwinToggleSpace(1)<CR>i"
@@ -657,10 +653,11 @@ endif
 " 	nmap <silent> <buffer> <F3>			:call <Sid>ChangeEnv()<CR>
 "     endif
 if !hasmapto("<Plug>ATP_ViewOutput", "n")
-    nmap  <silent> <buffer> <F3>        		<Plug>ATP_ViewOutput
+    nmap  <silent> <buffer> <F3>        		<Plug>ATP_ViewOutput_sync
+    nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput_nosync
 endif
 if !hasmapto("<Plug>ATP_ViewOutput", "i")
-    imap  <silent> <buffer> <F3> 			<C-O><Plug>ATP_ViewOutput
+    imap  <silent> <buffer> <F3> 			<C-O><Plug>ATP_ViewOutput_sync
 endif
 if !hasmapto("<Plug>Getpid", "n")
     nmap  <silent> <buffer> <LocalLeader>g 		<Plug>Getpid
@@ -1124,10 +1121,10 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>'", "g:atp_imap_define_math",		'\\supseteq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<='", "g:atp_imap_define_math",		'\\leq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>='", "g:atp_imap_define_math",		'\\geq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\rightarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\leftarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\Leftarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "=>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\Rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: ( atplib#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[->]' : '->' )", "g:atp_imap_define_math",		'\\rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: ( atplib#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[<-]' : '<-' )", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\Leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\Rightarrow'],
 	\ ]
 endif
 
