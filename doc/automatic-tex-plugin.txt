@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 18 September 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.1)
 			by Marcin Szamotulski
@@ -3155,7 +3155,7 @@ These are all variables which can help to customise the completion:
 put it here).
 							*g:atp_completion_limits*
 >
- 	g:atp_completion_limits		= [ 40, 60, 80, 100, 20 ]
+ 	g:atp_completion_limits		= [ 40, 60, 80, 120, 30 ]
 <
 	    The above variable specifies how long should atp plugin search for
 	    closed/unclosed environments:
