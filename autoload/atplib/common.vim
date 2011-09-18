@@ -442,7 +442,7 @@ def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
 
 # expr must be well quoted:
-#       vim_remote_expr('GVIM', "atplib#TexReturnCode()")
+#       vim_remote_expr('GVIM', "atplib#callback#TexReturnCode()")
     cmd=[options.progname, '--servername', servername, '--remote-expr', expr]
     subprocess.Popen(cmd, stdout=subprocess.PIPE).wait()
 

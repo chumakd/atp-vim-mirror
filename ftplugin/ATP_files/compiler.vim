@@ -27,8 +27,8 @@ nnoremap <silent> <Plug>BibtexVerbose	:call atplib#compiler#Bibtex("!", "verbose
 "}}}
 " Commands And Autocommands: 
 " {{{
-command! -buffer		HighlightErrors		:call atplib#HighlightErrors()
-command! -buffer		ClearHighlightErrors	:call atplib#ClearHighlightErrors()
+command! -buffer		HighlightErrors		:call atplib#callback#HighlightErrors()
+command! -buffer		ClearHighlightErrors	:call atplib#callback#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call atplib#compiler#Kill(<q-bang>)
 command! -buffer -bang -nargs=? ViewOutput		:call atplib#compiler#ViewOutput(<q-bang>,<f-args>)
 command! -buffer -bang 		SyncTex			:call atplib#compiler#SyncTex(<q-bang>, 0)

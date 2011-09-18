@@ -256,7 +256,7 @@ function! atplib#complete#CheckClosed_math(mathZone)
     
     " For \(:\) and \[:\] we use searchpair function to test if it is closed or
     " not.
-    if (a:mathZone == 'texMathZoneV' || a:mathZone == 'texMathZoneW') && atplib#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW'])
+    if (a:mathZone == 'texMathZoneV' || a:mathZone == 'texMathZoneW') && atplib#complete#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW'])
 	if index(synstack, a:mathZone) != -1
 	    let condition = searchpair( patterns[a:mathZone][0], '', patterns[a:mathZone][1], 'cnW', '', stop_line)
 	    let check 	  = ( !condition ? 1 : check )
@@ -290,7 +290,7 @@ endfunction
 " This function checks if a syntax group ends.
 " Returns 1 if the syntax group doesn't ends before a:limit_line, a:limit_col line (last character is included).
 "
-" Note, this function is slower than atplib#CheckClosed_math, which is designed
+" Note, this function is slower than atplib#complete#CheckClosed_math, which is designed
 " for texMathZone[VWXY]. (call synstack(...) inside atplib#complete#CheckSyntaxGroups()
 " is slow) - thus it is not used anymore.
 function! atplib#complete#CheckClosed_syntax(syntax,limit_line, limit_col)
@@ -904,7 +904,7 @@ endif
     endif
 
 " Copy the indentation of what we are closing.
-let l:eindent=atplib#CopyIndentation(l:line)
+let l:eindent=atplib#complete#CopyIndentation(l:line)
 "{{{2 close environment
     if l:close == 'environment'
 	" Info message
@@ -1009,12 +1009,12 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		    else
 			let l:limit=2
 		    endif
-		    let l:close_line_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env_name, 
+		    let l:close_line_nr=atplib#complete#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:env_name, 
 				\ '\%(%.*\)\@<!\\end\s*{' . l:env_name,
 				\ l:line_nr, l:col_nr, g:atp_completion_limits[l:limit], 1)
 		    if g:atp_debugCloseLastEnvironment
 			call atplib#Log('CloseLastEnvironment.log', 'WHILE l:close_line_nr='.l:close_line_nr)
-			call atplib#Log('CloseLastEnvironment.log', 'WHILE atplib#CheckClosed args ='.l:line_nr.', '.l:col_nr.', '.g:atp_completion_limits[l:limit].', 1')
+			call atplib#Log('CloseLastEnvironment.log', 'WHILE atplib#complete#CheckClosed args ='.l:line_nr.', '.l:col_nr.', '.g:atp_completion_limits[l:limit].', 1')
 		    endif
 
 		    if l:close_line_nr != 0
@@ -1063,7 +1063,7 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		endif
 
 		for l:uenv in l:env_names
-		    let l:uline_nr=atplib#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:uenv . '}', 
+		    let l:uline_nr=atplib#complete#CheckClosed('\%(%.*\)\@<!\\begin\s*{' . l:uenv . '}', 
 				\ '\%(%.*\)\@<!\\end\s*{' . l:uenv . '}',
 				\ l:line_nr, l:col_nr, g:atp_completion_limits[2])
 		    call extend(l:env_dict,[ l:uenv, l:uline_nr])
@@ -1232,13 +1232,13 @@ let l:eindent=atplib#CopyIndentation(l:line)
 		if !return_only
 		    if l:com == 'a' 
 			if getline(l:begin_line) =~ '^\s*\\\[\s*$'
-			    call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
+			    call append(line("."),atplib#complete#CopyIndentation(getline(l:begin_line)).'\]')
 			else
 			    call setline(line("."), strpart(l:cline,0,getpos(".")[2]) . '\]'. strpart(l:cline,getpos(".")[2]))
 			endif
 		    else
 			if getline(l:begin_line) =~ '^\s*\\\[\s*$'
-			    call append(line("."),atplib#CopyIndentation(getline(l:begin_line)).'\]')
+			    call append(line("."),atplib#complete#CopyIndentation(getline(l:begin_line)).'\]')
 			else
 			    call setline(line("."), strpart(l:cline,0,getpos(".")[2]-1) . '\]'. strpart(l:cline,getpos(".")[2]-1))
     " TODO: This could be optional: (but the option rather
@@ -2164,7 +2164,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    let b:comp_method='abbreviations'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
 	"{{{4 --------- brackets
-	elseif begParen[1] != 0 || atplib#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
+	elseif begParen[1] != 0 || atplib#complete#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
 	    let g:time_C=reltimestr(reltime(time))
@@ -2315,7 +2315,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    endif
 	endif
 	" AMSMATH
-	if atplib#complete#SearchPackage('amsmath', stop_line) || g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams'
+	if atplib#complete#SearchPackage('amsmath', stop_line) || g:atp_amsmath != 0 || atplib#complete#DocumentClass(b:atp_MainFile) =~ '^ams'
 	    if end !~ '\s*}'
 		call extend(completion_list,atplib#Add(g:atp_amsmath_environments,'}'),0)
 	    else
@@ -2656,7 +2656,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    endif
 
 	    if exists("g:atp_".package."_command_values") && 
-		\ ( atplib#complete#SearchPackage(package) || test || atplib#DocumentClass(b:atp_MainFile) == package )
+		\ ( atplib#complete#SearchPackage(package) || test || atplib#complete#DocumentClass(b:atp_MainFile) == package )
 		if package == "xcolor"
 		    let g:debugTC=1
 		endif
@@ -2776,10 +2776,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	endif
 	    let g:encoding=encoding
 	let completion_list=[]
-	let fd_list=atplib#FdSearch('^'.encoding.begin)
+	let fd_list=atplib#fontpreview#FdSearch('^'.encoding.begin)
 	    let g:fd_list=copy(fd_list)
 	for file in fd_list
-            call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont\\s*{[^}]*}\\s*{\\zs[^}]*\\ze}")'))
+            call extend(completion_list,map(atplib#fontpreview#ShowFonts(file),'matchstr(v:val,"usefont\\s*{[^}]*}\\s*{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
 	redraw
@@ -2805,10 +2805,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	echo "[ATP:] searching through fd files ..."
 " 	    let g:font_family=font_family
 	let completion_list=[]
-	let fd_list=atplib#FdSearch(encoding.font_family)
+	let fd_list=atplib#fontpreview#FdSearch(encoding.font_family)
 " 	    let g:fd_list = fd_list 
 	for file in fd_list
-	    call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{[^}]*}{\\zs[^}]*\\ze}")'))
+	    call extend(completion_list,map(atplib#fontpreview#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{[^}]*}{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
 	redraw
@@ -2828,10 +2828,10 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	let font_series=matchstr(fline,'\\\%(usefont\s*{[^}]*}\s*{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\s*{[^}]*}\|fontseries\)\s*{\zs[^}]*\ze}')
 	echo "[ATP:] searching through fd files ..."
 	let completion_list=[]
-	let fd_list=atplib#FdSearch('^'.encoding.font_family)
+	let fd_list=atplib#fontpreview#FdSearch('^'.encoding.font_family)
 
 	for file in fd_list
-	    call extend(completion_list,map(atplib#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{'.font_family.'}{'.font_series.'}{\\zs[^}]*\\ze}")'))
+	    call extend(completion_list,map(atplib#fontpreview#ShowFonts(file),'matchstr(v:val,"usefont{[^}]*}{'.font_family.'}{'.font_series.'}{\\zs[^}]*\\ze}")'))
 	endfor
 	call filter(completion_list,'count(completion_list,v:val) == 1 ')
 	redraw
@@ -2846,7 +2846,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	let font_family=matchstr(fline,'\\\%(usefont\s*{[^}]*}\|DeclareFixedFont\s*{[^}]*}\s*{[^}]*}\|fontfamily\)\s*{\zs[^}]*\ze}')
 	if font_family != ""
 	    echo "[ATP:] searching through fd files ..."
-	    let fd_list=atplib#FdSearch(font_family)
+	    let fd_list=atplib#fontpreview#FdSearch(font_family)
 	    let completion_list=map(copy(fd_list),'toupper(substitute(fnamemodify(v:val,":t"),"'.font_family.'.*$","",""))')
 	    redraw
 	else
@@ -2880,7 +2880,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 			call add(bibfiles, f)
 		    endif
 		endfor
-		let bibitems_list=values(atplib#searchbib_py(pat, bibfiles))
+		let bibitems_list=values(atplib#bibsearch#searchbib_py(pat, bibfiles))
 	    else
 		let bibdict={}
 		for f in b:ListOfFiles
@@ -2888,7 +2888,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 			let bibdict[f]=readfile(f)
 		    endif
 		endfor
-		let bibitems_list=values(atplib#searchbib(pat, bibdict))
+		let bibitems_list=values(atplib#bibsearch#searchbib(pat, bibdict))
 	    endif
 	    let g:bibitems_list=bibitems_list
 	    let g:time_searchbib_py=reltimestr(reltime(searchbib_time))
@@ -2967,7 +2967,7 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	    " add the \bibitems found in include files
 	    let time_bibitems_SearchBibItems=reltime()
             let completion_dict=[]
-            let dict=atplib#SearchBibItems()
+            let dict=atplib#bibsearch#SearchBibItems()
             for key in keys(dict)
 		if a:expert_mode && key =~ '^'.begin || !a:expert_mode && key =~ begin
 		    call add(completion_dict, { "word" : key, "menu" : dict[key]['rest'], "abbrev" : dict[key]['label'] })

@@ -347,7 +347,7 @@ function! atplib#compiler#GetPID()
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not running"
 	endif
     else
-	call atplib#PIDsRunning("b:atp_LatexPIDs")
+	call atplib#callback#PIDsRunning("b:atp_LatexPIDs")
 	if len(b:atp_LatexPIDs) > 0
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " pid(s): " . join(b:atp_LatexPIDs, ", ") 
 	else
@@ -996,7 +996,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	if has('clientserver') && v:servername != "" && g:atp_callback == 1
 
 	    let catchstatus_cmd = v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
-			\ shellescape('atplib#TexReturnCode')  . '\($?\) ; ' 
+			\ shellescape('atplib#callback#TexReturnCode')  . '\($?\) ; ' 
 	else
 	    let catchstatus_cmd = ''
 	endif
@@ -1065,7 +1065,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 
 " 	    let callback	= atplib#compiler#SidWrap('CallBack')
 	    let callback_cmd 	= v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
-				    \ shellescape('atplib#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\",\"'.a:bibtex.'\"\)'. " ; "
+				    \ shellescape('atplib#callback#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\",\"'.a:bibtex.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
 
@@ -1148,11 +1148,11 @@ function! atplib#compiler#auTeX(...)
 "     if index(split(g:atp_autex_wait, ','), mode()) != -1
 " " 	\ !b:atp_autex_wait
 " 	if g:atp_Compiler == "python"
-" 	    call atplib#PIDsRunning("b:atp_PythonPIDs")
+" 	    call atplib#callback#PIDsRunning("b:atp_PythonPIDs")
 " 	else
-" 	    call atplib#PIDsRunning("b:atp_LatexPIDs")
+" 	    call atplib#callback#PIDsRunning("b:atp_LatexPIDs")
 " 	endif
-" 	call atplib#PIDsRunning("b:atp_BibtexPIDs")
+" 	call atplib#callback#PIDsRunning("b:atp_BibtexPIDs")
 " 	echo string(b:atp_BibtexPIDs)
 " 	if g:atp_Compiler == "python" && len(b:atp_PythonPIDs) ||
 " 	    \ g:atp_Compiler == "bash" && len(b:atp_LatexPIDs) ||
@@ -1658,7 +1658,7 @@ endfunction
 " all errors and don't ignore any line - this overrides the variables
 " g:atp_ignore_unmatched and g:atp_show_all_lines.
 function! atplib#compiler#ShowErrors(...)
-    " It is not atplib#compiler# because it is run from atplib#CallBack()
+    " It is not atplib#compiler# because it is run from atplib#callback#CallBack()
 
     let errorfile	= &l:errorfile
     " read the log file and merge warning lines 
@@ -1702,7 +1702,7 @@ function! atplib#compiler#ShowErrors(...)
 
     " signs
     if g:atp_signs
-	call atplib#Signs()
+	call atplib#callback#Signs()
     endif
 
     " final stuff

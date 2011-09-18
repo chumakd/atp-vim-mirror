@@ -1389,7 +1389,7 @@ function! atplib#search#BibSearch(bang,...)
     endif
 
     let b:atp_LastBibPattern 	= pattern
-    "     This cannot be set here.  It is set later by atplib#showresults function.
+    "     This cannot be set here.  It is set later by atplib#bibsearch#showresults function.
     "     let b:atp_LastBibFlags	= flag
     let @/			= pattern
 
@@ -1420,9 +1420,9 @@ function! atplib#search#BibSearch(bang,...)
 "     let g:bibdict=s:bibdict
 
     if has("python") && g:atp_bibsearch == "python"
-	call atplib#showresults( atplib#searchbib_py(pattern, keys(s:bibdict), a:bang), flag, pattern, s:bibdict)
+	call atplib#bibsearch#showresults( atplib#bibsearch#searchbib_py(pattern, keys(s:bibdict), a:bang), flag, pattern, s:bibdict)
     else
-	call atplib#showresults( atplib#searchbib(pattern, s:bibdict, a:bang), flag, pattern, s:bibdict)
+	call atplib#bibsearch#showresults( atplib#bibsearch#searchbib(pattern, s:bibdict, a:bang), flag, pattern, s:bibdict)
     endif
     let g:time_BibSearch=reltimestr(reltime(time))
 endfunction

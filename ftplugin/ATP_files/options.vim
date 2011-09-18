@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Sep 18, 2011 at 12:11  +0100
+" Last Change: Sun Sep 18, 2011 at 11:48  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -138,7 +138,7 @@ if !exists("g:atp_debugProject")
     let g:atp_debugProject 	= 0
 endif
 if !exists("g:atp_debugChekBracket")
-    " atplib#CheckBracket()
+    " atplib#complete#CheckBracket()
     let g:atp_debugCheckBracket 		= 0
 endif
 if !exists("g:atp_debugClostLastBracket")
@@ -150,8 +150,8 @@ if !exists("g:atp_debugTabCompletion")
     let g:atp_debugTabCompletion 		= 0
 endif
 if !exists("g:atp_debugBS")
-    " atplib#searchbib()
-    " atplib#showresults()
+    " atplib#bibsearch#searchbib()
+    " atplib#bibsearch#showresults()
     " BibSearch() in ATP_files/search.vim
     " log file: /tmp/ATP_log 
     let g:atp_debugBS 		= 0
@@ -1060,7 +1060,7 @@ endif
 if !exists("g:atp_amsmath")
     let g:atp_amsmath=atplib#complete#SearchPackage('ams')
 endif
-if atplib#complete#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#DocumentClass(b:atp_MainFile) =~ '^ams'
+if atplib#complete#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#complete#DocumentClass(b:atp_MainFile) =~ '^ams'
     exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
 endif
 if !exists("g:atp_no_math_command_completion")
@@ -1863,8 +1863,8 @@ function! ATP_ToggleIMaps(insert_enter, bang,...)
 "     endif
 endfunction
 " }}}
-" }}}
 endif
+" }}}
  
 " Some Commands And Maps:
 "{{{
@@ -2653,7 +2653,7 @@ function! SetMathVimOptions(...)
 
 	" check if the current (and 3 steps back) cursor position is in math
 	" or use a:1
-" 	let check	= a:0 == 0 ? atplib#complete#CheckSyntaxGroups(MathZones) + atplib#CheckSyntaxGroups(MathZones, line("."), max([ 1, col(".")-3])) : a:1
+" 	let check	= a:0 == 0 ? atplib#complete#CheckSyntaxGroups(MathZones) + atplib#complete#CheckSyntaxGroups(MathZones, line("."), max([ 1, col(".")-3])) : a:1
 	let check	= a:0 == 0 ? atplib#IsInMath() : a:1
 
 	if check

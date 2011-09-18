@@ -38,7 +38,7 @@ let g:bibmatchgroup		='String'
 let g:defaultbibflags		= 'tabejsyu'
 let g:defaultallbibflags	= 'tabejfsvnyPNSohiuHcp'
 let b:lastbibflags		= g:defaultbibflags	" Set the lastflags variable to the default value on the startup.
-let g:bibflagsdict=atplib#bibflagsdict
+let g:bibflagsdict=atplib#bibsearch#bibflagsdict
 " These two variables were s:... but I switched to atplib ...
 let g:bibflagslist		= keys(g:bibflagsdict)
 let g:bibflagsstring		= join(g:bibflagslist,'')

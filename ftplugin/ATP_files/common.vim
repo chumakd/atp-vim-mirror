@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Sep 18, 2011 at 11:42  +0100
+" Last Change: Mon Sep 19, 2011 at 12:14  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -105,7 +105,7 @@ function! ATPRunning() "{{{
 	    if !exists("b:atp_".var."PIDs")
 		let b:atp_{var}PIDs = []
 	    endif
-	    call atplib#PIDsRunning("b:atp_".var."PIDs")
+	    call atplib#callback#PIDsRunning("b:atp_".var."PIDs")
 	endfor
 	if len(b:atp_LatexPIDs) > 0
 	    let atp_running= len(b:atp_LatexPIDs) 

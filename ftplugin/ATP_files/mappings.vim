@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Sep 18, 2011 at 11:09  +0100
+" Last Change: Sun Sep 18, 2011 at 11:56  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -79,8 +79,8 @@ if maparg("<F2>", "n") == ""
     nmap <buffer> <F2>	:echo ATP_ToggleSpace()<CR>
 endif
 
-command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
-command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f-args>)
+command! -buffer -bang -nargs=* FontSearch	:call atplib#fontpreview#FontSearch(<q-bang>, <f-args>)
+command! -buffer -bang -nargs=* FontPreview	:call atplib#fontpreview#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#OpenFdFile(<f-args>) 
 command! -buffer -nargs=* CloseLastEnvironment	:call atplib#complete#CloseLastEnvironment(<f-args>)
 command! -buffer 	  CloseLastBracket	:call atplib#complete#CloseLastBracket()
