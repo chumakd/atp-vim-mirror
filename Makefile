@@ -10,19 +10,20 @@
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.5.1
+VERSION = 10.5.2
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
 INSTALL_DIR = ${HOME}/.vim/addons/AutomaticLaTexPlugin
 
 SOURCE =  autoload/atplib.vim
-SOURCE += autoload/atplib_common.vim
-SOURCE += autoload/atplib_compiler.vim
-SOURCE += autoload/atplib_helpfunctions.vim
-SOURCE += autoload/atplib_motion.vim
-SOURCE += autoload/atplib_search.vim
-SOURCE += autoload/atplib_various.vim
+SOURCE += autoload/atplib/common.vim
+SOURCE += autoload/atplib/compiler.vim
+SOURCE += autoload/atplib/helpfunctions.vim
+SOURCE += autoload/atplib/motion.vim
+SOURCE += autoload/atplib/search.vim
+SOURCE += autoload/atplib/various.vim
+SOURCE += autoload/atplib/complete.vim
 SOURCE += colors/coots-beauty-256.vim
 SOURCE += doc/automatic-tex-plugin.txt
 SOURCE += doc/bibtex_atp.txt

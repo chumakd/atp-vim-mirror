@@ -7,7 +7,7 @@
 " options and some common tools.
 
 " Set the project name
-"{{{ atplib_common#SetProjectName (function and autocommands)
+"{{{ atplib#common#SetProjectName (function and autocommands)
 " This function sets the main project name (b:atp_MainFile)
 "
 " It is used by EditInputFile which copies the value of this variable to every
@@ -26,7 +26,7 @@
 "
 " {{{ SetProjectName ( function )
 " store a list of all input files associated to some file
-function! atplib_common#SetProjectName(...)
+function! atplib#common#SetProjectName(...)
     let bang 	= ( a:0 >= 1 ? a:1 : "" )	" do we override b:atp_project	
     let did 	= ( a:0 >= 2 ? a:2 : 1	) 	" do we check if the project name was set
     						" but also overrides the current b:atp_MainFile when 0 	
@@ -62,7 +62,7 @@ function! atplib_common#SetProjectName(...)
     " Now we can run things that needs the project name: 
     " b:atp_PackageList is not used
 "     if !exists("b:atp_PackageList")
-" 	let b:atp_PackageList	= atplib#GrepPackageList()
+" 	let b:atp_PackageList	= atplib#complete#GrepPackageList()
 "     endif
 
     if !exists("b:atp_ProjectDir")
@@ -75,12 +75,12 @@ endfunction
 "}}}
 
 " This functions sets the value of b:atp_OutDir variable
-" {{{ atplib_common#SetOutDir
+" {{{ atplib#common#SetOutDir
 " This options are set also when editing .cls files.
 " It can overwrite the value of b:atp_OutDir
 " if arg != 0 then set errorfile option accordingly to b:atp_OutDir
 " if a:0 >0 0 then b:atp_atp_OutDir is set iff it doesn't exsits.
-function! atplib_common#SetOutDir(arg, ...)
+function! atplib#common#SetOutDir(arg, ...)
 
     " THIS FUNCTION SHOULD BE REVIEWED !!!
 
@@ -123,7 +123,7 @@ function! atplib_common#SetOutDir(arg, ...)
 	    " if arg != 0 then set errorfile option accordingly to b:atp_OutDir
 	    if bufname("") =~ ".tex$" && a:arg != 0
 " 			\ &&  ( !exists("t:atp_QuickFixOpen") || exists("t:atp_QuickFixOpen") && !t:atp_QuickFixOpen )
-		 call atplib_common#SetErrorFile()
+		 call atplib#common#SetErrorFile()
 	    endif
 
 	    if exists("g:outdir_dict")
@@ -137,14 +137,14 @@ endfunction
 " }}}
 
 " This function sets vim 'errorfile' option.
-" {{{ atplib_common#SetErrorFile (function and autocommands)
+" {{{ atplib#common#SetErrorFile (function and autocommands)
 " let &l:errorfile=b:atp_OutDir . fnameescape(fnamemodify(expand("%"),":t:r")) . ".log"
-"{{{ atplib_common#SetErrorFile
-function! atplib_common#SetErrorFile()
+"{{{ atplib#common#SetErrorFile
+function! atplib#common#SetErrorFile()
 
     " set b:atp_OutDir if it is not set
     if !exists("b:atp_OutDir")
-	call atplib_common#SetOutDir(0)
+	call atplib#common#SetOutDir(0)
     endif
 
     " set the b:atp_MainFile varibale if it is not set (the project name)
@@ -193,13 +193,13 @@ endfunction
 " TreeOfFiles({main_file}, [{pattern}, {flat}, {run_nr}])
 " debug file - /tmp/tof_log
 " a:main_file	is the main file to start with
-function! atplib_common#TreeOfFiles_vim(main_file,...)
+function! atplib#common#TreeOfFiles_vim(main_file,...)
 " let time	= reltime()
 
     let atp_MainFile = atplib#FullPath(b:atp_MainFile)
 
     if !exists("b:atp_OutDir")
-	call atplib_common#SetOutDir(0, 1)
+	call atplib#common#SetOutDir(0, 1)
     endif
 
     let tree		= {}
@@ -218,10 +218,10 @@ function! atplib_common#TreeOfFiles_vim(main_file,...)
     " Adjust g:atp_inputfile_pattern if it is not set right 
     if run_nr == 1 
 	let pattern = '^[^%]*\\\(input\s*{\=\|include\s*{'
-	if '\subfile{' !~ g:atp_inputfile_pattern && atplib#SearchPackage('subfiles')
+	if '\subfile{' !~ g:atp_inputfile_pattern && atplib#complete#SearchPackage('subfiles')
 	    let pattern .= '\|subfiles\s*{'
 	endif
-	let biblatex = atplib#SearchPackage('biblatex')
+	let biblatex = atplib#complete#SearchPackage('biblatex')
 	if biblatex
 	    " If biblatex is present, search for bibliography files only in the
 	    " preambule.
@@ -391,7 +391,7 @@ function! atplib_common#TreeOfFiles_vim(main_file,...)
     if !flat || flat <= -1
     for [ifile, line] in ifiles	
 	if type_dict[ifile] == "input" && flat <= 0 || ( type_dict[ifile] == "preambule" && flat <= -1 )
-	     let [ ntree, nlist, ntype_dict, nlevel_dict ] = atplib_common#TreeOfFiles_vim(ifile, pattern, flat, run_nr+1)
+	     let [ ntree, nlist, ntype_dict, nlevel_dict ] = atplib#common#TreeOfFiles_vim(ifile, pattern, flat, run_nr+1)
 
 	     call extend(tree, 		{ ifile : [ ntree, line ] } )
 	     call extend(list, nlist, index(list, ifile)+1)  
@@ -428,7 +428,7 @@ function! atplib_common#TreeOfFiles_vim(main_file,...)
 
 endfunction "}}}
 " TreeOfFiles_py "{{{
-function! atplib_common#TreeOfFiles_py(main_file)
+function! atplib#common#TreeOfFiles_py(main_file)
 let time=reltime()
 python << END_PYTHON
 
@@ -626,7 +626,7 @@ endfunction
 "			 with the same format as the output of FindInputFiles
 " a:MainFile	- main file (b:atp_MainFile)
 " a:1 = 0 [1]	- use cached values of tree of files.
-function! atplib_common#FindInputFiles(MainFile,...)
+function! atplib#common#FindInputFiles(MainFile,...)
 
 "     let time=reltime()
     call atplib#write()
@@ -684,7 +684,7 @@ function! atplib_common#FindInputFiles(MainFile,...)
 "     let g:time_FindInputFiles=reltimestr(reltime(time))
     return Files
 endfunction
-function! atplib_common#UpdateMainFile()
+function! atplib#common#UpdateMainFile()
     if b:atp_MainFile =~ '^\s*\/'
 	let cwd = getcwd()
 	exe "lcd " . fnameescape(b:atp_ProjectDir)

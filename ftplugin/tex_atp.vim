@@ -2,7 +2,7 @@
 " Author:		Marcin Szamotulski
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 18-09-11_08-22
+" Time Stamp: 18-09-11_12-14
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
 " Last Change: Mon Sep 12, 2011 at 07:34  +0100
@@ -33,7 +33,7 @@ if exists("g:no_atp") && g:no_atp == 1
 endif
 
 let b:did_ftplugin	= 1
-let loaded_AutomaticLatexPlugin = "10.5.1"
+let loaded_AutomaticLatexPlugin = "10.5.2"
 
 if !exists("g:atp_reload_functions")
 	let g:atp_reload_functions = 0

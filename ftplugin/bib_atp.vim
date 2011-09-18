@@ -3,7 +3,7 @@
 " Email:       mszamot [AT] gmail [DOT] com
 " Mailing List: atp-vim-list [AT] lists.sourceforge.net
 " Language:    bib
-" Last Change: Tue Sep 13, 2011 at 10:51  +0100
+" Last Change: Sun Sep 18, 2011 at 11:42  +0100
 " Copyright Statement: 
 " 	  This file is part of Automatic Tex Plugin for Vim.
 "
@@ -284,7 +284,7 @@ endfunction "}}}
 
 " Wrap:
 "{{{
-command! -buffer -nargs=* -complete=custom,atplib_various#BibWrapSelection_compl -range Wrap			:call atplib_various#WrapSelection(<f-args>)
+command! -buffer -nargs=* -complete=custom,atplib#various#BibWrapSelection_compl -range Wrap			:call atplib#various#WrapSelection(<f-args>)
 if !hasmapto(":Wrap { } begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 endif

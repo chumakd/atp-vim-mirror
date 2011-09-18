@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Sep 17, 2011 at 09:43  +0100
+" Last Change: Sun Sep 18, 2011 at 11:09  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -82,8 +82,8 @@ endif
 command! -buffer -bang -nargs=* FontSearch	:call atplib#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#OpenFdFile(<f-args>) 
-command! -buffer -nargs=* CloseLastEnvironment	:call atplib#CloseLastEnvironment(<f-args>)
-command! -buffer 	  CloseLastBracket	:call atplib#CloseLastBracket()
+command! -buffer -nargs=* CloseLastEnvironment	:call atplib#complete#CloseLastEnvironment(<f-args>)
+command! -buffer 	  CloseLastBracket	:call atplib#complete#CloseLastBracket()
 
 " MAPS:
 if !hasmapto("\"SSec") && !hasmapto("'SSec")
@@ -280,36 +280,36 @@ endif
 
 " Goto File Map:
 if has("path_extra") && !hasmapto(" GotoFile(", 'n')
-	nnoremap <buffer> <silent> gf		:call GotoFile("", "")<CR>
+	nnoremap <buffer> <silent> gf		:call atplib#motion#GotoFile("", "")<CR>
 endif
 
 if !exists("g:atp_no_tab_map") || g:atp_no_tab_map == 0
     "Default Completion Maps:
-    if !hasmapto("<C-R>=atplib#TabCompletion(1)<CR>", 'i')
-	imap <silent> <buffer> <Tab> 		<C-R>=atplib#TabCompletion(1)<CR>
+    if !hasmapto("<C-R>=atplib#complete#TabCompletion(1)<CR>", 'i')
+	imap <silent> <buffer> <Tab> 		<C-R>=atplib#complete#TabCompletion(1)<CR>
     endif
-    if !hasmapto("<C-R>=atplib#TabCompletion(0)<CR>", 'i')
-	imap <silent> <buffer> <S-Tab> 		<C-R>=atplib#TabCompletion(0)<CR>
+    if !hasmapto("<C-R>=atplib#complete#TabCompletion(0)<CR>", 'i')
+	imap <silent> <buffer> <S-Tab> 		<C-R>=atplib#complete#TabCompletion(0)<CR>
     endif
-" 	if !hasmapto("atplib#TabCompletion(1,1)<CR>", 'n')
-" 	    nmap <silent> <buffer> <Tab>		:call atplib#TabCompletion(1,1)<CR>
+" 	if !hasmapto("atplib#complete#TabCompletion(1,1)<CR>", 'n')
+" 	    nmap <silent> <buffer> <Tab>		:call atplib#complete#TabCompletion(1,1)<CR>
 " 	endif
-    if !hasmapto("atplib#TabCompletion(0,1)<CR>", 'i')
-	nnoremap <silent> <buffer> <S-Tab>	:call atplib#TabCompletion(0,1)<CR> 
+    if !hasmapto("atplib#complete#TabCompletion(0,1)<CR>", 'i')
+	nnoremap <silent> <buffer> <S-Tab>	:call atplib#complete#TabCompletion(0,1)<CR> 
     endif
 else 
     "Non Default Completion Maps:
-    if !hasmapto("<C-R>=atplib#TabCompletion(1)<CR>", 'i')
-	imap <silent> <buffer> <F7> 		<C-R>=atplib#TabCompletion(1)<CR>
+    if !hasmapto("<C-R>=atplib#complete#TabCompletion(1)<CR>", 'i')
+	imap <silent> <buffer> <F7> 		<C-R>=atplib#complete#TabCompletion(1)<CR>
     endif
-    if !hasmapto(" atplib#TabCompletion(1,1)<CR>", 'n')
-	nnoremap <silent> <buffer> <F7>		:call atplib#TabCompletion(1,1)<CR>
+    if !hasmapto(" atplib#complete#TabCompletion(1,1)<CR>", 'n')
+	nnoremap <silent> <buffer> <F7>		:call atplib#complete#TabCompletion(1,1)<CR>
     endif
-    if !hasmapto("<C-R>=atplib#TabCompletion(0)<CR>", 'i')
-	imap <silent> <buffer> <S-F7> 		<C-R>=atplib#TabCompletion(0)<CR>
+    if !hasmapto("<C-R>=atplib#complete#TabCompletion(0)<CR>", 'i')
+	imap <silent> <buffer> <S-F7> 		<C-R>=atplib#complete#TabCompletion(0)<CR>
     endif
-    if !hasmapto(" atplib#TabCompletion(0,1)<CR>", 'n')
-	nnoremap <silent> <buffer> <S-F7>	:call atplib#TabCompletion(0,1)<CR> 
+    if !hasmapto(" atplib#complete#TabCompletion(0,1)<CR>", 'n')
+	nnoremap <silent> <buffer> <S-F7>	:call atplib#complete#TabCompletion(0,1)<CR> 
     endif
 endif
 if !hasmapto(":Wrap { } begin<cr>", 'v')
@@ -577,9 +577,9 @@ if !hasmapto("v<Plug>vSelectComment", "n")
 endif
 " Select Frame: (beamer)
 " This is done by a function, because it has to be run through an autocommand
-" otherwise atplib#DocumentClass is not working.
+" otherwise atplib#complete#DocumentClass is not working.
 function! <SID>BeamerOptions()
-    if atplib#DocumentClass(b:atp_MainFile) == "beamer"
+    if atplib#complete#DocumentClass(b:atp_MainFile) == "beamer"
 	
 	" _f
 	if !exists("g:atp_MapSelectFrame")
@@ -1121,8 +1121,8 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>'", "g:atp_imap_define_math",		'\\supseteq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<='", "g:atp_imap_define_math",		'\\leq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>='", "g:atp_imap_define_math",		'\\geq'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: ( atplib#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[->]' : '->' )", "g:atp_imap_define_math",		'\\rightarrow'],
-	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: ( atplib#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[<-]' : '<-' )", "g:atp_imap_define_math",		'\\leftarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: ( atplib#complete#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[->]' : '->' )", "g:atp_imap_define_math",		'\\rightarrow'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: ( atplib#complete#CheckSyntaxGroups(['texMathZoneT']) ? '\\draw[<-]' : '<-' )", "g:atp_imap_define_math",		'\\leftarrow'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\Leftarrow'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\Rightarrow'],
 	\ ]

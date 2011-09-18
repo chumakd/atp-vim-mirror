@@ -6,7 +6,7 @@
 
 " Functions:
 " Make a dictionary of definitions found in all input files.
-" {{{ atplib_search#make_defi_dict_vim
+" {{{ atplib#search#make_defi_dict_vim
 " Comparing with ]D, ]d, ]i, ]I vim maps this function deals with multiline
 " definitions.
 "
@@ -17,7 +17,7 @@
 "
 " ToDo: it is possible to check for the end using searchpairpos, but it
 " operates on a list not on a buffer.
-function! atplib_search#make_defi_dict_vim(bang,...)
+function! atplib#search#make_defi_dict_vim(bang,...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let bufname	= a:0 >= 1 ? a:1 : atp_MainFile
@@ -33,7 +33,7 @@ function! atplib_search#make_defi_dict_vim(bang,...)
 
     let defi_dict={}
 
-    let inputfiles=atplib_common#FindInputFiles(bufname)
+    let inputfiles=atplib#common#FindInputFiles(bufname)
     let input_files=[]
 
     " TeX: How this work in TeX files.
@@ -92,9 +92,9 @@ function! atplib_search#make_defi_dict_vim(bang,...)
 
     return defi_dict
 endfunction "}}}
-" {{{ atplib_search#make_defi_dict_py
-" command! -nargs=* -bang MakeDefiDict  :call atplib_search#make_defi_dict_py(<q-bang>,<f-args>)
-function! atplib_search#make_defi_dict_py(bang,...)
+" {{{ atplib#search#make_defi_dict_py
+" command! -nargs=* -bang MakeDefiDict  :call atplib#search#make_defi_dict_py(<q-bang>,<f-args>)
+function! atplib#search#make_defi_dict_py(bang,...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let bufname	= a:0 >= 1 ? a:1 : atp_MainFile
@@ -195,10 +195,10 @@ return s:defi_dict_py
 endfunction
 "}}}
 
-"{{{ atplib_search#LocalCommands_vim 
+"{{{ atplib#search#LocalCommands_vim 
 " a:1 = pattern
 " a:2 = "!" => renegenerate the input files.
-function! atplib_search#LocalCommands_vim(...)
+function! atplib#search#LocalCommands_vim(...)
 "     let time = reltime()
     let pattern = a:0 >= 1 && a:1 != '' ? a:1 : '\\def\>\|\\newcommand\>\|\\newenvironment\|\\newtheorem\|\\definecolor\|'
 		\ . '\\Declare\%(RobustCommand\|FixedFont\|TextFontCommand\|MathVersion\|SymbolFontAlphabet'
@@ -277,7 +277,7 @@ function! atplib_search#LocalCommands_vim(...)
 
 endfunction "}}}
 " {{{ LocalCommands_py
-function! atplib_search#LocalCommands_py(write, ...)
+function! atplib#search#LocalCommands_py(write, ...)
     let time=reltime()
     " The first argument pattern is not implemented
     " but it should be a python regular expression
@@ -375,7 +375,7 @@ return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
 " Local Abbreviations {{{
-function! atplib_search#LocalAbbreviations()
+function! atplib#search#LocalAbbreviations()
     if !exists("b:atp_LocalEnvironments")
 	let no_abbrev= ( exists('g:atp_no_local_abbreviations') ? g:atp_no_local_abbreviations : -1 )
 	let g:atp_no_local_abbreviations = 1
@@ -399,9 +399,9 @@ function! atplib_search#LocalAbbreviations()
     endfor
 endfunction "}}}
 
-" Search for Definition in the definition dictionary (atplib_search#make_defi_dict).
+" Search for Definition in the definition dictionary (atplib#search#make_defi_dict).
 "{{{ Dsearch
-function! atplib_search#Dsearch(bang,...)
+function! atplib#search#Dsearch(bang,...)
 
     call atplib#write()
 
@@ -412,9 +412,9 @@ function! atplib_search#Dsearch(bang,...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     if has("python")
-	let defi_dict	= atplib_search#make_defi_dict_py(a:bang, atp_MainFile, pattern)
+	let defi_dict	= atplib#search#make_defi_dict_py(a:bang, atp_MainFile, pattern)
     else
-	let defi_dict	= atplib_search#make_defi_dict_vim(a:bang, atp_MainFile, pattern)
+	let defi_dict	= atplib#search#make_defi_dict_vim(a:bang, atp_MainFile, pattern)
     endif
 
     if len(defi_dict) > 0
@@ -516,7 +516,7 @@ function! atplib_search#Dsearch(bang,...)
     endif
     let g:source_time_DSEARCH=reltimestr(reltime(time))
 endfunction
-function! atplib_search#DsearchComp(ArgLead, CmdLine, CursorPos)
+function! atplib#search#DsearchComp(ArgLead, CmdLine, CursorPos)
     if !exists("b:atp_LocalCommands")
         LocalCommands
     endif
@@ -531,7 +531,7 @@ endfunction
 "}}}
 
 " Search in tree and return the one level up element and its line number.
-" {{{ atplib_search#SearchInTree
+" {{{ atplib#search#SearchInTree
 " Before running this function one has to set the two variables
 " s:branch/s:branch_line to 0.
 " the a:tree variable should be something like:
@@ -539,7 +539,7 @@ endfunction
 " necessary a rooted tree!
 
 " This function remaps keys of dictionary.
-function! atplib_search#MapDict(dict) 
+function! atplib#search#MapDict(dict) 
     let new_dict = {}
     for key in keys(a:dict)
 	let new_key = fnamemodify(key, ":p")
@@ -548,7 +548,7 @@ function! atplib_search#MapDict(dict)
     return new_dict
 endfunction
 
-function! atplib_search#SearchInTree(tree, branch, what)
+function! atplib#search#SearchInTree(tree, branch, what)
     if g:atp_debugSIT
 	exe "redir! > ".g:atp_TempDir."/SearchInTree.log"
 	silent! echo "___SEARCH_IN_TREE___"
@@ -594,7 +594,7 @@ function! atplib_search#SearchInTree(tree, branch, what)
 	return branchArg
     else
 	for new_branch in keys(branch)
-	    call atplib_search#SearchInTree(branch, new_branch, whatArg)
+	    call atplib#search#SearchInTree(branch, new_branch, whatArg)
 	endfor
     endif
     if g:atp_debugSIT
@@ -630,10 +630,10 @@ endfunction
 			" and	  :set efm=.*
 			" if 2 show time
 " log file : /tmp/ATP_rs_debug
-" {{{ atplib_search#RecursiveSearch function
+" {{{ atplib#search#RecursiveSearch function
 let g:atp_swapexists = 0
 try
-function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, cur_branch, call_nr, wrap_nr, winsaveview, bufnr, strftime, vim_options, cwd, pattern, ... )
+function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, cur_branch, call_nr, wrap_nr, winsaveview, bufnr, strftime, vim_options, cwd, pattern, ... )
 
     let main_file	= g:atp_RelativePath ? atplib#RelativePath(a:main_file, b:atp_ProjectDir) : a:main_file
 	
@@ -752,7 +752,7 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	" FIND PATTERN: 
 	let cur_pos		= [line("."), col(".")]
 	" We filter out the 's' flag which should be used only once
-	" as the flags passed to next atplib_search#RecursiveSearch()es are based on flags_supplied variable
+	" as the flags passed to next atplib#search#RecursiveSearch()es are based on flags_supplied variable
 	" this will work.
 	let s_flag		= flags_supplied =~# 's' ? 1 : 0
 	let flags_supplied	= substitute(flags_supplied, 's', '', 'g')
@@ -850,7 +850,7 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 				redir END
 				endif
 
-			    keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
+			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
 
 			    return
 			else
@@ -932,7 +932,7 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 				redir END
 				endif
 
-			    keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
+			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
 
 				if g:atp_debugRS > 1
 				    silent echo "TIME_END:" . reltimestr(reltime(time0))
@@ -1098,9 +1098,9 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	    let flag	= flags_supplied =~ 'W' ? flags_supplied : flags_supplied . 'W'
 	    if @# == ''
-		keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
+		keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
 	    else
-		keepalt keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
+		keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
 	    endif
 
 	    if g:atp_debugRS
@@ -1119,9 +1119,9 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		endif
 
 	    if g:atp_RelativePath
-		call atplib_search#SearchInTree(l:tree, main_file, atplib#RelativePath(expand("%:p"), resolve(b:atp_ProjectDir)))
+		call atplib#search#SearchInTree(l:tree, main_file, atplib#RelativePath(expand("%:p"), resolve(b:atp_ProjectDir)))
 	    else
-		call atplib_search#SearchInTree(l:tree, main_file, expand("%:p"))
+		call atplib#search#SearchInTree(l:tree, main_file, expand("%:p"))
 	    endif
 
 		if g:atp_debugRS
@@ -1211,9 +1211,9 @@ function! atplib_search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 	    let flag	= flags_supplied =~ 'W' ? flags_supplied : flags_supplied . 'W'
 	    if goto_s == 'DOWN'
 		if @# == ''
-		    keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
+		    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
 		else
-		    keepalt keepjumps call atplib_search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
+		    keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
 		endif
 	    endif
 
@@ -1281,11 +1281,11 @@ catch /E127:/
 endtry
 " }}}
 
-" User interface to atplib_search#RecursiveSearch function.
-" atplib_search#GetSearchArgs {{{
+" User interface to atplib#search#RecursiveSearch function.
+" atplib#search#GetSearchArgs {{{
 " This functionn returns arguments from <q-args> - a list [ pattern, flag ]
-" It allows to pass arguments to atplib_search#Search in a similar way to :vimgrep, :ijump, ... 
-function! atplib_search#GetSearchArgs(Arg,flags)
+" It allows to pass arguments to atplib#search#Search in a similar way to :vimgrep, :ijump, ... 
+function! atplib#search#GetSearchArgs(Arg,flags)
     if a:Arg =~ '^\/'
 	let pattern 	= matchstr(a:Arg, '^\/\zs.*\ze\/')
 	let flag	= matchstr(a:Arg, '\/.*\/\s*\zs['.a:flags.']*\ze\s*$')
@@ -1301,10 +1301,10 @@ endfunction
 "}}}
 " {{{ Search()
 try
-function! atplib_search#Search(Bang, Arg)
+function! atplib#search#Search(Bang, Arg)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-    let [ pattern, flag ] = atplib_search#GetSearchArgs(a:Arg, 'bceswW')
+    let [ pattern, flag ] = atplib#search#GetSearchArgs(a:Arg, 'bceswW')
     let g:pattern = pattern
 
     if pattern == ""
@@ -1315,9 +1315,9 @@ function! atplib_search#Search(Bang, Arg)
     endif
 
     if a:Bang == "!" || !exists("b:TreeOfFiles")
-	call atplib_search#RecursiveSearch(atp_MainFile, expand("%:p"), 'make_tree', '', expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
+	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), 'make_tree', '', expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
     else
-	call atplib_search#RecursiveSearch(atp_MainFile, expand("%:p"), '', deepcopy(b:TreeOfFiles),  expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
+	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), '', deepcopy(b:TreeOfFiles),  expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
     endif
 
 endfunction
@@ -1325,7 +1325,7 @@ catch /E127: Cannot redefine function/
 endtry
 " }}}
 
-function! atplib_search#ATP_ToggleNn(...) " {{{
+function! atplib#search#ATP_ToggleNn(...) " {{{
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_mapNn )
     let g:on	= on
 	if !on
@@ -1348,7 +1348,7 @@ function! atplib_search#ATP_ToggleNn(...) " {{{
 	    echomsg "[ATP:] atp nN maps"
 	endif
 endfunction
-function! SearchHistCompletion(ArgLead, CmdLine, CursorPos)
+function! atplib#search#SearchHistCompletion(ArgLead, CmdLine, CursorPos)
     let search_history=[]
     let hist_entry	= histget("search")
     let nr = 0
@@ -1375,7 +1375,7 @@ endfunction
 " Front End Function
 " {{{ BibSearch
 "  There are three arguments: {pattern}, [flags, [choose]]
-function! atplib_search#BibSearch(bang,...)
+function! atplib#search#BibSearch(bang,...)
 "     let pattern = a:0 >= 1 ? a:1 : ""
 "     let flag	= a:0 >= 2 ? a:2 : ""
 	
@@ -1383,7 +1383,7 @@ function! atplib_search#BibSearch(bang,...)
 	
     let Arg = ( a:0 >= 1 ? a:1 : "" )
     if Arg != ""
-	let [ pattern, flag ] = atplib_search#GetSearchArgs(Arg, 'aetbjsynvpPNShouH@BcpmMtTulL')
+	let [ pattern, flag ] = atplib#search#GetSearchArgs(Arg, 'aetbjsynvpPNShouH@BcpmMtTulL')
     else
 	let [ pattern, flag ] = [ "", ""] 
     endif
