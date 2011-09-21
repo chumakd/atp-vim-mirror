@@ -442,7 +442,7 @@ try:
             shutil.copy(file_cp, mainfile_dir)
 
 # Copy aux file if there were no compilation errors or if it doesn't exists in mainfile_dir.
-# copy aux file to _aux file (for atplib#GrepAuxFile)
+# copy aux file to _aux file (for atplib#tools#GrepAuxFile)
     if latex_returncode == 0 or not os.path.exists(os.path.join(mainfile_dir, basename+".aux")):
         file_cp=basename+".aux"
         if os.path.exists(file_cp):

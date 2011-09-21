@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Sep 18, 2011 at 12:12  +0100
+" Last Change: Tue Sep 20, 2011 at 10:02  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -205,7 +205,7 @@ function! atplib#various#WrapSelection_compl(ArgLead, CmdLine, CursorPos)
     if searchpair('\\begin\s*{picture}','','\\end\s*{picture}','bnW',"", max([ 1, (line(".")-g:atp_completion_limits[2])]))
 	call add(variables, "g:atp_picture_commands")
     endif
-    if atplib#complete#SearchPackage('hyperref')
+    if atplib#search#SearchPackage('hyperref')
 	call add(variables, "g:atp_package_hyperref_commands")
     endif
     if atplib#IsInMath()
@@ -214,25 +214,25 @@ function! atplib#various#WrapSelection_compl(ArgLead, CmdLine, CursorPos)
 	call add(variables, "g:atp_math_commands_non_expert_mode")
 	call add(variables, "g:atp_amsmath_commands")
     endif
-    if atplib#complete#SearchPackage("fancyhdr")
+    if atplib#search#SearchPackage("fancyhdr")
 	call add(variables, "g:atp_fancyhdr_commands")
     endif
-    if atplib#complete#SearchPackage("makeidx")
+    if atplib#search#SearchPackage("makeidx")
 	call add(variables, "g:atp_makeidx_commands")
     endif
 "     Tikz dosn't have few such commands (in libraries)
-"     if atplib#complete#SearchPackage(#\(tikz\|pgf\)')
+"     if atplib#search#SearchPackage(#\(tikz\|pgf\)')
 " 	let in_tikz=searchpair('\\begin\s*{tikzpicture}','','\\end\s*{tikzpicture}','bnW',"", max([1,(line(".")-g:atp_completion_limits[2])])) || atplib#complete#CheckOpened('\\tikz{','}',line("."),g:atp_completion_limits[0])
 " 	    call add(variables, "g:atp_tikz_commands")
 " 	endif
 "     endif
-    if atplib#complete#DocumentClass(b:atp_MainFile) == "beamer"
+    if atplib#search#DocumentClass(b:atp_MainFile) == "beamer"
 	call add(variables, "g:atp_package_beamer_commands")
     endif
-    if atplib#complete#SearchPackage("mathtools")
+    if atplib#search#SearchPackage("mathtools")
 	call add(variables, "g:atp_package_mathtools_commands")
     endif
-    if atplib#complete#SearchPackage("todonotes")
+    if atplib#search#SearchPackage("todonotes")
 	call add(variables, "g:atp_TodoNotes_commands")
     endif
 "     if !exists("b:atp_LocalCommands")
@@ -549,7 +549,7 @@ function! atplib#various#ToggleStar()
 
     " omit pattern
     let no_star=copy(g:atp_no_star_environments)
-    let cond = atplib#complete#SearchPackage('mdwlist')
+    let cond = atplib#search#SearchPackage('mdwlist')
     if cond || exists("b:atp_LocalEnvironments") && index(b:atp_LocalEnvironments, 'enumerate*') != -1
 	call remove(no_star, index(no_star, 'enumerate'))
     endif
@@ -758,7 +758,7 @@ function! atplib#various#EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
     let env_list = copy(b:atp_LocalEnvironments)
     " add standard and ams environment if not present.
     let env_list=atplib#Extend(env_list, g:atp_Environments)
-    if atplib#complete#SearchPackage('amsmath')
+    if atplib#search#SearchPackage('amsmath')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
     call filter(env_list, "v:val =~# '^' .a:ArgLead")
@@ -772,7 +772,7 @@ function! atplib#various#EnvCompletionWithoutStarEnvs(ArgLead, CmdLine, CursorPo
     let env_list = copy(b:atp_LocalEnvironments)
     " add standard and ams environment if not present.
     let env_list=atplib#Extend(env_list, g:atp_Environments)
-    if atplib#complete#SearchPackage('amsmath')
+    if atplib#search#SearchPackage('amsmath')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
     call filter(env_list, "v:val =~# '^' .a:ArgLead")
@@ -788,7 +788,7 @@ function! atplib#various#F_compl(ArgLead, CmdLine, CursorPos) "{{{
     " add standard and ams environment if not present.
     let env_list=atplib#Extend(env_list, g:atp_Environments)
     let env_list=atplib#Extend(env_list, ['part', 'chapter', 'section', 'subsection', 'subsubsection'])
-    if atplib#complete#SearchPackage('amsmath') || atplib#complete#SearchPackage('amsthm')
+    if atplib#search#SearchPackage('amsmath') || atplib#search#SearchPackage('amsthm')
 	let env_list=atplib#Extend(env_list, g:atp_amsmath_environments)
     endif
     call filter(env_list+['math'], "v:val !~ '\*$'")
@@ -1653,7 +1653,7 @@ endtry
 
 function! atplib#various#AMSRef(bang, what)
     if !exists("b:AllBibFiles")
-	call atplib#common#FindInputFiles(b:atp_MainFile)
+	call atplib#search#FindInputFiles(b:atp_MainFile)
     endif
     if len(b:AllBibFiles) > 1
 	let bibfile = inputlist(extend("Which bib file to use?", b:AllBibFiles))

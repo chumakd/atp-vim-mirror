@@ -28,7 +28,7 @@ function! GetColors()
 	let colors=[]
     endif
     let colors=extend(colors,[ 'red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'black', 'gray', 'white', 'darkgray', 'lightgray', 'brown', 'lime', 'olive', 'orange', 'pink', 'purple', 'teal', 'violet' ])
-    let line=getline(atplib#complete#SearchPackage('color'))
+    let line=getline(atplib#search#SearchPackage('color'))
     if line =~ '\\usepackage\[[^\]]*\<dvipsnames\*\?\>'
 	let add_colors = [
 		    \	'Apricot',        'Cyan',        'Mahogany',     'ProcessBlue', 'SpringGreen',

@@ -42,7 +42,7 @@ pgfrcs.tex
 there is only one math syntax region: 
 	    paintexMath	
 
-To Do: add support for plain TeX users in the function atplib#complete#SearchPackage()
+To Do: add support for plain TeX users in the function atplib#search#SearchPackage()
 	in TeX one writes: '\input tikz.tex' instead of '\usepackage{tikz}'
 	in while in ConTeXt '\usemodule[tikz]'
 

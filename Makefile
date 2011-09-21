@@ -10,7 +10,7 @@
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.5.2
+VERSION = 10.5.3
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
@@ -76,6 +76,7 @@ SOURCE += ftplugin/ATP_files/packages/url.vim
 SOURCE += ftplugin/ATP_files/packages/xcolor.vim
 SOURCE += ftplugin/ATP_files/project.vim
 SOURCE += ftplugin/ATP_files/search.vim
+SOURCE += ftplugin/ATP_files/tex-fold.vim
 SOURCE += ftplugin/ATP_files/url_query.py
 SOURCE += ftplugin/ATP_files/various.vim
 SOURCE += ftplugin/ATP_files/vimcomplete.bst
@@ -116,3 +117,4 @@ release:
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
 	scp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.tar.gz mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/releases/
+	echo '>> WRITE E-MAIL TO: Tim Harder <radhermit@gentoo.org>'

@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Sep 18, 2011 at 11:48  +0100
+" Last Change: Tue Sep 20, 2011 at 09:53  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -306,7 +306,7 @@ let s:optionsDict= {
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
 		\ "atp_TexCompiler" 		: s:TexCompiler,
-		\ "atp_BibCompiler"		: ( getline(atplib#complete#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
+		\ "atp_BibCompiler"		: ( getline(atplib#search#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "40", 
 		\ "atp_LastBibPattern"		: "",
@@ -326,7 +326,7 @@ let s:optionsDict= {
 		\ "atp_MakeidxOutput"		: "",
 		\ "atp_ProgressBar"		: {}}
 
-" 		\ "atp_BibCompiler"		: ( getline(atplib#complete#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
+" 		\ "atp_BibCompiler"		: ( getline(atplib#search#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 " 		\ "atp_TexCompilerVariable"	: "",
 " 			\.";TEXINPUT="
 " 			\.($TEXINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$TEXINPUTS)
@@ -391,6 +391,12 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_folding")
+    let g:atp_folding = 0
+endif
+if !exists("g:atp_devversion")
+    let g:atp_devversion = 0
+endif
 if !exists("g:atp_completion_tikz_expertmode")
     let g:atp_completion_tikz_expertmode = 1
 endif
@@ -1007,7 +1013,7 @@ if !exists("g:atp_completion_font_encodings")
 endif
 " todo: to doc.
 if !exists("g:atp_font_encoding")
-    let s:line=atplib#complete#SearchPackage('fontenc')
+    let s:line=atplib#search#SearchPackage('fontenc')
     if s:line != 0
 	" the last enconding is the default one for fontenc, this we will
 	" use
@@ -1058,9 +1064,9 @@ if !exists("g:atp_env_maps_old")
     let g:atp_env_maps_old	= 0
 endif
 if !exists("g:atp_amsmath")
-    let g:atp_amsmath=atplib#complete#SearchPackage('ams')
+    let g:atp_amsmath=atplib#search#SearchPackage('ams')
 endif
-if atplib#complete#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#complete#DocumentClass(b:atp_MainFile) =~ '^ams'
+if atplib#search#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#search#DocumentClass(b:atp_MainFile) =~ '^ams'
     exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
 endif
 if !exists("g:atp_no_math_command_completion")
@@ -2414,7 +2420,7 @@ endfunction
 " {{{ Autocommands:
 
 if !s:did_options
-
+    
     augroup ATP_UpdateToCLine
 	au!
 	au CursorHold *.tex nested :call atplib#motion#UpdateToCLine()
@@ -2693,14 +2699,14 @@ function! <SID>ATP_SyntaxGroups()
 	return
     endif
     " add texMathZoneT syntax group for tikzpicture environment:
-    if atplib#complete#SearchPackage('tikz') || atplib#complete#SearchPackage('pgfplots')
+    if atplib#search#SearchPackage('tikz') || atplib#search#SearchPackage('pgfplots')
 	try
 	    call TexNewMathZone("T", "tikzpicture", 0)
 	catch /E117:/
 	endtry
     endif
     " add texMathZoneALG syntax group for algorithmic environment:
-    if atplib#complete#SearchPackage('algorithmic')
+    if atplib#search#SearchPackage('algorithmic')
 	try
 	    call TexNewMathZone("ALG", "algorithmic", 0)
 	catch /E117:/ 

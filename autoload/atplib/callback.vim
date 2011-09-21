@@ -9,23 +9,23 @@
 " Compilation Call Back Communication: 
 " with some help of D. Munger
 " (Communications with compiler script: both in compiler.vim and the python script.)
-" TexReturnCode {{{
+" atplib#callback#TexReturnCode {{{
 function! atplib#callback#TexReturnCode(returncode)
 	let b:atp_TexReturnCode=a:returncode
 endfunction "}}}
-" BibtexReturnCode {{{
+" atplib#callback#BibtexReturnCode {{{
 function! atplib#callback#BibtexReturnCode(returncode,...)
 	let b:atp_BibtexReturnCode=a:returncode
 	let b:atp_BibtexOutput= ( a:0 >= 1 ? a:1 : "" )
 endfunction
 " }}}
-" MakeidxReturnCode {{{
+" atplib#callback#MakeidxReturnCode {{{
 function! atplib#callback#MakeidxReturnCode(returncode,...)
 	let b:atp_MakeidxReturnCode=a:returncode
 	let b:atp_MakeidxOutput= ( a:0 >= 1 ? a:1 : "" )
 endfunction
 " }}}
-" PlaceSigns {{{
+" atplib#callback#Signs {{{
 function! atplib#callback#Signs()
     if has("signs")
 	sign unplace *
@@ -52,7 +52,7 @@ function! atplib#callback#Signs()
 	endfor
     endif
 endfunction "}}}
-" Callback {{{
+" atplib#callback#CallBack {{{
 " a:mode 	= a:verbose 	of s:compiler ( one of 'default', 'silent',
 " 				'debug', 'verbose')
 " a:commnad	= a:commmand 	of s:compiler 
@@ -310,38 +310,38 @@ function! atplib#callback#CallBack(mode,...)
 	redir END
     endif
 endfunction "}}}
-"{{{ LatexPID
+"{{{ atplib#callback#LatexPID
 "Store LatexPIDs in a variable
 function! atplib#callback#LatexPID(pid)
     call add(b:atp_LatexPIDs, a:pid)
 "     call atplib#callback#PIDsRunning("b:atp_BitexPIDs")
     let b:atp_LastLatexPID =a:pid
 endfunction "}}}
-"{{{ BibtexPID
+"{{{ atplib#callback#BibtexPID
 "Store BibtexPIDs in a variable
 function! atplib#callback#BibtexPID(pid)
     call add(b:atp_BibtexPIDs, a:pid)
 "     call atplib#callback#PIDsRunning("b:atp_BibtexPIDs")
 endfunction "}}}
-"{{{ MakeindexPID
+"{{{ atplib#callback#MakeindexPID
 "Store MakeindexPIDs in a variable
 function! atplib#callback#MakeindexPID(pid)
     call add(b:atp_MakeindexPIDs, a:pid)
     let b:atp_LastMakeindexPID =a:pid
 endfunction "}}}
-"{{{ PythonPID
+"{{{ atplib#callback#PythonPID
 "Store PythonPIDs in a variable
 function! atplib#callback#PythonPID(pid)
     call add(b:atp_PythonPIDs, a:pid)
 "     call atplib#callback#PIDsRunning("b:atp_PythonPIDs")
 endfunction "}}}
-"{{{ MakeindexPID
+"{{{ atplib#callback#MakeindexPID
 "Store MakeindexPIDs in a variable
 function! atplib#callback#PythonPIDs(pid)
     call add(b:atp_PythonPIDs, a:pid)
     let b:atp_LastPythonPID =a:pid
 endfunction "}}}
-"{{{ PIDsRunning
+"{{{ atplib#callback#PIDsRunning
 function! atplib#callback#PIDsRunning(var)
 " a:var is a string, and might be one of 'b:atp_LatexPIDs', 'b:atp_BibtexPIDs' or
 " 'b:atp_MakeindexPIDs'
@@ -366,7 +366,7 @@ if len(pids) > 0:
 	vim.eval("filter("+var+", 'v:val !~ \""+str(pid)+"\"')")
 EOL
 endfunction "}}}
-"{{{ ProgressBar
+"{{{ atplib#callback#ProgressBar
 function! atplib#callback#ProgressBar(value,pid)
     if a:value != 'end'
 	let b:atp_ProgressBar[a:pid]=a:value
@@ -375,11 +375,11 @@ function! atplib#callback#ProgressBar(value,pid)
     endif
     redrawstatus
 endfunction "}}}
-"{{{ redrawstatus
+"{{{ atplib#callback#redrawstatus
 function! atplib#callback#redrawstatus()
     redrawstatus
 endfunction "}}}
-"{{{ CursorMoveI
+"{{{ atplib#callback#CursorMoveI
 " function! atplib#callback#CursorMoveI()
 "     if mode() != "i"
 " 	return
@@ -388,7 +388,7 @@ endfunction "}}}
 "     call feedkeys("\<left>", "n")
 "     call cursor(cursor_pos)
 " endfunction "}}}
-" {{{ HighlightErrors
+" {{{ atplib#callback#HighlightErrors
 function! atplib#callback#HighlightErrors()
     call atplib#callback#ClearHighlightErrors()
     let qf_list = getqflist()
@@ -406,7 +406,7 @@ function! atplib#callback#HighlightErrors()
 	let error_msg=split(error.text, "\n")
     endfor
 endfunction "}}}
-" {{{ ClearHighlightErrors
+" {{{ atplib#callback#ClearHighlightErrors
 function! atplib#callback#ClearHighlightErrors()
     if !exists("s:matchid")
 	let s:matchid=[]
@@ -420,7 +420,7 @@ function! atplib#callback#ClearHighlightErrors()
     endfor
     let s:matchid=[]
 endfunction "}}}
-"{{{ Echo
+"{{{ atplib#callback#Echo
 function! atplib#callback#Echo(msg, cmd, hlgroup, ...)
     if a:0 >= 1 && a:1
 	redraw

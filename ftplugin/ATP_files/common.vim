@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Sep 19, 2011 at 12:14  +0100
+" Last Change: Tue Sep 20, 2011 at 10:02  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -68,9 +68,9 @@ function! TreeOfFiles(main_file,...)
     let time=reltime()
     if has("python") && &filetype != "plaintex" && ( !exists("g:atp_no_python") || g:atp_no_python == 0 )
 	" It was not tested on plaintex files.
-	call atplib#common#TreeOfFiles_py(a:main_file)
+	call atplib#search#TreeOfFiles_py(a:main_file)
     else
-	call atplib#common#TreeOfFiles_vim(a:main_file, pattern, flat, run_nr)
+	call atplib#search#TreeOfFiles_vim(a:main_file, pattern, flat, run_nr)
     endif
     " Notes: vim script avrage is 0.38s, python avrage is 0.28
     return [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]
@@ -324,12 +324,12 @@ if !exists("g:atp_inputfile_pattern") || g:atp_reload_variables
     if &filetype == 'plaintex'
 	let g:atp_inputfile_pattern = '^[^%]*\\input\>\s*'
     else
-	if atplib#complete#SearchPackage("subfiles")
+	if atplib#search#SearchPackage("subfiles")
 	    let g:atp_inputfile_pattern = '^[^%]*\\\(input\s*{\=\|include\s*{\|subfile\s*{'
 	else
 	    let g:atp_inputfile_pattern = '^[^%]*\\\(input\s*{\=\|include\s*{'
 	endif
-	if atplib#complete#SearchPackage("biblatex")
+	if atplib#search#SearchPackage("biblatex")
 	    let g:atp_inputfile_pattern .= '\)'
 	else
 	    let g:atp_inputfile_pattern .= '\|bibliography\s*{\)'
@@ -350,7 +350,7 @@ endif "}}}1
 command! -buffer -bang SetProjectName	:call atplib#common#SetProjectName(<q-bang>, 0)
 command! -buffer SetErrorFile		:call atplib#common#SetErrorFile()
 command! -buffer SetOutDir		:call atplib#common#SetOutDir(1)
-command! -buffer InputFiles 		:call atplib#common#UpdateMainFile() | :call atplib#common#FindInputFiles(atplib#FullPath(b:atp_MainFile)) | echo join([b:atp_MainFile]+b:ListOfFiles, "\n")
+command! -buffer InputFiles 		:call atplib#common#UpdateMainFile() | :call atplib#search#FindInputFiles(atplib#FullPath(b:atp_MainFile)) | echo join([b:atp_MainFile]+b:ListOfFiles, "\n")
 
 " This should set the variables and run atplib#common#SetNotificationColor function
 command! -buffer SetNotificationColor :call atplib#common#SetNotificationColor()

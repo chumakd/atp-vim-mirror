@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 19 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 21 September 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.2)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.3)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -161,14 +161,30 @@ for all the defined functions :help atp*()<CTRL>d, mappings: :help atp-map<CTRL>
 NEWS							*atp-news*
 >
  ======================
- Changes in version 10.5.1
+ Changes in version 10.5.3
 <
  The command |atp-:ViewOutput| with bang (also <F3> map) opens and makes forward search.
  Reverse search (atplib#FindAndOpen() function) sets the "'" mark before
  changing text position.
 
- Imaps
+ Folding: ~
+ I found a nice folding file (written by Johannes Zellner, added with his
+ permition) I twiked it a little and I added two options:
+ g:atp_folding	= 0 [default] enables/disables folding. You should set in your
+	 |vimrc| or |atprc| files. If you reset the value on the fly you need
+	 to issue '|:filetype| detect' command in order for changes to take
+	 place.
+ g:atp_fold_environments = 0 [default] enables/disables folding of
+	 environments.
+By default folding is disables since it slows down vim.
+
+ Imaps: ~
  ->, <- in tikz picture environment (but not in math) puts \draw[->] or \draw[<-].
+ They are also disabled inside [:].
+
+ Vmaps: ~
+ 'o, 'u	insteado of 'ov and 'uv (\overline, \underline). This is compatible
+ with imaps 'o and 'u.
 
  Some bug fixes.
 >

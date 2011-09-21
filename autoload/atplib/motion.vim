@@ -80,7 +80,7 @@ function! atplib#motion#maketoc(filename)
     endfor
     " make a filter
     let j = 0
-    let biblatex	= ( atplib#complete#SearchPackage("biblatex") )
+    let biblatex	= ( atplib#search#SearchPackage("biblatex") )
     " When \usepackge{biblatex} do not search for \bibliography{} commands -- they are placed in ther preambule.
     let key_list 	= ( biblatex ? filter(keys(g:atp_sections), "v:val != 'bibliography'") : keys(g:atp_sections) ) 
     for section in key_list
@@ -565,7 +565,7 @@ function! atplib#motion#UpdateToCLine(...)
 	    let num+=1
 	endif
 	keepjumps call setpos('.',[bufnr(""),num,1,0])
-	call atplib#CursorLine()
+	call atplib#tools#CursorLine()
     endfor
 
     let eventignore=&eventignore
@@ -728,11 +728,11 @@ function! atplib#motion#Labels(bang)
 
     " Generate the dictionary with labels
     if a:bang == "" || ( a:bang == "!" && !exists("t:atp_labels") )
-	let [ t:atp_labels, b:ListOfFiles ] =  atplib#generatelabels(atp_MainFile, 1)
+	let [ t:atp_labels, b:ListOfFiles ] =  atplib#tools#generatelabels(atp_MainFile, 1)
     endif
 
     " Show the labels in seprate window
-    call atplib#showlabels([ t:atp_labels, map(extend([b:atp_MainFile], copy(b:ListOfFiles)), 'atplib#FullPath(v:val)')])
+    call atplib#tools#showlabels([ t:atp_labels, map(extend([b:atp_MainFile], copy(b:ListOfFiles)), 'atplib#FullPath(v:val)')])
 
     if error
 	echohl WarningMsg
@@ -753,7 +753,7 @@ function! atplib#motion#GotoLabel(bang,...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     " Generate the dictionary with labels
     if a:bang == "" || ( a:bang == "!" && ( !exists("b:ListOfFiles") || !exists("t:atp_labels") ) )
-	let [ t:atp_labels, b:ListOfFiles ] =  atplib#generatelabels(atp_MainFile, 1)
+	let [ t:atp_labels, b:ListOfFiles ] =  atplib#tools#generatelabels(atp_MainFile, 1)
     endif
 
     let matches = []
@@ -818,7 +818,7 @@ function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     " Generate the dictionary with labels (only if it doesn't exist)
     if !exists("t:atp_labels") || t:atp_labels == {} || !exists("b:ListOfFiles") || a:CmdLine !~# '^GotoLabel!'
-	let [ t:atp_labels, b:ListOfFiles ] =  atplib#generatelabels(atp_MainFile, 1)
+	let [ t:atp_labels, b:ListOfFiles ] =  atplib#tools#generatelabels(atp_MainFile, 1)
 " It would be nice to delete the ! from the cmdline after this step. There are
 " only getcmdline(), getcmdpos() and setcmdpos() functions available.
 	let cmd_line=substitute(getcmdline(), "GotoLabel!", "GotoLabel", "")
@@ -838,7 +838,7 @@ function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 endfunction
 " {{{1 TAGS
 function! atplib#motion#LatexTags(bang)
-    let hyperref_cmd = ( atplib#complete#SearchPackage("hyperref") ? " --hyperref " : "" )
+    let hyperref_cmd = ( atplib#search#SearchPackage("hyperref") ? " --hyperref " : "" )
     if has("clientserver")
 	let servername 	= " --servername ".v:servername." "
 	let progname	= " --progname ".v:progname." " 
@@ -866,9 +866,9 @@ function! atplib#motion#LatexTags(bang)
 	let bib= " --bibtags_env "
     endif
     let dir 	= expand("%:p:h")
-    if atplib#complete#SearchPackage("biblatex")
+    if atplib#search#SearchPackage("biblatex")
 	let cite = " --cite biblatex "
-    elseif atplib#complete#SearchPackage("natbib")
+    elseif atplib#search#SearchPackage("natbib")
 	let cite = " --cite natbib "
     else
 	let cite = " "
@@ -1261,7 +1261,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 	    let ext 	= '.sty'
 
 	    let fname   = atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
-	    let file 	= atplib#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1)
+	    let file 	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1)
 	    let file_l	= [ file ]
 
 	    let message = "Pacakge: "
@@ -1277,7 +1277,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 
 	    " The 'file . ext' might be already a full path.
 	    if fnamemodify(fname, ":p") != fname
-		let file_l 	= atplib#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\|miktex\)')
+		let file_l 	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\|miktex\)')
 		let file	= get(file_l, 0, 'file_missing')
 	    else
 		let file_l	= [ fname ] 
@@ -1291,7 +1291,7 @@ function! atplib#motion#GotoFile(bang,args,...)
     elseif line =~ '\\input\s*{\@!'
 	let method = "input"
 	    let fname	= atplib#append_ext(matchstr(getline(line(".")), '\\input\s*\zs\f*\ze'), '.tex')
-	    let file_l	= atplib#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
+	    let file_l	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
 	    let file	= get(file_l, 0, "file_missing")
 	    let options = ' +setl\ ft=' . &l:filetype  
 
@@ -1308,7 +1308,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let classname 	= strpart(getline("."), bcol, ecol-bcol-1)
 
 	let fname	= atplib#append_ext(classname, '.cls')
-	let file	= atplib#KpsewhichFindFile('tex', fname,  g:atp_texinputs, ':p')
+	let file	= atplib#search#KpsewhichFindFile('tex', fname,  g:atp_texinputs, ':p')
 	let file_l	= [ file ]
 	let options	= ""
     else

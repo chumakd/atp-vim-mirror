@@ -4,7 +4,6 @@
 " Language:	tex
 " Last Change:Tue Sep 06, 2011 at 03:18  +0100
 
-" Functions:
 " Make a dictionary of definitions found in all input files.
 " {{{ atplib#search#make_defi_dict_vim
 " Comparing with ]D, ]d, ]i, ]I vim maps this function deals with multiline
@@ -33,7 +32,7 @@ function! atplib#search#make_defi_dict_vim(bang,...)
 
     let defi_dict={}
 
-    let inputfiles=atplib#common#FindInputFiles(bufname)
+    let inputfiles=atplib#search#FindInputFiles(bufname)
     let input_files=[]
 
     " TeX: How this work in TeX files.
@@ -276,7 +275,7 @@ function! atplib#search#LocalCommands_vim(...)
     return [ atp_LocalEnvironments, atp_LocalCommands, atp_LocalColors ]
 
 endfunction "}}}
-" {{{ LocalCommands_py
+" {{{ atplib#search#LocalCommands_py
 function! atplib#search#LocalCommands_py(write, ...)
     let time=reltime()
     " The first argument pattern is not implemented
@@ -308,7 +307,7 @@ function! atplib#search#LocalCommands_py(write, ...)
 		 call add(files, file)
 	     else
                  " This makes it really slow when the files are missing.
-		 let file=atplib#KpsewhichFindFile("tex", file)
+		 let file=atplib#search#KpsewhichFindFile("tex", file)
 		 if file != ""
 		     call add(files, file)
 		 endif
@@ -374,7 +373,7 @@ exe "cd ".fnameescape(pwd)
 return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
-" Local Abbreviations {{{
+" atplib#search#LocalAbbreviations {{{
 function! atplib#search#LocalAbbreviations()
     if !exists("b:atp_LocalEnvironments")
 	let no_abbrev= ( exists('g:atp_no_local_abbreviations') ? g:atp_no_local_abbreviations : -1 )
@@ -400,7 +399,7 @@ function! atplib#search#LocalAbbreviations()
 endfunction "}}}
 
 " Search for Definition in the definition dictionary (atplib#search#make_defi_dict).
-"{{{ Dsearch
+"{{{ atplib#search#Dsearch
 function! atplib#search#Dsearch(bang,...)
 
     call atplib#write()
@@ -605,7 +604,7 @@ endfunction
 " }}}
 
 " Search in all input files recursively.
-" {{{ Search (recursive)
+" {{{ Recursice Search
 "
 " Variables are used to pass them to next runs (this function calls it self) 
 " a:main_file	= b:atp_MainFile
@@ -1365,7 +1364,7 @@ endfunction
 
 " These are only variables and front end functions for Bib Search Engine of ATP.
 " Search engine is define in autoload/atplib.vim script library.
-"{{{ BibSearch
+"{{{ Bibliography Search
 "-------------SEARCH IN BIBFILES ----------------------
 " This function counts accurence of a:keyword in string a:line, 
 " there are two methods keyword is a string to find (a:1=0)or a pattern to
@@ -1427,5 +1426,881 @@ function! atplib#search#BibSearch(bang,...)
     let g:time_BibSearch=reltimestr(reltime(time))
 endfunction
 " }}}
+"}}}
+
+" Other Searching Tools: 
+" {{{1 atplib#search#KpsewhichGlobPath 
+" 	a:format	is the format as reported by kpsewhich --help
+" 	a:path		path if set to "", then kpse which will find the path.
+" 			The default is what 'kpsewhich -show-path tex' returns
+" 			with "**" appended. 
+" 	a:name 		can be "*" then finds all files with the given extension
+" 			or "*.cls" to find all files with a given extension.
+" 	a:1		modifiers (the default is ":t:r")
+" 	a:2		filters path names matching the pattern a:1
+" 	a:3		filters out path names not matching the pattern a:2
+"
+" 	Argument a:path was added because it takes time for kpsewhich to return the
+" 	path (usually ~0.5sec). ATP asks kpsewhich on start up
+" 	(g:atp_kpsewhich_tex) and then locks the variable (this will work
+" 	unless sb is reinstalling tex (with different personal settings,
+" 	changing $LOCALTEXMF) during vim session - not that often). 
+"
+" Example: call atplib#search#KpsewhichGlobPath('tex', '', '*', ':p', '^\(\/home\|\.\)','\%(texlive\|kpsewhich\|generic\)')
+" gives on my system only the path of current dir (/.) and my localtexmf. 
+" this is done in 0.13s. The long pattern is to 
+"
+" atplib#search#KpsewhichGlobPath({format}, {path}, {expr=name}, [ {mods}, {pattern_1}, {pattern_2}]) 
+function! atplib#search#KpsewhichGlobPath(format, path, name, ...)
+"     let time	= reltime()
+    let modifiers = a:0 == 0 ? ":t:r" : a:1
+    if a:path == ""
+	let path	= substitute(substitute(system("kpsewhich -show-path ".a:format ),'!!','','g'),'\/\/\+','\/','g')
+	let path	= substitute(path,':\|\n',',','g')
+	let path_list	= split(path, ',')
+	let idx		= index(path_list, '.')
+	if idx != -1
+	    let dot 	= remove(path_list, index(path_list,'.')) . ","
+	else
+	    let dot 	= ""
+	endif
+	call map(path_list, 'v:val . "**"')
+
+	let path	= dot . join(path_list, ',')
+    else
+	let path = a:path
+    endif
+    " If a:2 is non zero (if not given it is assumed to be 0 for compatibility
+    " reasons)
+    if get(a:000, 1, 0) != "0"
+	let path_list	= split(path, ',')
+	call filter(path_list, 'v:val =~ a:2')
+	let path	= join(path_list, ',')
+    endif
+    if get(a:000, 2, 0) != "0"
+	let path_list	= split(path, ',')
+	call filter(path_list, 'v:val !~ a:3')
+	let path	= join(path_list, ',')
+    endif
+
+    let list	= split(globpath(path, a:name),"\n") 
+    call map(list, 'fnamemodify(v:val, modifiers)')
+    return list
+endfunction
+" }}}1
+" {{{1 atplib#search#KpsewhichFindFile
+" the arguments are similar to atplib#KpsewhichGlob except that the a:000 list
+" is shifted:
+" a:1		= path	
+" 			if set to "" then kpsewhich will find the path.
+" a:2		= count (as for findfile())
+" a:3		= modifiers 
+" a:4		= positive filter for path (see KpsewhichGLob a:1)
+" a:5		= negative filter for path (see KpsewhichFind a:2)
+"
+" needs +path_extra vim feature
+"
+" atp#KpsewhichFindFile({format}, {expr=name}, [{path}, {count}, {mods}, {pattern_1}, {pattern_2}]) 
+function! atplib#search#KpsewhichFindFile(format, name, ...)
+
+    " Unset the suffixadd option
+    let saved_sua	= &l:suffixesadd
+    let &l:sua	= ""
+
+"     let time	= reltime()
+    let path	= a:0 >= 1 ? a:1 : ""
+    let l:count	= a:0 >= 2 ? a:2 : 0
+    let modifiers = a:0 >= 3 ? a:3 : ""
+    " This takes most of the time!
+    if path == ""
+	let path	= substitute(substitute(system("kpsewhich -show-path ".a:format ),'!!','','g'),'\/\/\+','\/','g')
+	let path	= substitute(path,':\|\n',',','g')
+	let path_list	= split(path, ',')
+	let idx		= index(path_list, '.')
+	if idx != -1
+	    let dot 	= remove(path_list, index(path_list,'.')) . ","
+	else
+	    let dot 	= ""
+	endif
+	call map(path_list, 'v:val . "**"')
+
+	let path	= dot . join(path_list, ',')
+	unlet path_list
+    endif
+
+
+    " If a:2 is non zero (if not given it is assumed to be 0 for compatibility
+    " reasons)
+    if get(a:000, 3, 0) != 0
+	let path_list	= split(path, ',')
+	call filter(path_list, 'v:val =~ a:4')
+	let path	= join(path_list, ',')
+    endif
+    if get(a:000, 4, 0) != 0
+	let path_list	= split(path, ',')
+	call filter(path_list, 'v:val !~ a:5')
+	let path	= join(path_list, ',')
+    endif
+
+    if l:count >= 1
+	let result	= findfile(a:name, path, l:count)
+    elseif l:count == 0
+	let result	= findfile(a:name, path)
+    elseif l:count < 0
+	let result	= findfile(a:name, path, -1)
+    endif
+	
+
+    if l:count >= 0 && modifiers != ""
+	let result	= fnamemodify(result, modifiers) 
+    elseif l:count < 0 && modifiers != ""
+	call map(result, 'fnamemodify(v:val, modifiers)')
+    endif
+
+    let &l:sua	= saved_sua
+    return result
+endfunction
+" }}}1
+
+" atplib#search#SearchPackage {{{1
+"
+" This function searches if the package in question is declared or not.
+" Returns the line number of the declaration  or 0 if it was not found.
+"
+" It was inspired by autex function written by Carl Mueller, math at carlm e4ward c o m
+" and made work for project files using lvimgrep.
+"
+" This function doesn't support plaintex files (\\input{})
+" ATP support plaintex input lines in a different way (but not that flexible
+" as this: for plaintex I use atplib#GrepPackageList on startup (only!) and
+" then match input name with the list).
+"
+" name = package name (tikz library name)
+" a:1  = stop line (number of the line \\begin{document} 
+" a:2  = pattern matching the command (without '^[^%]*\\', just the name)
+" to match \usetikzlibrary{...,..., - 
+function! atplib#search#SearchPackage(name,...)
+
+    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    if !filereadable(atp_MainFile)
+	silent echomsg "[ATP:] atp_MainFile : " . atp_MainFile . " is not readable "
+	return
+    endif
+    let cwd = getcwd()
+    if exists("b:atp_ProjectDir") && getcwd() != b:atp_ProjectDir
+	exe "lcd " . fnameescape(b:atp_ProjectDir)
+    endif
+
+    if getbufvar("%", "atp_MainFile") == ""
+	call SetProjectName()
+    endif
+
+"     let time	= reltime()
+
+"     if bufloaded("^" . a:file . "$")
+" 	let file=getbufline("^" . a:file . "$", "1", "$")
+"     else
+" 	let file=readfile(a:filename)
+"     endif
+
+    if a:0 != 0
+	let stop_line	= a:1
+    else
+	if expand("%:p") == atp_MainFile
+	    let saved_pos=getpos(".")
+	    keepjumps call setpos(".", [0,1,1,0])
+	    keepjumps let stop_line=search('\\begin\s*{\s*document\s*}','nW')
+	else
+	    if &l:filetype == 'tex'
+		let saved_loclist	= getloclist(0)
+		silent! execute '1lvimgrep /\\begin\s*{\s*document\s*}/j ' . fnameescape(atp_MainFile)
+		let stop_line	= get(get(getloclist(0), 0, {}), 'lnum', 0)
+		call setloclist(0, saved_loclist) 
+	    else
+		let stop_line = 0
+	    endif
+	endif
+    endif
+
+    let com	= a:0 >= 2 ? a:2 : 'usepackage\s*\%(\[[^\]]*\]\?\)\?'
+
+    " If the current file is the atp_MainFile
+    if expand("%:p") == atp_MainFile
+
+	if !exists("saved_pos")
+	    let saved_pos=getpos(".")
+	endif
+	if stop_line != 0
+
+	    keepjumps call setpos(".",[0,1,1,0])
+	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
+	    keepjump call setpos(".",saved_pos)
+
+	    exe "lcd " . fnameescape(cwd)
+	    return ret
+
+	else
+
+	    keepjumps call setpos(".",[0,1,1,0])
+	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
+	    keepjump call setpos(".", saved_pos)
+
+	    exe "lcd " . fnameescape(cwd)
+	    return ret
+
+	endif
+
+    " If the current file is not the mainfile
+    else
+	" Cache the Preambule / it is not changing so this is completely safe /
+	if !exists("s:Preambule")
+	    let s:Preambule = readfile(atp_MainFile) 
+	    if stop_line != 0
+		silent! call remove(s:Preambule, stop_line+1, -1)
+	    endif
+	endif
+	let lnum = 1
+	for line in s:Preambule
+	    if line =~ '^[^%]*\\'.com."\s*{[^}]*\C".a:name
+
+" 		echo reltimestr(reltime(time))
+		exe "lcd " . fnameescape(cwd)
+		return lnum
+	    endif
+	    let lnum += 1
+	endfor
+    endif
+
+"     echo reltimestr(reltime(time))
+
+    " If the package was not found return 0 
+    exe "lcd " . fnameescape(cwd)
+    return 0
+
+endfunction
+" }}}1
+"{{{1 atplib#search#GrepPackageList
+" This function returns list of packages declared in the b:atp_MainFile (or
+" a:2). If the filetype is plaintex it returns list of all \input{} files in
+" the b:atp_MainFile. 
+" I'm not shure if this will be OK for project files written in plaintex: Can
+" one declare a package in the middle of document? probably yes. So it might
+" be better to use TreeOfFiles in that case.
+
+" This takes =~ 0.02 s. This is too long to call it in complete#TabCompletion.
+function! atplib#search#GrepPackageList(...)
+" 	let time = reltime() 
+    let file	= a:0 >= 2 ? a:2 : getbufvar("%", "atp_MainFile") 
+    let pat	= a:0 >= 1 ? a:1 : ''
+    if file == ""
+	return []
+    endif
+
+    let ftype	= getbufvar(file, "&filetype")
+    if pat == ''
+	if ftype =~ '^\(ams\)\=tex$'
+	    let pat	= '\\usepackage\s*\(\[[^]]*\]\)\=\s*{'
+	elseif ftype == 'plaintex'
+	    let pat = '\\input\s*{'
+	else
+    " 	echoerr "ATP doesn't recognize the filetype " . &l:filetype . ". Using empty list of packages."
+	    return []
+	endif
+    endif
+
+    let saved_loclist	= getloclist(0)
+    try
+	silent execute 'lvimgrep /^[^%]*'.pat.'/j ' . fnameescape(file)
+    catch /E480:/
+	call setloclist(0, [{'text' : 'empty' }])
+    endtry
+    let loclist		= getloclist(0)
+    call setloclist(0, saved_loclist)
+
+    let pre		= map(loclist, 'v:val["text"]')
+    let pre_l		= []
+    for line in pre
+	let package_l	= matchstr(line, pat.'\zs[^}]*\ze}')
+	call add(pre_l, package_l)
+    endfor
+
+    " We make a string of packages separeted by commas and the split it
+    " (compatibility with \usepackage{package_1,package_2,...})
+    let pre_string	= join(pre_l, ',')
+    let pre_list	= split(pre_string, ',')
+    call filter(pre_list, "v:val !~ '^\s*$'")
+
+"      echo reltimestr(reltime(time))
+    return pre_list
+endfunction
+"{{{1 atplib#search#GrepPreambule
+function! atplib#search#GrepPreambule(pattern, ...)
+    let saved_loclist 	= getloclist(0)
+    let atp_MainFile	= ( a:0 >= 1 ? a:1 : b:atp_MainFile ) 
+    let winview = winsaveview()
+    exe 'silent! 1lvimgrep /^[^%]*\\begin\s*{\s*document\s*}/j ' . fnameescape(atp_MainFile)
+    let linenr = get(get(getloclist(0), 0, {}), 'lnum', 'nomatch')
+    if linenr == "nomatch"
+	call setloclist(0, saved_loclist)
+	return
+    endif
+    exe 'silent! lvimgrep /'.a:pattern.'\%<'.linenr.'l/jg ' . fnameescape(atp_MainFile) 
+    let matches = getloclist(0)
+    call setloclist(0, saved_loclist)
+    return matches
+endfunction
+
+" atplib#search#DocumentClass {{{1
+function! atplib#search#DocumentClass(file)
+
+    let saved_loclist	= getloclist(0)
+    try
+	silent execute 'lvimgrep /\\documentclass/j ' . fnameescape(a:file)
+    catch /E480:/
+	return 0
+    catch /E680:/
+	return 0
+    catch /E683:/
+	return 0
+    endtry
+    let line		= get(get(getloclist(0), 0, { 'text' : "no_document_class"}), 'text')
+    call setloclist(0, saved_loclist)
+
+
+    if line != 'no_document_class'
+	return substitute(l:line,'.*\\documentclass\s*\%(\[.*\]\)\?{\(.*\)}.*','\1','')
+    endif
+ 
+    return 0
+endfunction
+" }}}1
+
+" Make a tree of input files.
+" {{{ atplib#search#TreeOfFiles_vim
+" this is needed to make backward searching.
+" It returns:
+" 	[ {tree}, {list}, {type_dict}, {level_dict} ]
+" 	where {tree}:
+" 		is a tree of files of the form
+" 			{ file : [ subtree, linenr ] }
+"		where the linenr is the linenr of \input{file} iline the one level up
+"		file.
+"	{list}:
+"		is just list of all found input files (except the main file!).
+"	{type_dict}: 
+"		is a dictionary of types for files in {list}
+"		type is one of: preambule, input, bib. 
+"
+" {flat} =  1 	do not be recursive
+" {flat} =  0	the deflaut be recursive for input files (not bib and not preambule) 
+" 		bib and preambule files are not added to the tree	
+" {flat} = -1 	include input and premabule files into the tree
+" 		
+
+" TreeOfFiles({main_file}, [{pattern}, {flat}, {run_nr}])
+" debug file - /tmp/tof_log
+" a:main_file	is the main file to start with
+function! atplib#search#TreeOfFiles_vim(main_file,...)
+" let time	= reltime()
+
+    let atp_MainFile = atplib#FullPath(b:atp_MainFile)
+
+    if !exists("b:atp_OutDir")
+	call atplib#common#SetOutDir(0, 1)
+    endif
+
+    let tree		= {}
+
+    " flat = do a flat search, i.e. fo not search in input files at all.
+    let flat		= a:0 >= 2	? a:2 : 0	
+
+    " This prevents from long runs on package files
+    " for example babel.sty has lots of input files.
+    if expand("%:e") != 'tex'
+	return [ {}, [], {}, {} ]
+    endif
+    let run_nr		= a:0 >= 3	? a:3 : 1 
+    let biblatex	= 0
+
+    " Adjust g:atp_inputfile_pattern if it is not set right 
+    if run_nr == 1 
+	let pattern = '^[^%]*\\\(input\s*{\=\|include\s*{'
+	if '\subfile{' !~ g:atp_inputfile_pattern && atplib#search#SearchPackage('subfiles')
+	    let pattern .= '\|subfiles\s*{'
+	endif
+	let biblatex = atplib#search#SearchPackage('biblatex')
+	if biblatex
+	    " If biblatex is present, search for bibliography files only in the
+	    " preambule.
+	    if '\addbibresource' =~ g:atp_inputfile_pattern || '\addglobalbib' =~ g:atp_inputfile_pattern || '\addsectionbib' =~ g:atp_inputfile_pattern || '\bibliography' =~ g:atp_inputfile_pattern
+		echo "[ATP:] You might remove biblatex patterns from g:atp_inputfile_pattern if you use biblatex package."
+	    endif
+	    let biblatex_pattern = '^[^%]*\\\%(bibliography\s*{\|addbibresource\s*\%(\[[^]]*\]\)\?\s*{\|addglobalbib\s*\%(\[[^]]*\]\)\?\s*{\|addsectionbib\s*\%(\[[^]]*\]\)\?\s*{\)'
+	else
+	    let pattern .= '\|bibliography\s*{'
+	endif
+	let pattern .= '\)'
+    endif
+    let pattern		= a:0 >= 1 	? a:1 : g:atp_inputfile_pattern
+
+	if g:atp_debugToF
+	    if exists("g:atp_TempDir")
+		if run_nr == 1
+		    exe "redir! > ".g:atp_TempDir."/TreeOfFiles.log"
+		else
+		    exe "redir! >> ".g:atp_TempDir."/TreeOfFiles.log"
+		endif
+	    endif
+	endif
+
+	if g:atp_debugToF
+	    silent echo run_nr . ") |".a:main_file."| expand=".expand("%:p") 
+	endif
+	
+    if run_nr == 1
+	let cwd		= getcwd()
+	exe "lcd " . fnameescape(b:atp_ProjectDir)
+    endif
+	
+
+    let line_nr		= 1
+    let ifiles		= []
+    let list		= []
+    let type_dict	= {}
+    let level_dict	= {}
+
+    let saved_llist	= getloclist(0)
+    if run_nr == 1 && &l:filetype =~ '^\(ams\)\=tex$'
+	try
+	    silent execute 'lvimgrep /\\begin\s*{\s*document\s*}/j ' . fnameescape(a:main_file)
+	catch /E480:/
+	endtry
+	let end_preamb	= get(get(getloclist(0), 0, {}), 'lnum', 0)
+	call setloclist(0,[])
+	if biblatex
+	    try
+		silent execute 'lvimgrep /'.biblatex_pattern.'\%<'.end_preamb.'l/j ' . fnameescape(a:main_file)
+	    catch /E480:/
+	    endtry
+	endif
+    else
+	let end_preamb	= 0
+	call setloclist(0,[])
+    endif
+
+    try
+	silent execute "lvimgrepadd /".pattern."/jg " . fnameescape(a:main_file)
+    catch /E480:/
+"     catch /E683:/ 
+" 	let g:pattern = pattern
+" 	let g:filename = fnameescape(a:main_file)
+    endtry
+    let loclist	= getloclist(0)
+    call setloclist(0, saved_llist)
+    let lines	= map(loclist, "[ v:val['text'], v:val['lnum'], v:val['col'] ]")
+
+    	if g:atp_debugToF
+	    silent echo run_nr . ") Lines: " .string(lines)
+	endif
+
+    for entry in lines
+
+	    let [ line, lnum, cnum ] = entry
+	    " input name (iname) as appeared in the source file
+	    let iname	= substitute(matchstr(line, pattern . '\(''\|"\)\=\zs\f\%(\f\|\s\)*\ze\1\='), '\s*$', '', '') 
+	    if iname == "" && biblatex 
+		let iname	= substitute(matchstr(line, biblatex_pattern . '\(''\|"\)\=\zs\f\%(\f\|\s\)*\ze\1\='), '\s*$', '', '') 
+	    endif
+	    if g:atp_debugToF
+		silent echo run_nr . ") iname=".iname
+	    endif
+	    if line =~ '{\s*' . iname
+		let iname	= substitute(iname, '\\\@<!}\s*$', '', '')
+	    endif
+
+	    let iext	= fnamemodify(iname, ":e")
+	    if g:atp_debugToF
+		silent echo run_nr . ") iext=" . iext
+	    endif
+
+	    if iext == "ldf"  || 
+			\( &filetype == "plaintex" && getbufvar(fnamemodify(b:atp_MainFile, ":t"), "&filetype") != "tex") 
+			\ && expand("%:p") =~ 'texmf'
+		" if the extension is ldf (babel.sty) or the file type is plaintex
+		" and the filetype of main file is not tex (it can be empty when the
+		" buffer is not loaded) then match the full path of the file: if
+		" matches then doesn't go below this file. 
+		if g:atp_debugToF
+		    silent echo run_nr . ") CONTINUE"
+		endif
+		continue
+	    endif
+
+	    " type: preambule,bib,input.
+	    if strpart(line, cnum-1)  =~ '^\s*\(\\bibliography\>\|\\addglobalbib\>\|\\addsectionbib\>\|\\addbibresource\>\)'
+		let type	= "bib"
+	    elseif lnum < end_preamb && run_nr == 1
+		let type	= "preambule"
+	    else
+		let type	= "input"
+	    endif
+
+	    if g:atp_debugToF
+		silent echo run_nr . ") type=" . type
+	    endif
+
+	    let inames	= []
+	    if type != "bib"
+		let inames		= [ atplib#append_ext(iname, '.tex') ]
+	    else
+		let inames		= map(split(iname, ','), "atplib#append_ext(v:val, '.bib')")
+	    endif
+
+	    if g:atp_debugToF
+		silent echo run_nr . ") inames " . string(inames)
+	    endif
+
+	    " Find the full path only if it is not already given. 
+	    for iname in inames
+		let saved_iname = iname
+		if iname != fnamemodify(iname, ":p")
+		    if type != "bib"
+			let iname	= atplib#search#KpsewhichFindFile('tex', iname, b:atp_OutDir . "," . g:atp_texinputs , 1, ':p', '^\%(\/home\|\.\)', '\(^\/usr\|texlive\|kpsewhich\|generic\|miktex\)')
+		    else
+			let iname	= atplib#search#KpsewhichFindFile('bib', iname, b:atp_OutDir . "," . g:atp_bibinputs , 1, ':p')
+		    endif
+		endif
+
+		if fnamemodify(iname, ":t") == "" 
+		    let iname  = expand(saved_iname, ":p")
+		endif
+
+		if g:atp_debugToF
+		    silent echo run_nr . ") iname " . string(iname)
+		endif
+
+		if g:atp_RelativePath
+		    let iname = atplib#RelativePath(iname, (fnamemodify(resolve(b:atp_MainFile), ":h")))
+		endif
+
+		call add(ifiles, [ iname, lnum] )
+		call add(list, iname)
+		call extend(type_dict, { iname : type } )
+		call extend(level_dict, { iname : run_nr } )
+	    endfor
+    endfor
+
+	    if g:atp_debugToF
+		silent echo run_nr . ") list=".string(list)
+	    endif
+
+    " Be recursive if: flat is off, file is of input type.
+    if !flat || flat <= -1
+    for [ifile, line] in ifiles	
+	if type_dict[ifile] == "input" && flat <= 0 || ( type_dict[ifile] == "preambule" && flat <= -1 )
+	     let [ ntree, nlist, ntype_dict, nlevel_dict ] = atplib#search#TreeOfFiles_vim(ifile, pattern, flat, run_nr+1)
+
+	     call extend(tree, 		{ ifile : [ ntree, line ] } )
+	     call extend(list, nlist, index(list, ifile)+1)  
+	     call extend(type_dict, 	ntype_dict)
+	     call extend(level_dict, 	nlevel_dict)
+	endif
+    endfor
+    else
+	" Make the flat tree
+	for [ ifile, line ]  in ifiles
+	    call extend(tree, { ifile : [ {}, line ] })
+	endfor
+    endif
+
+"	Showing time takes ~ 0.013sec.
+"     if run_nr == 1
+" 	echomsg "TIME:" . join(reltime(time), ".") . " main_file:" . a:main_file
+"     endif
+    let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ] = deepcopy([ tree, list, type_dict, level_dict])
+
+    " restore current working directory
+    if run_nr == 1
+	exe "lcd " . fnameescape(cwd)
+    endif
+
+    if g:atp_debugToF && run_nr == 1
+	silent! echo "========TreeOfFiles========================"
+	silent! echo "TreeOfFiles b:ListOfFiles=" . string(b:ListOfFiles)
+	redir END
+    endif
+
+
+    return [ tree, list, type_dict, level_dict ]
+
+endfunction "}}}
+" atplib#search#TreeOfFiles_py "{{{
+function! atplib#search#TreeOfFiles_py(main_file)
+let time=reltime()
+python << END_PYTHON
+
+import vim, re, subprocess, os, glob
+
+filename=vim.eval('a:main_file')
+relative_path=vim.eval('g:atp_RelativePath')
+project_dir=vim.eval('b:atp_ProjectDir')
+
+def vim_remote_expr(servername, expr):
+# Send <expr> to vim server,
+
+# expr must be well quoted:
+#       vim_remote_expr('GVIM', "atplib#callback#TexReturnCode()")
+    cmd=[options.progname, '--servername', servername, '--remote-expr', expr]
+    subprocess.Popen(cmd, stdout=subprocess.PIPE).wait()
+
+def isnonempty(string):
+    if str(string) == "":
+        return False
+    else:
+        return True
+
+def scan_preambule(file, pattern):
+# scan_preambule for a pattern
+
+# file is list of lines
+    for line in file:
+        ret=re.search(pattern, line)
+        if ret:
+            return True
+        elif re.search('\\\\begin\s*{\s*document\s*}', line):
+            return False
+    return False
+
+def preambule_end(file):
+# find linenr where preambule ends,
+
+# file is list of lines
+    nr=1
+    for line in file:
+        if re.search('\\\\begin\s*{\s*document\s*}', line):
+            return nr
+        nr+=1
+    return 0
+
+def addext(string, ext):
+# the pattern is not matching .tex extension read from file.
+    if not re.search("\."+ext+"$", string):
+        return string+"."+ext
+    else:
+        return string
+
+def kpsewhich_path(format):
+# find fname of format in path given by kpsewhich,
+
+    kpsewhich=subprocess.Popen(['kpsewhich', '-show-path', format], stdout=subprocess.PIPE)
+    kpsewhich.wait()
+    path=kpsewhich.stdout.read()
+    path=re.sub("!!", "",path)
+    path=re.sub("\/\/+", "/", path)
+    path=re.sub("\n", "",path)
+    path_list=path.split(":")
+    return path_list
+
+def kpsewhich_find(file, path_list):
+    results=[]
+    for path in path_list:
+        found=glob.glob(os.path.join(path, "*"+os.sep+file))
+        results.extend(found)
+        found=glob.glob(os.path.join(path, file))
+        results.extend(found)
+    return results
+
+
+def scan_file(file, fname, pattern, bibpattern):
+# scan file for a pattern, return all groups,
+
+# file is a list of lines, 
+    matches_d={}
+    matches_l=[]
+    nr = 0
+    for line in file:
+        nr+=1
+        match_all=re.findall(pattern, line)
+        if len(match_all) > 0:
+            for match in match_all:
+                for m in match:
+                    if str(m) != "":
+                        m=addext(m, "tex")
+                        if not os.access(m, os.F_OK):
+                            try:
+                                m=kpsewhich_find(m, tex_path)[0]
+                            except IndexError:
+                                pass
+                        elif relative_path == "0":
+                            m=os.path.join(project_dir,m)
+                        if fname == filename and nr < preambule_end:
+                            matches_d[m]=[m, fname, nr, 'preambule']
+                            matches_l.append(m)
+                        else:
+                            matches_d[m]=[m, fname, nr, 'input']
+                            matches_l.append(m)
+        match_all=re.findall(bibpattern, line)
+        if len(match_all) > 0:
+            for match in match_all:
+                if str(match) != "":
+                    for m in  match.split(','):
+                        m=addext(m, "bib")
+                        if not os.access(m, os.F_OK):
+                            m=kpsewhich_find(m, bib_path)[0]
+                        matches_d[m]=[m, fname,  nr, 'bib']
+                        matches_l.append(m)
+    return [ matches_d, matches_l ]
+
+def tree(file, level, pattern, bibpattern):
+# files - list of file names to scan, 
+
+    try:
+        file_ob = open(file, 'r')
+    except IOError:
+        if re.search('\.bib$', file):
+            path=bib_path
+        else:
+            path=tex_path
+        try:
+            file=kpsewhich_find(file, path)[0]
+        except IndexError:
+            pass
+        try:
+            file_ob = open(file, 'r')
+        except IOError:
+            return [ {}, [], {}, {} ]
+    file_l  = file_ob.read().split("\n")
+    file_ob.close()
+    [found, found_l] =scan_file(file_l, file, pattern, bibpattern)
+    t_list=[]
+    t_level={}
+    t_type={}
+    t_tree={}
+    for item in found_l:
+        t_list.append(item)
+        t_level[item]=level
+        t_type[item]=found[item][3]
+    i_list=[]
+    for file in t_list:
+        if found[file][3]=="input":
+            i_list.append(file)
+    for file in i_list:
+        [ n_tree, n_list, n_type, n_level ] = tree(file, level+1, pattern, bibpattern)
+        for f in n_list:
+            t_list.append(f)
+            t_type[f]   =n_type[f]
+            t_level[f]  =n_level[f]
+        t_tree[file]    = [ n_tree, found[file][2] ]
+    return [ t_tree, t_list, t_type, t_level ]
+
+try:
+    mainfile_ob = open(filename, 'r')
+    mainfile    = mainfile_ob.read().split("\n")
+    mainfile_ob.close()
+    if scan_preambule(mainfile, re.compile('\\\\usepackage\s*\[.*\]\s*{\s*subfiles\s*}')):
+	pat_str='^[^%]*(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?|subfiles)\s*{([^}]*)})'
+	pattern=re.compile(pat_str)
+    else:
+	pat_str='^[^%]*(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?)\s*{([^}]*)})'
+	pattern=re.compile(pat_str)
+
+    bibpattern=re.compile('^[^%]*\\\\(?:bibliography|addbibresource|addsectionbib(?:\s*\[.*\])?|addglobalbib(?:\s*\[.*\])?)\s*{([^}]*)}')
+
+    bib_path=kpsewhich_path('bib')
+    tex_path=kpsewhich_path('tex')
+    preambule_end=preambule_end(mainfile)
+
+# Make TreeOfFiles:
+    [ tree_of_files, list_of_files, type_dict, level_dict]= tree(filename, 1, pattern, bibpattern)
+    vim.command("let b:TreeOfFiles="+str(tree_of_files))
+    vim.command("let b:ListOfFiles="+str(list_of_files))
+    vim.command("let b:TypeDict="+str(type_dict))
+    vim.command("let b:LevelDict="+str(level_dict))
+except IOError:
+    vim.command("let b:TreeOfFiles={}")
+    vim.command("let b:ListOfFiles=[]")
+    vim.command("let b:TypeDict={}")
+    vim.command("let b:LevelDict={}")
+END_PYTHON
+let g:time_TreeOfFiles_py=reltimestr(reltime(time))
+endfunction
+"}}}
+
+" This function finds all the input and bibliography files declared in the source files (recursive).
+" {{{ atplib#search#FindInputFiles 
+" Returns a dictionary:
+" { <input_name> : [ 'bib', 'main file', 'full path' ] }
+"			 with the same format as the output of FindInputFiles
+" a:MainFile	- main file (b:atp_MainFile)
+" a:1 = 0 [1]	- use cached values of tree of files.
+function! atplib#search#FindInputFiles(MainFile,...)
+
+"     let time=reltime()
+    call atplib#write()
+
+    let cached_Tree	= a:0 >= 1 ? a:1 : 0
+
+    let saved_llist	= getloclist(0)
+    call setloclist(0, [])
+
+    if cached_Tree && exists("b:TreeOfFiles")
+	let [ TreeOfFiles, ListOfFiles, DictOfFiles, LevelDict ]= deepcopy([ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ]) 
+    else
+	
+	if &filetype == "plaintex"
+	    let flat = 1
+	else
+	    let flat = 0
+	endif
+
+	let [ TreeOfFiles, ListOfFiles, DictOfFiles, LevelDict ]= TreeOfFiles(fnamemodify(a:MainFile, ":p"), g:atp_inputfile_pattern, flat)
+	" Update the cached values:
+	let [ b:TreeOfFiles, b:ListOfFiles, b:TypeDict, b:LevelDict ] = deepcopy([ TreeOfFiles, ListOfFiles, DictOfFiles, LevelDict ])
+    endif
+
+    let AllInputFiles	= keys(filter(copy(DictOfFiles), " v:val == 'input' || v:val == 'preambule' "))
+    let AllBibFiles	= keys(filter(copy(DictOfFiles), " v:val == 'bib' "))
+
+    let b:AllInputFiles	= deepcopy(AllInputFiles)
+    let b:AllBibFiles	= deepcopy(AllBibFiles)
+    let b:atp_BibFiles	= copy(b:AllBibFiles)
+
+
+    " this variable will store unreadable bibfiles:    
+    let NotReadableInputFiles=[]
+
+    " this variable will store the final result:   
+    let Files		= {}
+
+    for File in ListOfFiles
+	let File_Path	= atplib#FullPath(File)
+	if filereadable(File) 
+	call extend(Files, 
+	    \ { fnamemodify(File_Path,":t:r") : [ DictOfFiles[File] , fnamemodify(a:MainFile, ":p"), File_Path ] })
+	else
+	" echo warning if a bibfile is not readable
+" 	    echohl WarningMsg | echomsg "File " . File . " not found." | echohl None
+	    if count(NotReadableInputFiles, File_Path) == 0 
+		call add(NotReadableInputFiles, File_Path)
+	    endif
+	endif
+    endfor
+    let g:NotReadableInputFiles	= NotReadableInputFiles
+
+    " return the list  of readable bibfiles
+"     let g:time_FindInputFiles=reltimestr(reltime(time))
+    return Files
+endfunction
+function! atplib#search#UpdateMainFile()
+    if b:atp_MainFile =~ '^\s*\/'
+	let cwd = getcwd()
+	exe "lcd " . fnameescape(b:atp_ProjectDir)
+	let b:atp_MainFile	= ( g:atp_RelativePath ? fnamemodify(b:atp_MainFile, ":.") : b:atp_MainFile )
+	exe "lcd " . fnameescape(cwd)
+    else
+	let b:atp_MainFile	= ( g:atp_RelativePath ? b:atp_MainFile : atplib#FullPath(b:atp_MainFile) )
+    endif
+    return
+endfunction
 "}}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
