@@ -10,7 +10,7 @@
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.5.3
+VERSION = 10.6
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
@@ -92,29 +92,31 @@ SOURCE += syntax/log_atp.vim
 SOURCE += syntax/toc_atp.vim
 
 ${Plugin}_${VERSION}.vmb: ${SOURCE}
-		python stamp.py ${DATE} ${VERSION}
-		python version.py ${VERSION}
-		tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
-		vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
+	python stamp.py ${DATE} ${VERSION}
+	python version.py ${VERSION}
+	tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
+	vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 
 install:
-		rsync -Rv ${SOURCE} ${INSTALL_DIR}
-		vim --cmd :helptags\ ${INSTALL_DIR}/doc --cmd q!
+	rsync -Rv ${SOURCE} ${INSTALL_DIR}
+	vim --cmd :helptags\ ${INSTALL_DIR}/doc --cmd q!
 
 clean:		
-		rm ${PLUGIN}_[0-9.]*.*
-		rm msg
+	rm ${PLUGIN}_[0-9.]*.*
+	rm msg
 
 test:
-		tar -tzf ${PLUGIN}${VERSION}.tar.gz
+	tar -tzf ${PLUGIN}${VERSION}.tar.gz
 upload:		
 	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
+	rm ${PLUGIN}_${VERSION}.vmb.${DATA} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 release:		
 	# upload snaphot and release (this is important for UploadATP command)
 	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
+	rm ${PLUGIN}_${VERSION}.vmb.${DATA} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.tar.gz mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/releases/
 	echo '>> WRITE E-MAIL TO: Tim Harder <radhermit@gentoo.org>'

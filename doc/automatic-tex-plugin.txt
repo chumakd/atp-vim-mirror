@@ -99,8 +99,8 @@ DONATE     						*atp-donate*
 ==============================================================================
 TABLE OF CONTENTS 					*atp*
                                                 	*atp-help-toc*
-	|atp-news|			News
-	|atp-installation| 		Installation								
+	|atp-news|			News.
+	|atp-installation| 		Installation.								
 	|atp-commands| 			Functions and commands:
 	some most important commands: ~
 	    compile ~
@@ -113,45 +113,46 @@ TABLE OF CONTENTS 					*atp*
 		|atp-:Kill|
 	    viewer ~
 		|atp-:ViewOutput|
-		|atp-:SyncTex|		/forward searching/
+		|atp-:SyncTex|		forward searching,
 	    diff ~
 		|atp-:Wdiff|
 	    motion ~
 		|atp-:TOC|
 		|atp-:F|
 		|atp-:B|
-		|atp-:Tags|		/make tags file/
+		|atp-:Tags|		make tags file,
 	    search ~
-		|atp-:Dsearch|		/definition search/
-		|atp-:S|		/search in projects/
+		|atp-:Dsearch|		definition search,
+		|atp-:S|		search in projects.
 
-	|atp-toc-window|		Commands/maps defined in Table of Contents window
-					  and Labels window. 
-	|atp-bibtex|			File type plugin for bibtex 		  
-	|atp-bibsearch|			Searching in bib files
+	|atp-toc-window|		Commands/maps defined in Table of Contents window 
+				      and Labels window. Includes folding from toc.
+	|atp-folding|			Folding.
+	|atp-bibtex|			File type plugin for bibtex.
+	|atp-bibsearch|			Searching in bib files.
 	|atp-completion|       		How to use and configure completion
-	|atp-omnicompletion|		    and omni completion
-	|atp-configure| 		How to configure to your needs 
+	|atp-omnicompletion|		    and omni completion.
+	|atp-configure| 		How to configure to your needs.
 	|atp-ProjectFiles|		A note how to write project files within ATP.
 	|atp-ProjectScript|		A script executing project specific settings.
-	|atp-mappings|  		Mappings
-		|atp-imaps|
-		    |atp-imaps-fonts|
-		    |atp-imaps-greek-letters|
-		    |atp-imaps-environments|
-		    |atp-imaps-math-misc|
-		    |atp-imaps-math|
-		    |atp-imaps-diacritics|
-	|atp-abbreviations|		Abbreviations
-	|atp-errors|  			Debugging ATP
-	|atp-editing|			Editing tools 
-	|atp-requirements|  		Requirements
-	|atp-viewers| 			Note about viewers 
-					(with HOW TO CONFIGURE REVERSE SEARCHING for Okular)
-	|atp-tips|			Some tex oriented tips
-	|atp-highlight|			Colours and syntax files
-	|atp-remarks|  			Final remarks
-	|atp-copy-rights|		Copy Rights
+	|atp-mappings|  		Mappings.
+	    |atp-imaps|
+		|atp-imaps-fonts|
+		|atp-imaps-greek-letters|
+		|atp-imaps-environments|
+		|atp-imaps-math-misc|
+		|atp-imaps-math|
+		|atp-imaps-diacritics|
+	|atp-abbreviations|		Abbreviations.
+	|atp-errors|  			Debugging ATP.
+	|atp-editing|			Editing tools.
+	|atp-requirements|  		Requirements.
+	|atp-viewers| 			Note about viewers,
+					with [reverse_searching] for Okular, Xpdf and Skim
+	|atp-tips|			Some tex oriented tips.
+	|atp-highlight|			Colours and syntax files.
+	|atp-remarks|  			Final remarks.
+	|atp-copy-rights|		Copy Rights.
 
 	
 Note on usage: type :help atp<CTRL>d to see all the helptags. To see help tags
@@ -167,26 +168,20 @@ NEWS							*atp-news*
  Reverse search (atplib#FindAndOpen() function) sets the "'" mark before
  changing text position.
 
- Folding: ~
- I found a nice folding file (written by Johannes Zellner, added with his
- permition) I twiked it a little and I added two options:
- g:atp_folding	= 0 [default] enables/disables folding. You should set in your
-	 |vimrc| or |atprc| files. If you reset the value on the fly you need
-	 to issue '|:filetype| detect' command in order for changes to take
-	 place.
- g:atp_fold_environments = 0 [default] enables/disables folding of
-	 environments.
-By default folding is disables since it slows down vim.
+ folding: ~
+ See |atp-folding| - thanks to Johannes Zellner for the simple (and fast)
+ folding script.
 
  Imaps: ~
  ->, <- in tikz picture environment (but not in math) puts \draw[->] or \draw[<-].
  They are also disabled inside [:].
 
  Vmaps: ~
- 'o, 'u	insteado of 'ov and 'uv (\overline, \underline). This is compatible
+ 'o, 'u	instead of 'ov and 'uv (\overline, \underline). This is compatible
  with imaps 'o and 'u.
 
- Some bug fixes.
+ Some bug fixes. For example the algorithm for closing brackets is more
+ reliable (should work in 100% cases ;).
 >
  ======================
  Changes in version 10.5
@@ -2395,13 +2390,25 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 		You may want to have a map: >
 				:au FileType toc_atp nnoremap dd :DeleteSection<CR>
 <		this can be put in your '$HOME/.atp.vim' configuration file.
-							    *atp-:Fold*
+				        			*atp-:Fold*
 >
     :Fold, :'<,'>Fold
 <	Fold section[s], works in the same way as 'zc' (as above) with the same
 	limitations.
 
 
+================================================================================
+FOLDING								*atp-folding*
+ I found a nice folding file (written by Johannes Zellner, added with his
+ permission) there are two options:
+ g:atp_folding = 0						*g:atp_folding*
+	 enables/disables folding. you should set in your |vimrc| or |atprc|
+	 files. if you reset the value on the fly you need to issue
+	 '|:filetype| detect' command in order for changes to take place.
+
+ g:atp_fold_environments = 0					*g:atp_fold_environments*
+	 enables/disables folding of environments. By default folding is
+	 disabled since it slows down vim.
 ================================================================================
 SEARCHING IN BIB FILES						*atp-bibsearch*
 
@@ -4553,10 +4560,10 @@ imap l+		\vee		[    lat +, join]
 imap L+		\bigvee		[big lat +]
 imap <=		\leq
 imap >=		\geq
-imap ->		\rightarrow
-imap <-		\leftarrow
-imap =>		\Rightarrow
-imap <=		\Leftarrow
+imap ->		\rightarrow	or \draw[->] [inside tikzpicture environment]
+imap <-		\leftarrow	or \draw[<-] [inside tikzpicture environment]
+imap _>		\Rightarrow
+imap <_		\Leftarrow
 imap |-		\vdash
 imap -|		\dashv
 imap t<		\triangleleft
@@ -4635,8 +4642,8 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	    vmap <buffer> \sc	:<C-U>WrapSelection \\textsc{<CR>
 	    vmap <buffer> \up	:<C-U>WrapSelection \\textup{<CR>
 	    vmap <buffer> \md	:<C-U>WrapSelection \\textmd{<CR>
-	    vmap <buffer> \un	:<C-U>WrapSelection \\underline{<CR>
-	    vmap <buffer> \ov	:<C-U>WrapSelection \\overline{<CR>
+	    vmap <buffer> \u	:<C-U>WrapSelection \\underline{<CR>
+	    vmap <buffer> \o	:<C-U>WrapSelection \\overline{<CR>
 	    vmap <buffer> \n	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>
 	    vmap <buffer> \cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>
 

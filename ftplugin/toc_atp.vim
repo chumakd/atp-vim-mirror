@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Mon Sep 19, 2011 at 06:51  +0100
+" Last Change: Thu Sep 22, 2011 at 08:48  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -21,7 +21,6 @@ setlocal statusline=%{ATP_TOC_StatusLine()}
 function! Getlinenr(...)
     let line 	=  a:0 >= 1 ? a:1 : line('.')
     let labels 	=  a:0 >= 2 ? a:2 : expand("%") == "__Labels__" ? 1 : 0
-    let g:line	= line 
 
     if labels == 0
 	return get(b:atp_Toc, line, ["", ""])[1]
@@ -125,7 +124,6 @@ function! GotoLine(closebuffer) "{{{
 
     " window to go to
     let gotowinnr= s:gotowinnr()
-    let g:gotowinnr=gotowinnr
 
     if gotowinnr != -1
  	exe gotowinnr . " wincmd w"
@@ -164,7 +162,6 @@ function! <SID>yank(arg) " {{{
     if !labels_window
 	if exists("t:atp_labels") || get(t:atp_labels, file_name, "nofile") != "nofile"	 
 	    " set t:atp_labels variable
-	    let g:file=s:file()
 	    call atplib#tools#generatelabels(getbufvar(s:file(), 'atp_MainFile'), 0)
 	endif
 
@@ -306,8 +303,6 @@ function! ShowLabelContext()
     let buf_name	= s:file()
     let buf_nr		= bufnr("^" . buf_name . "$")
     let win_nr		= bufwinnr(buf_name)
-    let g:buf_name	= buf_name
-    let g:win_nr	= win_nr
     let line		= atplib#tools#getlinenr(line("."), labels_window)
     if !exists("t:atp_labels")
 	let t:atp_labels=UpdateLabels(buf_name)
@@ -347,7 +342,6 @@ function! EchoLine()
     endif
     let line		= atplib#tools#getlinenr(line("."), labels_window)
     let sec_line	= join(getbufline(buf_name,line))
-    	let g:sec_line	= sec_line
     let sec_type	= ""
 
     if sec_line =~ '\\subparagraph[^\*]'
@@ -659,7 +653,6 @@ if expand("%") == "__ToC__"
     function! s:PasteSection(type, ...)
 
 	let stack_number = a:0 >= 1 ? a:1-1 : 0 
-	let g:stack_number = stack_number
 
 	if !len(t:atp_SectionStack)
 	    sleep 750m
@@ -678,7 +671,6 @@ if expand("%") == "__ToC__"
 		let begin_line	= "last_line"
 	    endif
 	endif
-	let g:begin_line = begin_line
 
 	" Window to go to
 	let gotowinnr	= s:gotowinnr()
@@ -807,8 +799,6 @@ function! FoldClose(...) " {{{1
     let atp_toc	= deepcopy(t:atp_toc)
     let f_line = (a:0 >= 1 ? a:1 : line(".") )
     let l_line = (a:0 >= 2 ? a:2 : line(".") )
-    let g:f_line = f_line
-    let g:l_line = l_line
     " This function is not working well with sections put into chapters. Then
     " chapters are not folded with greater fold level.
     for line in range(f_line, l_line)
@@ -817,11 +807,8 @@ function! FoldClose(...) " {{{1
 	    return
 	endif
 	let type = <SID>Section2Nr(get(get(deepcopy(atp_toc), s:file(), {}), beg_line, [''])[0])
-	let g:type = type
 	let type_dict = get(deepcopy(atp_toc), s:file(), {})
-	let g:type_dict_0 = deepcopy(type_dict)
 	call filter(map(type_dict, "<SID>Section2Nr(v:val[0])"), "str2nr(v:val) <= str2nr(type)")
-	let g:type_dict_1 = deepcopy(type_dict)
 	let line_list = sort(filter(keys(type_dict), "str2nr(v:val) >= str2nr(beg_line)"), "<SID>CompareNumbers")
 	let end_line = Getlinenr(line(".")+1)
 	" Goto file
