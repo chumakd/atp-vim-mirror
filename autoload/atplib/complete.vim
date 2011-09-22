@@ -1417,7 +1417,7 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 
    if open_col 
 	let line	= getline(open_line)
-	let bline	= strpart(line,0,(open_col))
+	let bline	= strpart(line,0,open_col)
 	if g:atp_debugCloseLastBracket
 	    let g:bline = bline
 	    call atplib#Log("CloseLastBracket.log", "bline=".bline)
@@ -1433,8 +1433,19 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 	    let space	= matchlist[2]
 	endif
 	let closing_size=get(g:atp_sizes_of_brackets, opening_size, "").space
+	" DEBUG
+	if g:atp_debugCloseLastBracket
+	    call atplib#Log("CloseLastBracket.log", "opening_size=".opening_size)
+	    call atplib#Log("CloseLastBracket.log", "closing_size=".closing_size)
+	endif
+	" Do not add closing size if it is already there.
+	if get(g:atp_sizes_of_brackets, opening_size, "") != "" && 
+		\ getline(".")[0:col(".")-2] =~ escape(get(g:atp_sizes_of_brackets, opening_size, ""), '\').'\s*$' 
+	    let closing_size=""
+	endif
 
-	if opening_size =~ '\\' && opening_bracket != '(' && opening_bracket != '['
+	if opening_size == "\\" && opening_bracket != '(' && opening_bracket != '['
+	    " This is done for \right\}
 	    let bbline		= strpart(bline, 0, len(bline)-1)
 	    let opening_size2	= matchstr(bbline,'\zs'.pattern_b.'\s*$')
 	    if opening_size2 =~ '^\\\s\+$'
@@ -1447,6 +1458,11 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 	    endif
 	    let closing_size2	= get(g:atp_sizes_of_brackets,opening_size2,"")
 	    let closing_size	= closing_size2.space2.closing_size
+	    " Do not add closing size if it is already there.
+	    if get(g:atp_sizes_of_brackets,opening_size2,"") != "" && 
+		    \ getline(".")[0:col(".")-2] =~ escape(get(g:atp_sizes_of_brackets,opening_size2,""), '\').'\s*$'
+		let closing_size=get(g:atp_sizes_of_brackets,opening_size,"")
+	    endif
 
 	    " DEBUG
 	    if g:atp_debugCloseLastBracket
@@ -1458,6 +1474,7 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 		call atplib#Log("CloseLastBracket.log", "closing_size2=".closing_size2)
 	    endif
 	endif
+" 	if cline[1:col(".")-1] =~ g:atp
 
 	if open_line != line(".")
 	    echomsg "[ATP:] closing " . opening_size . opening_bracket . " from line " . open_line
@@ -1465,6 +1482,7 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 
 	" DEBUG:
 	if g:atp_debugCloseLastBracket
+	    call atplib#Log("CloseLastBracket.log", "======")
 	    let g:o_bra		= opening_bracket
 	    call atplib#Log("CloseLastBracket.log", "opening_bracket=".opening_bracket)
 	    let g:o_size	= opening_size
