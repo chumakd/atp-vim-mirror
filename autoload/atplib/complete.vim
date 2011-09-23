@@ -2463,7 +2463,6 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	else
 	    let command = matchstr(l, '.*\\renewcommand{\s*\zs\\\?\w*\ze\s*}')
 	endif
-	let g:command = command
 	let completion_list = []
 	let command_pat='\\\w\+[{\|\[]'
 	for package in g:atp_packages

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Sep 20, 2011 at 11:59  +0100
+" Last Change: Fri Sep 23, 2011 at 12:05  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -49,30 +49,30 @@ exe "cmap <buffer> <M-c> ^".s:backslash."%([^%]".s:bbackslash."|".s:bbackslash."
 if has("gui")
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\/?]' ? '\_s\+' : ' ' )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> getcmdtype() =~ '[?/]' ? '\_s\+' : ' ' 
-	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) ) 
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\\/?]' ? '\\_s\\+' : ' ' )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
-	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
     endif
 else
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\/?]' ? '\_s\+' : ' ' )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
-	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\_s\+' : ' '
+	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> 	( g:atp_cmap_space && getcmdtype() =~ '[\\/?]' ? '\\_s\\+' : ' ' )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
-	cmap <expr> <buffer> <C-_> getcmdtype() =~ '[?/]' ? '\\_s\\+' : ' '
+	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
     endif
 endif
 if maparg("<F2>", "n") == ""

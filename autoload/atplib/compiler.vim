@@ -1727,6 +1727,7 @@ class LatexThread( threading.Thread ):
 LatexThread().start()
 ENDPYTHON
 endfunction "}}}
+" {{{ atplib#compiler#tex [test function]
 function atplib#compiler#tex()
 python << ENDPYTHON
 import vim, threading

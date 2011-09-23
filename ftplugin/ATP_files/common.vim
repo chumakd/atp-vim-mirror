@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Sep 20, 2011 at 10:02  +0100
+" Last Change: Fri Sep 23, 2011 at 12:12  +0100
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -56,8 +56,8 @@ endif
 " }}}
 
 augroup ATP_SetErrorFile
-    au BufEnter 	*.tex 	call 		atplib#common#SetErrorFile()
-    au BufRead 	$l:errorfile 	setlocal 	autoread 
+    au BufEnter 	*.tex 		call atplib#common#SetErrorFile()
+    au BufEnter 	$l:errorfile 	setl autoread 
 augroup END
 
 " TreeOfFiles
@@ -350,15 +350,15 @@ endif "}}}1
 command! -buffer -bang SetProjectName	:call atplib#common#SetProjectName(<q-bang>, 0)
 command! -buffer SetErrorFile		:call atplib#common#SetErrorFile()
 command! -buffer SetOutDir		:call atplib#common#SetOutDir(1)
-command! -buffer InputFiles 		:call atplib#common#UpdateMainFile() | :call atplib#search#FindInputFiles(atplib#FullPath(b:atp_MainFile)) | echo join([b:atp_MainFile]+b:ListOfFiles, "\n")
+command! -buffer InputFiles 		:call atplib#search#UpdateMainFile() | :call atplib#search#FindInputFiles(atplib#FullPath(b:atp_MainFile)) | echo join([b:atp_MainFile]+b:ListOfFiles, "\n")
 
 " This should set the variables and run atplib#common#SetNotificationColor function
 command! -buffer SetNotificationColor :call atplib#common#SetNotificationColor()
 augroup ATP_SetStatusLineNotificationColor
     au!
-    au VimEnter 	*.tex 	:call s:SetNotificationColor()
-    au BufEnter 	*.tex 	:call s:SetNotificationColor()
-    au ColorScheme 	* 	:call s:SetNotificationColor()
+    au VimEnter 		*.tex 	:call s:SetNotificationColor()
+    au BufEnter 		*.tex 	:call s:SetNotificationColor()
+    au ColorScheme 		* 	:call s:SetNotificationColor()
 augroup END
 "}}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
