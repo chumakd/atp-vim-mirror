@@ -17,13 +17,17 @@ DATE	= $(shell date '+%d-%m-%y_%H-%M')
 INSTALL_DIR = ${HOME}/.vim/addons/AutomaticLaTexPlugin
 
 SOURCE =  autoload/atplib.vim
+SOURCE += autoload/atplib/bibsearch.vim
+SOURCE += autoload/atplib/callback.vim
 SOURCE += autoload/atplib/common.vim
 SOURCE += autoload/atplib/compiler.vim
+SOURCE += autoload/atplib/complete.vim
+SOURCE += autoload/atplib/fontpreview.vim
 SOURCE += autoload/atplib/helpfunctions.vim
 SOURCE += autoload/atplib/motion.vim
 SOURCE += autoload/atplib/search.vim
+SOURCE += autoload/atplib/tools.vim
 SOURCE += autoload/atplib/various.vim
-SOURCE += autoload/atplib/complete.vim
 SOURCE += colors/coots-beauty-256.vim
 SOURCE += doc/automatic-tex-plugin.txt
 SOURCE += doc/bibtex_atp.txt
@@ -111,12 +115,12 @@ upload:
 	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
-	rm ${PLUGIN}_${VERSION}.vmb.${DATA} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
+	rm ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 release:		
 	# upload snaphot and release (this is important for UploadATP command)
 	cp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.vmb.${DATE}
 	cp ${PLUGIN}_${VERSION}.tar.gz ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE} mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/snapshots/
-	rm ${PLUGIN}_${VERSION}.vmb.${DATA} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
+	rm ${PLUGIN}_${VERSION}.vmb.${DATE} ${PLUGIN}_${VERSION}.tar.gz.${DATE}
 	scp ${PLUGIN}_${VERSION}.vmb ${PLUGIN}_${VERSION}.tar.gz mszamotulski,atp-vim@frs.sourceforge.net:/home/frs/project/a/at/atp-vim/releases/
 	echo '>> WRITE E-MAIL TO: Tim Harder <radhermit@gentoo.org>'

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Sep 24, 2011 at 12:12  +0100
+" Last Change: Sat Sep 24, 2011 at 12:55  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -828,9 +828,11 @@ function! atplib#various#TeXdoc_complete(ArgLead, CmdLine, CursorPos)
     for file in texdoc_alias_files
 	call extend(aliases, readfile(file))
     endfor
+    let local_list = map(split(globpath(g:texmf.'/doc', '*'), "\n"), 'fnamemodify(v:val, ":t:r")')
 
     call filter(aliases, "v:val =~ 'alias'")
     call filter(map(aliases, "matchstr(v:val, '^\\s*alias\\s*\\zs\\S*\\ze\\s*=')"),"v:val !~ '^\\s*$'")
+    call extend(aliases, local_list)
     if exists("g:atp_LatexPackages")
 	call extend(aliases, g:atp_LatexPackages)
     endif

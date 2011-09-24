@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 24 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 25 September 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6)
 			by Marcin Szamotulski
@@ -4841,6 +4841,9 @@ nmap gS :%s/<c-r>=expand("<cword>")<cr>/
 				command. 
 
 :g/^[^%]*\\usepackge/#		List loaded packages with line numbers
+				If you want to keepjumps and do not move the
+				cursor you can use this:
+:g/^[^%]*\\usepackage/keepjumps #|normal ''
 
 y/\\begin{document}/		When standing on 1st line - copy the preamble
 				(possibly to a register)
@@ -4849,6 +4852,13 @@ y/\\begin{document}/		When standing on 1st line - copy the preamble
 :g/\(^\s*\n\)\{2,}/d		Compress empty lines 
 					/ when there are more than two empty
 					lines it leaves just one /  
+				or even better:
+:g/^\s*$/,/\S/-j
+				or even better:
+:v/./,/./-j
+				but this will compress only empty lines,
+				see http://vim.wikia.com/wiki/Power_of_g for
+				explanation.
 
 :g/\\begin{table}/+;/\\end{table}/-s/\(\\\\\s*\)\@<!\n/
 				Joint lines inside table environment which
