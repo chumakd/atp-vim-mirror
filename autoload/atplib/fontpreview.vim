@@ -172,14 +172,8 @@ function! atplib#fontpreview#Preview(fd_files,keep_tex)
 	endfor
     endfor
 
-    if exists("b:tmp_dir")
-	let l:tmp_dir=b:tmp_dir
-    else
-	let l:tmp_dir=tempname()
-    endif
-    if !isdirectory(l:tmp_dir)
-	call mkdir(l:tmp_dir)
-    endif
+    let l:tmp_dir=tempname()
+    call mkdir(expand(l:tmp_dir))
     if a:fd_files == ["buffer"]
 	" WINDOWS NOT COMPATIBLE
 	let l:testfont_file=l:tmp_dir . "/" . fnamemodify(bufname("%"),":t:r") . ".tex"

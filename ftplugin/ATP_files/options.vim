@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Sep 23, 2011 at 12:12  +0100
+" Last Change: Sat Sep 24, 2011 at 08:30  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -998,6 +998,9 @@ endif
 if !exists("g:atp_imap_leader_1")
     let g:atp_imap_leader_1	= "#"
 endif
+if !exists("g:atp_infty_leader")
+    let g:atp_infty_leader = (g:atp_imap_leader_1 == '#' ? '`' : g:atp_imap_leader_1 ) 
+endif
 if !exists("g:atp_imap_leader_2")
     let g:atp_imap_leader_2= "##"
 endif
@@ -1007,11 +1010,9 @@ endif
 if !exists("g:atp_imap_leader_4")
     let g:atp_imap_leader_4= "["
 endif
-" todo: to doc.
 if !exists("g:atp_completion_font_encodings")
     let g:atp_completion_font_encodings	= ['T1', 'T2', 'T3', 'T5', 'OT1', 'OT2', 'OT4', 'UT1']
 endif
-" todo: to doc.
 if !exists("g:atp_font_encoding")
     let s:line=atplib#search#SearchPackage('fontenc')
     if s:line != 0
@@ -1153,7 +1154,6 @@ endif
 if !exists("g:atp_completion_truncate")
     let g:atp_completion_truncate	= 4
 endif
-" ToDo: to doc.
 " add server call back (then automatically reads errorfiles)
 if !exists("g:atp_statusNotif")
     if has('clientserver') && !empty(v:servername) 
@@ -1174,11 +1174,6 @@ if !exists("g:atp_callback")
 	let g:atp_callback	= 0
     endif
 endif
-" ToDo: to doc.
-" I switched this off.
-" if !exists("g:atp_complete_math_env_first")
-"     let g:atp_complete_math_env_first=0
-" endif
 " }}}
 
 " Project Settings:
@@ -3000,7 +2995,7 @@ if g:atp_reload_functions == 0
 endif
 
 " Set vim path option: 
-exe "setlocal path+=".substitute(g:texmf."/tex,".join(filter(split(globpath(b:atp_ProjectDir, '**'), "\n"), "isdirectory(v:val)"), ","), ' ', '\\\\\\\ ', 'g')
+exe "setlocal path+=".substitute(g:texmf."/tex,".join(filter(split(globpath(b:atp_ProjectDir, '**'), "\n"), "isdirectory(expand(v:val))"), ","), ' ', '\\\\\\\ ', 'g')
 
 " Some Commands:
 " {{{

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Sep 20, 2011 at 10:02  +0100
+" Last Change: Sat Sep 24, 2011 at 12:12  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -12,7 +12,6 @@ function! atplib#various#Replace() "{{{
     " working with <:>, possibly because g:atp_bracket_dict doesn't contain this
     " pair.
     let char =  nr2char(getchar())
-    let g:char = char
     let f_char = getline(line("."))[col(".")-1]
     if f_char =~ '^[(){}\[\]]$'
 	if f_char =~ '^[({\[]$'
@@ -30,8 +29,12 @@ function! atplib#various#Replace() "{{{
 	    return
 	endif
 	let [b_line, b_col] = [line("."), col(".")]
-	exe "normal %"
+	exe "normal! %"
 	let [e_line, e_col] = [line("."), col(".")]
+	if b_line == e_line && b_col == e_col
+	    exe "normal! r".char
+	    return
+	endif
 	call cursor(b_line, b_col)
 	exe "normal! r".char
 	call cursor(e_line, e_col)

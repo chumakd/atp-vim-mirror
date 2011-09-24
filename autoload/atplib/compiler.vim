@@ -1728,7 +1728,7 @@ LatexThread().start()
 ENDPYTHON
 endfunction "}}}
 " {{{ atplib#compiler#tex [test function]
-function atplib#compiler#tex()
+function! atplib#compiler#tex()
 python << ENDPYTHON
 import vim, threading
 import sys, errno, os.path, shutil, subprocess, psutil, re, tempfile, optparse, glob

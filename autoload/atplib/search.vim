@@ -2104,7 +2104,7 @@ def kpsewhich_path(format):
 def kpsewhich_find(file, path_list):
     results=[]
     for path in path_list:
-        found=glob.glob(os.path.join(path, "*"+os.sep+file))
+        found=glob.glob(os.path.join(path, file))
         results.extend(found)
         found=glob.glob(os.path.join(path, file))
         results.extend(found)

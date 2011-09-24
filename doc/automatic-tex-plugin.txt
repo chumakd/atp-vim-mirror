@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 21 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 24 September 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.5.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 		----------------------------------------
@@ -556,13 +556,13 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	  |atp-:ShowErrors| will use |signs| to mark errors and warnings.
 
 							*atp-status-line-notification*
-	
+							*g:atp_statusNotif*
 	* Status Line Notification: status line can show if tex is running >
-		    let g:atp_status_notification = 1
+		let g:atp_statusNotif = 1
 <	  If unset you will get a message when compiler ends. If set the
 	  number next to the name of your compiler indicates how many
 	  instances are currently running. If |g:atp_ProgressBar|=1 then also
-	  progress information of TeX compiler  will be shown.
+	  progress information of TeX compiler will be shown.
 
 	  It can also show if other programs such as bibtex, biber or makeidx
 	  are curently running.
@@ -1905,7 +1905,7 @@ vmap <F4>
 	only controls the status line at startup. If you want to remove/add
 	output directory rather use |atp-:Status| command.
 
-ToDo({keyword}, {stop}, [bufname])		*atp-function-ToDo*
+ToDo({keyword}, {stop}, [bufname])			*atp-function-ToDo*
 :ToDo[!] [bufname]					*atp-:ToDo*
 :Note[!] [bufname]					*atp-:Note*
 	The function list all the lines of the buffer [bufname] which match
@@ -2834,6 +2834,10 @@ COMPLETION MODES		                       	*atp-completion-modes*
 
 		If <font_family> and <font_series> are defined then the
 		<font_shape> for this font (in the above encoding) is found.
+
+							*g:atp_completion_font_encodings*
+		The completed <encoding>'s are taken from the variable:
+		|g:atp_completion_font_encodings|.
 		
 							*atp-completion-bibstyle*
 	bibstyle ~
