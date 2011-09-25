@@ -2693,7 +2693,6 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 	while col > 0 && line[col - 1] !~ '{\|,'
 		let col -= 1
 	endwhile
-" 	let pat = ( strpart(l,col) == "" ? '.*' : strpart(l,col) )
 	let pat = strpart(l,col)
 	let searchbib_time=reltime()
 	if len(filter(values(copy(b:TypeDict)), "v:val == 'bib'"))
@@ -2737,15 +2736,15 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 		    if nchar != ',' && nchar != '}'
 			let bibkey.="}"
 		    endif
-		    let title=get(dict[key],'title','notitle')
-		    let title=substitute(matchstr(title,'^\s*title\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)'),'{\|}','','g')
+		    let title=get(dict[key],'title', 'notitle')
+		    let title=substitute(matchstr(title,'^\s*\ctitle\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)'),'{\|}','','g')
 		    let year=get(dict[key],'year',"")
-		    let year=matchstr(year,'^\s*year\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)')
+		    let year=matchstr(year,'^\s*\cyear\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*\%(,\|$\)')
 		    let abbr=get(dict[key],'author',"noauthor")
-		    let author = matchstr(abbr,'^\s*author\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
+		    let author = matchstr(abbr,'^\s*\cauthor\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
 		    if abbr=="noauthor" || abbr == ""
 			let abbr=get(dict[key],'editor',"")
-			let author = matchstr(abbr,'^\s*editor\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
+			let author = matchstr(abbr,'^\s*\ceditor\s*=\s*\%("\|{\|(\)\zs.*\ze\%("\|}\|)\)\s*,')
 		    endif
 		    if len(author) >= 40
 			if match(author,'\sand\s')
@@ -2755,27 +2754,27 @@ let b:completion_method = ( exists("completion_method") ? completion_method : 'c
 			endif
 		    endif
 		    let author=substitute(author,'{\|}','','g')
-		    if dict[key]['bibfield_key'] =~ 'article'
+		    if dict[key]['bibfield_key'] =~? '\<article\>'
 			let type="[a]"
-		    elseif dict[key]['bibfield_key'] =~ 'book\>'
+		    elseif dict[key]['bibfield_key'] =~? '\<book\>'
 			let type="[B]"
-		    elseif dict[key]['bibfield_key'] =~ 'booklet'
+		    elseif dict[key]['bibfield_key'] =~? '\<booklet\>'
 			let type="[b]"
-		    elseif  dict[key]['bibfield_key'] =~ 'proceedings\|conference'
+		    elseif  dict[key]['bibfield_key'] =~? '\<\%(proceedings\|conference\)\>'
 			let type="[p]"
-		    elseif dict[key]['bibfield_key'] =~ 'unpublished'
+		    elseif dict[key]['bibfield_key'] =~? '\<unpublished\>'
 			let type="[u]"
-		    elseif dict[key]['bibfield_key'] =~ 'incollection'
+		    elseif dict[key]['bibfield_key'] =~? '\<incollection\>'
 			let type="[c]"
-		    elseif dict[key]['bibfield_key'] =~ 'phdthesis'
+		    elseif dict[key]['bibfield_key'] =~? '\<phdthesis\>'
 			let type="[PhD]"
-		    elseif dict[key]['bibfield_key'] =~ 'masterthesis'
+		    elseif dict[key]['bibfield_key'] =~? '\<masterthesis\>'
 			let type="[M]"
-		    elseif dict[key]['bibfield_key'] =~ 'misc'
+		    elseif dict[key]['bibfield_key'] =~? '\<misc\>'
 			let type="[-]"
-		    elseif dict[key]['bibfield_key'] =~ 'techreport'
+		    elseif dict[key]['bibfield_key'] =~? '\<techreport\>'
 			let type="[t]"
-		    elseif dict[key]['bibfield_key'] =~ 'manual'
+		    elseif dict[key]['bibfield_key'] =~? '\<manual\>'
 			let type="[m]"
 		    else
 			let type="   "
