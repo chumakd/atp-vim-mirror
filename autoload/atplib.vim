@@ -405,7 +405,7 @@ endfunction
 " Each list is an argument with two values:
 " listA=[ line_nrA, col_nrA] usually given by searchpos() function
 " listB=[ line_nrB, col_nrB]
-" returns 1 iff A is smaller than B
+" returns 1 iff A is before B
 fun! atplib#CompareCoordinates(listA,listB)
     if a:listA[0] < a:listB[0] || 
 	\ a:listA[0] == a:listB[0] && a:listA[1] < a:listB[1] ||

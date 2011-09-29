@@ -1383,7 +1383,10 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
     let [ open_line, open_col, opening_bracket ] = ( tab_completion ? 
 		\ deepcopy([ s:open_line, s:open_col, s:opening_bracket ]) : atplib#complete#CheckBracket(a:bracket_dict) )
     call cursor(line("."), pos_saved[2])
-    let open_col = ( open_col > 1 ? open_col-1 : open_col )
+    if opening_bracket == '{' && open_col-2>=0 && getline(open_line)[open_col-2] == '\'
+	" This code is only for \{:\}.
+	let open_col = ( open_col > 1 ? open_col-1 : open_col )
+    endif
 
     " Check and Close Environment:
     for env_name in g:atp_closebracket_checkenv
@@ -1533,22 +1536,23 @@ function! atplib#complete#GetBracket(append,...)
     let pos=getpos(".")
     call cursor(line("."), col(".")-1)
     let begParen = ( a:0 >=2 ? a:2 : atplib#complete#CheckBracket(g:atp_bracket_dict) )
+    let g:begParen = begParen
     call cursor(line("."), pos[2])
     if begParen[1] != 0  || atplib#complete#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY', 'texMathZoneV', 'texMathZoneW']) || ( a:0 >= 1 && a:1 )
 	if atplib#complete#CheckSyntaxGroups(['texMathZoneV'])
-	    let pattern = '\\\@<!\\(\zs'
+	    let pattern = '\\\@<!\\\zs('
 	    let syntax	= 'texMathZoneV'
 	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#complete#CheckSyntaxGroups(['texMathZoneW'])
-	    let pattern = '\\\@<!\\\[\zs'
+	    let pattern = '\\\@<!\\\zs\['
 	    let syntax	= 'texMathZoneW'
 	    let limit	= g:atp_completion_limits[1]
 	elseif atplib#complete#CheckSyntaxGroups(['texMathZoneX'])
-	    let pattern = '\%(\\\|\$\)\@<!\$\$\@!\zs'
+	    let pattern = '\%(\\\|\$\)\@<!\zs\$\$\@!'
 	    let syntax	= 'texMathZoneX'
 	    let limit	= g:atp_completion_limits[0]
 	elseif atplib#complete#CheckSyntaxGroups(['texMathZoneY'])
-	    let pattern = '\\\@<!\$\$\zs'
+	    let pattern = '\\\@<!\$\zs\$'
 	    let syntax	= 'texMathZoneY'
 	    let limit	= g:atp_completion_limits[1]
 	else
@@ -1556,7 +1560,6 @@ function! atplib#complete#GetBracket(append,...)
 	endif
 
 	let g:pattern = pattern
-	let g:debug = 0
 	if !empty(pattern)
 	    let begMathZone = searchpos(pattern, 'bnW')
 	    let g:begMathZone = copy(begMathZone)
@@ -1565,17 +1568,14 @@ function! atplib#complete#GetBracket(append,...)
 	    if atplib#CompareCoordinates([ begParen[0], begParen[1] ], begMathZone) && closed_math
 		" I should close it if math is not closed.
 		let bracket = atplib#complete#CloseLastEnvironment(a:append, 'math', '', [0, 0], 1)
-		let g:debug = 1
 	    elseif (begParen[0] != 0 && begParen[1] !=0) && atplib#complete#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], begParen[0], begParen[1]) == atplib#complete#CheckSyntaxGroups(['texMathZoneV', 'texMathZoneW', 'texMathZoneX', 'texMathZoneY'], line("."), max([1,col(".")-1]))
-		let g:debug = 2
 		let [s:open_line, s:open_col, s:opening_bracket]=begParen
+		let g:debug = s:open_line." ".s:open_col 
 		let bracket = atplib#complete#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	    else
-		let g:debug = 3
 		let bracket = "0"
 	    endif
 	else
-	    let g:debug = 4
 	    let bracket =  atplib#complete#CloseLastBracket(g:atp_bracket_dict, 1, 1)
 	endif
 	call setpos(".", pos)
@@ -1982,9 +1982,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- brackets, algorithmic, abbreviations, close environments
     else
-	let g:time_A = reltimestr(reltime(time))
 	let begParen = atplib#complete#CheckBracket(g:atp_bracket_dict)
-	let g:time_B = reltimestr(reltime(time))
 	"{{{4 --------- abbreviations
 	if l =~ '=[a-zA-Z]\+\*\=$' &&
 		\ index(g:atp_completion_active_modes, 'abbreviations') != -1
@@ -1995,7 +1993,6 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	elseif begParen[1] != 0 || atplib#complete#CheckSyntaxGroups(['texMathZoneX', 'texMathZoneY']) &&
 		\ (!normal_mode &&  index(g:atp_completion_active_modes, 'brackets') != -1 ) ||
 		\ (normal_mode && index(g:atp_completion_active_modes_normal_mode, 'brackets') != -1 )
-	    let g:time_C=reltimestr(reltime(time))
 	    let completion_method = 'brackets'
 	    let b:comp_method='brackets'
 	    let bracket=atplib#complete#GetBracket(append, 0, begParen)

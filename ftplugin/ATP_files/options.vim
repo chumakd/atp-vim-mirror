@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Sep 24, 2011 at 23:38:38  +0100
+" Last Change: Wed Sep 28, 2011 at 23:30:07  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -355,7 +355,7 @@ function! s:SetOptions()
 
 	    " set b:atp_OutDir and the value of errorfile option
 	    if !exists("b:atp_OutDir")
-		call s:SetOutDir(1)
+		call atplib#common#SetOutDir(1)
 	    endif
 	    let s:ask["ask"] 	= 1
 	endif
@@ -1182,44 +1182,33 @@ endif
 if !exists("g:atp_ProjectLocalVariables")
     " This is a list of variable names which will be preserved in project files
     let g:atp_ProjectLocalVariables = [
-		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex", 
-		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 	
-		\ "b:atp_OutDir", 	"b:atp_auruns", 	"b:atp_ReloadOnError", 	
-		\ "b:atp_OpenViewer", 	"b:atp_XpdfServer",	"b:atp_ProjectDir", 	
-		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles", 	
-		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler", 
-		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault", 
+		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex",
+		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 
+		\ "b:atp_auruns", 	"b:atp_ReloadOnError",
+		\ "b:atp_OpenViewer", 	"b:atp_XpdfServer",
+		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles",
+		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler",
+		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault",
 		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal",
 		\ ] 
     if !has("python")
 	call extend(g:atp_ProjectLocalVariables, ["b:atp_LocalCommands", "b:atp_LocalEnvironments", "b:atp_LocalColors"])
     endif
 endif
-" the variable a:1 is the name of the variable which stores the list of variables to
-" save.
-function! SaveProjectVariables(...)
-    let variables_List	= ( a:0 >= 1 ? {a:1} : g:atp_ProjectLocalVariables )
-    let variables_Dict 	= {}
-    for var in variables_List
-	if exists(var)
-	    call extend(variables_Dict, { var : {var} })
-	endif
-    endfor
-    return variables_Dict
-endfunction
-function! RestoreProjectVariables(variables_Dict)
-    for var in keys(a:variables_Dict)
- 	let cmd =  "let " . var . "=" . string(a:variables_Dict[var])
-	try
-	    exe cmd
-	catch E741:
-	    "if the variable was locked
-	    exe "unlockvar ".var
-	    exe cmd
-	    exe "lockvar ".var 
-	endtry
-    endfor
-endfunction
+" This variable is used by atplib#motion#GotoFile (atp-:Edit command):c
+let g:atp_SavedProjectLocalVariables = [
+		\ "b:atp_MainFile", 	"g:atp_mapNn", 		"b:atp_autex",
+		\ "b:atp_TexCompiler", 	"b:atp_TexOptions", 	"b:atp_TexFlavor", 
+		\ "b:atp_ProjectDir", 	"b:atp_auruns", 	"b:atp_ReloadOnError",
+		\ "b:atp_OutDir",	"b:atp_OpenViewer", 	"b:atp_XpdfServer",
+		\ "b:atp_Viewer", 	"b:TreeOfFiles",	"b:ListOfFiles",
+		\ "b:TypeDict", 	"b:LevelDict", 		"b:atp_BibCompiler",
+		\ "b:atp_StarEnvDefault", 	"b:atp_StarMathEnvDefault",
+		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal", 
+		\ "b:atp_ErrorFormat", 	"b:atp_LastLatexPID",	"b:atp_LatexPIDs",
+		\ "b:atp_LatexPIDs",	"b:atp_BibtexPIDs",	"b:atp_MakeindexPIDs",
+		\ "b:atp_ProgressBar"]
+
 " }}}1
 
 " This is to be extended into a nice function which shows the important options

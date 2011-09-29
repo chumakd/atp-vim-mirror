@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Sep 24, 2011 at 12:55  +0100
+" Last Change: Wed Sep 28, 2011 at 23:36:14  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -936,14 +936,13 @@ function! atplib#various#OpenLog()
     if filereadable(&l:errorfile)
 
 	let projectVarDict = SaveProjectVariables()
-	let g:projectVarDict = projectVarDict
 	let s:winnr	= bufwinnr("")
 	let atp_TempDir	= b:atp_TempDir
 	exe "rightbelow split +setl\\ nospell\\ ruler\\ syn=log_atp\\ autoread " . fnameescape(&l:errorfile)
 	let b:atp_TempDir = atp_TempDir
 	call RestoreProjectVariables(projectVarDict)
 
-	map <buffer> q :bd!<CR>
+	map <buffer> q :<C-U>bd!<CR>
 	nnoremap <silent> <buffer> ]m :call atplib#various#Search('\CWarning\\|^!', 'W')<CR>
 	nnoremap <silent> <buffer> [m :call atplib#various#Search('\CWarning\\|^!', 'bW')<CR>
 	nnoremap <silent> <buffer> ]w :call atplib#various#Search('\CWarning', 'W')<CR>
@@ -973,19 +972,18 @@ function! atplib#various#OpenLog()
 	endtry
 		   
 	command! -buffer -bang SyncTex		:call atplib#various#SyncTex(<q-bang>)
-	map <buffer> <Enter>			:SyncTex<CR>
-" 	nnoremap <buffer> <LocalLeader>g	:SyncTex<CR>	
+	nnoremap <buffer> <Enter>		:<C-U>SyncTex<CR>
+	nnoremap <buffer> <C-t>			:<C-U>SyncTex<CR>	
 	augroup ATP_SyncLog
 	    au CursorMoved *.log :call atplib#various#SyncTex("", 1)
 	augroup END
 
 	command! -buffer SyncXpdf 	:call atplib#various#SyncXpdfLog(0)
 	command! -buffer Xpdf 		:call atplib#various#SyncXpdfLog(0)
-	map <buffer> <silent> <F3> 	:SyncXpdf<CR>
+	map <buffer> <silent> <F3> 	:<C-U>SyncXpdf<CR>
 	augroup ATP_SyncXpdfLog
 	    au CursorMoved *.log :call atplib#various#SyncXpdfLog(1)
 	augroup END
-
     else
 	echo "No log file"
     endif
@@ -1723,7 +1721,6 @@ function! atplib#various#Dictionary(word)
     let entry		= substitute(entry, '&nbsp;', ' ', 'g')
     let entry		= substitute(entry, 'Lists of words starting with.*', '', 'g')
     let entry		= substitute(entry, '\.\{4,}', '...', 'g')
-    let g:entry=entry
     let entry_list	= split(entry, "\n")
     let i=0
     redraw
@@ -1741,8 +1738,6 @@ function! atplib#various#Dictionary(word)
 	endif
 	let i+=1
     endfor
-"     let g:url		= url
-    let g:wget_file 	= wget_file
 endfunction
 
 function! atplib#various#Complete_Dictionary(ArgLead, CmdLine, CursorPos)
