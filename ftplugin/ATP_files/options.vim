@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Sep 28, 2011 at 23:30:07  +0100
+" Last Change: Sat Oct 01, 2011 at 16:16:13  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -261,8 +261,9 @@ endif
 " This was throwing all autocommand groups to the command line on startup.
 " Anyway this is not very good.
 "     augroup ATP_makeprg
+" 	au!
 " 	au VimEnter *.tex let &l:makeprg="vim --servername " . v:servername . " --remote-expr 'Make()'"
-"     augroup
+"     augroup END
 
 " }}}
 
@@ -1290,6 +1291,7 @@ endif
 
 if !s:did_options
     augroup ATP_DebugMode
+	au!
 	au BufEnter *.tex let t:atp_DebugMode	 = ( exists("t:atp_DebugMode") ? t:atp_DebugMode : g:atp_DefaultDebugMode )
 	au BufEnter *.tex let t:atp_QuickFixOpen = ( exists("t:atp_QuickFixOpen") ? t:atp_QuickFixOpen : 0 )
 	" When opening the quickfix error buffer:  
@@ -2685,10 +2687,11 @@ function! <SID>ATP_SyntaxGroups()
     endif
     " add texMathZoneT syntax group for tikzpicture environment:
     if atplib#search#SearchPackage('tikz') || atplib#search#SearchPackage('pgfplots')
-	try
-	    call TexNewMathZone("T", "tikzpicture", 0)
-	catch /E117:/
-	endtry
+	syntax region texMathZoneT start='\\begin\s*{\s*tikzpicture\s*}' end='\\end\s*{\s*tikzpicture\s*}' keepend contains=@texMathZoneGroup,@texMathZones
+" 	try
+" 	    call TexNewMathZone("T", "tikzpicture", 0)
+" 	catch /E117:/
+" 	endtry
     endif
     " add texMathZoneALG syntax group for algorithmic environment:
     if atplib#search#SearchPackage('algorithmic')
@@ -2699,11 +2702,13 @@ function! <SID>ATP_SyntaxGroups()
     endif
 endfunction
 
-augroup ATP_AddSyntaxGroups
+augroup ATP_SyntaxGroups
+    au!
     au BufEnter *.tex :call <SID>ATP_SyntaxGroups()
 augroup END
 
 augroup ATP_Devel
+    au!
     au BufEnter *.sty	:setl nospell	
     au BufEnter *.cls	:setl nospell
     au BufEnter *.fd	:setl nospell
@@ -2712,20 +2717,21 @@ augroup END
 
 "{{{1 Highlightings in help file
 augroup ATP_HelpFile_Highlight
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_FileName') ? "atp_FileName" : "Title",  'highlight atp_FileName\s\+Title')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_LineNr') 	? "atp_LineNr"   : "LineNr", 'highlight atp_LineNr\s\+LineNr')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Number') 	? "atp_Number"   : "Number", 'highlight atp_Number\s\+Number')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Chapter') 	? "atp_Chapter"  : "Label",  'highlight atp_Chapter\s\+Label')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Section') 	? "atp_Section"  : "Label",  'highlight atp_Section\s\+Label')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_SubSection') ? "atp_SubSection": "Label", 'highlight atp_SubSection\s\+Label')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Abstract')	? "atp_Abstract" : "Label", 'highlight atp_Abstract\s\+Label')
+    au!
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_FileName') ? "atp_FileName" : "Title",  'highlight atp_FileName\s\+Title')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_LineNr') 	? "atp_LineNr"   : "LineNr", 'highlight atp_LineNr\s\+LineNr')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Number') 	? "atp_Number"   : "Number", 'highlight atp_Number\s\+Number')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Chapter') 	? "atp_Chapter"  : "Label",  'highlight atp_Chapter\s\+Label')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Section') 	? "atp_Section"  : "Label",  'highlight atp_Section\s\+Label')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_SubSection') ? "atp_SubSection": "Label", 'highlight atp_SubSection\s\+Label')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_Abstract')	? "atp_Abstract" : "Label", 'highlight atp_Abstract\s\+Label')
 
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_FileName') 	? "atp_label_FileName" 	: "Title",	'^\s*highlight atp_label_FileName\s\+Title\s*$')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_LineNr') 	? "atp_label_LineNr" 	: "LineNr",	'^\s*highlight atp_label_LineNr\s\+LineNr\s*$')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_Name') 	? "atp_label_Name" 	: "Label",	'^\s*highlight atp_label_Name\s\+Label\s*$')
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_Counter') 	? "atp_label_Counter" 	: "Keyword",	'^\s*highlight atp_label_Counter\s\+Keyword\s*$')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_FileName') 	? "atp_label_FileName" 	: "Title",	'^\s*highlight atp_label_FileName\s\+Title\s*$')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_LineNr') 	? "atp_label_LineNr" 	: "LineNr",	'^\s*highlight atp_label_LineNr\s\+LineNr\s*$')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_Name') 	? "atp_label_Name" 	: "Label",	'^\s*highlight atp_label_Name\s\+Label\s*$')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('atp_label_Counter') 	? "atp_label_Counter" 	: "Keyword",	'^\s*highlight atp_label_Counter\s\+Keyword\s*$')
 
-au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('bibsearchInfo')	? "bibsearchInfo"	: "Number",	'^\s*highlight bibsearchInfo\s*$')
+    au BufEnter automatic-tex-plugin.txt call matchadd(hlexists('bibsearchInfo')	? "bibsearchInfo"	: "Number",	'^\s*highlight bibsearchInfo\s*$')
 augroup END
 "}}}1
 

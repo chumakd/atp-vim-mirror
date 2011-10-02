@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 29 September 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 02 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.1)
 			by Marcin Szamotulski
@@ -173,8 +173,8 @@ NEWS							*atp-news*
  |atp-:Yank| and |atp-:Paste|, the maps 'y', 'c' and 'p', 'P' can be invoked
  with a count. |atp-:Yank| by default uses the " register.
 
- |atp-:SyncTex| is now mapped to |atp-]f|, instead of t, which was not
- compatible with |t| vim command. It is easy to remember |atp-]f| = like forward
+ |atp-:SyncTex| is now mapped to |atp-\f|, instead of t, which was not
+ compatible with |t| vim command. It is easy to remember |atp-\f| = like forward
  search ;)
 >
  ======================
@@ -214,8 +214,8 @@ NEWS							*atp-news*
 
  Here are the recent changes (excluding bug fixes):
 
- Signs				-- see |atp-signs| (and |signs|).
- :Unwrap			-- see |atp-:Unwrap| command (nmap \u).
+ Signs			-- see |atp-signs| (and |signs|).
+ :Unwrap		-- see |atp-:Unwrap| command (nmap <LocalLeader>u).
 
  See added note below |g:atp_texinputs|.
  The package variable names are changed, see |atp-completion-packages|.
@@ -772,7 +772,7 @@ There is also a variable which stores the last command which executed
 your tex compiler, see |g:atp_TexCommand|.   
 
 :{runs}TEX[!] [debug_mode]				*atp-:TEX*
-map [runs]\l, map [runs]\d
+map [runs]<LocalLeader>l, map [runs]<LocalLeader>d
 	If anyway you want to run TeX yourself but you do not want to see the
 	output this is the right tool. This runs TeX in 'nonstopmode'. You can
 	specify an argument {runs} which tells how many consecutive runs of
@@ -811,7 +811,7 @@ map [runs]\l, map [runs]\d
 	debug mode).
 
 :{runs}DTEX 							*atp-:DTEX*
-map [runs]\d 
+map [runs]<LocalLeader>d 
 	This is equivalent to ':TEX debug'.
 
 :MakeLatex[!]						*atp-:MakeLatex*
@@ -834,7 +834,7 @@ map [runs]\d
 	only).
 
 :Bibtex[!] [debug_mode]					*atp-:Bibtex*
-map \b
+map <LocalLeader>b
     With BANG "!":
 	This function will call bibtex to produce the bibliography file
 	(.bbl). If in |b:atp_OutDir| there is no 'aux' file it first calls tex
@@ -854,7 +854,7 @@ map \b
 	If you want to just run bibtex use :Bibtex without
 	bang.
 
-	The command :Bibtex  will :call Bibtex(), while :Bibtex v
+	The command |atp-:Bibtex|  will :call Bibtex(), while :Bibtex v
 	(and :Bibtex [debug_mode]) will :call Bibtex(1)
 
 	The bang "!" is used in the same way as for |atp-:TEX| command.
@@ -1017,7 +1017,7 @@ automatically using autocommand group |CursorMoved|.
 
 							*atp-:SyncTex-(log_file)*
 :SyncTex[!]	(inside log file)
-:nmap \g
+:nmap <LocalLeader>f, nmap <Enter>
 	If you open log file with ':ShowErrors o' command then you can use
 	this command to move to the place in the source code where the error
 	occurs. It works with project files and also can go to error which
@@ -1052,7 +1052,7 @@ automatically using autocommand group |CursorMoved|.
 	:SyncXpdf or :Xpdf in the log buffer which does the same.
 
 :ViewOutput[!] 						*atp-:ViewOutput*
-map \v,map <F3>, imap <F3>  
+map <LocalLeader>v,map <F3>, imap <F3>  
 	You would like to see what you are editing use this function. It will
 	use the program defined in the variable b:atp_Viewer. See |b:atp_Viewer|,
 	|g:atp_XpdfServer|, |atp-xpdfOptions|. When there is no output file it will run
@@ -1063,8 +1063,8 @@ map \v,map <F3>, imap <F3>
 	(forward search). This will only work for viewers that support forward
 	searching (xpdf, xdvi, okular, skim).
 
-:SyncTex[!]						*atp-:SyncTex* *atp-]f*
-map ]f, map <S-LeftMouse>
+:SyncTex[!]						*atp-:SyncTex* *atp-\f*
+map <LocalLeader>f, map <S-LeftMouse>
 	Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
 	Xpdf and Xdvi with this feature (Evince is not yet supported).
 
@@ -1095,7 +1095,7 @@ map ]f, map <S-LeftMouse>
 	and reverse searching. You can use the command |atp-:SyncTex| for
 	forward searches (Vim->Xdvi) >
 		:SyncTex	(although dvi is using srcspecials rather than synctex)
-		map ]f
+		map <LocalLeader>f
 		nmap <S-LeftMouse>
 <	For inverse searching hold CTRL and press click left mouse button on
 	the text in xdvi viewer. It sets: >
@@ -1338,7 +1338,7 @@ map <F6>d
 
 							*atp-:Unwrap*
 :Unwrap	
-nmap \u
+nmap <LocalLeader>u
 	If cursor is standing over a bracket it will remove both matching
 	brackets together with \left:\right, \bigl:\bigr, ... sizes. This
 	works for: (:), {:}, [:], \{:\}, \[:\] and \(:\).
@@ -1371,7 +1371,7 @@ nmap \u
 
 							*atp-:TexAlign*
 :TexAlign[!]
-map \a 
+map <LocalLeader>a 
 	This is a wrapper around Align command of the great AutoAlign Vim plugin:
 	    http://www.vim.org/scripts/script.php?script_id=884. 
 	This command sets correct align options and aligns the environment.
@@ -1388,8 +1388,8 @@ map \a
 	g:Align_xstrlen=2.
 
 	With bang "!", |atp-:TexAlign| will join lines which do not ends with
-	'\\'. If *g:atp_TexAlign_join_lines* =1 then the map \a will use the
-	bang.
+	'\\'. If *g:atp_TexAlign_join_lines* =1 then the map <LocalLeader>a
+	will use the bang.
     							*atp-:LatexTags*
 							*atp-:Tags*
 :Tags[!]
@@ -1427,14 +1427,14 @@ map \a
     :LatexTags command is only defined if there was :Tags command defined.
 
 :TOC[!] 							*atp-:TOC*
-nmap \t
+nmap <LocalLeader>t
 	Shows Table of Contents of your document. It do not yet support the
 	starred version of chapter, section,... . 
 
 	The optional argument bang controls if the table of contents data base
-	must be generated: by default map \t doesn't regenerate the toc data
-	base (unless if it doesn't exist), :TOC command regenerate the
-	data base, :TOC! not.
+	must be generated: by default map <LocalLeader>t doesn't regenerate
+	the toc data base (unless if it doesn't exist), :TOC command
+	regenerate the data base, :TOC! not.
 
 	See |atp-toc-window| for commands and maps defined in the toc window.
 
@@ -1457,10 +1457,10 @@ nmap \t
 	This function returns the name of the currently edited chapter/
 	section/subsection/subsubsection. Use ':echo CTOC()' or just ':CTOC' to
 	see the returned value. If you added a section unit the function will
-	not update the database, run ':TOC' to do that (map \t).
+	not update the database, run ':TOC' to do that (map <LocalLeader>t).
 
 :Labels[!]						*atp-:Labels*
-map \L 
+map <LocalLeader>L 
 	Shows labels defined in your file. You can also use the commands and
 	mappings described in |atp-toc-window|.
 
@@ -3245,7 +3245,8 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 							*b:atp_TexCompiler*
 >
  let b:atp_TexCompiler	= "pdflatex"			
-<	Used by functions: TEX() (map \l, imap \l), VTEX() (map <F5>, imap <F5>)
+<	Used by functions: TEX() (map <LocalLeader>l, imap <LocalLeader>l),
+	VTEX() (map <F5>, imap <F5>)
 
 	You can set it to latex, tex, luatex, and so on and possibly to
 	lilypond as well.  
@@ -3391,7 +3392,7 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
     |b:atp_xdviOptions|
     |b:atp_okularOptions|
     |b:atp_evinceOptions|, etc ... (also global variables g:atp_...Options)
-	Used by function: ViewOutput() (map \v, map <F3>, imap <F3>)
+	Used by function: ViewOutput() (map <LocalLeader>v, map <F3>, imap <F3>)
 
 	These are lists in which every viewer switch and its value should be
 	placed as element (separate!). See examples below. 
@@ -3406,7 +3407,7 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 							*g:atp_XpdfServer* 
 >
  let b:atp_XpdfServer=fnamemodify(expand("%"),":t")		
-<	Used by function: ViewOutput() (map \v, map <F3>, imap <F3>)
+<	Used by function: ViewOutput() (map <LocalLeader>v, map <F3>, imap <F3>)
 
 	It is equal to the name of the source file. You do not need escape
 	spaces in the name (shellescape() function is used before it is send
@@ -3926,7 +3927,8 @@ altered with the option |maplocalleader|. A good alternate solution is to use "_
 instead of "##".
 
 Maps are using the <buffer> option thus are local to the buffer. To unmap you
-also have to use this option, for example to unmap \l issue the command:
+also have to use this option, for example to unmap <LocalLeader>l issue the
+command:
 >
 	:unmap <buffer> <LocalLeader>l
 <
@@ -3980,8 +3982,8 @@ nmap gC, vmap gC
 							*atp-comment-lines*
 							*atp-uncomment-lines*
 							*g:atp_MapCommentLines*
-nmap \c, vmap \c		-- comment
-nmap \u, vmap \u		-- uncomment
+nmap <LocalLeader>c, vmap <LocalLeader>c   -- comment
+nmap <LocalLeader>u, vmap <LocalLeader>u   -- uncomment
 	Comment/Uncomment lines (both in |Normal| and |Visual| modes). 
 
 	Comment leader can be set with the variable g:atp_CommentLeader (by
@@ -4648,7 +4650,7 @@ Xpdf ~
 	useful. Xpdf supports forward searching (vim->Xpdf) with command:
 	|atp-:SyncTex| >
 		:SyncTex
-		map ]f
+		map <LocalLeader>f
 		map <S-LeftMouse>
 <	Read also |atp-:SyncTex_Xpdf-hack| and see |atp-:SetXpdf| command
 	description.  You can set your own options of Xpdf using
@@ -4694,7 +4696,7 @@ Okular ~
 	(Okular->Vim) searches. Okular supports forward searching (vim->Okular)
 	with command: |atp-:SyncTex| >
 		:SyncTex
-		map ]f
+		map <LocalLeader>f
 		map <S-LeftMouse>
 <
 Okular: inverse search ~

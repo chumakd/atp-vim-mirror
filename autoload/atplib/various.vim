@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Sep 28, 2011 at 23:36:14  +0100
+" Last Change: Fri Sep 30, 2011 at 09:06:14  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -973,7 +973,7 @@ function! atplib#various#OpenLog()
 		   
 	command! -buffer -bang SyncTex		:call atplib#various#SyncTex(<q-bang>)
 	nnoremap <buffer> <Enter>		:<C-U>SyncTex<CR>
-	nnoremap <buffer> <C-t>			:<C-U>SyncTex<CR>	
+	nnoremap <buffer> <LocalLeader>f	:<C-U>SyncTex<CR>	
 	augroup ATP_SyncLog
 	    au CursorMoved *.log :call atplib#various#SyncTex("", 1)
 	augroup END
@@ -1119,9 +1119,9 @@ function! atplib#various#SyncTex(bang,...)
 	let [ startline_o, startcol_o ] = deepcopy([ startline, startcol ])
     endwhile
     keepjumps call setpos(".", saved_pos)
-	if g:atp_debugST
-	    let g:fname_post = fname
-	endif
+    if g:atp_debugST
+	let g:fname_post = fname
+    endif
 
     " if the file is under texmf directory return unless g:atp_developer = 1
     " i.e. do not visit packages and classes.
@@ -1188,8 +1188,6 @@ function! atplib#various#SyncTex(bang,...)
 
     " highlight the error
     if exists("error") && error != ""
-" 		let error_pat = escape(error, '\.')
-" 		call matchadd("ErrorMsg", '\%'.lineNr.'l' . error_pat) 
 	let matchID =  matchadd("Error", error, 15) 
     endif
 
@@ -1197,9 +1195,6 @@ function! atplib#various#SyncTex(bang,...)
 	setl cursorline
 	" Unset 'cursorline' option when entering the window. 
 	exe 'au! WinEnter ' . expand("%:p")  . " setl nocursorline"
-" 		if exists("matchID")
-" 		    exe 'au! WinEnter ' . expand("%:p")  . " call matchdelete(".matchID.")"
-" 		endif
 	exe log_winnr . ' wincmd w'
     else
 	setl nocursorline

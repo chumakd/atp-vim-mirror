@@ -398,7 +398,7 @@ endfunction
 " Various Comparing Functions:
 "{{{1 atplib#CompareNumbers
 function! atplib#CompareNumbers(i1, i2)
-   return str2nr(a:i1) == str2nr(a:i2) ? 0 : str2nr(a:i1) > str2nr(a:i2) ? 1 : -1
+   return ( str2nr(a:i1) == str2nr(a:i2) ? 0 : ( str2nr(a:i1) > str2nr(a:i2) ? 1 : -1 ) )
 endfunction
 "}}}1
 " {{{1 atplib#CompareCoordinates

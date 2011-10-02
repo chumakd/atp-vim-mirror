@@ -141,8 +141,8 @@ function! atplib#complete#CheckClosed(bpat, epat, line, col, limit,...)
 	call cursor(saved_pos[1], saved_pos[2])
 	if g:atp_debugCheckClosed
 	    call atplib#Log("CheckClosed.log", "l:closed_before_count=".l:closed_before_count)
+	    let g:nr_2 = l:nr
 	endif
-	let g:nr_2 = l:nr
 	while l:nr <= a:line+l:limit
 	    let l:line		= getline(l:nr)
 	    if l:nr == a:line+l:limit
@@ -181,12 +181,17 @@ function! atplib#complete#CheckClosed(bpat, epat, line, col, limit,...)
 		    call atplib#Log("CheckClosed.log", ">> cline=".cline."> cpos_bpat_count=".cpos_bpat_count." cpos_epat_count=".cpos_epat_count)
 		endif
 	    endif
+	    " Strip comments:
+	    let comment_match = match(l:line, '\%(\\\\\|\\\@<!\)%')
+	    if comment_match != -1
+		let l:line = strpart(l:line, 0, comment_match)
+	    endif
 	    call cursor(saved_pos[1], saved_pos[2])
 	    let l:bpat_count+=atplib#count(l:line,a:bpat, 1)
 	    let l:epat_count+=atplib#count(l:line,a:epat, 1)
 	    let cond = l:epat_count - l:closed_before_count - l:bpat_count >= 0
 	    if g:atp_debugCheckClosed
-		call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count)
+		call atplib#Log("CheckClosed.log", l:nr." l:bpat_count=".l:bpat_count." l:epat_count=".l:epat_count." ".l:line)
 		if l:nr >= saved_pos[1]
 		    call atplib#Log("CheckClosed.log", "cond (closed-opened)=".cond." value=".(l:epat_count - l:closed_before_count - l:bpat_count))
 		endif	
@@ -1266,33 +1271,23 @@ function! atplib#complete#CheckBracket(bracket_dict)
 	endif
 	let pos[1]	= pair_{i}[0]
 	let pos[2]	= pair_{i}[1]
-	" check_{i} is 1 if the bracket is closed
-" 	let bslash = ( ket != '{' ? '\\\@<!' : '' )
-" 	let check_{i}	= atplib#complete#CheckClosed(escape(ket,'\[]'),
-" 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-" 		    \ pos[1], pos[2], g:atp_completion_limits[4],1) == '0'
 
 	let no_backslash = ( i == 0 || i == 2 ? '\\\@<!' : '' )
-	if i == 2
+	if i == 3
 	    let g:atp_debugCheckClosed = 1
-	    let g:d = pos
-	    let g:c = max([0,pos[1]-g:atp_completion_limits[4]])
 	else
 	    let g:atp_debugCheckClosed = 0
 	endif
 	if pos[1] != 0
-	    let check_{i}	= atplib#complete#CheckClosed(no_backslash.escape(ket,'\[]'),
+	    let check_{i} = atplib#complete#CheckClosed(no_backslash.escape(ket,'\[]'),
 			\ '\%('.no_backslash.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 			\ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2)
 	    let check_{i} = ( check_{i} == 0 )
 	else
 	    let check_{i} = 0
 	endif
-" 	let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2]
+	let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2]
 
-" 	let check_{i}	= atplib#complete#CheckClosed(escape(ket,'\[]'),
-" 		    \ '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-" 		    \ pos[1], 1, 2*g:atp_completion_limits[4],2) == '0'
 	if g:atp_debugCheckBracket >= 1
 	    call atplib#Log("CheckBracket.log", ket." check_".i."=".string(check_{i}))
 	endif

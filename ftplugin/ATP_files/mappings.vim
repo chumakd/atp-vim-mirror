@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Sep 29, 2011 at 23:44:25  +0100
+" Last Change: Fri Sep 30, 2011 at 09:02:14  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -115,7 +115,7 @@ if g:atp_MapCommentLines
 endif
 
 if !hasmapto("<Plug>SyncTexKeyStroke", "n")
-    nmap <buffer> <silent> ]f		<Plug>SyncTexKeyStroke
+    nmap <buffer> <silent> <LocalLeader>f		<Plug>SyncTexKeyStroke
 endif
 if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
     nmap <buffer> <S-LeftMouse> 	<LeftMouse><Plug>SyncTexMouse
