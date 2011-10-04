@@ -220,7 +220,11 @@ endfunction "}}}
 function! FindProjectScripts()
     let dir 	= fnamemodify(resolve(expand("%:p")), ":p:h")
     let cwd 	= getcwd()
-    exe "lcd " . fnameescape(dir)
+    try
+	exe "lcd " . fnameescape(dir)
+    catch /E344:/
+	return [] 
+    endtry
     while glob('*.project.vim', 1) == '' 
 	let dir_l 	= dir
 	let dir 	= fnamemodify(dir, ":h")

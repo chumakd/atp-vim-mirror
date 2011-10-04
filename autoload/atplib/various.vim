@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Fri Sep 30, 2011 at 09:06:14  +0100
+" Last Change: Tue Oct 04, 2011 at 21:46:46  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1471,18 +1471,21 @@ function! atplib#various#ReloadATP(bang)
 	execute "source " . tex_atp_file
 
 	" delete functions from autoload/atplib.vim:
-	let atplib_file	= split(globpath(&rtp, 'autoload/atplib.vim'), "\n")[0]
+	let atplib_files = join(map(split(globpath(&rtp, 'autoload/atplib.vim')."\n".globpath(&rtp, 'autoload/atplib/*.vim'), "\n"), "fnameescape(v:val)"), " ")
 	let saved_loclist = getloclist(0)
 	try
-	    exe 'silent! lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_file
+	    exe 'silent! lvimgrep /^\s*fun\%[ction]!\=\s\+/gj '.atplib_files
 	catch E486:
 	endtry
 	let list=map(getloclist(0), 'v:val["text"]')
 	call setloclist(0,saved_loclist)
 	call map(list, 'matchstr(v:val, ''^\s*fun\%[ction]!\=\s\+\zsatplib#\S\+\ze\s*('')')
 	for fname in list
-	    if fname != ""
-		exe 'delfunction '.fname
+	    if fname != "" && fname != "atplib#various#ReloadATP"
+		try
+		    exe 'delfunction '.fname
+		catch /E130:/
+		endtry
 	    endif
 	endfor
     endif

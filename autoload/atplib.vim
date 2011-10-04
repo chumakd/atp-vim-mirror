@@ -136,9 +136,13 @@ function! atplib#FullPath(file_name) "{{{1
     if a:file_name =~ '^\s*\/'
 	let file_path = a:file_name
     elseif exists("b:atp_ProjectDir")
-	exe "lcd " . fnameescape(b:atp_ProjectDir)
-	let file_path = fnamemodify(a:file_name, ":p")
-	exe "lcd " . fnameescape(cwd)
+	try
+	    exe "lcd " . fnameescape(b:atp_ProjectDir)
+	    let file_path = fnamemodify(a:file_name, ":p")
+	    exe "lcd " . fnameescape(cwd)
+	catch /E344:/
+	    let file_path = fnamemodify(a:file_name, ":p")
+	endtry
     else
 	let file_path = fnamemodify(a:file_name, ":p")
     endif
