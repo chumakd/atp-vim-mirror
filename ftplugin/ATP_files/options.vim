@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Oct 04, 2011 at 07:32:47  +0100
+" Last Change: Thu Oct 06, 2011 at 08:42:36  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -1132,7 +1132,7 @@ if !exists("t:atp_labels_window_width")
     endif
 endif
 if !exists("g:atp_completion_limits")
-    let g:atp_completion_limits	= [40,60,80,120,30]
+    let g:atp_completion_limits	= [40,60,80,120,60]
 endif
 if !exists("g:atp_long_environments")
     let g:atp_long_environments	= []

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 04 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 06 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.1)
 			by Marcin Szamotulski
@@ -1628,8 +1628,8 @@ vmap >p, vmap >c, vmap >s, vmap >S
 	depending on the value of |g:atp_mapNn| (see |atp-:ToggleNn|, when
 	g:atp_mapNn=1 the |atp-:S| command is used). You can set the value
 	of |g:atp_mapNn| using the command |atp-:ToggleNn|. If 'wrapscan' is
-	set and g:atp_mapNn=1 the search will wrap around the end of the project (not the end of
-	the current buffer).
+	set and g:atp_mapNn=1 the search will wrap around the end of the
+	project (not the end of the current buffer).
 
 	You can unmap these keys and use <Plug>GotoNextSubSection,
 	<Plug>GotoNextSection, <Plug>GotoNextChapter, <Plug>GotoNextPart to
@@ -3676,6 +3676,16 @@ PROJECT SCRIPT						*atp-ProjectScript*
 
 	The |atprc| file is executed after the local and global project
 	scripts.
+
+	If you want to have two main files (for example a copy of a project
+	in another directory below the project main directory), i.e.
+	    main.tex
+	    tmp/main.tex
+	Then the easiest way is to open tmp/main.tex and adjust the variables:
+	|b:atp_ProjectScriptFile| to point to tmp/main.tex.project.vim and
+	|b:atp_MainFile| (this is only necessary if |g:atp_RelativePath|=0)
+	and run |atp-:InputFiles|, then use |atp-:WriteProjectScript|.
+
 
 							*b:atp_ProjectScript*
 							*g:atp_ProjectScript*
