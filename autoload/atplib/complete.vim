@@ -23,6 +23,7 @@
 " after testing I shall remove method 0
 " Method 2 doesn't makes less mistakes than method 1 (which makes them :/) but it is only for
 " brackets, returns >0 if the bracket is closed 0 if it is not. 
+try
 function! atplib#complete#CheckClosed(bpat, epat, line, col, limit,...)
 
 "     NOTE: THIS IS MUCH FASTER !!! or SLOWER !!! ???            
@@ -251,6 +252,8 @@ function! atplib#complete#CheckClosed(bpat, epat, line, col, limit,...)
 	return 1
     endif
 endfunction
+catch /E127:/
+endtry
 " }}}1
 " {{{1 atplib#complete#CheckClosed_math
 " This functions makes a test if in line math is closed. This works well with
@@ -1173,6 +1176,7 @@ endfunction
 " for the {:} pair.
 " to make it faster I could first count the number of { and } and compare
 " them.
+try
 function! atplib#complete#CheckBracket(bracket_dict)
 
     let time		= reltime()
@@ -1333,6 +1337,8 @@ function! atplib#complete#CheckBracket(bracket_dict)
 "     let g:time=g:time+str2float(substitute(g:time_CheckBracket, '\.', ',', ''))
     return [ open_line, open_col, bracket_list[open_bracket_nr] ]
 endfunction
+catch /E127:/
+endtry
 " }}}1
 " {{{1 atplib#complete#CloseLastBracket
 "
@@ -1640,12 +1646,11 @@ try
 " Main tab completion function
 function! atplib#complete#TabCompletion(expert_mode,...)
 
-    let time=reltime()
-
     if g:atp_debugTabCompletion
 	call atplib#Log("TabCompletion.log", "", "init")
     endif
 
+    let time=reltime()
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     " {{{2 Match the completed word 
     let normal_mode=0
@@ -2025,10 +2030,8 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	endif
 	"}}}3
     endif
+    let b:completion_method = ( exists("completion_method") ? completion_method : 'completion_method does not exists' )
 "}}}2
-let b:completion_method = ( exists("completion_method") ? completion_method : 'completion_method does not exists' )
-" if the \[ is not closed, first close it and then complete the commands, it
-" is better as then automatic tex will have better file to operate on.
 " {{{2 close environments
     if completion_method=='close_env'
 
