@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 06 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 08 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.1)
 			by Marcin Szamotulski
@@ -176,6 +176,16 @@ NEWS							*atp-news*
  |atp-:SyncTex| is now mapped to |atp-\f|, instead of t, which was not
  compatible with |t| vim command. It is easy to remember |atp-\f| = like forward
  search ;)
+
+ Commands to find maps:
+    :Map[!]  {pattern}			|atp-:Map|
+    :Nmap[!] {pattern}			|atp-:Nmap|
+    :Imap[!] {pattern}			|atp-:Imap|
+    :Smap[!] {pattern} 			|atp-:Smap|
+    :Vmap[!] {pattern}			|atp-:Vmap|
+    :Omap[!] {pattern}			|atp-:Omap|
+    :Lmap[!] {pattern}			|atp-:Lmap|
+
 >
  ======================
  Changes in version 10.6
@@ -1995,7 +2005,24 @@ ToDo({keyword}, {stop}, [bufname])			*atp-function-ToDo*
 	These commands list valid mappings defined by ATP (unless g:no_plugin_maps or
 	g:no_atp_maps are defined).
 
- 							*atp-:ShowPackages*
+:Map[!]	 {pattern}					*atp-:Map*
+:Nmap[!] {pattern}					*atp-:Nmap*
+:Imap[!] {pattern}					*atp-:Imap*
+:Smap[!] {pattern} 					*atp-:Smap*
+:Vmap[!] {pattern}					*atp-:Vmap*
+:Omap[!] {pattern}					*atp-:Omap*
+:Lmap[!] {pattern}					*atp-:Lmap*
+	The {pattern} is matched against the right hand side of a map as shown
+	by the corresponding |:map| command. If |<bang>| is added the pattern
+	is matched against output of [nisvol]map commands with only first
+	column removed (which indicates the map mode).
+
+	The Imap can also find imaps which are not defined in normal mode
+	(there are such maps in ATP), and thus are invisible while looking at
+	the output of |:imap| command).
+.
+
+							*atp-:ShowPackages*
 :ShowPackages	lists LaTeX packages defined in the preamble.
 							*atp-:Preamble*
 :Preamble	echoes the preamble to vim pager.							
