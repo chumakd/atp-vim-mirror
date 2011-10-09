@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 08 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 09 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.1)
 			by Marcin Szamotulski
@@ -177,6 +177,9 @@ NEWS							*atp-news*
  compatible with |t| vim command. It is easy to remember |atp-\f| = like forward
  search ;)
 
+ New normal mode wrapping operator maps: see |atp-nmap-fonts| and
+ |atp-nmap-bracket-wrappers|.
+
  Commands to find maps:
     :Map[!]  {pattern}			|atp-:Map|
     :Nmap[!] {pattern}			|atp-:Nmap|
@@ -185,6 +188,11 @@ NEWS							*atp-news*
     :Vmap[!] {pattern}			|atp-:Vmap|
     :Omap[!] {pattern}			|atp-:Omap|
     :Lmap[!] {pattern}			|atp-:Lmap|
+There is another my plugin: MapFinder 
+    http://www.vim.org/scripts/script.php?script_id=3767
+which defines them. The only Imap differs, here it is more specific to ATP,
+since ATP defines and deletes some imaps on the fly not all of them are
+visible with :imap command.
 
 >
  ======================
@@ -212,6 +220,7 @@ NEWS							*atp-news*
  Cmap: ~
  <space> cmap for \_s\+, if |\v| is included (very magic) in the pattern (any where) then
  \_s+ is used as rhs.
+
 >
  ======================
  Changes in version 10.5
@@ -335,23 +344,21 @@ NEWS							*atp-news*
 
   cmap <M-c> will insert a pattern which match lines which are not a comment.
 
->
- ======================
- Changes in version 9.4
-<
-
-DICTIONARIES ~
-    I added extended versions of dictionaries of latex-suite to ATP (the files
-    dictionaries/dictionary and dictionary/SIunits). They are added to
-    |'complete'| vim option, so you can use them through |ins-completion|.
-    I made one more dictionary (dictionaries/ams_dictionary) with ams commands
-    and environment names. It will be added to the vim |'complete'| option if
-    you use amsmath package or if the document class is one of the standard
-    ams classes or of |g:atp_amsmath| is set to 1.
-    						Chears, Marcin
 
 ================================================================================
 INSTALLATION                               		*atp-installation*
+
+If you have .vmb (or .vba) file just open it in vim and source it (:so %<CR>).
+You can also install ATP using Vim Addon Manager (VAM):
+http://www.vim.org/scripts/script.php?script_id=2905
+or GetLatestVimScipt plugin:
+http://www.vim.org/scripts/script.php?script_id=642
+Third option is to checkout svn repository with the command:
+svn co https://atp-vim.svn.sourceforge.net/svnroot/atp-vim/trunk ~/.vim
+If you use VAM you can checkout into your vim-addon directory
+(~/.vim/vim-addons/AutomaticLaTexPlugin) and VAM will update it using svn
+pull. In this way you will have alwasy the most recent version of ATP.
+
 
      Necessary vim settings:
      |:filetype-plugin-on|
@@ -362,7 +369,9 @@ If you do not like colours you can still set syntax on but clear the highlight
 colours (you should make a simple function which clears all the highlight
 groups, because ':hi clear' will not give you what you want).
 
-See |atp-requirements| for other  ATP requirements. 
+See |atp-requirements| for other ATP requirements or better go to:
+http://atp-vim.sf.net/requirements.shtml web page.
+
 
 GET ATP UPDATES ~
 To get updates it is enough to use this command:
@@ -2544,6 +2553,14 @@ nmap, imap `<Tab>
 
     Note: see |atp-Tab-note|.
 
+DICTIONARIES ~
+    I added extended versions of dictionaries of latex-suite to ATP (the files
+    dictionaries/dictionary and dictionary/SIunits). They are added to
+    |'complete'| vim option, so you can use them through |ins-completion|.
+    I made one more dictionary (dictionaries/ams_dictionary) with ams commands
+    and environment names. It will be added to the vim |'complete'| option if
+    you use amsmath package or if the document class is one of the standard
+    ams classes or of |g:atp_amsmath| is set to 1.
 
 COMPLETION MODES		                       	*atp-completion-modes*
 							*atp-completion-commands*
@@ -4087,24 +4104,26 @@ is only one given in both. The map leader is defined by the variable
 |g:atp_imap_leader_2|, which by default is set to '##' (another good
 setting is '_')
 	  	in text			in math ~
-imap ##rm 	\textrm{}<Left>		\mathrm{}<Left>
-imap ##te 	\textrm{}<Left>		\text{}<Left>
-imap ##up	\textup{}<Left>
-imap ##md	\textmd{}<Left>
-imap ##sl	\textsl{}<Left>
-imap ##sc	\textsc{}<Left>
-imap ##em	\emph{}<Left>
-imap ##it 	\textit{}<Left>		\mathit{}<Left>
-imap ##sf 	\textsf{}<Left>		\mathsf{}<Left>
-imap ##bf 	\textbf{}<Left>		\mathbf{}<Left>
-imap ##bf 	\texttt{}<Left>		\mathtt{}<Left>
-imap ##no	\textnormal{}<Left>	\mathnormal{}<Left>
-imap ##bb	\(\mathbb{}<left>	\mathbb{}<Left>
-imap ##cal	\(\mathcal{}<left>	\mathcal{}<Left>
-imap ##cr	\(\mathscr{}<left>	\mathscr{}<Left>
-imap ##fr	\(\mathfrak{}<left>	\mathfrak{}<Left>
+imap <LocalLeader>rm 	\textrm{}<Left>		\mathrm{}<Left>
+imap <LocalLeader>te 	\textrm{}<Left>		\text{}<Left>
+imap <LocalLeader>up	\textup{}<Left>
+imap <LocalLeader>md	\textmd{}<Left>
+imap <LocalLeader>sl	\textsl{}<Left>
+imap <LocalLeader>sc	\textsc{}<Left>
+imap <LocalLeader>em	\emph{}<Left>
+imap <LocalLeader>it 	\textit{}<Left>		\mathit{}<Left>
+imap <LocalLeader>sf 	\textsf{}<Left>		\mathsf{}<Left>
+imap <LocalLeader>bf 	\textbf{}<Left>		\mathbf{}<Left>
+imap <LocalLeader>bf 	\texttt{}<Left>		\mathtt{}<Left>
+imap <LocalLeader>no	\textnormal{}<Left>	\mathnormal{}<Left>
+imap <LocalLeader>bb	\(\mathbb{}<left>	\mathbb{}<Left>
+imap <LocalLeader>cal	\(\mathcal{}<left>	\mathcal{}<Left>
+imap <LocalLeader>cr	\(\mathscr{}<left>	\mathscr{}<Left>
+imap <LocalLeader>fr	\(\mathfrak{}<left>	\mathfrak{}<Left>
 
-	
+							*atp-nmap-fonts*
+These maps are also defined in normal mode. They requre a motion afterwards,
+i.e. <LocalLeader>rmw will wrap next word in \textrm{:} or \mathrm{:}.
 
 							
 GREEK LETTERS						*atp-imap-greek-letters*
@@ -4448,6 +4467,12 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 <	The leader '\' in above commands is configurable: the value of
 	g:atp_vmap_text_font_leader is used (the default value is <LocalLeader>).
 
+							*atp-nmap-WrapSelection*
+							*atp-nmap-InteligentWrapSelection*
+	The above maps are also valide in normal mode. They require a motion
+	afterwords, i.e. \rmw will wrap the following word inside \textrm{:}
+	or \mathrm{:}.
+
 	Another provided font wrapper: >
 	    vmap <LocalLeader>f	:exe ':Wrap {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
 <	Where the variable: 				*g:atp_font_encoding*
@@ -4458,6 +4483,7 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	\usepackage[...]{fontenc} see the 'Latex2e font selection'
 	/font user guide/ available on CTAN).
 
+							*atp-vmap-bracket-wrappers*
 	Other wrappers: >
 	    vmap m			:Wrap \( \)<CR>
 	    vmap M			:Wrap \[ \]<CR>
@@ -4473,7 +4499,14 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	    vmap <LocalLeader>b[	:Wrap \left[ \right] end<CR>
 	    vmap <LocalLeader>b{	:Wrap \left{ \right} end<CR>
 	    vmap <LocalLeader>b{	:Wrap \left{ \right} end<CR>
-< 	And the maps to put the selected text into an environment: >
+<
+							*atp-nmap-bracket-wrappers*
+	The above maps work also in normal mode, but they require a motion
+	command afterwards, e.g. <LocalLeader>{w will wrap the following word
+	inside {:}. Only m and M differs, in normal mode they are
+	<LocalLeader>m (wrap with \(:\))and <LocalLeader>M (wrap with \[:\]).
+
+	The maps to put the selected text into an environment: >
 	    vmap <LocalLeader>A	:Wrap \begin{align} \end{align} 0 1<CR>
 	    vmap <LocalLeader>C	:Wrap \begin{center} \end{center} 0 1<CR>
 	    vmap <LocalLeader>E	:Wrap \begin{equation} \end{equation} 0 1<CR>
