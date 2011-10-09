@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Oct 04, 2011 at 21:46:46  +0100
+" Last Change: Sun Oct 09, 2011 at 09:02:52  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -55,15 +55,16 @@ function! atplib#various#WrapSelection(...)
     let end_wrapper 	= ( a:0 >= 2 ? a:2 : '}' )
     let cursor_pos	= ( a:0 >= 3 ? a:3 : 'end' )
     let new_line	= ( a:0 >= 4 ? a:4 : 0 )
+    let marks		= ( a:0 >= 5 ? a:5 : ["'<", "'>"])
 
 "     let b:new_line=new_line
 "     let b:cursor_pos=cursor_pos
 "     let b:end_wrapper=end_wrapper
 
-    let l:begin=getpos("'<")
+    let l:begin=getpos(marks[0])
     " todo: if and on 'ą' we should go one character further! (this is
     " a multibyte character)
-    let l:end=getpos("'>")
+    let l:end=getpos(marks[1])
     let l:pos_save=getpos(".")
 
     " hack for that:

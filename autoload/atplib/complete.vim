@@ -1391,10 +1391,6 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
     let [ open_line, open_col, opening_bracket ] = ( tab_completion ? 
 		\ deepcopy([ s:open_line, s:open_col, s:opening_bracket ]) : atplib#complete#CheckBracket(a:bracket_dict) )
     call cursor(line("."), pos_saved[2])
-    if opening_bracket == '{' && open_col-2>=0 && getline(open_line)[open_col-2] == '\'
-	" This code is only for \{:\}.
-	let open_col = ( open_col > 1 ? open_col-1 : open_col )
-    endif
 
     " Check and Close Environment:
     for env_name in g:atp_closebracket_checkenv
@@ -1428,7 +1424,7 @@ function! atplib#complete#CloseLastBracket(bracket_dict, ...)
 
    if open_col 
 	let line	= getline(open_line)
-	let bline	= strpart(line,0,open_col)
+	let bline	= strpart(line,0,open_col-1)
 	if g:atp_debugCloseLastBracket
 	    let g:bline = bline
 	    call atplib#Log("CloseLastBracket.log", "bline=".bline)
@@ -1537,6 +1533,7 @@ endfunction
 " This function is used in atplib#complete#TabCompletion in several places.
 " It combines both above atplib#complete#CloseLastEnvironment and
 " atplib#complete#CloseLastBracket functions.
+try
 function! atplib#complete#GetBracket(append,...)
     " a:1 = 0  - pass through first if (it might be checked already).
     " a:2 = atplib#complete#CheckBracket(g:atp_bracket_dict)
@@ -1597,6 +1594,8 @@ function! atplib#complete#GetBracket(append,...)
     let g:time_GetBrackets=reltimestr(reltime(time))
     return ''
 endfunction
+catch /E127:/
+endtry
 "}}}1
 
 " Tab Completion:
