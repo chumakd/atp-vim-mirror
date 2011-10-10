@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 09 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 10 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.1)
 			by Marcin Szamotulski
@@ -164,6 +164,13 @@ for all the defined functions :help atp*()CTRL-d, mappings: :help atp-mapCTRL-d
 
 ================================================================================
 NEWS							*atp-news*
+>
+ ======================
+ Changes in version 10.6.2
+<
+ |atp-:Yank| and |atp-:Paste| (inside bib search) changed.
+ Also yanking in toc (the section key) is in more vim style.
+
 >
  ======================
  Changes in version 10.6.1
@@ -2430,31 +2437,33 @@ and for the bib field labels for the latex command \cite{}.
 < 	This is not possible with |g:atp_bibsearch|="python" (the default).
 
 		
-:Yank {BibEntry[RegisterName]}					*atp-:Yank*
-map [count]c, map [count]y
-	This function/command is only available in the window with BibSearch results
-	and allows to copy a bib entry key to a register or directly to the
-	last opened buffer (after the cursor position). It is mapped to 'c'
-	and 'y'. You will be asked to give the number of bib entry to yank:
+:{BibEntry}Yank [RegisterName]					*atp-:Yank*
+map {count[register]}c, map {count[register]}y
+	This function/command is only available in the window with BibSearch
+	results and allows to copy a bib entry key to a register or directly
+	to the last opened buffer (after the cursor position). It is mapped to
+	'c' and 'y'. You will be asked to give the number of bib entry to
+	yank:
 >
 	    <bib entry number><register name><Enter>	- to copy it to a register
 	    <bib entry number><Enter>			- to copy to the " register
 	    <Enter>					- to skip the choice
-<	When the [count] is given the bib item [count] will be copied to the
+<	When the {count} is given the bib item {count} will be copied to the
 	register ".
 
 	For example: >
-		:BibYank 5e
-		:BibYank 7+
-		:BibYank 2
-<	Copy the bibkey to register e,+, or ". The same you will obtain using
-	the nmaps y or c. 
+		:5Yank e
+		:7Yank +
+		:2Yank
+<	Copy the bibkey to register e,+, or " (this might depend on the
+	'clipboard' option in which register the bib key will be put). The
+	same you will obtain using the nmaps y or c. 
 	
 	This commands and maps are only in the BibSearch buffer.
 
 								*atp-:Paste*
-:Paste {BibEntry[RegisterName]}
-map [count]p, [count]P
+:{BibEntry}Paste [RegisterName]
+map {count}p, {count}P
 	The syntax is the same as for |atp-:BibYank|. It paste the bib entry
 	to the tex buffer (where the |atp-:BibSearch| was inoked). The bib
 	entry is also copied to the " register.

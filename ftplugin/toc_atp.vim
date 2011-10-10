@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Thu Sep 22, 2011 at 08:48  +0100
+" Last Change: Mon Oct 10, 2011 at 08:37:11  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -147,8 +147,9 @@ function! GotoLine(closebuffer) "{{{
 endfunction
 " }}}
 
-function! <SID>yank(arg) " {{{
+function! <SID>yank(arg, ...) " {{{
     let labels_window	= expand("%") == "__Labels__" ? 1 : 0
+    let register	= ( a:0 >= 1 ? a:1 : '"' )
 
     let l:toc=getbufline("%",1,"$")
     let l:h_line=index(reverse(copy(l:toc)),'')+1
@@ -188,64 +189,63 @@ function! <SID>yank(arg) " {{{
 	return ""
     else
 	if a:arg == '@'
-	    let l:letter=input("To which register? <reg name><Enter> or empty for none ")
-	    silent if l:letter == 'a'
+	    silent if register == 'a'
 		let @a=choice
-	    elseif l:letter == 'b'
+	    elseif register == 'b'
 		let @b=choice
-	    elseif l:letter == 'c'
+	    elseif register == 'c'
 		let @c=choice
-	    elseif l:letter == 'd'
+	    elseif register == 'd'
 		let @d=choice
-	    elseif l:letter == 'e'
+	    elseif register == 'e'
 		let @e=choice
-	    elseif l:letter == 'f'
+	    elseif register == 'f'
 		let @f=choice
-	    elseif l:letter == 'g'
+	    elseif register == 'g'
 		let @g=choice
-	    elseif l:letter == 'h'
+	    elseif register == 'h'
 		let @h=choice
-	    elseif l:letter == 'i'
+	    elseif register == 'i'
 		let @i=choice
-	    elseif l:letter == 'j'
+	    elseif register == 'j'
 		let @j=choice
-	    elseif l:letter == 'k'
+	    elseif register == 'k'
 		let @k=choice
-	    elseif l:letter == 'l'
+	    elseif register == 'l'
 		let @l=choice
-	    elseif l:letter == 'm'
+	    elseif register == 'm'
 		let @m=choice
-	    elseif l:letter == 'n'
+	    elseif register == 'n'
 		let @n=choice
-	    elseif l:letter == 'o'
+	    elseif register == 'o'
 		let @o=choice
-	    elseif l:letter == 'p'
+	    elseif register == 'p'
 		let @p=choice
-	    elseif l:letter == 'q'
+	    elseif register == 'q'
 		let @q=choice
-	    elseif l:letter == 'r'
+	    elseif register == 'r'
 		let @r=choice
-	    elseif l:letter == 's'
+	    elseif register == 's'
 		let @s=choice
-	    elseif l:letter == 't'
+	    elseif register == 't'
 		let @t=choice
-	    elseif l:letter == 'u'
+	    elseif register == 'u'
 		let @u=choice
-	    elseif l:letter == 'v'
+	    elseif register == 'v'
 		let @v=choice
-	    elseif l:letter == 'w'
+	    elseif register == 'w'
 		let @w=choice
-	    elseif l:letter == 'x'
+	    elseif register == 'x'
 		let @x=choice
-	    elseif l:letter == 'y'
+	    elseif register == 'y'
 		let @y=choice
-	    elseif l:letter == 'z'
+	    elseif register == 'z'
 		let @z=choice
-	    elseif l:letter == '*'
+	    elseif register == '*'
 		let @-=choice
-	    elseif l:letter == '+'
+	    elseif register == '+'
 		let @+=choice
-	    elseif l:letter == '-'
+	    elseif register == '-'
 		let @@=choice
 	    endif
 	elseif a:arg == 'p'
@@ -276,7 +276,7 @@ command! -buffer P :call Yank("p")
 
 if !exists("*YankToReg")
 function! YankToReg()
-    call <SID>yank("@")
+    call <SID>yank("@", v:register)
 endfunction
 endif
 
