@@ -2019,13 +2019,14 @@ endfunction "}}}
 " atplib#search#TreeOfFiles_py "{{{
 function! atplib#search#TreeOfFiles_py(main_file)
 let time=reltime()
+let project_dir = getbufvar(a:main_file, 'atp_ProjectDir')
 python << END_PYTHON
 
 import vim, re, subprocess, os, glob
 
 filename=vim.eval('a:main_file')
 relative_path=vim.eval('g:atp_RelativePath')
-project_dir=vim.eval('b:atp_ProjectDir')
+project_dir=vim.eval('project_dir')
 
 def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,

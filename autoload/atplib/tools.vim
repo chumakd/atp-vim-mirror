@@ -104,14 +104,22 @@ endfunction
 " there are no errors (for to not affect :Labels command)
 function! atplib#tools#GrepAuxFile(...)
     " Aux file to read:
-    if exists("b:atp_MainFile")
-	let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+
+    if a:0 >= 1
+	let aux_filename	= fnamemodify(a:1, ":r") . "._aux"
+	if !filereadable(aux_filename)
+	    let aux_filename	= a:1
+	    if !filereadable(a:1) && exists("b:atp_MainFile")
+		let aux_filename = fnamemodify(atplib#FullPath(b:atp_MainFile), ":r") . "._aux"
+		if !filereadable(aux_filename)
+		    let aux_filename = fnamemodify(atplib#FullPath(b:atp_MainFile), ":r") . ".aux"
+		else
+		    echoerr "[ATP] aux file not found (atplib#tools#GrepAuxFile)."
+		endif
+	    endif
+	endif
     endif
-    if filereadable(fnamemodify(atp_MainFile, ":r") . "._aux")
-	let aux_filename	= ( a:0 == 0 && exists("b:atp_MainFile") ? fnamemodify(atp_MainFile, ":r") . "._aux" : a:1 )
-    else
-	let aux_filename	= ( a:0 == 0 && exists("b:atp_MainFile") ? fnamemodify(atp_MainFile, ":r") . ".aux" : a:1 )
-    endif
+
     let tex_filename	= fnamemodify(aux_filename, ":r") . ".tex"
 
     if !filereadable(aux_filename)
