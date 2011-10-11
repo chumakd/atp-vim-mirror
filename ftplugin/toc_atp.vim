@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Mon Oct 10, 2011 at 08:37:11  +0100
+" Last Change: Tue Oct 11, 2011 at 08:13:13  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -336,12 +336,20 @@ function! EchoLine()
 "     endif
 
     let buf_name	= s:file()
+    let g:buf_name	= buf_name
     let buf_nr		= bufnr("^" . buf_name . "$")
     if !exists("t:atp_labels")
 	let t:atp_labels[buf_name]	= UpdateLabels(buf_name)[buf_name]
     endif
     let line		= atplib#tools#getlinenr(line("."), labels_window)
+    let g:line		= line
     let sec_line	= join(getbufline(buf_name,line))
+    let i 		= 1
+    while sec_line	!~ '\\\%(\%(sub\)\?paragraph\|\%(sub\)\{0,2}section\|chapter\|part\)\s*{.*}' && i <= 20
+	let sec_line	= substitute(sec_line, '\s*$', '', '') . substitute(join(getbufline(buf_name, line+i)), '^\s*', ' ', '')
+	let i 		+= 1
+    endwhile
+    let g:sec_line	= sec_line
     let sec_type	= ""
 
     if sec_line =~ '\\subparagraph[^\*]'
