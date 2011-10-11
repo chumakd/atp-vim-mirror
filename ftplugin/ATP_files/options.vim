@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Oct 10, 2011 at 23:04:20  +0100
+" Last Change: Tue Oct 11, 2011 at 15:45:23  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -1864,7 +1864,7 @@ endif
 command! -buffer ToggleSpace	:call <SID>ToggleSpace()
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleIMaps	 	:call ATP_ToggleIMaps(0, "!", <f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleIMaps		:call ATP_ToggleIMaps(0, "!")<CR>
-inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<Esc>:call ATP_ToggleIMaps(0, "!")<CR>
+inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<C-O>:call ATP_ToggleIMaps(0, "!")<CR>
 " inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<Esc>:call ATP_ToggleIMaps(1, "")<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
@@ -1888,7 +1888,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleDebugMode		:call ATP_ToggleDebugMode("De
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp	ToggleTab	 	:call ATP_ToggleTab(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleTab		:call ATP_ToggleTab()<CR>
-inoremap <silent> <buffer> 	<Plug>ToggleTab		<Esc>:call ATP_ToggleTab()<CR>
+inoremap <silent> <buffer> 	<Plug>ToggleTab		<C-O>:call ATP_ToggleTab()<CR>
 "}}}
 
 " Tab Completion Variables:

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Oct 09, 2011 at 10:13:50  +0100
+" Last Change: Tue Oct 11, 2011 at 15:46:25  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -879,7 +879,7 @@ if !hasmapto("<Plug>ToggleIMaps", "n")
     nmap  <silent> <buffer> '<Tab>			<Plug>ToggleIMaps
 endif
 if !hasmapto("<Plug>ToggleIMapsa", "i")
-    imap  <silent> <buffer> '<Tab>			<Plug>ToggleIMapsa
+    imap  <silent> <buffer> '<Tab>			<Plug>ToggleIMaps
 endif
 if !hasmapto("<Plug>SimpleBibtex", "n")
     nmap  <silent> <buffer> <LocalLeader>B		<Plug>SimpleBibtex
