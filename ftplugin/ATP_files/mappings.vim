@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Oct 11, 2011 at 23:50:50  +0100
+" Last Change: Wed Oct 12, 2011 at 07:30:18  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1196,7 +1196,7 @@ endif
 
     else
 	let g:atp_imap_diacritics = [
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '''', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ? "<ESC>vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."'.s:bbackslash.'''{\"}" : "''''")', 
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '''', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."'.s:bbackslash.'''{\"}" : "''''")', 
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '"', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'\"{\"}"',
 		    \ "g:atp_imap_define_diacritics", '\"{}' ],
@@ -1206,21 +1206,21 @@ endif
 		    \ "g:atp_imap_define_diacritics", '\^{}' ],
 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'v', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'v{\"}"',
 		    \ "g:atp_imap_define_diacritics", '\v{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'b', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'b{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'b', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'b{\"}" : "''v" )',
 		    \ "g:atp_imap_define_diacritics", '\b{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'd', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'d{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'd', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'d{\"}" : "''b" )',
 		    \ "g:atp_imap_define_diacritics", '\d{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'`{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'`{\"}" : "`''" )',
 		    \ "g:atp_imap_define_diacritics", '\d{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'H', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'H{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'H', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'H{\"}" : "''H" )',
 		    \ "g:atp_imap_define_diacritics", '\H{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '~', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'~{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '~', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'~{\"}" : "''~" )',
 		    \ "g:atp_imap_define_diacritics", '\~{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '.', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'.{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '.', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'.{\"}" : "''." )',
 		    \ "g:atp_imap_define_diacritics", '\.{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'c', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'c{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'c', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'c{\"}" : "''c" )',
 		    \ "g:atp_imap_define_diacritics", '\c{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  't', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'t{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  't', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''t")[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'t{\"}" : "''t" )',
 		    \ "g:atp_imap_define_diacritics", '\t{}' ]
 	    \ ]
 " 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', "(atplib#IsInMath() ? '' : '<ESC>vxa".s:backslash."`{\"}')", 	
