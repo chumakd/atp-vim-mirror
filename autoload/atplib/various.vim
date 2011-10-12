@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Oct 09, 2011 at 09:02:52  +0100
+" Last Change: Wed Oct 12, 2011 at 14:24:53  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1482,7 +1482,7 @@ function! atplib#various#ReloadATP(bang)
 	call setloclist(0,saved_loclist)
 	call map(list, 'matchstr(v:val, ''^\s*fun\%[ction]!\=\s\+\zsatplib#\S\+\ze\s*('')')
 	for fname in list
-	    if fname != "" && fname != "atplib#various#ReloadATP"
+	    if fname != "" && fname != "atplib#various#ReloadATP" && fname != "atplib#various#UpdateATP"
 		try
 		    exe 'delfunction '.fname
 		catch /E130:/

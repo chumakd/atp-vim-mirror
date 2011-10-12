@@ -585,7 +585,7 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
 
     let bufnr	= bufnr("%")
     try
-	silent! exe "keepalt edit +setl\\ noswapfile " . fnameescape(a:project_script)
+	silent! exe "keepalt keepjumps edit +setl\\ noswapfile " . fnameescape(a:project_script)
     catch /.*/
 	echoerr v:errmsg
 	let errmsg	= v:errmsg
@@ -608,7 +608,7 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
     " Delete the variables which where unlet:
     for var in deleted_variables
 	try 
-	    exe 'silent! %g/^\s*let\s\+' . var . '\>/d_'
+	    exe 'keepjumps silent! %g/^\s*let\s\+' . var . '\>/d_'
 	catch /E48\%(6\|0\):/
 	endtry
     endfor
@@ -624,16 +624,16 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
 	if exists(lvar)
 
 	    try 
-		exe 'silent! %g/^\s*let\s\+' . var . '\>/d_'
+		exe 'silent! keepjumps %g/^\s*let\s\+' . var . '\>/d_'
 	    catch /E486:/
 	    endtry
-	    call append('$', 'let ' . var . ' = ' . string({lvar}))
+	    keepjumps call append('$', 'let ' . var . ' = ' . string({lvar}))
 	endif
     endfor
     " Save project script file:
     silent w
     let projectscript_bufnr	= bufnr("%")
-    exe "silent keepalt b " . bufnr
+    exe "silent keepalt keepjumps b " . bufnr
     exe "bdelete " . projectscript_bufnr
 
 
