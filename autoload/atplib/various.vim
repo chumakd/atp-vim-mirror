@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Oct 12, 2011 at 14:24:53  +0100
+" Last Change: Thu Oct 13, 2011 at 08:42:18  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2184,12 +2184,10 @@ function! atplib#various#NiceDiff()
     call matchadd('DiffAdd', '\textcolor{blue}{[^}]*}',  10)
 endfunction "}}}
 
-" ATPUpdate
-try "{{{ UpdateATP
+" UpdateATP
+"{{{ UpdateATP
+try 
 function! atplib#various#UpdateATP(bang)
-    "DONE: add bang -> get stable/unstable latest release.
-    "DONE: check if the current version is newer than the available one
-    "		if not do not download and install (this saves time).
 
 	if g:atp_debugUpdateATP
 	    exe "redir! > ".g:atp_TempDir."/UpdateATP.log"
@@ -2258,6 +2256,8 @@ function! atplib#various#UpdateATP(bang)
 	    let sorted_list = sort(keys(dict), "atplib#various#CompareVersions")
 	endif
 	if g:atp_debugUpdateATP
+	    let g:sorted_list 	= sorted_list
+	    let g:dict		= dict
 	    silent echo "dict=".string(dict)
 	    silent echo "sorted_list=".string(sorted_list)
 	endif
@@ -2295,12 +2295,14 @@ function! atplib#various#UpdateATP(bang)
 	    endtry
 	endif
 	if g:atp_debugUpdateATP
+	    let g:old_stamp	= old_stamp
 	    silent echo "old_stamp=".old_stamp
 	endif
 
 
 	let new_stamp = sorted_list[0]
 	if g:atp_debugUpdateATP
+	    let g:new_stamp	= new_stamp
 	    silent echo "new_stamp=".new_stamp
 	endif
 	 
@@ -2312,6 +2314,9 @@ function! atplib#various#UpdateATP(bang)
 	    let compare = atplib#various#CompareStamps(new_stamp, old_stamp)
 	else
 	    let compare = atplib#various#CompareVersions(new_stamp, old_stamp) 
+	endif
+	if g:atp_debugUpdateATP
+	    let g:compare	= compare
 	endif
 	if a:bang == "!"
 	    if  compare == 1 || compare == 0
@@ -2399,9 +2404,18 @@ function! atplib#various#CompareStamps(new, old)
     " new > old => -1
     " new = old => 0
     " new < old => 1
-    let new=substitute(a:new, '\.', '', 'g')
-    let old=substitute(a:old, '\.', '', 'g')
-    return ( new == old ? 0 : new > old ? -1 : 1 )
+    let new_r=split(a:new, '\%(-\|_\)')
+    let old_r=split(a:old, '\%(-\|_\)')
+    let new	= [ new_r[2], new_r[1], new_r[0], new_r[3], new_r[4] ]
+    let old	= [ old_r[2], old_r[1], old_r[0], old_r[3], old_r[4] ]
+    let compare = []
+    for i in range(max([len(new), len(old)]))
+	let nr = (str2nr(get(new,i,0)) < str2nr(get(old,i,0)) ? 1 : ( str2nr(get(new,i,0)) == str2nr(get(old,i,0)) ? 0 : 2 ))
+	call add(compare, nr)
+    endfor
+    let comp = join(compare, "")
+    " comp =~ '^0*1' new is older version 
+    return ( comp == 0 ? 0 : ( comp =~ '^0*1' ? 1 : -1 ))
 endfunction
 function! atplib#various#CompareVersions(new, old)
     " newer stamp is smaller 
@@ -2411,18 +2425,14 @@ function! atplib#various#CompareVersions(new, old)
     " new < old => 1
     let new=split(a:new, '\.')
     let old=split(a:old, '\.')
-    let g:new=new
-    let g:old=old
     let compare = []
     for i in range(max([len(new), len(old)]))
-	let nr = (get(new,i,0) < get(old,i,0) ? 1 : ( get(new,i,0) == get(old,i,0) ? 0 : 2 ))
+	let nr = (str2nr(get(new,i,0)) < str2nr(get(old,i,0)) ? 1 : ( str2nr(get(new,i,0)) == str2nr(get(old,i,0)) ? 0 : 2 ))
 	call add(compare, nr)
     endfor
     let comp = join(compare, "")
     " comp =~ '^0*1' new is older version 
     return ( comp == 0 ? 0 : ( comp =~ '^0*1' ? 1 : -1 ))
-
-"     return ( new == old ? 0 : new > old ? -1 : 1 )
 endfunction
 function! atplib#various#GetTimeStamp(file)
 python << END
