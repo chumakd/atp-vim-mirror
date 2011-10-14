@@ -539,7 +539,7 @@ endfunction
 function! atplib#motion#ToCbufnr() 
     return index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__')
 endfunction
-" {{{2 UpdateToCLine
+" atplib#motion#UpdateToCLine {{{2
 function! atplib#motion#UpdateToCLine(...)
     if !g:atp_UpdateToCLine
 	return
@@ -574,7 +574,7 @@ function! atplib#motion#UpdateToCLine(...)
     let &eventignore=eventignore
 endfunction
 " This is User Front End Function 
-"{{{2 TOC
+" atplib#motion#TOC {{{2
 function! atplib#motion#TOC(bang,...)
     " skip generating t:atp_toc list if it exists and if a:0 != 0
     if &l:filetype != 'tex' && &l:filetype != 'toc_atp'   
@@ -597,8 +597,6 @@ endfunction
 nnoremap <Plug>ATP_TOC			:call atplib#motion#TOC("")<CR>
 
 " This finds the name of currently eddited section/chapter units. 
-" {{{2 Current TOC
-" ToDo: make this faster!
 " {{{2 atplib#motion#NearestSection
 " This function finds the section name of the current section unit with
 " respect to the dictionary a:section={ 'line number' : 'section name', ... }
@@ -743,7 +741,7 @@ function! atplib#motion#Labels(bang)
 endfunction
 nnoremap <Plug>ATP_Labels		:call atplib#motion#Labels("")<CR>
 
-" atplib#motion#GotoLabel & atplib#motion#GotoLabelCompletion {{{1
+" atplib#motion#GotoLabel {{{1
 " a:bang = "!" do not regenerate labels if not necessary
 " This is developed for one tex project in a vim.
 function! atplib#motion#GotoLabel(bang,...)
@@ -812,7 +810,7 @@ function! atplib#motion#GotoLabel(bang,...)
 	call cursor(line,1)
     endif
 endfunction
-
+" atplib#motion#GotoLabelCompletion {{{1
 function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
@@ -836,7 +834,7 @@ function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 
     return map(labels, "v:val.'\\>'")
 endfunction
-" {{{1 TAGS
+" atplib#motion#LatexTags {{{1
 function! atplib#motion#LatexTags(bang)
     let hyperref_cmd = ( atplib#search#SearchPackage("hyperref") ? " --hyperref " : "" )
     if has("clientserver")
@@ -922,8 +920,7 @@ function! atplib#motion#CompleteDestinations(ArgLead, CmdLine, CursorPos)
 endfunction
 
 " Motion functions through environments and sections. 
-" {{{1 Motion functions
-" Go to next environment "{{{2
+"  atplib#motion#GotoEnvironment {{{1
 " which name is given as the argument. Do not wrap
 " around the end of the file.
 function! atplib#motion#GotoEnvironment(flag,count,...)
@@ -1035,7 +1032,7 @@ function! atplib#motion#GotoEnvironment(flag,count,...)
     silent! let @/ 	 = pattern
     return ""
 endfunction
-" {{{2 atplib#motion#GotoFrame
+" atplib#motion#GotoFrame {{{1
 function! atplib#motion#GotoFrame(f, count)
     let g:Count=a:count
     let lz=&lazyredraw
@@ -1050,7 +1047,7 @@ function! atplib#motion#GotoFrame(f, count)
 endfunction
 nnoremap <Plug>NextFrame	:<C-U>call atplib#motion#GotoFrame('forward', v:count1)<CR>
 nnoremap <Plug>PreviousFrame	:<C-U>call atplib#motion#GotoFrame('backward', v:count1)<CR>
-"{{{2 atplib#motion#JumptoEnvironment
+" atplib#motion#JumptoEnvironment {{{1 
 " function! atplib#motion#GotoEnvironmentB(flag,count,...)
 "     let env_name 	= (a:0 >= 1 && a:1 != ""  ? a:1 : '[^}]*')
 "     for i in range(1,a:count)
@@ -1068,7 +1065,7 @@ function! atplib#motion#JumptoEnvironment(backward)
 	let col	= searchpos('\w*\>\zs', 'n')[1]-1
 	if strpart(getline(line(".")), 0, col) =~ '\\begin\>$' &&
 		    \ strpart(getline(line(".")), col) !~ '^\s*{\s*document\s*}'
-	    exe "normal %"
+	    exe "normal g%"
 	endif
 	call search('^\%([^%]\|\\%\)*\zs\\begin\>', 'W')
     else
@@ -1081,7 +1078,7 @@ function! atplib#motion#JumptoEnvironment(backward)
     endif
     let &l:lazyredraw=lazyredraw
 endfunction 
-" Go to next section {{{2 
+" atplib#motion#GotoSection {{{1 
 " The extra argument is a pattern to match for the
 " section title. The first, obsolete argument stands for:
 " part,chapter,section,subsection,etc.
@@ -1180,7 +1177,7 @@ function! atplib#motion#ggGotoSection(count,section)
     call setpos("''",mark)
 endfunction
 
-" {{{2 atplib#motion#Input()
+" atplib#motion#Input {{{1 
 function! atplib#motion#Input(flag)
     let pat 	= ( &l:filetype == "plaintex" ? '\\input\s*{' : '\%(\\input\>\|\\include\s*{\)' )
     let @/	= '^\([^%]\|\\\@<!\\%\)*' . pat
@@ -1194,7 +1191,7 @@ function! atplib#motion#Input(flag)
     "     search history.
     "     call histadd("search", pat)
 endfunction
-" {{{1 Go to File
+" atplib#motion#GotoFile {{{1
 " This function also sets filetype vim option.
 " It is useing '\f' pattern thus it depends on the 'isfname' vim option.
 try
@@ -1469,7 +1466,7 @@ function! atplib#motion#GotoFileComplete(ArgLead, CmdLine, CursorPos)
     endif
     return  filter(file_l, "v:val =~ a:ArgLead")
 endfunction
-" Skip Comment "{{{1
+" atplib#motion#SkipComment {{{1
 " a:flag=fb (f-forward, b-backward)
 " f works like ]*
 " b workd like [*
@@ -1674,7 +1671,7 @@ function! atplib#motion#TexSyntaxMotion(forward, how, ...)
 endfunction
 
 " ctrl-j motion
-" {{{1 ctrl-j motion
+" atplib#motion#JMotion {{{1
 " New <Ctrl-j> motion
 function! atplib#motion#JMotion(flag)
 " 	Note: pattern to match only commands which do not have any arguments:

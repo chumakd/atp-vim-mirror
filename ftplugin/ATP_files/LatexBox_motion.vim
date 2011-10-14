@@ -56,7 +56,7 @@ endfunction
 " - search backwards if backward is given and nonzero
 " - search forward otherwise
 "
-function! s:JumpToMatch(direction, mode, ...)
+function! s:JumpToMatch(mode, ...)
 
     	if a:0 >= 1
 	    let backward = a:1
@@ -78,11 +78,15 @@ function! s:JumpToMatch(direction, mode, ...)
 	let two_dollar_pat 	= '\\\@<!\$\$'
 
 	let saved_pos = getpos('.')
+	let g:saved_pos = saved_pos
 	let beg_of_line  = strpart(getline('.'), 0, searchpos('\>', 'n')[1]-1)
-	    let g:beg_of_line = beg_of_line
+" 	    let g:beg_of_line = beg_of_line
 
 	" move to the left until not on alphabetic characters
 	call search('\A', 'cbW', line('.'))
+	if getline('.')[col('.')-1]=~'}\|\]\|)' && col('.') < saved_pos[2]
+	    normal! l
+	endif
 
 	let zonex=s:HasSyntax('texMathZoneX', line("."), col(".")) || s:HasSyntax('texMathZoneX', line('.'), max([1, col(".")-1])) 
 	let zoney=s:HasSyntax('texMathZoneY', line("."), col("."))  
@@ -107,7 +111,7 @@ function! s:JumpToMatch(direction, mode, ...)
 	endif
 
 	let rest_of_line = strpart(getline('.'), col('.') - 1)
-	    let g:rest_of_line = rest_of_line
+" 	    let g:rest_of_line = rest_of_line
 
 	" match for '$' pairs
 	if rest_of_line =~ '^\$' && beg_of_line !~ '\C\\item$' && !s:HasSyntax('texSectionModifier', line('.'), col('.'))
@@ -132,27 +136,32 @@ function! s:JumpToMatch(direction, mode, ...)
 		endif
 	else
 
-	    let g:direction = a:direction
-
 	" match other pairs
 	for i in range(len(open_pats))
 		let open_pat = open_pats[i]
 		let close_pat = close_pats[i]
 		let mid_pat = ( open_pat  == '\\begin\>' ? '\C\\item\>' : '' )
+		let g:cpos = getpos('.')
 
 		if mid_pat != "" && beg_of_line =~ '\C\%(' . mid_pat . '\)$'
-		    " is on mid pattern
-		    call setpos(".", saved_pos)
-		    call search('\\\<', 'bc')
-		    call searchpair('\C'.open_pat, mid_pat, '\C'.close_pat, 'W'.a:direction, 'LatexBox_InComment()')
+		" if on mid pattern
+" 		    call setpos(".", saved_pos)
+" 		    call search('\\\<', 'bc')
+		    call search('\C'.mid_pat, 'Wbc', line("."))
+		    call searchpair('\C'.open_pat, mid_pat, '\C'.close_pat, 'W'.(backward ? 'b' : ''), 'LatexBox_InComment()')
+		    let g:debug = 1." ".'\C'.open_pat." ". mid_pat." ". '\C'.close_pat." ". 'W'.(backward ? 'b' : '')." ". 'LatexBox_InComment()'
 		    break
 		elseif rest_of_line =~ '^\C\%(' . open_pat . '\)'
 		" if on opening pattern, go to closing pattern
-		    call searchpair('\C'.open_pat, (a:direction == '' ? mid_pat : ''), '\C'.close_pat, 'W', 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, 
+				\ (!backward && (saved_pos[1] == line('.') && saved_pos[2] >= col('.')) ? mid_pat : ''),
+				\ '\C'.close_pat, 'W', 'LatexBox_InComment()')
+		    let g:debug = 2." ".'\C'.open_pat." ". (!backward  && ( saved_pos[1] == line('.') && saved_pos[2] >= col('.') )? mid_pat : '')." ". '\C'.close_pat." ". 'W'." ". 'LatexBox_InComment()'
 		    break
 		elseif rest_of_line =~ '^\C\%(' . close_pat . '\)'
-		    " if on closing pattern, go to opening pattern
-		    call searchpair('\C'.open_pat, (a:direction == '' ? '' : mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
+		" if on closing pattern, go to opening pattern
+		    call searchpair('\C'.open_pat, (!backward ? '' : mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
+" 		    let g:debug = 3." ".'\C'.open_pat." ". (!backward ? '' : mid_pat)." ". '\C'.close_pat." ". 'Wb'." ". 'LatexBox_InComment()'
 		    break
 		endif
 
@@ -161,13 +170,10 @@ function! s:JumpToMatch(direction, mode, ...)
 
 endfunction
 
-nnoremap <silent> <Plug>LatexBox_JumpToMatchForward		:call <SID>JumpToMatch('', 'n')<CR>
-nnoremap <silent> <Plug>LatexBox_JumpToMatchBackward		:call <SID>JumpToMatch('b', 'n')<CR>
-vnoremap <silent> <Plug>LatexBox_JumpToMatchForward 		:<C-U>call <SID>JumpToMatch('', 'v')<CR>
-nnoremap <silent> <Plug>LatexBox_BackJumpToMatchForward 	:call <SID>JumpToMatch('', 'n', 1)<CR>
-nnoremap <silent> <Plug>LatexBox_BackJumpToMatchBackward 	:call <SID>JumpToMatch('b', 'n', 1)<CR>
-vnoremap <silent> <Plug>LatexBox_BackJumpToMatchForward 	:<C-U>call <SID>JumpToMatch('', 'v', 1)<CR>
-vnoremap <silent> <Plug>LatexBox_BackJumpToMatchBackward 	:<C-U>call <SID>JumpToMatch('b', 'v', 1)<CR>
+nnoremap <silent> <Plug>LatexBox_JumpToMatch		:call <SID>JumpToMatch('n')<CR>
+vnoremap <silent> <Plug>LatexBox_JumpToMatch 		:<C-U>call <SID>JumpToMatch('v')<CR>
+nnoremap <silent> <Plug>LatexBox_BackJumpToMatch 	:call <SID>JumpToMatch('n', 1)<CR>
+vnoremap <silent> <Plug>LatexBox_BackJumpToMatch 	:<C-U>call <SID>JumpToMatch('v', 1)<CR>
 " }}}
 
 " select inline math {{{
