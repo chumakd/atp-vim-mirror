@@ -15,8 +15,8 @@ for line in file_l:
     if re.match('\s*"\s+Time\s+Stamp:', line):
         file_l[i-1]='" Time Stamp: '+newstamp+"\n"
         t+=1
-    elif re.match('\s*let\s+loaded_AutomaticLatexPlugin\s*=', line):
-        file_l[i-1]='let loaded_AutomaticLatexPlugin = "'+version+"\"\n"
+    elif re.match('\s*let\s+(g:)?loaded_AutomaticLatexPlugin\s*=', line):
+        file_l[i-1]='let g:loaded_AutomaticLatexPlugin = "'+version+"\"\n"
         t+=1
     if t== 2:
         break

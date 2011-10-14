@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Oct 11, 2011 at 15:45:23  +0100
+" Last Change: Fri Oct 14, 2011 at 07:14:42  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2687,7 +2687,12 @@ function! <SID>ATP_SyntaxGroups()
     endif
     " add texMathZoneT syntax group for tikzpicture environment:
     if atplib#search#SearchPackage('tikz') || atplib#search#SearchPackage('pgfplots')
+	" This works with \matrix{} but not with \matrix[matrix of math nodes]
 	syntax region texMathZoneT start='\\begin\s*{\s*tikzpicture\s*}' end='\\end\s*{\s*tikzpicture\s*}' keepend contains=@texMathZoneGroup,@texMathZones
+	syntax sync match texSyncMathZoneT grouphere texMathZoneT '\\begin\s*{\s*tikzpicture\s*}'
+	" This will mark whole tikzpicture environment as a math environment,
+	" which I prefer not to do.
+" 	call TexNewMathZone("T", "tikzpicture", 0)
     endif
     " add texMathZoneALG syntax group for algorithmic environment:
     if atplib#search#SearchPackage('algorithmic')

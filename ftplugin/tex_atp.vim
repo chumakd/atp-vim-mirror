@@ -2,10 +2,10 @@
 " Author:		Marcin Szamotulski
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 10-10-11_21-25
+" Time Stamp: 13-10-11_14-02
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Wed Sep 28, 2011 at 08:31:16  +0100
+" Last Change: Thu Oct 13, 2011 at 08:45:31  +0100
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -32,7 +32,7 @@ if exists("g:no_atp") && g:no_atp == 1
 endif
 
 let b:did_ftplugin	= 1
-let loaded_AutomaticLatexPlugin = "10.6.1"
+let g:loaded_AutomaticLatexPlugin = "10.6.2"
 
 if !exists("g:atp_reload_functions")
 	let g:atp_reload_functions = 0

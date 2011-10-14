@@ -56,7 +56,7 @@ endfunction
 " - search backwards if backward is given and nonzero
 " - search forward otherwise
 "
-function! s:JumpToMatch(mode, ...)
+function! s:JumpToMatch(direction, mode, ...)
 
     	if a:0 >= 1
 	    let backward = a:1
@@ -72,18 +72,20 @@ function! s:JumpToMatch(mode, ...)
 	endif
 
 	" open/close pairs (dollars signs are treated apart)
-	let open_pats 		= ['{', '\[', '(', '\\begin\>', '\\left\>', '\\lceil\>', '\\lgroup\>', '\\lfloor', '\\langle']
-	let close_pats 		= ['}', '\]', ')', '\\end\>', '\\right\>', '\\rceil', '\\rgroup\>', '\\rfloor', '\\rangle']
+	let open_pats 		= ['\\begin\>', '{', '\[', '(', '\\left\>', '\\lceil\>', '\\lgroup\>', '\\lfloor', '\\langle']
+	let close_pats 		= ['\\end\>', '}', '\]', ')', '\\right\>', '\\rceil', '\\rgroup\>', '\\rfloor', '\\rangle']
 	let dollar_pat 		= '\\\@<!\$'
 	let two_dollar_pat 	= '\\\@<!\$\$'
 
 	let saved_pos = getpos('.')
+	let beg_of_line  = strpart(getline('.'), 0, searchpos('\>', 'n')[1]-1)
+	    let g:beg_of_line = beg_of_line
 
 	" move to the left until not on alphabetic characters
 	call search('\A', 'cbW', line('.'))
 
-		let zonex=s:HasSyntax('texMathZoneX', line("."), col(".")) || s:HasSyntax('texMathZoneX', line('.'), max([1, col(".")-1])) 
-		let zoney=s:HasSyntax('texMathZoneY', line("."), col("."))  
+	let zonex=s:HasSyntax('texMathZoneX', line("."), col(".")) || s:HasSyntax('texMathZoneX', line('.'), max([1, col(".")-1])) 
+	let zoney=s:HasSyntax('texMathZoneY', line("."), col("."))  
 
 	let stopline = ( g:atp_VimCompatible || g:atp_VimCompatible =~? '\<yes\>' ? line('.') : 0 )
 	" go to next opening/closing pattern on same line
@@ -105,9 +107,10 @@ function! s:JumpToMatch(mode, ...)
 	endif
 
 	let rest_of_line = strpart(getline('.'), col('.') - 1)
+	    let g:rest_of_line = rest_of_line
 
 	" match for '$' pairs
-	if rest_of_line =~ '^\$' && !s:HasSyntax('texSectionModifier', line('.'), col('.'))
+	if rest_of_line =~ '^\$' && beg_of_line !~ '\C\\item$' && !s:HasSyntax('texSectionModifier', line('.'), col('.'))
 
 		" check if next character is in inline math
 		let zonex+=s:HasSyntax('texMathZoneX', line("."), col(".")) 
@@ -129,18 +132,30 @@ function! s:JumpToMatch(mode, ...)
 		endif
 	else
 
+
 	" match other pairs
 	for i in range(len(open_pats))
 		let open_pat = open_pats[i]
 		let close_pat = close_pats[i]
+		let mid_pat = ( open_pat  == '\\begin\>' ? '\\item\>' : '' )
+		echomsg open_pat." ".mid_pat." ".close_pat
 
-		if rest_of_line =~ '^\C\%(' . open_pat . '\)'
+		if mid_pat != "" && beg_of_line =~ '\C\%(' . mid_pat . '\)$'
+		    let g:debug = 1 ." ". '\C' . open_pat." ". mid_pat." ". '\C' . close_pat." ". 'W'.a:direction." ". 'LatexBox_InComment()'
+		    " is on mid pattern
+		    call setpos(".", saved_pos)
+		    call search('\\\<', 'bc')
+		    call searchpair('\C'.open_pat, '\C'.mid_pat, '\C'.close_pat, 'W'.a:direction, 'LatexBox_InComment()')
+		    break
+		elseif rest_of_line =~ '^\C\%(' . open_pat . '\)'
+		    let g:debug = 2 ." ".'\C' .open_pat." ". (a:direction == '' ? '\C'.mid_pat : '')." ". '\C' . close_pat." ". 'W'.a:direction." ". 'LatexBox_InComment()' 
 		" if on opening pattern, go to closing pattern
-		    call searchpair('\C' . open_pat, '', '\C' . close_pat, 'W', 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, (a:direction == '' ? '\C'.mid_pat : ''), '\C'.close_pat, 'W', 'LatexBox_InComment()')
 		    break
 		elseif rest_of_line =~ '^\C\%(' . close_pat . '\)'
+		    let g:debug = 3 ." ".'\C' . open_pat." ". (a:direction == '' ? '' : mid_pat)." ". '\C' . close_pat." ". 'W'.(a:direction ==# '' ? 'b' : '')." ". 'LatexBox_InComment()'
 		    " if on closing pattern, go to opening pattern
-		    call searchpair('\C' . open_pat, '', '\C' . close_pat, 'bW', 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, (a:direction == '' ? '' : '\C'.mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
 		    break
 		endif
 
@@ -149,10 +164,13 @@ function! s:JumpToMatch(mode, ...)
 
 endfunction
 
-nnoremap <silent> <Plug>LatexBox_JumpToMatch 		:call <SID>JumpToMatch('n')<CR>
-vnoremap <silent> <Plug>LatexBox_JumpToMatch 		:<C-U>call <SID>JumpToMatch('v')<CR>
-nnoremap <silent> <Plug>LatexBox_BackJumpToMatch 	:call <SID>JumpToMatch('n', 1)<CR>
-vnoremap <silent> <Plug>LatexBox_BackJumpToMatch 	:<C-U>call <SID>JumpToMatch('v', 1)<CR>
+nnoremap <silent> <Plug>LatexBox_JumpToMatchForward		:call <SID>JumpToMatch('', 'n')<CR>
+nnoremap <silent> <Plug>LatexBox_JumpToMatchBackward		:call <SID>JumpToMatch('b', 'n')<CR>
+vnoremap <silent> <Plug>LatexBox_JumpToMatchForward 		:<C-U>call <SID>JumpToMatch('', 'v')<CR>
+nnoremap <silent> <Plug>LatexBox_BackJumpToMatchForward 	:call <SID>JumpToMatch('', 'n', 1)<CR>
+nnoremap <silent> <Plug>LatexBox_BackJumpToMatchBackward 	:call <SID>JumpToMatch('b', 'n', 1)<CR>
+vnoremap <silent> <Plug>LatexBox_BackJumpToMatchForward 	:<C-U>call <SID>JumpToMatch('', 'v', 1)<CR>
+vnoremap <silent> <Plug>LatexBox_BackJumpToMatchBackward 	:<C-U>call <SID>JumpToMatch('b', 'v', 1)<CR>
 " }}}
 
 " select inline math {{{
