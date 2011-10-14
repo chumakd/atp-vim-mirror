@@ -132,30 +132,27 @@ function! s:JumpToMatch(direction, mode, ...)
 		endif
 	else
 
+	    let g:direction = a:direction
 
 	" match other pairs
 	for i in range(len(open_pats))
 		let open_pat = open_pats[i]
 		let close_pat = close_pats[i]
-		let mid_pat = ( open_pat  == '\\begin\>' ? '\\item\>' : '' )
-		echomsg open_pat." ".mid_pat." ".close_pat
+		let mid_pat = ( open_pat  == '\\begin\>' ? '\C\\item\>' : '' )
 
 		if mid_pat != "" && beg_of_line =~ '\C\%(' . mid_pat . '\)$'
-		    let g:debug = 1 ." ". '\C' . open_pat." ". mid_pat." ". '\C' . close_pat." ". 'W'.a:direction." ". 'LatexBox_InComment()'
 		    " is on mid pattern
 		    call setpos(".", saved_pos)
 		    call search('\\\<', 'bc')
-		    call searchpair('\C'.open_pat, '\C'.mid_pat, '\C'.close_pat, 'W'.a:direction, 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, mid_pat, '\C'.close_pat, 'W'.a:direction, 'LatexBox_InComment()')
 		    break
 		elseif rest_of_line =~ '^\C\%(' . open_pat . '\)'
-		    let g:debug = 2 ." ".'\C' .open_pat." ". (a:direction == '' ? '\C'.mid_pat : '')." ". '\C' . close_pat." ". 'W'.a:direction." ". 'LatexBox_InComment()' 
 		" if on opening pattern, go to closing pattern
-		    call searchpair('\C'.open_pat, (a:direction == '' ? '\C'.mid_pat : ''), '\C'.close_pat, 'W', 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, (a:direction == '' ? mid_pat : ''), '\C'.close_pat, 'W', 'LatexBox_InComment()')
 		    break
 		elseif rest_of_line =~ '^\C\%(' . close_pat . '\)'
-		    let g:debug = 3 ." ".'\C' . open_pat." ". (a:direction == '' ? '' : mid_pat)." ". '\C' . close_pat." ". 'W'.(a:direction ==# '' ? 'b' : '')." ". 'LatexBox_InComment()'
 		    " if on closing pattern, go to opening pattern
-		    call searchpair('\C'.open_pat, (a:direction == '' ? '' : '\C'.mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
+		    call searchpair('\C'.open_pat, (a:direction == '' ? '' : mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
 		    break
 		endif
 
