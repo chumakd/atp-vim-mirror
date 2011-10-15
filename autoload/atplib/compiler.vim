@@ -8,7 +8,7 @@
 " {{{
 " This limits how many consecutive runs there can be maximally.
 " Note: compile.py script has hardcoded the same value.
-let atplib#compiler#runlimit		= 9
+let s:runlimit		= 9
 " }}}
 
 " This is the function to view output. It calls compiler if the output is a not
@@ -791,27 +791,27 @@ endfunction
 "
 function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang)
     
-    " Set biber setting on the fly
-    call atplib#compiler#SetBiberSettings()
+	" Set biber setting on the fly
+	call atplib#compiler#SetBiberSettings()
 
-    if !has('gui') && a:verbose == 'verbose' && b:atp_running > 0
-	redraw!
-	echomsg "[ATP:] please wait until compilation stops."
-	return
-    endif
+	if !has('gui') && a:verbose == 'verbose' && b:atp_running > 0
+	    redraw!
+	    echomsg "[ATP:] please wait until compilation stops."
+	    return
+	endif
 
-    if g:atp_debugCompiler
-	exe "redir! > ".g:atp_TempDir."/Compiler.log"
-	silent echomsg "________ATP_COMPILER_LOG_________"
-	silent echomsg "changedtick=" . b:changedtick . " atp_changedtick=" . b:atp_changedtick
-	silent echomsg "a:bibtex=" . a:bibtex . " a:start=" . a:start . " a:runs=" . a:runs . " a:verbose=" . a:verbose . " a:command=" . a:command . " a:filename=" . a:filename . " a:bang=" . a:bang
-	silent echomsg "1 b:changedtick=" . b:changedtick . " b:atp_changedtick" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
-    endif
+	if g:atp_debugCompiler
+	    exe "redir! > ".g:atp_TempDir."/Compiler.log"
+	    silent echomsg "________ATP_COMPILER_LOG_________"
+	    silent echomsg "changedtick=" . b:changedtick . " atp_changedtick=" . b:atp_changedtick
+	    silent echomsg "a:bibtex=" . a:bibtex . " a:start=" . a:start . " a:runs=" . a:runs . " a:verbose=" . a:verbose . " a:command=" . a:command . " a:filename=" . a:filename . " a:bang=" . a:bang
+	    silent echomsg "1 b:changedtick=" . b:changedtick . " b:atp_changedtick" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
+	endif
 
-    if has('clientserver') && !empty(v:servername) && g:atp_callback && a:verbose != 'verbose'
-	let b:atp_running+=1
-    endif
-    call atplib#outdir()
+	if has('clientserver') && !empty(v:servername) && g:atp_callback && a:verbose != 'verbose'
+	    let b:atp_running+=1
+	endif
+	call atplib#outdir()
     	" IF b:atp_TexCompiler is not compatible with the viewer
 	" ToDo: (move this in a better place). (luatex can produce both pdf and dvi
 	" files according to options so this is not the right approach.) 
@@ -827,11 +827,11 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	    echomsg "       b:atp_Viewer=" . b:atp_Viewer	
 	endif
 
-	" there is no need to run more than atplib#compiler#runlimit (=5) consecutive runs
+	" There is no need to run more than ~5 (s:runlimit=9) consecutive runs
 	" this prevents from running tex as many times as the current line
 	" what can be done by a mistake using the range for the command.
-	if a:runs > atplib#compiler#runlimit
-	    let runs = atplib#compiler#runlimit
+	if ( a:runs > s:runlimit )
+	    let runs = s:runlimit
 	else
 	    let runs = a:runs
 	endif
@@ -1999,8 +1999,6 @@ function! atplib#compiler#TeX(runs, bang, ...)
 	endif
     endfor
 
-"     echomsg "TEX_2 CHANGEDTICK=" . b:changedtick . " " . b:atp_running
-
     if l:mode != 'silent'
 	if a:runs > 2 && a:runs <= 5
 	    echo "[ATP:] ".Compiler . " will run " . a:1 . " times."
@@ -2009,7 +2007,7 @@ function! atplib#compiler#TeX(runs, bang, ...)
 	elseif a:runs == 1
 	    echo "[ATP:] ".Compiler . " will run once."
 	elseif a:runs > 5
-	    echo "[ATP:] ".Compiler . " will run " . atplib#compiler#runlimit . " times."
+	    echo "[ATP:] ".Compiler . " will run " . s:runlimit . " times."
 	endif
     endif
     if g:atp_Compiler == 'python'
