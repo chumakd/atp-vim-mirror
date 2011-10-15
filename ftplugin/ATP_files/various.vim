@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Sep 20, 2011 at 09:53  +0100
+" Last Change: Sat Oct 15, 2011 at 22:06:09  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen
@@ -461,7 +461,7 @@ command! -buffer ReloadATP					:call atplib#various#ReloadATP("!")
 command! -bang -buffer -nargs=1 AMSRef				:call atplib#various#AMSRef(<q-bang>, <q-args>)
 command! -buffer	Preamble				:call atplib#various#Preamble()
 command! -bang		WordCount				:call atplib#various#ShowWordCount(<q-bang>)
-command! -buffer -bang	UpadteATP				:call atplib#various#UpdateATP(<q-bang>)
+command! -buffer -bang	UpdateATP				:call atplib#various#UpdateATP(<q-bang>)
 command! -buffer	ATPversion				:echo atplib#various#ATPversion()
 if has("unix") && g:atp_atpdev
     command! -nargs=? -complete=custom,atplib#various#DebugPrintComp DebugPrint	:call atplib#various#DebugPrint(<q-args>)

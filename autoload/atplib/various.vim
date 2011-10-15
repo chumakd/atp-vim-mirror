@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Oct 13, 2011 at 08:42:18  +0100
+" Last Change: Sat Oct 15, 2011 at 22:04:47  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -881,7 +881,6 @@ function! atplib#various#Delete(delete_output)
     endfor
 endfunction
 "}}}
-
 "{{{ OpenLog, TexLog, TexLog Buffer Options, PdfFonts, YesNoCompletion
 "{{{ atplib#various#Search function for Log Buffer
 function! atplib#various#Search(pattern, flag, ...)
@@ -1245,8 +1244,6 @@ function! atplib#various#YesNoCompletion(A,P,L)
     return ['yes','no']
 endfunction
 "}}}
-
-" Ssh printing tools
 "{{{ Print, Lpstat, ListPrinters
 " This function can send the output file to local or remote printer.
 " a:1   = file to print		(if not given printing the output file)
@@ -1432,16 +1429,7 @@ function! atplib#various#CompleteLocal_lpr(ArgLead, CmdLine, CPos)
 endfunction
 " }}}
 
-" Open Library Command
-" {{{ :Open
-" -complete=customlist,ATP_CompleteOpen
-" function! ATP_CompleteOpen(ArgLead, CmdLead, CurPos)
-"     return filter(deepcopy(g:atp_open_completion), "v:val =~ '^' . a:ArgLead")
-" endfunction
-" }}}
-
-" This functions reloads ATP (whole or just a function)
-" {{{  ReloadATP
+" {{{  atplib#various#ReloadATP
 " ReloadATP() - reload all the tex_atp functions and delete all autoload functions from
 " autoload/atplib.vim
 try
@@ -1496,9 +1484,7 @@ catch /E127:/
     " Cannot redefine function, function is in use.
 endtry
 " }}}
-
-" This functions prints preamble 
-" {{{ Preambule
+" {{{ atplib#various#Preambule
 function! atplib#various#Preamble()
     let loclist = getloclist(0)
     let winview = winsaveview()
@@ -1520,9 +1506,7 @@ function! atplib#various#Preamble()
     endif
 endfunction
 " }}}
-
-" Get bibdata from ams
-" {{{ AMSGet
+" {{{ atplib#various#GetAMS
 
 try
 function! atplib#various#GetAMSRef(what, bibfile)
@@ -1682,9 +1666,7 @@ function! atplib#various#AMSRef(bang, what)
     endif
 endfunction
 "}}}
-
-" Dictionary (of J.Trzeciak IMPAN)
-"{{{ Dictionary
+"{{{ atplib#various#Dictionary
 function! atplib#various#Dictionary(word)
     redraw
     let URLquery_path 	= split(globpath(&rtp, 'ftplugin/ATP_files/url_query.py'), "\n")[0]
@@ -2016,10 +1998,7 @@ function! atplib#various#MakeListOfWords()
     return word_list
 endfunction
 "}}}
-
-
-" Count Words
-" {{{ WordCount() ShowWordCount()
+" {{{ atplib#various#WordCount()
 function! atplib#various#WordCount(bang)
 
     call atplib#write()
@@ -2038,8 +2017,8 @@ function! atplib#various#WordCount(bang)
     endfor
 
     return wc_sum
-endfunction
-
+endfunction "}}}
+" {{{ atplib#various#ShowWordCount()
 function! atplib#various#ShowWordCount(bang)
 
     let wc = atplib#various#WordCount(a:bang)
@@ -2059,9 +2038,7 @@ function! atplib#various#ShowWordCount(bang)
 	echomsg wc . "  " . b:atp_MainFile
     endif
 endfunction "}}}
-
-" Wdiff
-" {{{
+" {{{ atplib#various#Wdiff
 " Needs wdiff program.
 function! atplib#various#Wdiff(new_file, old_file)
 
@@ -2183,9 +2160,7 @@ function! atplib#various#NiceDiff()
     call matchadd('DiffDelete', '\textcolor{red}{[^}]*}', 10)
     call matchadd('DiffAdd', '\textcolor{blue}{[^}]*}',  10)
 endfunction "}}}
-
-" UpdateATP
-"{{{ UpdateATP
+"{{{ atplib#various#UpdateATP
 try 
 function! atplib#various#UpdateATP(bang)
 
@@ -2469,17 +2444,6 @@ file_o=tarfile.open(file_n, "r:gz")
 file_o.extractall(path)
 END
 endfunction
-" function! Tar(file,path)
-" python << END
-" import tarfile, vim
-" file_n=vim.eval("a:file")
-" print(file_n)
-" path=vim.eval("a:path")
-" print(path)
-" file_o=tarfile.open(file_n, "r:gz")
-" file_o.extractall(path)
-" END
-" endfunction
 function! atplib#various#ATPversion()
     " This function is used in opitons.vim
     let saved_loclist = getloclist(0)
@@ -2503,9 +2467,8 @@ function! atplib#various#ATPversion()
     return "ATP version: ".l:version.", time stamp: ".stamp."."
 endfunction
 "}}}
-
-" Comment Lines
-function! atplib#various#Comment(arg) "{{{
+" atplib#various#Comment {{{
+function! atplib#various#Comment(arg)
 
     " remember the column of the cursor
     let col=col('.')
@@ -2520,10 +2483,7 @@ function! atplib#various#Comment(arg) "{{{
     endif
 
 endfunction "}}}
-
-" DebugPrint
-" cat files under g:atp_TempDir (with ATP debug info)
-" {{{
+" {{{ atplib#various#DebugPring
 function! atplib#various#DebugPrint(file)
     if a:file == ""
 	return
