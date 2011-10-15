@@ -4,6 +4,10 @@
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
 
+try
+    compiler tex
+catch E666:
+endtry
 " Maps:
 "{{{
 noremap <silent> <Plug>ATP_ViewOutput_sync	:call atplib#compiler#ViewOutput("!")<CR>

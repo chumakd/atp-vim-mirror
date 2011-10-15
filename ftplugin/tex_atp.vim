@@ -5,7 +5,7 @@
 " Time Stamp: 14-10-11_20-44
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Thu Oct 13, 2011 at 08:45:31  +0100
+" Last Change: Sat Oct 15, 2011 at 15:36:11  +0100
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -41,9 +41,12 @@ if !exists("g:atp_reload_variables")
 	let g:atp_reload_variables = 0
 endif
 
-if &cpoptions =~ '<'
-	echoerr "[ATP:] removing '<' from cpoptions"
-	setl cpoptions-=<
+if &cpo =~# 'C'
+    set cpo-=C
+endif
+let saved_cpo = &cpo
+if &cpo =~ '<'
+    setl cpo-=<
 endif
 
 	" Source Project Script
@@ -100,5 +103,7 @@ endif
 
 	" Read ATPRC once again (to set mapps).
 	call atplib#ReadATPRC()
+
+let &cpo=saved_cpo
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

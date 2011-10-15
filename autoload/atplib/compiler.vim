@@ -9,11 +9,6 @@
 " This limits how many consecutive runs there can be maximally.
 " Note: compile.py script has hardcoded the same value.
 let atplib#compiler#runlimit		= 9
-
-try
-    compiler tex
-catch E666:
-endtry
 " }}}
 
 " This is the function to view output. It calls compiler if the output is a not
