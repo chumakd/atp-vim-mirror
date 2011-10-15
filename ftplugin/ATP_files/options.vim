@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Oct 14, 2011 at 07:14:42  +0100
+" Last Change: Sun Oct 16, 2011 at 00:29:09  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -310,7 +310,7 @@ let s:optionsDict= {
 		\ "atp_TexCompiler" 		: s:TexCompiler,
 		\ "atp_BibCompiler"		: ( getline(atplib#search#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
-		\ "atp_TruncateStatusSection"	: "40", 
+		\ "atp_TruncateStatusSection"	: "60", 
 		\ "atp_LastBibPattern"		: "",
 		\ "atp_TexCompilerVariable"	: "max_print_line=2000",
 		\ "atp_StarEnvDefault"		: "",
@@ -326,14 +326,9 @@ let s:optionsDict= {
 		\ "atp_MakeidxReturnCode"	: 0,
 		\ "atp_BibtexOutput"		: "",
 		\ "atp_MakeidxOutput"		: "",
-		\ "atp_ProgressBar"		: {}}
+		\ "atp_ProgressBar"		: {},
+		\ "atp_DocumentClass"		: atplib#search#DocumentClass(b:atp_MainFile)}
 
-" 		\ "atp_BibCompiler"		: ( getline(atplib#search#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
-" 		\ "atp_TexCompilerVariable"	: "",
-" 			\.";TEXINPUT="
-" 			\.($TEXINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$TEXINPUTS)
-" 			\.";BIBINPUTS="
-" 			\.($BIBINPUTS == "" ? b:atp_OutDir : b:atp_OutDir.":".$BIBINPUTS),
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
 

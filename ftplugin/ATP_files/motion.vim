@@ -9,22 +9,47 @@ let s:sourced = ( !exists("s:sourced") ? 0 : 1 )
 " CTOC Function:
 " {{{1 CTOC
 function! CTOC(...)
-    " if there is any argument given, then the function returns the value
-    " (used by ATPStatus()), otherwise it echoes the section/subsection
-    " title. It returns only the first b:atp_TruncateStatusSection
-    " characters of the the whole titles.
-    let names=atplib#motion#ctoc()
+
+    if bufloaded(b:atp_MainFile)
+	let file = getbufline(bufnr(atplib#FullPath(b:atp_MainFile)), 0, "$")
+    else
+	let file = readfile(b:atp_MainFile) 
+    endif
+    for fline in file
+	if fline =~# '^\([^%]\|\\%\)*\\documentclass\>'
+	    break
+	endif
+    endfor
+    let document_class = matchstr(fline, '\\documentclass\[.*\]{\s*\zs[^}]*\ze\s*}')
+    if document_class == "beamer"
+	let saved_pos = getpos(".")
+	call search('^\([^%]\|\\%\)*\zs\\begin\s*{\s*frame\s*}', 'cbW')
+	let limit 	= search('^\([^%]\|\\%\)*\zs\\end\s*{\s*frame\s*}', 'nW')
+	if search('^\([^%]\|\\%\)*\frametitle\>\zs{', 'W', limit)
+	    let a		= @a
+	    normal! "ayi}
+	    let title	= substitute(@a, '\_s\+', ' ', 'g')
+	    let @a		= a
+	    call cursor(saved_pos[1:2])
+	    return substitute(strpart(title,0,b:atp_TruncateStatusSection/2), '\_s*$', '','')
+	else
+	    call cursor(saved_pos[1:2])
+	    return ""
+	endif
+    endif
+
+    let names		= atplib#motion#ctoc()
     let chapter_name	= get(names, 0, '')
     let section_name	= get(names, 1, '')
     let subsection_name	= get(names, 2, '')
 
     if chapter_name == "" && section_name == "" && subsection_name == ""
 
-    if a:0 == '0'
-	echo "" 
-    else
-	return ""
-    endif
+	if a:0 == '0'
+	    echo "" 
+	else
+	    return ""
+	endif
 	
     elseif chapter_name != ""
 	if section_name != ""
