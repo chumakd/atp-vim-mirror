@@ -10,27 +10,48 @@ let s:sourced = ( !exists("s:sourced") ? 0 : 1 )
 " {{{1 CTOC
 function! CTOC(...)
 
-    if bufloaded(b:atp_MainFile)
-	let file = getbufline(bufnr(atplib#FullPath(b:atp_MainFile)), 0, "$")
-    else
-	let file = readfile(b:atp_MainFile) 
-    endif
-    for fline in file
-	if fline =~# '^\([^%]\|\\%\)*\\documentclass\>'
-	    break
+    let winsavedview = winsaveview()
+    try
+	if bufloaded(b:atp_MainFile)
+	    let file = getbufline(bufnr(atplib#FullPath(b:atp_MainFile)), 0, "$")
+	else
+	    let file = readfile(b:atp_MainFile) 
 	endif
-    endfor
-    let document_class = matchstr(fline, '\\documentclass\[.*\]{\s*\zs[^}]*\ze\s*}')
-    if document_class == "beamer"
+	for fline in file
+	    if fline =~# '^\([^%]\|\\%\)*\\documentclass\>'
+		break
+	    endif
+	endfor
+	let s:document_class = matchstr(fline, '\\documentclass\[.*\]{\s*\zs[^}]*\ze\s*}')
+    catch /E484:/
+	if !exists("s:document_class")
+	    let s:document_class = ""
+	endif
+    endtry
+    if s:document_class == "beamer"
 	let saved_pos = getpos(".")
-	call search('^\([^%]\|\\%\)*\zs\\begin\s*{\s*frame\s*}', 'cbW')
-	let limit 	= search('^\([^%]\|\\%\)*\zs\\end\s*{\s*frame\s*}', 'nW')
-	if search('^\([^%]\|\\%\)*\frametitle\>\zs{', 'W', limit)
-	    let a		= @a
-	    normal! "ayi}
-	    let title	= substitute(@a, '\_s\+', ' ', 'g')
-	    let @a		= a
-	    call cursor(saved_pos[1:2])
+	if getline(line(".")) =~ '^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}' 
+	    call cursor(line(".")-1, len(getline(line("."))))
+	endif
+	keepmarks keepjumps call searchpair('^\([^%]\|\\%\)*\\begin\s*{\s*frame\s*}', '', '^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'cbW', '',
+		    \ search('^\([^%]\|\\%\)*\\begin\s*{\s*frame\s*}', 'bnW'))
+	keepmarks keepjumps let limit 	= search('^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'nW')
+	keepmarks keepjumps if search('^\([^%]\|\\%\)*\frametitle\>\zs{', 'W', limit)
+	    let a 	= @a
+	    if mode() ==# 'n'
+		" We can't use this normal mode command in visual mode.
+		normal! "ayi}
+		let title	= substitute(@a, '\_s\+', ' ', 'g')
+		let @a 	= a
+	    else
+		let title	= matchstr(getline(line(".")), '\\frametitle\s*{\s*\zs[^}]*\ze\(}\|$\)')
+		let title	= substitute(title, '\s\+', ' ', 'g')
+		let title	= substitute(title, '\s\+$', '', 'g')
+		if getline(line(".")) =~ '\\frametitle\s*{[^}]*$'
+		    let title 	.= " ".matchstr(getline(line(".")+1), '\s*\zs[^}]*\ze\(}\|$\)')
+		endif
+	    endif
+	    call winrestview(winsavedview)
 	    return substitute(strpart(title,0,b:atp_TruncateStatusSection/2), '\_s*$', '','')
 	else
 	    call cursor(saved_pos[1:2])
