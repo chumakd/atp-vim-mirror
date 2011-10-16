@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 15 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 16 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.2)
 			by Marcin Szamotulski
@@ -168,8 +168,10 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.6.2
 <
- |atp-:Yank| and |atp-:Paste| (inside bib search) changed.
- Also yanking in toc (the section key) is in more vim style.
+ |atp-:Yank| and |atp-:Paste| (inside bib search) changed.  Also yanking in
+ toc (the section key) is in more vim style.
+
+ |atp-:PasteSection| with bang "!" puts section before rather than after.
 
 >
  ======================
@@ -2103,7 +2105,7 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 	 The other commands do not use registers but an internal stack.
 >
     :DeleteSection
-    :PasteSection
+    :PasteSection[!]
     :SectionStack
 <	Using ':DeleteSection' you can delete the section under cursor together 
 	with all its subsections.  /Section can be one of: part, chapter,
@@ -2115,7 +2117,8 @@ TABLE OF CONTENTS WINDOW					 *atp-toc-window*
 	/bear in mind that then numbers of sections in the stack will change/.
 
 	':PasteSection' puts the section just after where current section
-	ends (section under the cursor in the ToC buffer).
+	ends (section under the cursor in the ToC buffer). With bang "!" it
+	puts before.
 
 	Note: If you use bibtex commands to make bibliography ATP finds the
 	line which contains '\bibliography' command. And then searches

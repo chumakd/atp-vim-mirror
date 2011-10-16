@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Tue Oct 11, 2011 at 08:13:13  +0100
+" Last Change: Sun Oct 16, 2011 at 13:44:54  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -645,7 +645,7 @@ if expand("%") == "__ToC__"
 	    let g:atp_SectionBackup	= [[title, type, deleted_section, section_nr, expand("%:p")]]
 	endif
 	" return to toc 
-	TOC 0
+	TOC! 0
 
 	" Update the stack of deleted sections
 	call extend(t:atp_SectionStack, [[title, type, deleted_section, section_nr]],0)
@@ -718,7 +718,7 @@ if expand("%") == "__ToC__"
 	" Update the stack
 	call remove(t:atp_SectionStack, stack_number)
     endfunction
-    command! -buffer -nargs=? PasteSection	:call <SID>PasteSection('p', <f-args>)
+    command! -buffer -nargs=? -bang PasteSection	:call <SID>PasteSection((<q-bang> == '!' ? 'P' : 'p'), <f-args>)
 
     " Lists title of sections in the t:atp_SectionStack
     function! s:SectionStack()
