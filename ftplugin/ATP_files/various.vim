@@ -2,10 +2,10 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Oct 15, 2011 at 22:06:09  +0100
+" Last Change: Mon Oct 17, 2011 at 08:56:39  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
-"{{{ ATP_strlen
+"{{{ ATP_strlen()
 " This function is used to measure lenght of a string using :Align, :TexAlign
 " commads. See help file of AlignPlugin for g:Align_xstrlen variable.
 function! ATP_strlen(x)
@@ -110,8 +110,8 @@ function! ATP_strlen(x)
     return strlen(x)
 endfunction
 "}}}
-" Insert() function, which is used to insert text depending on mode: text/math. 
 " {{{ Insert()
+" Insert() function is used to insert text depending on mode: text/math. 
 " Should be called via an imap:
 " imap <lhs> 	<Esc>:call atplib#various#Insert(text, math)<CR>a
 " a:text	= text to insert in text mode
@@ -154,7 +154,6 @@ function! Insert(text, math, ...)
     return ""
 endfunction
 " }}}
-" Insert \item update the number. 
 " {{{ InsertItem()
 " ToDo: indent
 function! InsertItem()
@@ -340,6 +339,38 @@ function! InsertItem()
     return ""
 endfunction
 " }}}
+"{{{ Variables
+if !exists("g:atp_no_toggle_environments")
+    let g:atp_no_toggle_environments=[ 'document', 'tikzpicture', 'picture']
+endif
+if !exists("g:atp_toggle_environment_1")
+    let g:atp_toggle_environment_1=[ 'center', 'flushleft', 'flushright', 'minipage' ]
+endif
+if !exists("g:atp_toggle_environment_2")
+    let g:atp_toggle_environment_2=[ 'enumerate', 'itemize', 'list', 'description' ]
+endif
+if !exists("g:atp_toggle_environment_3")
+    let g:atp_toggle_environment_3=[ 'quotation', 'quote', 'verse' ]
+endif
+if !exists("g:atp_toggle_environment_4")
+    let g:atp_toggle_environment_4=[ 'theorem', 'proposition', 'lemma' ]
+endif
+if !exists("g:atp_toggle_environment_5")
+    let g:atp_toggle_environment_5=[ 'corollary', 'remark', 'note' ]
+endif
+if !exists("g:atp_toggle_environment_6")
+    let g:atp_toggle_environment_6=[  'equation', 'align', 'array', 'alignat', 'gather', 'flalign', 'multline'  ]
+endif
+if !exists("g:atp_toggle_environment_7")
+    let g:atp_toggle_environment_7=[ 'smallmatrix', 'pmatrix', 'bmatrix', 'Bmatrix', 'vmatrix' ]
+endif
+if !exists("g:atp_toggle_environment_8")
+    let g:atp_toggle_environment_8=[ 'tabbing', 'tabular']
+endif
+if !exists("g:atp_toggle_labels")
+    let g:atp_toggle_labels=1
+endif
+"}}}
 " ToDo notes
 " {{{ ToDo
 "
@@ -433,6 +464,7 @@ command! -buffer -bang	TexAlign				:call atplib#various#TexAlign(<q-bang>)
 command! -buffer 	ToggleStar   				:call atplib#various#ToggleStar()<CR>
 command! -buffer -nargs=? ToggleEnv	   			:call atplib#various#ToggleEnvironment(0, <f-args>)
 command! -buffer -nargs=* -complete=customlist,atplib#various#EnvCompletion ChangeEnv				:call atplib#various#ToggleEnvironment(1, <f-args>)
+command! -buffer -nargs=1 ChangeLabel				:call atplib#various#ChangeLabel(<q-args>)
 command! -buffer -nargs=* -complete=customlist,atplib#various#TeXdoc_complete TexDoc 	:call atplib#various#TexDoc(<f-args>)
 command! -buffer -bang 	Delete					:call atplib#various#Delete(<q-bang>)
 nmap <silent> <buffer>	 <Plug>Delete				:call atplib#various#Delete("")<CR>

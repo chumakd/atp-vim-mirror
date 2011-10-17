@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 16 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.2)
 			by Marcin Szamotulski
@@ -173,6 +173,9 @@ NEWS							*atp-news*
 
  |atp-:PasteSection| with bang "!" puts section before rather than after.
 
+ At the end of |atp-tips| I show how to make w b and aw work slightly better. 
+
+ |atp-:ChangeLabel| command.
 >
  ======================
  Changes in version 10.6.1
@@ -268,7 +271,7 @@ visible with :imap command.
   					see |atp-:Dictionary| (with map =d
 					using |<cword>| under the cursor).
 
-  |atp-:Edit|   		  -- instead of :EditInputFile
+  |atp-:Edit|			-- instead of :EditInputFile
 
   :ShowErrors e			-- fixed (finally!)
   :TexAlign			-- can manage table environments and also
@@ -1797,6 +1800,14 @@ nmap <F4>
 	Changes are not saved by default (ATP uses |'hidden'| option, so when
 	you use q! or qa! all changes will be lost).
 
+							*atp-:ChangeLabel*
+:ChangeLabel
+	This command changes label in the current line and all its occurrences
+	inside \ref{}, \pageref{}, \eqref{} commands. 
+
+	In project files this is done in all files belonging to the project.
+	Changes are not saved by default (ATP uses |'hidden'| option, so when
+	you use q! or qa! all changes will be lost).
 							*atp-:WrapEnvironment*
 :WrapEnvironment {environment} 
 vmap <F4>		
@@ -5028,6 +5039,50 @@ command! -buffer	Xpdf	:call SetXpdf()
 				
 imap <C-B>	<C-o>b<C-o>de	Delete word before the cursor
 		<C-o>vbx	(this an alternative using visual mode).
+
+The vim motions w and b in TeX/LaTeX might behave a bitt better if they treat
+\ as a place where word starts/ends. If you add \ to 'iskeyword' option, then
+this will not work. As a workaround you can use the following functions:
+Note: 10w10b might not bring you to the same place - this might be fixed in
+the future.
+
+fun! Wmotion(count)
+    let i=1
+    while i <= a:count
+	if getline(line("."))[col(".")-1] == "\\"
+	    call search('\\\=\<')
+	    keepjumps keepmarks call search('\\\=\<')
+	else
+	    call search('\\\=\<')
+	endif
+	let i+=1
+    endwhile
+endfun
+map <buffer> w :<C-U>call Wmotion(v:count1)<CR>
+omap <buffer> <silent> w :<C-U>call Wmotion(v:count1)<CR>
+
+fun! Bmotion(count)
+    let i=1
+    while i <= a:count
+	call search('\<\|\\', 'b')
+	if getline(line("."))[col(".")-2] == "\\"
+	    normal! h
+	endif
+	let i+=1
+    endwhile
+endfun
+map <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
+omap <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
+
+fun! OuterWord()
+    call search('\<\|\\', 'cb')
+    if getline(line("."))[col(".")-2] == "\\"
+	normal! h
+    endif
+    normal ve
+endfun
+vmap <buffer> <silent> aw <Esc>:call OuterWord()<CR>
+
 
 ================================================================================
 COLOUR HIGHLIGHTING AND SYNTAX GROUPS				*atp-highlight*

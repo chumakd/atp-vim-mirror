@@ -528,7 +528,7 @@ function! atplib#motion#showtoc(toc)
 		\ ":'<,'>Fold",
 		\ ':YankSection', 
 		\ ':DeleteSection', 
-		\ ':PasteSection', 		
+		\ ':PasteSection[!]', 		
 		\ ':SectionStack', 
 		\ ':Undo' ])
     endif

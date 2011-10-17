@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Oct 15, 2011 at 22:04:47  +0100
+" Last Change: Mon Oct 17, 2011 at 09:11:03  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -510,38 +510,6 @@ function! atplib#various#TexAlign(bang)
 endfunction
 "}}}
 " Editing Toggle Functions
-"{{{ Variables
-if !exists("g:atp_no_toggle_environments")
-    let g:atp_no_toggle_environments=[ 'document', 'tikzpicture', 'picture']
-endif
-if !exists("g:atp_toggle_environment_1")
-    let g:atp_toggle_environment_1=[ 'center', 'flushleft', 'flushright', 'minipage' ]
-endif
-if !exists("g:atp_toggle_environment_2")
-    let g:atp_toggle_environment_2=[ 'enumerate', 'itemize', 'list', 'description' ]
-endif
-if !exists("g:atp_toggle_environment_3")
-    let g:atp_toggle_environment_3=[ 'quotation', 'quote', 'verse' ]
-endif
-if !exists("g:atp_toggle_environment_4")
-    let g:atp_toggle_environment_4=[ 'theorem', 'proposition', 'lemma' ]
-endif
-if !exists("g:atp_toggle_environment_5")
-    let g:atp_toggle_environment_5=[ 'corollary', 'remark', 'note' ]
-endif
-if !exists("g:atp_toggle_environment_6")
-    let g:atp_toggle_environment_6=[  'equation', 'align', 'array', 'alignat', 'gather', 'flalign', 'multline'  ]
-endif
-if !exists("g:atp_toggle_environment_7")
-    let g:atp_toggle_environment_7=[ 'smallmatrix', 'pmatrix', 'bmatrix', 'Bmatrix', 'vmatrix' ]
-endif
-if !exists("g:atp_toggle_environment_8")
-    let g:atp_toggle_environment_8=[ 'tabbing', 'tabular']
-endif
-if !exists("g:atp_toggle_labels")
-    let g:atp_toggle_labels=1
-endif
-"}}}
 "{{{ ToggleStar
 " this function adds a star to the current environment
 " todo: to doc.
@@ -611,117 +579,112 @@ try
 function! atplib#various#ToggleEnvironment(ask, ...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-    " l:add might be a number or an environment name
+    " add might be a number or an environment name
     " if it is a number the function will jump this amount in appropriate list
     " (g:atp_toggle_environment_[123...]) to find new environment name
-    let l:add = ( a:0 >= 1 ? a:1 : 1 ) 
+    let add = ( a:0 >= 1 ? a:1 : 1 ) 
 
     " limit:
-    let l:from_line=max([1,line(".")-g:atp_completion_limits[2]])
-    let l:to_line=line(".")+g:atp_completion_limits[2]
+    let from_line=max([1,line(".")-g:atp_completion_limits[2]])
+    let to_line=line(".")+g:atp_completion_limits[2]
 
     " omit pattern
-    let l:omit=join(g:atp_no_toggle_environments,'\|')
-    let l:open_pos=searchpairpos('\\begin\s*{','','\\end\s*{[^}]*}\zs','bnW','getline(".") =~ "\\\\begin\\s*{".l:omit."}"',l:from_line)
-    let l:env_name=matchstr(strpart(getline(l:open_pos[0]),l:open_pos[1]),'begin\s*{\zs[^}]*\ze}')
+    let omit=join(g:atp_no_toggle_environments,'\|')
+    let open_pos=searchpairpos('\\begin\s*{','','\\end\s*{[^}]*}\zs','bnW','getline(".") =~ "\\\\begin\\s*{".omit."}"',from_line)
+    let env_name=matchstr(strpart(getline(open_pos[0]),open_pos[1]),'begin\s*{\zs[^}]*\ze}')
 
-    let l:label=matchstr(strpart(getline(l:open_pos[0]),l:open_pos[1]),'\\label\s*{\zs[^}]*\ze}')
+    let label=matchstr(strpart(getline(open_pos[0]),open_pos[1]),'\\label\s*{\zs[^}]*\ze}')
     " DEBUG
-"     let b:line=strpart(getline(l:open_pos[0]),l:open_pos[1])
-"     let b:label=l:label
-"     let b:env_name=l:env_name
-    if l:open_pos == [0, 0] || index(g:atp_no_toggle_environments,l:env_name) != -1
+"     let b:line=strpart(getline(open_pos[0]),open_pos[1])
+"     let b:label=label
+"     let b:env_name=env_name
+    if open_pos == [0, 0] || index(g:atp_no_toggle_environments,env_name) != -1
 	return
     endif
 
-    let l:env_name_ws=substitute(l:env_name,'\*$','','')
+    let env_name_ws=substitute(env_name,'\*$','','')
 
     if !a:ask
-	let l:variable="g:atp_toggle_environment_1"
-	let l:i=1
+	let variable="g:atp_toggle_environment_1"
+	let i=1
 	while 1
-	    let l:env_idx=index({l:variable},l:env_name_ws)
-	    if l:env_idx != -1
+	    let env_idx=index({variable},env_name_ws)
+	    if env_idx != -1
 		break
 	    else
-		let l:i+=1
-		let l:variable="g:atp_toggle_environment_".l:i
+		let i+=1
+		let variable="g:atp_toggle_environment_".i
 	    endif
-	    if !exists(l:variable)
+	    if !exists(variable)
 		return
 	    endif
 	endwhile
 
-	if l:add > 0 && l:env_idx > len({l:variable})-l:add-1
-	    let l:env_idx=0
-	elseif ( l:add < 0 && l:env_idx < -1*l:add )
-	    let l:env_idx=len({l:variable})-1
+	if add > 0 && env_idx > len({variable})-add-1
+	    let env_idx=0
+	elseif ( add < 0 && env_idx < -1*add )
+	    let env_idx=len({variable})-1
 	else
-	    let l:env_idx+=l:add
+	    let env_idx+=add
 	endif
-	let l:new_env_name={l:variable}[l:env_idx]
-	if l:env_name =~ '\*$'
-	    let l:new_env_name.="*"
+	let new_env_name={variable}[env_idx]
+	if env_name =~ '\*$'
+	    let new_env_name.="*"
 	endif
     else
-	if l:add == 1
-	    let l:new_env_name=input("What is the new name for " . l:env_name . "? type and hit <Enter> ", "", "customlist,EnvCompletion" )
-	    if l:new_env_name == ""
+	if add == 1
+	    let new_env_name=input("What is the new name for " . env_name . "? type and hit <Enter> ", "", "customlist,EnvCompletion" )
+	    if new_env_name == ""
 		redraw
 		echomsg "[ATP:] environment name not changed"
 		return
 	    endif
 	else
-	    let l:new_env_name = l:add
+	    let new_env_name = add
 	endif
     endif
 
     " DEBUG
-"     let g:i=l:i
-"     let g:env_idx=l:env_idx
-"     let g:env_name=l:env_name
-"     let g:add = l:add
-"     let g:new_env_name=l:new_env_name
+"     let g:i=i
+"     let g:env_idx=env_idx
+"     let g:env_name=env_name
+"     let g:add = add
+"     let g:new_env_name=new_env_name
 
-    let l:env_name=escape(l:env_name,'*')
-    let l:close_pos=searchpairpos('\\begin\s*{'.l:env_name.'}','','\\end\s*{'.l:env_name.'}\zs','nW',"",l:to_line)
-    if l:close_pos != [0, 0]
-	call setline(l:open_pos[0],substitute(getline(l:open_pos[0]),'\(\\begin\s*{\)'.l:env_name.'}','\1'.l:new_env_name.'}',''))
-	call setline(l:close_pos[0],substitute(getline(l:close_pos[0]),
-		    \ '\(\\end\s*{\)'.l:env_name.'}','\1'.l:new_env_name.'}',''))
+    let env_name=escape(env_name,'*')
+    let close_pos=searchpairpos('\\begin\s*{'.env_name.'}','','\\end\s*{'.env_name.'}\zs','nW',"",to_line)
+    if close_pos != [0, 0]
+	call setline(open_pos[0],substitute(getline(open_pos[0]),'\(\\begin\s*{\)'.env_name.'}','\1'.new_env_name.'}',''))
+	call setline(close_pos[0],substitute(getline(close_pos[0]),
+		    \ '\(\\end\s*{\)'.env_name.'}','\1'.new_env_name.'}',''))
 	redraw
-	echomsg "[ATP:] environment toggeled at lines: " .l:open_pos[0]." and ".l:close_pos[0]
+	echomsg "[ATP:] environment toggeled at lines: " .open_pos[0]." and ".close_pos[0]
     endif
 
-    if l:label != "" && g:atp_toggle_labels
-	if l:env_name == ""
-	    let l:new_env_name_ws=substitute(l:new_env_name,'\*$','','')
-	    let l:new_short_name=get(g:atp_shortname_dict,l:new_env_name_ws,"")
-	    let l:new_label =  l:new_short_name . strpart(l:label, stridx(l:label, g:atp_separator))
-" 	    let g:new_label = l:new_label . "XXX"
+    if label != "" && g:atp_toggle_labels
+	if env_name == ""
+	    let new_env_name_ws=substitute(new_env_name,'\*$','','')
+	    let new_short_name=get(g:atp_shortname_dict,new_env_name_ws,"")
+	    let new_label =  new_short_name . strpart(label, stridx(label, g:atp_separator))
 	else
-" 	    let g:label = l:label
-	    let l:new_env_name_ws=substitute(l:new_env_name,'\*$','','')
-" 	    let g:new_env_name_ws=l:new_env_name_ws
-	    let l:new_short_name=get(g:atp_shortname_dict,l:new_env_name_ws,"")
-" 	    let g:new_short_name=l:new_short_name
-	    let l:short_pattern= '^\(\ze:\|' . join(values(filter(g:atp_shortname_dict,'v:val != ""')),'\|') . '\)'
-" 	    let g:short_pattern=l:short_pattern
-	    let l:short_name=matchstr(l:label, l:short_pattern)
-" 	    let g:short_name=l:short_name
-	    let l:new_label=substitute(l:label,'^'.l:short_name,l:new_short_name,'')
-" 	    let g:new_label=l:new_label
+	    let new_env_name_ws=substitute(new_env_name,'\*$','','')
+	    let new_short_name=get(g:atp_shortname_dict,new_env_name_ws,"")
+	    let short_pattern= '^\(\ze:\|' . join(values(filter(g:atp_shortname_dict,'v:val != ""')),'\|') . '\)'
+	    let short_name=matchstr(label, short_pattern)
+	    let new_label=substitute(label,'^'.short_name,new_short_name,'')
 	endif
 
 
 	" check if new label is in use!
 	let pos_save=getpos(".")
-	let n=search('\m\C\\\(label\|\%(eq\|page\)\?ref\)\s*{'.l:new_label.'}','nwc')
 
-	if n == 0 && l:new_label != l:label
-	    let hidden =  &hidden
+	" Test if the new label exists.
+	let test = search('\m\C\\\(label\|\%(eq\|page\)\?ref\)\s*{'.new_label.'}','nwc')
+
+	if !test && new_label != label
+	    let hidden = &hidden
 	    set hidden
-	    silent! keepjumps execute l:open_pos[0].'substitute /\\label{'.l:label.'}/\\label{'.l:new_label.'}'
+	    silent! keepjumps execute open_pos[0].'substitute /\\label{'.label.'}/\\label{'.new_label.'}'
 	    " This should be done for every file in the project. 
 	    if !exists("b:TypeDict")
 		call TreeOfFiles(atp_MainFile)
@@ -730,28 +693,68 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 	    let file		= expand("%:p")
 	    let project_files = keys(filter(b:TypeDict, "v:val == 'input'")) + [ atp_MainFile ]
 	    for project_file in project_files
+		let bufloaded = bufloaded(project_file)
 		if atplib#FullPath(project_file) != expand("%:p")
 		    exe "silent keepalt edit " . project_file
 		endif
 		let pos_save_pf=getpos(".")
-		silent! keepjumps execute '%substitute /\\\(eq\|page\)\?\(ref\s*\){'.l:label.'}/\\\1\2{'.l:new_label.'}/gIe'
+		silent! keepjumps execute '%substitute /\\\(eq\|page\)\?\(ref\s*\){'.label.'}/\\\1\2{'.new_label.'}/gIe'
+		" Write the file: 
+" 		update
+" 		if !bufloaded
+" 		    silent! bd
+" 		endif
 		keepjumps call setpos(".", pos_save_pf)
 	    endfor
 	    execute "keepalt buffer " . file
 	    keepjumps call setpos(".", pos_save)
 	    let &hidden = hidden
-	elseif n != 0 && l:new_label != l:label
+	elseif n != 0 && new_label != label
 	    redraw
 	    echohl WarningMsg
-	    echomsg "[ATP:] labels not changed, new label: ".l:new_label." is in use!"
+	    echomsg "[ATP:] labels not changed, new label: ".new_label." is in use!"
 	    echohl Normal
 	endif
     endif
-    return  l:open_pos[0]."-".l:close_pos[0]
+    return  open_pos[0]."-".close_pos[0]
 endfunction
 catch /E127:/
 endtry "}}}
+" {{{ ChangeLabel
+function! atplib#various#ChangeLabel(new_label)
+    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let pos_save=getpos(".")
+    let view = winsaveview()
 
+    let label  = matchstr(getline(line(".")), '\\label\s*{\zs[^}]*\ze}')
+    let hidden = &hidden
+    set hidden
+    let save_view 	= winsaveview()
+    execute 's/\\label{'.label.'}/\\label{'.a:new_label.'}/'
+    " This should be done for every file in the project. 
+    if !exists("b:TypeDict")
+	call TreeOfFiles(atp_MainFile)
+    endif
+    let file		= expand("%:p")
+    let project_files = keys(filter(b:TypeDict, "v:val == 'input'")) + [ atp_MainFile ]
+    for project_file in project_files
+	let bufloaded = bufloaded(project_file)
+	if atplib#FullPath(project_file) != expand("%:p")
+	    exe "silent keepalt edit " . project_file
+	endif
+	let pos_save_pf=getpos(".")
+	silent! keepjumps execute '%substitute /\\\(eq\|page\)\?\(ref\s*\){'.label.'}/\\\1\2{'.a:new_label.'}/gIe'
+	" Write the file: 
+" 		update
+" 		if !bufloaded
+" 		    silent! bd
+" 		endif
+	keepjumps call setpos(".", pos_save_pf)
+    endfor
+    execute "keepalt buffer " . file
+    keepjumps keepmarks call winrestview(view)
+    let &hidden = hidden
+endfunction "}}}
 " This is completion for input() inside ToggleEnvironment which uses
 " b:atp_LocalEnvironments variable.
 function! atplib#various#EnvCompletion(ArgLead, CmdLine, CursorPos) "{{{
