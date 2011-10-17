@@ -5049,11 +5049,12 @@ the future.
 fun! Wmotion(count)
     let i=1
     while i <= a:count
-	if getline(line("."))[col(".")-1] == "\\"
-	    call search('\\\=\<')
-	    keepjumps keepmarks call search('\\\=\<')
-	else
-	    call search('\\\=\<')
+	if getline(line("."))[col(".")-1:col(".")] =~? '^\\\w'
+	    normal! w
+	endif
+	normal! w
+	if getline(line("."))[col(".")-2] == "\\"
+	    normal! h
 	endif
 	let i+=1
     endwhile
@@ -5064,7 +5065,7 @@ omap <buffer> <silent> w :<C-U>call Wmotion(v:count1)<CR>
 fun! Bmotion(count)
     let i=1
     while i <= a:count
-	call search('\<\|\\', 'b')
+	normal! b
 	if getline(line("."))[col(".")-2] == "\\"
 	    normal! h
 	endif
@@ -5074,6 +5075,23 @@ endfun
 map <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
 omap <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
 
+fun! Emotion(countm,...)
+    let type = ( a:0 >= 1 ? a:1 : 'n' )
+    let i=1
+    while i <= a:count
+	normal! e
+	if getline(line("."))[col(".")-1] =~ "\\"
+	    normal! e
+	endif
+	let i+=1
+    endwhile
+    if type ==# 'o'
+	normal! l
+    endif
+endfun
+map <buffer> <silent> e :<C-U>call Emotion(v:count1)<CR>
+omap <buffer> <silent> e :<C-U>call Emotion(v:count1, 'o')<CR>
+
 fun! OuterWord()
     call search('\<\|\\', 'cb')
     if getline(line("."))[col(".")-2] == "\\"
@@ -5082,7 +5100,6 @@ fun! OuterWord()
     normal ve
 endfun
 vmap <buffer> <silent> aw <Esc>:call OuterWord()<CR>
-
 
 ================================================================================
 COLOUR HIGHLIGHTING AND SYNTAX GROUPS				*atp-highlight*

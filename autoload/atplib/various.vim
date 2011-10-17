@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Oct 17, 2011 at 09:11:03  +0100
+" Last Change: Mon Oct 17, 2011 at 16:58:51  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -727,6 +727,12 @@ function! atplib#various#ChangeLabel(new_label)
     let view = winsaveview()
 
     let label  = matchstr(getline(line(".")), '\\label\s*{\zs[^}]*\ze}')
+    if label == ""
+	echohl WarningMsg
+	echo "[ATP:] \\label command not found in the current line."
+	echohl Normal
+	return
+    endif
     let hidden = &hidden
     set hidden
     let save_view 	= winsaveview()
