@@ -33,14 +33,16 @@ function! CTOC(...)
 	if getline(line(".")) =~ '^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}' 
 	    call cursor(line(".")-1, len(getline(line("."))))
 	endif
-	keepmarks keepjumps call searchpair('^\([^%]\|\\%\)*\\begin\s*{\s*frame\s*}', '', '^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'cbW', '',
+	keepjumps call searchpair('^\([^%]\|\\%\)*\\begin\s*{\s*frame\s*}', '', '^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'cbW', '',
 		    \ search('^\([^%]\|\\%\)*\\begin\s*{\s*frame\s*}', 'bnW'))
-	keepmarks keepjumps let limit 	= search('^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'nW')
-	keepmarks keepjumps if search('^\([^%]\|\\%\)*\frametitle\>\zs{', 'W', limit)
+	let limit 	= search('^\([^%]\|\\%\)*\\end\s*{\s*frame\s*}', 'nW')
+	let pos	= [ line("."), col(".") ]
+	keepjumps call search('^\([^%]\|\\%\)*\frametitle\>\zs{', 'W', limit)
+	if pos != getpos(".")[1:2]
 	    let a 	= @a
 	    if mode() ==# 'n'
 		" We can't use this normal mode command in visual mode.
-		normal! "ayi}
+		keepjumps normal! "ayi}
 		let title	= substitute(@a, '\_s\+', ' ', 'g')
 		let @a 	= a
 	    else

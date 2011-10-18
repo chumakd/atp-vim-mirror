@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Oct 16, 2011 at 00:29:09  +0100
+" Last Change: Tue Oct 18, 2011 at 09:02:51  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2683,10 +2683,13 @@ function! <SID>ATP_SyntaxGroups()
     " add texMathZoneT syntax group for tikzpicture environment:
     if atplib#search#SearchPackage('tikz') || atplib#search#SearchPackage('pgfplots')
 	" This works with \matrix{} but not with \matrix[matrix of math nodes]
-	syntax region texMathZoneT start='\\begin\s*{\s*tikzpicture\s*}' end='\\end\s*{\s*tikzpicture\s*}' keepend contains=@texMathZoneGroup,@texMathZones
+	" It is not working with tikzpicture environment inside mathematics.
+	syntax cluster texMathZones add=texMathZoneT
+	syntax region texMathZoneT start='\\begin\s*{\s*tikzpicture\s*}' end='\\end\s*{\s*tikzpicture\s*}' keepend containedin=@texMathZoneGroup contains=@texMathZoneGroup,@texMathZones,@NoSpell
 	syntax sync match texSyncMathZoneT grouphere texMathZoneT '\\begin\s*{\s*tikzpicture\s*}'
-	" This will mark whole tikzpicture environment as a math environment,
-	" which I prefer not to do.
+	" The function TexNewMathZone() will mark whole tikzpicture
+	" environment as a math environment.  This makes problem when one
+	" wants to close \(:\) inside tikzpicture.  
 " 	call TexNewMathZone("T", "tikzpicture", 0)
     endif
     " add texMathZoneALG syntax group for algorithmic environment:

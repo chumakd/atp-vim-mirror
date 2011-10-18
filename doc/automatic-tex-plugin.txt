@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 October 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 18 October 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.2)
 			by Marcin Szamotulski
@@ -5043,11 +5043,10 @@ imap <C-B>	<C-o>b<C-o>de	Delete word before the cursor
 The vim motions w and b in TeX/LaTeX might behave a bitt better if they treat
 \ as a place where word starts/ends. If you add \ to 'iskeyword' option, then
 this will not work. As a workaround you can use the following functions:
-Note: 10w10b might not bring you to the same place - this might be fixed in
-the future.
 
-fun! Wmotion(count)
+fun! Wmotion(count, mode)
     let i=1
+    let beg_pos = getpos(".")
     while i <= a:count
 	if getline(line("."))[col(".")-1:col(".")] =~? '^\\\w'
 	    normal! w
@@ -5058,12 +5057,23 @@ fun! Wmotion(count)
 	endif
 	let i+=1
     endwhile
+    if a:mode ==? 'v'
+	if a:mode ==# 'v'
+	    normal! v
+	else
+	    normal! V
+	endif
+	call cursor(beg_pos[1:2])
+	normal! o
+    endif
 endfun
-map <buffer> w :<C-U>call Wmotion(v:count1)<CR>
-omap <buffer> <silent> w :<C-U>call Wmotion(v:count1)<CR>
+nmap <buffer> <silent> w :<C-U>call Wmotion(v:count1, 'n')<CR>
+vmap <buffer> <silent> w :<C-U>call Wmotion(v:count1, 'v')<CR>
+omap <buffer> <silent> w :<C-U>call Wmotion(v:count1, 'o')<CR>
 
-fun! Bmotion(count)
+fun! Bmotion(count, mode)
     let i=1
+    let beg_pos = getpos(".")
     while i <= a:count
 	normal! b
 	if getline(line("."))[col(".")-2] == "\\"
@@ -5071,13 +5081,23 @@ fun! Bmotion(count)
 	endif
 	let i+=1
     endwhile
+    if a:mode ==? 'v'
+	if a:mode ==# 'v'
+	    normal! v
+	else
+	    normal! V
+	endif
+	call cursor(beg_pos[1:2])
+	normal! o
+    endif
 endfun
-map <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
-omap <buffer> <silent> b :<C-U>call Bmotion(v:count1)<CR>
+map <buffer> <silent> b :<C-U>call Bmotion(v:count1, 'n')<CR>
+vmap <buffer> <silent> b :<C-U>call Bmotion(v:count1, 'v')<CR>
+omap <buffer> <silent> b :<C-U>call Bmotion(v:count1, 'o')<CR>
 
-fun! Emotion(countm,...)
-    let type = ( a:0 >= 1 ? a:1 : 'n' )
+fun! Emotion(count, mode)
     let i=1
+    let beg_pos = getpos(".")
     while i <= a:count
 	normal! e
 	if getline(line("."))[col(".")-1] =~ "\\"
@@ -5085,11 +5105,20 @@ fun! Emotion(countm,...)
 	endif
 	let i+=1
     endwhile
-    if type ==# 'o'
+    if a:mode ==# 'o'
 	normal! l
+    elseif a:mode ==? 'v'
+	if a:mode ==# 'v'
+	    normal! v
+	else
+	    normal! V
+	endif
+	call cursor(beg_pos[1:2])
+	normal! o
     endif
 endfun
-map <buffer> <silent> e :<C-U>call Emotion(v:count1)<CR>
+map <buffer> <silent> e :<C-U>call Emotion(v:count1, 'n')<CR>
+vmap <buffer> <silent> e :<C-U>call Emotion(v:count1, 'v')<CR>
 omap <buffer> <silent> e :<C-U>call Emotion(v:count1, 'o')<CR>
 
 fun! OuterWord()
