@@ -1029,7 +1029,7 @@ function! atplib#motion#GotoEnvironment(flag,count,...)
 
     call atplib#motion#UpdateToCLine()
     silent! call histadd("search", pattern)
-    silent! let @/ 	 = pattern
+    silent! let @/  = pattern
     return ""
 endfunction
 " atplib#motion#GotoFrame {{{1
@@ -1125,7 +1125,7 @@ function! atplib#motion#GotoSection(bang, count, flag, secname, ...)
 
     call atplib#motion#UpdateToCLine()
     call histadd("search", pattern)
-    let @/	= pattern
+    let @/ = pattern
 endfunction
 function! atplib#motion#Env_compl(A,P,L) 
     let envlist=sort(['algorithm', 'algorithmic', 'abstract', 'definition', 'equation', 'proposition', 

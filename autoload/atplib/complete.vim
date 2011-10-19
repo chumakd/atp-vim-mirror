@@ -156,19 +156,23 @@ function! atplib#complete#CheckClosed(bpat, epat, line, col, limit,...)
 		    let l:line	= strpart(l:line,0, l:col+1)
 		endif
 	    elseif l:nr == a:line
+		let saved_pos 	= getpos(".")
 		if g:atp_debugCheckClosed
 		    call atplib#Log("CheckClosed.log", 'x2')
+		    let g:epat = a:epat
+		    let g:ps = getpos(".")
 		endif
-		let saved_pos 	= getpos(".")
 		call cursor(l:nr, 1)
+		let l:col = 1
 		" The following motion should go out any opened bracket which
 		" is starts before a:line. It is far from perfect!
-		let [ nl, nc ] 	= searchpos('.*'.a:epat.'\zs', 'cn', cline)
-		if nl != 0
-		    let [l:nr, l:col] = [ nl, nc ]
-		else
-		    let [l:nr, l:col] = [ l:nr, 1 ]
-		endif
+		" Indeed, it omits opened brackets!
+" 		let [ nl, nc ] 	= searchpos('.*'.a:epat.'\zs', 'cn', cline)
+" 		if nl != 0
+" 		    let [l:nr, l:col] = [ nl, nc ]
+" 		else
+" 		    let [l:nr, l:col] = [ l:nr, 1 ]
+" 		endif
 		let l:line	= strpart(getline(l:nr), l:col-1)
 	    endif
 	    if l:nr == saved_pos[1]
@@ -1290,9 +1294,13 @@ function! atplib#complete#CheckBracket(bracket_dict)
 " 	    let check_{i} = atplib#complete#CheckClosed(no_backslash.escape(ket,'\[]'),
 " 			\ '\%('.no_backslash.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
 " 			\ max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2)
+	    if  i == 2
+		let g:atp_debugCheckClosed = 1
+	    endif
 	    let check_{i} = atplib#complete#CheckClosed(no_backslash.escape(ket,'\[]'),
 			\ '\%('.no_backslash.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', 
-			\ begin_line, 1, length,2)
+			\ begin_line, 1, length, 2)
+	    let g:atp_debugCheckClosed = 0
 	    let check_{i} = ( check_{i} == 0 )
 	else
 	    let check_{i} = 0
@@ -1300,7 +1308,7 @@ function! atplib#complete#CheckBracket(bracket_dict)
 
 	if g:atp_debugCheckBracket >= 1
 	    call atplib#Log("CheckBracket.log", ket." check_".i."=".string(check_{i}))
-	    let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', max([0,pos[1]-g:atp_completion_limits[4]]), 1, 2*g:atp_completion_limits[4],2]
+	    let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', begin_line, 1, 2*g:atp_completion_limits[4],2]
 	endif
 	" check_dot_{i} is 1 if the bracket is closed with a dot (\right.) . 
 " 	let check_dot_{i} = atplib#complete#CheckClosed('\\\@<!'.escape(ket, '\[]'), '\\\.', line("."), pos[1], g:atp_completion_limits[4], 1) == '0'

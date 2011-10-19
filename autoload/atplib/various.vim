@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Oct 17, 2011 at 16:58:51  +0100
+" Last Change: Wed Oct 19, 2011 at 08:58:18  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -401,7 +401,7 @@ function! atplib#various#TexAlign(bang)
 	let bline = bmatrix+1 
 	let epat = '}'
 	let AlignCtr = 'l+'
-	let AlignSep = '&'
+	let AlignSep = '&\|\\pgfmatrixnextcell'
 	let env = "matrix"
     elseif balign
 	let bpat = '\\begin\s*{\s*array\s*}'
@@ -483,8 +483,10 @@ function! atplib#various#TexAlign(bang)
     endif
 
     if a:bang == "!" && eline-1 > bline
-    " Join lines (g:atp_TexAlign_join_lines)
-    execute 'silent! '.(bline).','.(eline-1).'g/\%(\\\\\s*\|\\intertext.*\)\@<!\n/s/\n//'
+	" Join lines (g:atp_TexAlign_join_lines)
+	execute 'keepjumps silent! '.(bline).','.(eline-1).'g/\%(\\\\\s*\|\\intertext.*\)\@<!\n/s/\n//'
+	call histdel("search", -1)
+	let @/ = histget("search", -1)
 	if env != "matrix"
 	    let eline = searchpair(bpat, '', epat, 'cn')  - 1
 	else
