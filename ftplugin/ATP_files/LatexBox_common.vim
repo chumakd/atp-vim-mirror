@@ -3,7 +3,7 @@
 " Maintainer:  Marcin Szamotulski
 " Note:		   This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Fri Jun 10 07:00  2011 W
+" Last Change: Thu Oct 20, 2011 at 21:38:32  +0100
 
 let s:sourced = exists("s:sourced") ? 1 : 0
 " Settings {{{
@@ -182,8 +182,16 @@ function! LatexBox_GetCurrentEnvironment(...)
 		let with_pos = 0
 	endif
 
-	let begin_pat = '\C\\begin\_\s*{[^}]*}\|\\\@<!\\\[\|\\\@<!\\('
-	let end_pat = '\C\\end\_\s*{[^}]*}\|\\\@<!\\\]\|\\\@<!\\)'
+	if atplib#complete#CheckSyntaxGroups(['texMathZoneV'])
+	    let begin_pat 	= '\\\@<!\\('
+	    let end_pat		= '\\\@<!\\)'
+	elseif atplib#complete#CheckSyntaxGroups(['texMathZoneW'])
+	    let begin_pat 	= '\\\@<!\\\['
+	    let end_pat		= '\\\@<!\\\]'
+	else
+	    let begin_pat = '\C\\begin\_\s*{[^}]*}'
+	    let end_pat = '\C\\end\_\s*{[^}]*}'
+	endif
 	let saved_pos = getpos('.')
 
 	" move to the left until on a backslash
@@ -191,7 +199,6 @@ function! LatexBox_GetCurrentEnvironment(...)
 	" here, simple change of mode here doesn't help, because mode() returns
 	" 'n' here.  
 	let [bufnum, lnum, cnum, off] = getpos('.')
-	let g:pos = [bufnum, lnum, cnum, off]
 	let line = getline(lnum)
 	while cnum > 1 && line[cnum - 1] != '\'
 		let cnum -= 1
