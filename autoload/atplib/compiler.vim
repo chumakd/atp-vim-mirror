@@ -95,7 +95,7 @@ function! atplib#compiler#ViewOutput(bang,...)
 	else
 	    echohl WarningMsg
 	    echomsg "[SyncTex:] viewer is not running"
-	    echohl Normal
+	    echohl None
 	endif
     endif
 endfunction
@@ -180,7 +180,7 @@ function! atplib#compiler#SyncShow( page_nr, y_coord)
 	echohl WarningMsg
 	echomsg "[SyncTex:] ".a:y_coord
 " 	echomsg "       You cannot forward search on comment lines, if this is not the case try one or two lines above/below"
-	echohl Normal
+	echohl None
     endif
 endfunction "}}}
 " {{{ atplib#compiler#SyncTex
@@ -208,7 +208,7 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
 "        endif
        echohl WarningMsg
        echomsg "[SyncTex:] no output file"
-       echohl Normal
+       echohl None
        return 2
     endif
     let atp_MainFile         = atplib#FullPath(b:atp_MainFile)
@@ -227,7 +227,7 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
 	    "another server. We can use: xpdf -remote b:atp_XpdfServer "run('echo %f')"
 	    echohl WarningMsg
 	    echomsg "[SyncTex:] please open the file first. (if file is opend add bang \"!\")"
-	    echohl Normal
+	    echohl None
 	    return
 	endif
     endif
@@ -534,7 +534,7 @@ function! atplib#compiler#Kill(bang)
 	if a:bang != "!"
 	    echohl WarningMsg
 	    echomsg "[ATP:] you need python suppor" 
-	    echohl Normal
+	    echohl None
 	endif
 	return
     endif
@@ -686,17 +686,18 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 	echohl WaningMsg | echomsg "[ATP:] your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
 	echomsg "       b:atp_TexCompiler=" . b:atp_TexCompiler	
 	echomsg "       b:atp_Viewer=" . b:atp_Viewer	
+	echohl None
     endif
     if !has('clientserver')
 	if has("win16") || has("win32") || has("win64") || has("win95")
 	    echohl WarningMsg
 	    echomsg "[ATP:] ATP needs +clientserver vim compilation option."
-	    echohl Normal
+	    echohl None
 	else
 	    echohl WarningMsg
 	    echomsg "[ATP:] python compiler needs +clientserver vim compilation option."
 	    echomsg "       falling back to g:atp_Compiler=\"bash\""
-	    echohl Normal
+	    echohl None
 	    let g:atp_Compiler = "bash"
 	    return
 	endif
@@ -825,6 +826,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	    echohl WaningMsg | echomsg "[ATP:] your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
 	    echomsg "       b:atp_TexCompiler=" . b:atp_TexCompiler	
 	    echomsg "       b:atp_Viewer=" . b:atp_Viewer	
+	    echohl None
 	endif
 
 	" There is no need to run more than ~5 (s:runlimit=9) consecutive runs
@@ -1177,17 +1179,18 @@ function! atplib#compiler#ThreadedCompiler(bibtex, start, runs, verbose, command
 	echohl WaningMsg | echomsg "[ATP:] your ".b:atp_TexCompiler." and ".b:atp_Viewer." are not compatible:" 
 	echomsg "       b:atp_TexCompiler=" . b:atp_TexCompiler	
 	echomsg "       b:atp_Viewer=" . b:atp_Viewer	
+	echohl None
     endif
     if !has('clientserver')
 	if has("win16") || has("win32") || has("win64") || has("win95")
 	    echohl WarningMsg
 	    echomsg "[ATP:] ATP needs +clientserver vim compilation option."
-	    echohl Normal
+	    echohl None
 	else
 	    echohl WarningMsg
 	    echomsg "[ATP:] python compiler needs +clientserver vim compilation option."
 	    echomsg "       falling back to g:atp_Compiler=\"bash\""
-	    echohl Normal
+	    echohl None
 	    let g:atp_Compiler = "bash"
 	    return
 	endif
@@ -1917,7 +1920,7 @@ function! atplib#compiler#auTeX(...)
 	    if g:atp_debugauTeX
 		echomsg expand("%") . "E212: Cannon open file for writing"
 	    endif
-	    echohl Normal
+	    echohl None
 	    if g:atp_debugauTeX
 		echomsg " E212"
 	    endif
@@ -2343,7 +2346,7 @@ function! atplib#compiler#ShowErrors(...)
     if !filereadable(errorfile)
 	echohl WarningMsg
 	echo "[ATP:] no error file: " . errorfile  
-	echohl Normal
+	echohl None
 	return
     endif
 

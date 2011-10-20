@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Oct 19, 2011 at 08:58:18  +0100
+" Last Change: Thu Oct 20, 2011 at 23:39:03  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -715,7 +715,7 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 	    redraw
 	    echohl WarningMsg
 	    echomsg "[ATP:] labels not changed, new label: ".new_label." is in use!"
-	    echohl Normal
+	    echohl None
 	endif
     endif
     return  open_pos[0]."-".close_pos[0]
@@ -732,7 +732,7 @@ function! atplib#various#ChangeLabel(new_label)
     if label == ""
 	echohl WarningMsg
 	echo "[ATP:] \\label command not found in the current line."
-	echohl Normal
+	echohl None
 	return
     endif
     let hidden = &hidden
@@ -922,7 +922,7 @@ function! atplib#various#Search(pattern, flag, ...)
 	endif
 	echohl WarningMsg
 	echo "No " . message . " " . type . " message."
-	echohl Normal
+	echohl None
     endif
 " This fails (?):
 "     if center
@@ -1271,7 +1271,7 @@ endfunction
 	if ext == "not present"
 	    echohl WarningMsg
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
-	    echohl Normal
+	    echohl None
 	    return "extension not found"
 	endif
 	if b:atp_TexCompiler =~ "lua"
@@ -1325,7 +1325,7 @@ function! atplib#various#Lpr(...)
 	if ext == "not present"
 	    echohl WarningMsg
 	    echomsg "[ATP:] ".b:atp_TexCompiler . " is not present in g:atp_CompilersDict"
-	    echohl Normal
+	    echohl None
 	    return "extension not found"
 	endif
 	if b:atp_TexCompiler =~ "lua"
@@ -1605,7 +1605,7 @@ function! atplib#various#GetAMSRef(what, bibfile)
 	normal GG
 	echohl WarningMsg
 	echomsg "[ATP:] bibkey " . bibkey . " appended to: " . a:bibfile 
-	echohl Normal
+	echohl None
     else
 	" If the user is using \begin{bibliography} environment.
 	let pattern = '^<tr><td align="left">'
@@ -1668,7 +1668,7 @@ function! atplib#various#AMSRef(bang, what)
 	redraw
 	echohl WarningMsg
 	echomsg "[ATP:] found bib data is in register " . g:atp_bibrefRegister
-	echohl Normal
+	echohl None
     elseif return[0] == 'NoUniqueMatch' 
 	redraw
 	echohl WarningMsg
@@ -1726,7 +1726,7 @@ function! atplib#various#Dictionary(word)
 	endif
 	echo line
 	if line =~ '\[see also:' || i == 0
-	    echohl Normal
+	    echohl None
 	endif
 	let i+=1
     endfor
@@ -2056,7 +2056,7 @@ function! atplib#various#Wdiff(new_file, old_file)
     if !executable("wdiff")
 	echohl WarningMsg
 	echo "You need to install GNU wdiff program." 
-	echohl Normal
+	echohl None
 	return 1
     endif
 
@@ -2066,6 +2066,7 @@ function! atplib#various#Wdiff(new_file, old_file)
     catch /E484/
 	echohl ErrorMsg
 	echomsg "[ATP:] can't open file " . a:new_file
+	echohl None
 	return 1
     endtry
     try
@@ -2073,6 +2074,7 @@ function! atplib#various#Wdiff(new_file, old_file)
     catch /E484/
 	echohl ErrorMsg
 	echomsg "[ATP:] can't open file " . a:old_file
+	echohl None
 	return 1
     endtry
 

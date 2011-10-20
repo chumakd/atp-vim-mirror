@@ -145,7 +145,7 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
 	if g:atp_debugProject
 	    echohl ErrorMsg
 	    echomsg "[ATP LoadProjectScript:] Error : File name is empty. Not loading project script."
-	    echohl Normal
+	    echohl None
 	    redir END
 	endif
 	return

@@ -14,7 +14,7 @@ function! atplib#tools#Open(bang, dir, TypeDict, ...)
     if a:dir == "0"
 	echohl WarningMsg 
 	echomsg "You have to set g:atp_LibraryPath in your vimrc or atprc file." 
-	echohl Normal
+	echohl None
 	return
     endif
 
@@ -36,7 +36,7 @@ function! atplib#tools#Open(bang, dir, TypeDict, ...)
 	if len(found) > 1
 	    echohl Title 
 	    echo "Found files:"
-	    echohl Normal
+	    echohl None
 	    let i = 1
 	    for file in found
 		if len(map(copy(found), "v:val =~ escape(fnamemodify(file, ':t'), '~') . '$'")) == 1
@@ -81,7 +81,7 @@ function! atplib#tools#Open(bang, dir, TypeDict, ...)
 	redraw!
 	echohl Title
 	echo "cat '" . file . "'"
-	echohl Normal
+	echohl None
 	echo system(viewer . " '" . file . "' &")  
     endif
 "     if fnamemodify(file, ":t") != "" && count(g:atp_open_completion, fnamemodify(file, ":t")) == 0
@@ -127,7 +127,7 @@ function! atplib#tools#GrepAuxFile(...)
 	" /this is not visible ! only after using the command 'mes'/
 	echohl WarningMsg
 	echomsg "[ATP:] there is no aux file. Run ".b:atp_TexCompiler." first."
-	echohl Normal
+	echohl None
 	return []
 	" CALL BACK is not working
 	" I can not get output of: vim --servername v:servername --remote-expr v:servername

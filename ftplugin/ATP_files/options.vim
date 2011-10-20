@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Oct 18, 2011 at 09:02:51  +0100
+" Last Change: Thu Oct 20, 2011 at 23:39:03  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -1219,7 +1219,7 @@ function! s:ShowOptions(bang,...)
     redraw
     echohl WarningMsg
     echo "Local buffer variables:"
-    echohl Normal
+    echohl None
     for key in sort(keys(s:optionsDict))
 	let space = ""
 	for s in range(mlen-len(key)+1)
@@ -1236,7 +1236,7 @@ function! s:ShowOptions(bang,...)
 	echo "\n"
 	echohl WarningMsg
 	echo "Global variables (defined in ".s:file."):"
-	echohl Normal
+	echohl None
 	let saved_loclist	= getloclist(0)
 	    execute "lvimgrep /^\\s*let\\s\\+g:/j " . fnameescape(s:file)
 	let global_vars		= getloclist(0)
@@ -1402,7 +1402,7 @@ function! <SID>SetXdvi()
     if compiler != "" && compiler !~ '\(la\)\=tex'
 	echohl Error
 	echomsg "[SetXdvi:] You need to change the first line of your project!"
-	echohl Normal
+	echohl None
     endif
 
     " Remove menu entries
@@ -1495,7 +1495,7 @@ function! <SID>SetPdf(viewer)
     if compiler != "" && compiler !~ 'pdf\(la\)\=tex'
 	echohl Error
 	echomsg "[SetPdf:] You need to change the first line of your project!"
-	echohl Normal
+	echohl None
     endif
 
     let b:atp_TexCompiler	= "pdflatex"
@@ -2462,7 +2462,7 @@ EOF
 else
     echohl ErrorMsg
     echo "[ATP:] the directory ".a:dir." is not removed."
-    echohl Normal
+    echohl None
 endif
 endfunction
 
@@ -2873,7 +2873,7 @@ function! <SID>SetDebugMode(bang,...)
 	    catch /E40/
 		echohl WarningMsg 
 		echo "[ATP:] log file missing."
-		echohl Normal
+		echohl None
 	    endtry
 	    if a:bang == "!"
 		exe "cwindow " . (max([1, min([len(getqflist()), g:atp_DebugModeQuickFixHeight])]))
@@ -2891,7 +2891,7 @@ function! <SID>SetDebugMode(bang,...)
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."
-	    echohl Normal
+	    echohl None
 	endtry
 	" DebugMode is not changing when log file is missing!
     elseif a:1 =~# 'D\%[ebug]'
@@ -2905,7 +2905,7 @@ function! <SID>SetDebugMode(bang,...)
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."
-	    echohl Normal
+	    echohl None
 	endtry
 	try 
 	    cc
@@ -2936,7 +2936,7 @@ except ImportError:
     if test != str(0):
 	vim.command('echomsg "Falling back to bash"')
 	vim.command("let g:atp_Compiler='bash'")
-    vim.command("echohl Normal")
+    vim.command("echohl None")
     vim.command("echomsg \"If you don't want to see this message (and you are on *nix system)\"") 
     vim.command("echomsg \"put let g:atp_Compiler='bash' in your vimrc or atprc file.\"")
     vim.command("sleep 2")
@@ -2947,11 +2947,11 @@ if g:atp_Compiler == "python"
     if !executable(g:atp_Python) || !has("python")
 	echohl ErrorMsg
 	echomsg "[ATP:] needs: python and python support in vim."
-	echohl Normal
+	echohl None
 	if has("mac") || has("macunix") || has("unix")
 	    echohl ErrorMsg
 	    echomsg "I'm falling back to bash (deprecated)."
-	    echohl Normal
+	    echohl None
 	    let g:atp_Compiler = "bash"
 	    echomsg "If you don't want to see this message"
 	    echomsg "put let g:atp_Compiler='bash' in your vimrc or atprc file."
@@ -2981,7 +2981,7 @@ elseif has("unix") && has("macunix")
 else
     echohl ErrorMsg
     echomsg "[ATP:] Leaving temporary directory ".g:atp_TempDir
-    echohl Normal
+    echohl None
 endif
 endfunction "}}}
 if g:atp_reload_functions == 0

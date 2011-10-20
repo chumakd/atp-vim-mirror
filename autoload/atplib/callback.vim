@@ -301,7 +301,7 @@ function! atplib#callback#CallBack(mode,...)
 	    let g:debugCB .=" BIBTEX_output "
 	endif
     endfor
-    echohl Normal
+    echohl None
     if len(msg_list)==0
 	redraw
     endif
@@ -427,6 +427,6 @@ function! atplib#callback#Echo(msg, cmd, hlgroup, ...)
     endif
     exe "echohl ".a:hlgroup
     exe a:cmd." '".a:msg."'"
-    echohl Normal
+    echohl None
 endfunction "}}}
 " vim:fdm=marker:ff=unix:noet:ts=8:sw=4:fdc=1

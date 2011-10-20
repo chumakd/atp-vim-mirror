@@ -68,6 +68,7 @@ function! atplib#motion#maketoc(filename)
     catch /E484:/
 	echohl Warning
 	echo "File " . a:filename . " not readable."
+	echohl None
     endtry
     let texfile_copy	= deepcopy(texfile)
 
@@ -736,7 +737,7 @@ function! atplib#motion#Labels(bang)
 	echohl WarningMsg
 	redraw
 	echomsg "[ATP:] the compelation contains errors, aux file might be not appriopriate for labels window."
-	echohl Normal
+	echohl None
     endif
 endfunction
 nnoremap <Plug>ATP_Labels		:call atplib#motion#Labels("")<CR>
@@ -769,7 +770,7 @@ function! atplib#motion#GotoLabel(bang,...)
 	redraw
 	echohl WarningMsg
 	echomsg "[ATP:] no matching label"
-	echohl Normal
+	echohl None
 	return 1
     elseif len(matches) == 1
 	let file=matches[0][0]
@@ -787,7 +788,7 @@ function! atplib#motion#GotoLabel(bang,...)
 " 	endif
 	echohl Title
 	echo "Which label to choose?"
-	echohl Normal
+	echohl None
 " 	let mlabels= ( file ? extend([[' nr', 'LABEL', 'LABEL NR', 'FILE']], mlabels) : extend([[' nr', 'LABEL', 'LABEL NR']], mlabels) )
 	let g:mlabels=copy(mlabels)
 	for row in atplib#FormatListinColumns(atplib#Table(mlabels, [1,2]),2)
@@ -1365,7 +1366,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 		endif
 		echo f
 		if matchstr(f, '(\d\+)\s*\zs.*$') == expand("%:t") || f == msg
-		    echohl Normal
+		    echohl None
 		endif
 	    endfor
 	    let choice	= input("Type number and <Enter> (empty cancels): ")

@@ -207,7 +207,7 @@ function! atplib#helpfunctions#MapSearch(bang,rhs_pattern,...)
     else
 	echohl WarningMsg
 	echo "No such map"
-	echohl Normal
+	echohl None
     endif
 endfunction
 

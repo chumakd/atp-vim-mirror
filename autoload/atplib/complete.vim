@@ -686,7 +686,7 @@ if ( &filetype != "plaintex" && b:atp_TexFlavor != "plaintex" && exists("math_4"
     echohl ErrorMsg
     echomsg "[ATP:] $$:$$ in LaTeX are deprecated (this breaks some LaTeX packages)" 
     echomsg "       You can set b:atp_TexFlavor = 'plaintex', and ATP will ignore this. "
-    echohl Normal
+    echohl None
     if g:atp_debugCloseLastEnvironment
 	call atplib#Log('CloseLastEnvironment.log', "return A")
     endif

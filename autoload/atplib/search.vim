@@ -469,7 +469,7 @@ function! atplib#search#Dsearch(bang,...)
 	    else
 		echomsg "[ATP:] definition not found in the preambule, try with a bang ! to search beyond."
 	    endif
-	    echohl Normal
+	    echohl None
 	    return
 	endif
 
@@ -511,7 +511,7 @@ function! atplib#search#Dsearch(bang,...)
 	else
 	    echomsg "[ATP:] definition not found in the preambule, try with a bang ! to search beyond."
 	endif
-	echohl Normal
+	echohl None
     endif
     let g:source_time_DSEARCH=reltimestr(reltime(time))
 endfunction
@@ -690,7 +690,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    let flags_supplied = substitute(flags_supplied, 'p', '', 'g')
 	    echohl WarningMsg
 	    echomsg "[ATP:] searching flag 'p' is not supported, filtering it out."
-	    echohl Normal
+	    echohl None
 	endif
 
 	if a:maketree == 'make_tree'
@@ -988,12 +988,12 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		redraw
 		echohl WarningMsg
 		echo "search hit TOP, continuing at BOTTOM "
-		echohl Normal
+		echohl None
 	    elseif a:wrap_nr == 2
 		redraw
 		echohl WarningMsg
 		echo "search hit BOTTOM, continuing at TOP "
-		echohl Normal
+		echohl None
 	    endif
 
 		if g:atp_debugRS
@@ -1121,7 +1121,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    if g:ATP_branch == "nobranch"
 		echohl ErrorMsg
 		echomsg "[ATP:] this probably happend while searching for \\input, it is not yet supported, if not it is a bug"
-		echohl Normal
+		echohl None
 
 		silent! echomsg "Tree=" . string(l:tree)
 		silent! echomsg "MainFile " . main_file . " current_file=" . expand("%:p")
@@ -1202,7 +1202,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	elseif goto_s == 'REJECT'
 	    echohl ErrorMsg
 	    echomsg "[ATP:] pattern not found"
-	    echohl Normal
+	    echohl None
 
 	    if g:atp_debugRS > 1
 		silent echo "TIME_END:" . reltimestr(reltime(time0))
@@ -1237,7 +1237,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	elseif
 	    echohl ErrorMsg
 	    echomsg "[ATP:] this is a bug in ATP."
-	    echohl
+	    echohl None
 	    
 	    " restore vim options 
 	    if a:vim_options != { 'no_options' : 'no_options' }
@@ -1291,7 +1291,7 @@ function! atplib#search#Search(Bang, Arg)
     if pattern == ""
 	echohl ErrorMsg
 	echomsg "[ATP:] enclose the pattern with /.../"
-	echohl Normal
+	echohl None
 	return
     endif
 
