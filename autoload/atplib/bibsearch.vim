@@ -509,7 +509,13 @@ function! atplib#bibsearch#SearchBibItems()
     if !exists("b:ListOfFiles") || !exists("b:TypeDict")
 	call TreeOfFiles(b:atp_MainFile)
     endif
+    let i=1
     for f in b:ListOfFiles
+	let type = get(b:TypeDict, f, 'no_type')
+	if type == 'no_type' && i
+	    call TreeOfFiles(b:atp_MainFile)
+	    let i=0
+	endif
 	if b:TypeDict[f] == "input"
 	    call add(l:includefile_list, f)
 	endif
