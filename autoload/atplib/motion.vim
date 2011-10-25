@@ -726,7 +726,8 @@ function! atplib#motion#Labels(bang)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     " Generate the dictionary with labels
-    if a:bang == "" || ( a:bang == "!" && !exists("t:atp_labels") )
+    if a:bang == "" || ( a:bang == "!" && !exists("t:atp_labels") ) ||
+		\ ( a:bang == "!" && exists("t:atp_labels") && get(t:atp_labels, atp_MainFile, []) == [] )
 	let [ t:atp_labels, b:ListOfFiles ] =  atplib#tools#generatelabels(atp_MainFile, 1)
     endif
 
