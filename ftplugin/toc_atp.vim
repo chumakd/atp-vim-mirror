@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Sun Oct 16, 2011 at 13:44:54  +0100
+" Last Change: Tue Oct 25, 2011 at 10:19:33  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -141,6 +141,7 @@ function! GotoLine(closebuffer) "{{{
     endif
 
     "finally, set the position
+    call setpos("\"'", getpos("."))
     call setpos('.', [0, nr, 1, 0])
     exe "normal zt"
     

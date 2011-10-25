@@ -296,18 +296,21 @@ function! atplib#tools#generatelabels(filename, ...)
     let saved_pos	= getpos(".")
     call cursor(1,1)
 
-    let [ TreeofFiles, ListOfFiles, DictOfFiles, LevelDict ] 		= TreeOfFiles(a:filename)
+    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] 		= TreeOfFiles(a:filename)
     let ListOfFiles_orig = copy(ListOfFiles)
     if count(ListOfFiles, a:filename) == 0
 	call add(ListOfFiles, a:filename)
+	let TypeDict[a:filename] = "input"
     endif
     let saved_llist	= getloclist(0)
     call setloclist(0, [])
 
     " Look for labels in all input files.
     for file in ListOfFiles
-	let file	= atplib#FullPath(file)
-	silent! execute "lvimgrepadd /\\label\s*{/j " . fnameescape(file)
+	if get(TypeDict, file, 'input') == 'input'
+	    let file	= atplib#FullPath(file)
+	    silent! execute "keepjumps lvimgrepadd /\\label\s*{/j " . fnameescape(file)
+	endif
     endfor
     let loc_list	= getloclist(0)
 "     call setloclist(0, saved_llist)
