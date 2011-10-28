@@ -34,7 +34,7 @@ nnoremap <silent> <Plug>BibtexVerbose	:call atplib#compiler#Bibtex("!", "verbose
 command! -buffer		HighlightErrors		:call atplib#callback#HighlightErrors()
 command! -buffer		ClearHighlightErrors	:call atplib#callback#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call atplib#compiler#Kill(<q-bang>)
-command! -buffer -bang -nargs=? ViewOutput		:call atplib#compiler#ViewOutput(<q-bang>,<f-args>)
+command! -buffer -bang -nargs=? View			:call atplib#compiler#ViewOutput(<q-bang>,<f-args>)
 command! -buffer -bang 		SyncTex			:call atplib#compiler#SyncTex(<q-bang>, 0)
 command! -buffer 		PID			:call atplib#compiler#GetPID()
 command! -buffer -nargs=? -bang -complete=custom,atplib#compiler#DebugComp MakeLatex		:call atplib#compiler#SetBiberSettings() | call atplib#compiler#MakeLatex(<q-bang>, <q-args>, 0)
