@@ -1794,6 +1794,10 @@ augroup END
 
 function! atplib#compiler#auTeX(...)
 
+    if !exists("b:atp_changedtick")
+	let b:atp_changedtick = b:changedtick
+    endif
+
     if g:atp_debugauTeX
 	echomsg "*****************"
 	echomsg "b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick
@@ -2128,16 +2132,16 @@ endfunction
 " {{{ atplib#compiler#SetErrorFormat
 " first argument is a word in flags 
 " the default is a:1=e /show only error messages/
-function! atplib#compiler#SetErrorFormat(...)
+function! atplib#compiler#SetErrorFormat(cgetfile,...)
 
-    let l:cgetfile = ( a:0 >=2 ? a:2 : 0 )
-    " This l:cgetfile == 1 only if run by the command :ErrorFormat 
-    if l:cgetfile  == 1 && a:1 == ''	
+    " This a:cgetfile == 1 only if run by the command :ErrorFormat 
+    let efm = ( a:0 >= 1 ? a:1 : '' )
+    if efm == "" || a:0 == 0
 	echo "[ATP:] current error format: ".getbufvar(bufnr(fnamemodify(&l:errorfile, ":r").".tex"), "atp_ErrorFormat") 
 	return
     endif
 
-    let carg_raw = ( a:0 == 0 ? g:atp_DefaultErrorFormat : a:1 )
+    let carg_raw = ( a:0 >= 1 ? a:1 : g:atp_DefaultErrorFormat )
     let carg_list= split(carg_raw, '\zs')
     if carg_list[0] =~ '^[+-]$'
 	let add=remove(carg_list,0)
@@ -2313,7 +2317,7 @@ function! atplib#compiler#SetErrorFormat(...)
 			    \%".pm."Q%*[^()])%r,
 			    \%".pm."Q[%\\d%*[^()])%r"
     endif
-    if l:cgetfile
+    if a:cgetfile
 	try
 	    cgetfile
 	catch E40:
@@ -2373,7 +2377,7 @@ function! atplib#compiler#ShowErrors(...)
 	echo b:atp_BibtexOutput
 	return
     endif
-    call atplib#compiler#SetErrorFormat(l:arg)
+    call atplib#compiler#SetErrorFormat(0, l:arg)
     let show_message = ( a:0 >= 2 ? a:2 : 1 )
 
     " read the log file
