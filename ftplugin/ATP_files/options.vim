@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Oct 20, 2011 at 23:39:03  +0100
+" Last Change: Sat Oct 29, 2011 at 09:37:15  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2071,7 +2071,12 @@ endif
 	\ "\\DeclareMathDelimiter", "\\DeclareMathAccent", "\\DeclareMathRadical",
 	\ "\\SetMathAlphabet", "\\show", "\\CheckCommand", "\\mathnormal",
 	\ "\\pounds", "\\magstep{", "\\hyperlink", "\\newenvironment{", 
-	\ "\\renewenvironemt{", "\\DeclareFixedFont", "\\layout", "\\parskip" ]
+	\ "\\renewenvironemt{", "\\DeclareFixedFont", "\\layout", "\\parskip",
+	\ "\\brokenpenalty", "\\clubpenalty", "\\windowpenalty", "\\hyphenpenalty", "\\tolerance",
+	\ "\\frenchspacing", "\\nonfrenchspacing", "\\binoppenalty", "\\exhyphenpenalty", 
+	\ "\\displaywindowpenalty", "\\floatingpenalty", "\\interlinepenalty", "\\lastpenalty",
+	\ "\\linepenalty", "\\outputpenalty", "\\penalty", "\\postdisplaypenalty", "\\predisplaypenalty", 
+	\ "\\repenalty", "\\unpenalty" ]
 	
 	let g:atp_picture_commands=[ "\\put", "\\circle", "\\dashbox", "\\frame{", 
 		    \"\\framebox(", "\\line(", "\\linethickness{",
