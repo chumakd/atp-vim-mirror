@@ -176,6 +176,10 @@ NEWS							*atp-news*
  At the end of |atp-tips| I show how to make w b and aw work slightly better. 
 
  |atp-:ChangeLabel| command.
+
+ omap % added. Now to delete an environment just put the cursor over \begin or \end
+ command and use d%. The same will work if you want to delete (:),[:],{:} or
+ $:$ pairs.
 >
  ======================
  Changes in version 10.6.1

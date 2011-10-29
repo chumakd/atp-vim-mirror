@@ -10,6 +10,7 @@ let s:loaded = ( !exists("s:loaded") ? 1 : s:loaded+1 )
 nmap <buffer> % <Plug>LatexBox_JumpToMatch
 nmap <buffer> g% <Plug>LatexBox_BackJumpToMatch
 xmap <buffer> % <Plug>LatexBox_JumpToMatch
+omap <buffer> <expr> % ( index(['\', '$', '(', ')', '[', ']', '{', '}'], getline(".")[col(".")-1]) != -1 ? ":<C-U>normal v%<CR>" : ":<C-U>normal V%<CR>" )
 xmap <buffer> g% <Plug>LatexBox_BackJumpToMatch
 vmap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
 vmap <buffer> iE <Plug>LatexBox_SelectCurrentEnVInner
