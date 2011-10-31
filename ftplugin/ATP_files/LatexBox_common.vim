@@ -3,7 +3,7 @@
 " Maintainer:  Marcin Szamotulski
 " Note:		   This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Oct 20, 2011 at 21:38:32  +0100
+" Last Change: Mon Oct 31, 2011 at 23:38:53  +0000
 
 let s:sourced = exists("s:sourced") ? 1 : 0
 " Settings {{{
@@ -13,10 +13,16 @@ let s:sourced = exists("s:sourced") ? 1 : 0
 " g:vim_program {{{
 if !exists('g:vim_program')
 
+	if match(&shell, '/bash$') >= 0
+		let ppid = '$PPID'
+	else
+		let ppid = '$$'
+	endif
+
 	" attempt autodetection of vim executable
 	let g:vim_program = ''
 	let tmpfile = tempname()
-	silent execute '!ps -o command= -p $PPID > ' . tmpfile
+	silent execute '!ps -o command= -p ' . ppid . ' > ' . tmpfile
 	for line in readfile(tmpfile)
 		let line = matchstr(line, '^\S\+\>')
 		if !empty(line) && executable(line)
