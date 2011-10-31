@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Oct 29, 2011 at 09:37:15  +0100
+" Last Change: Mon Oct 31, 2011 at 11:19:18  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -300,7 +300,7 @@ let s:optionsDict= {
 		\ "atp_updatetime_normal"	: 2000,
 		\ "atp_MaxProcesses"		: 3,
 		\ "atp_KillYoungest"		: 0,
-		\ "atp_ProjectScript"		: "1",
+		\ "atp_ProjectScript"		: ( fnamemodify(b:atp_MainFile, ":e") != "tex" ? "0" : "1" ),
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
@@ -941,7 +941,7 @@ endif  				    " user cannot change the value set by :LoadHistory on startup in 
 " 				    better to start with atp_mapNn = 0 and let the
 " 				    user change it. 
 if !exists("g:atp_TeXdocDefault")
-    let g:atp_TeXdocDefault	= '-a -I lshort'
+    let g:atp_TeXdocDefault	= '-I lshort'
 endif
 "ToDo: to doc.
 "ToDo: luatex! (can produce both!)
