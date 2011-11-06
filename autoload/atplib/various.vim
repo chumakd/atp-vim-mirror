@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Thu Oct 20, 2011 at 23:39:03  +0100
+" Last Change: Sun Nov 06, 2011 at 10:12:55  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2010,15 +2010,26 @@ function! atplib#various#MakeListOfWords()
 endfunction
 "}}}
 " {{{ atplib#various#WordCount()
-function! atplib#various#WordCount(bang)
+function! atplib#various#WordCount(bang, range)
+
+    " if range is current line, count whole project, other wise count the
+    " given part of the text (this is the default range for the commmand.
+    " range is [ <line1>, <line2> ]
 
     call atplib#write()
 
     let g:atp_WordCount = {}
-    for file in keys(filter(copy(b:TypeDict), 'v:val == ''input''')) + [ b:atp_MainFile ]
-	let wcount = substitute(system("detex -n " . fnameescape(file) . " | wc -w "), '\D', '', 'g')
-	call extend(g:atp_WordCount, { file : wcount })
-    endfor
+
+    if a:range == [ line("."), line(".") ]
+	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input''')) + [ b:atp_MainFile ]
+	    let wcount = substitute(system("detex -n " . fnameescape(file) . " | wc -w "), '\D', '', 'g')
+	    call extend(g:atp_WordCount, { file : wcount })
+	endfor
+    else
+	let wcount = system("echo '".join(getbufline(bufnr("%"), a:range[0], a:range[1]), "\n")."'|detex -n|wc -w")
+	call extend(g:atp_WordCount, { expand("%") : wcount } )
+    endif
+
 
     " sum values
     let val = values(g:atp_WordCount)
@@ -2030,11 +2041,11 @@ function! atplib#various#WordCount(bang)
     return wc_sum
 endfunction "}}}
 " {{{ atplib#various#ShowWordCount()
-function! atplib#various#ShowWordCount(bang)
+function! atplib#various#ShowWordCount(bang,range)
 
-    let wc = atplib#various#WordCount(a:bang)
+    let wc = atplib#various#WordCount(a:bang,a:range)
     let c = 0
-    if a:bang == "!"
+    if a:bang == "!" && a:range != [ line("."), line(".") ] 
 	echo g:atp_WordCount[b:atp_MainFile] . "\t" . b:atp_MainFile
 	for file in b:ListOfFiles
 	    if get(g:atp_WordCount, file, "NOFILE") != "NOFILE"
@@ -2046,7 +2057,11 @@ function! atplib#various#ShowWordCount(bang)
 	    echomsg wc
 	endif
     else
-	echomsg wc . "  " . b:atp_MainFile
+	if a:range == [ line("."), line(".") ] 
+	    echomsg wc . "  " . b:atp_MainFile
+	else
+	    echomsg wc
+	endif
     endif
 endfunction "}}}
 " {{{ atplib#various#Wdiff

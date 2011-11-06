@@ -175,7 +175,9 @@ NEWS							*atp-news*
 
  At the end of |atp-tips| I show how to make w b and aw work slightly better. 
 
- |atp-:ChangeLabel| command.
+ |atp-:ChangeLabel| 	-- a new command.
+
+ |atp-:WordCount|		-- range added.
 
  omap % added. Now to delete an environment just put the cursor over \begin or \end
  command and use d%. The same will work if you want to delete (:),[:],{:} or
@@ -1978,12 +1980,15 @@ ToDo({keyword}, {stop}, [bufname])			*atp-function-ToDo*
 	prepended to the patterns.
 
   							*atp-:WordCount*
-:WordCount[!] 					
+:[range]WordCount[!] 					
 	The command to compute the number of words. With bang [!] it will show
 	the word count of each input file. It uses 'detex' program (which is
 	present in 'texlive') to remove the latex markups prior to word
 	counting (done by the external 'wc' program).  Note: This command will
 	first save the file. 
+
+	If [range] is not given (or is the current line) it counts words in
+	whole project, otherwise counts words in the given range.
 
 							*atp-:Babel*
 							*g:atp_babel*
