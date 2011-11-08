@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Tue Oct 25, 2011 at 15:43:27  +0100
+" Last Change: Tue Nov 08, 2011 at 15:13:41  +0000
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -502,13 +502,17 @@ if expand("%") == "__ToC__"
 
 	if gotowinnr != -1
 	    exe gotowinnr . " wincmd w"
+	    let winview	= winsaveview()
+	    let bufnr = bufnr("%")
 	else
 	    exe gotowinnr . " wincmd w"
+	    let bufnr = bufnr("%")
+	    let winview	= winsaveview()
 	    exe "e " . fnameescape(file_name)
 	endif
+	let g:bufnr = bufnr
 	    
 	"finally, set the position
-	let winview	= winsaveview()
 	keepjumps call setpos('.',[0,begin_line,1,0])
 	normal! V
 	if end_line != -1 && !bibliography
@@ -522,6 +526,9 @@ if expand("%") == "__ToC__"
 	endif
 
 	execute 'normal '.register.'y'
+	if bufnr != -1
+	    execute "buffer ".bufnr
+	endif
 	call winrestview(winview)
 	execute toc_winnr . "wincmd w"
 	execute "let yanked_section=@".register
@@ -534,7 +541,7 @@ if expand("%") == "__ToC__"
     command! -buffer -nargs=? YankSection	:call <SID>YankSection(<f-args>)
 
 
-    function! s:DeleteSection()
+    function! <SID>DeleteSection()
 
 	" if under help lines do nothing:
 	let toc_line	= getbufline("%",1,"$")
@@ -659,7 +666,7 @@ if expand("%") == "__ToC__"
     " type = p/P	like paste p/P.
     " a:1	- the number of the section in the stack (from 1,...)
     " 	- by default it is the last one.
-    function! s:PasteSection(type, ...)
+    function! <SID>PasteSection(type, ...)
 
 	let stack_number = a:0 >= 1 ? a:1-1 : 0 
 
@@ -722,7 +729,7 @@ if expand("%") == "__ToC__"
     command! -buffer -nargs=? -bang PasteSection	:call <SID>PasteSection((<q-bang> == '!' ? 'P' : 'p'), <f-args>)
 
     " Lists title of sections in the t:atp_SectionStack
-    function! s:SectionStack()
+    function! <SID>SectionStack()
 	if len(t:atp_SectionStack) == 0
 	    echomsg "[ATP:] section stack is empty"
 	    sleep 750m
@@ -741,7 +748,7 @@ if expand("%") == "__ToC__"
 
     " Undo in the winnr under the cursor.
     " a:1 is one off u or U, default is u.
-    function! s:Undo(...)
+    function! <SID>Undo(...)
 	let cmd	= ( a:0 >= 1 && a:1 =~ '\cu\|g\%(-\|+\)' ? a:1 : 'u' )
 	let winnr	= s:gotowinnr()
 	exe winnr . " wincmd w"
