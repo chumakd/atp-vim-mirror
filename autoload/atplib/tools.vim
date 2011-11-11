@@ -249,6 +249,7 @@ function! atplib#tools#GrepAuxFile(...)
 	endif
 
 	if label !~ '^nolabel:\>'
+	    let number = substitute(number, '{\|}', '', 'g')
 	    call add(labels, [ label, number, counter])
 	    if g:atp_debugGAF
 		call extend(g:gaf_debug, { label : [ number, counter ] })
@@ -484,13 +485,14 @@ function! atplib#tools#getlinenr(...) "{{{
     let labels 	=  a:0 >= 2 ? a:2 : expand("%") == "__Labels__" ? 1 : 0
 
     if labels == 0
-	let bnr = bufnr("_ToC_")
-	if string(getbufvar(bnr, "atp_Toc")) != ""
+	let bnr = bufnr("__ToC__")
+	let g:bkr = bnr
+	if len(getbufvar(bnr, "atp_Toc"))
 	    return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[1]
 	endif
     else
-	let bnr = bufnr("_Labels_")
-	if string(getbufvar(bnr, "atp_Lables")) != ""
+	let bnr = bufnr("__Labels__")
+	if len(getbufvar(bnr, "atp_Lables"))
 	    return get(getbufvar(bnr, "atp_Labels"), line, ["", ""])[1]
 	endif
     endif

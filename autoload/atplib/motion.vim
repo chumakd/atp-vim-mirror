@@ -589,7 +589,7 @@ function! atplib#motion#TOC(bang,...)
     if ( a:bang == "!" || !exists("t:atp_toc") )
 	let t:atp_toc = {}
 	for buffer in t:atp_toc_buflist 
-" 	    let t:atp_toc=atplib#motion#maketoc(buffer)
+" 	    let b:atp_toc=atplib#motion#maketoc(buffer)
 	    call extend(t:atp_toc, atplib#motion#maketoc(buffer))
 	endfor
     endif

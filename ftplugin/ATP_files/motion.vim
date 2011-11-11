@@ -255,5 +255,5 @@ command! -buffer NInput				:call atplib#motion#Input("w") 	| let v:searchforward
 command! -buffer PInput 			:call atplib#motion#Input("bw")	| let v:searchforward = 0
 command! -buffer -nargs=? -bang -complete=customlist,atplib#motion#GotoFileComplete GotoFile	:call atplib#motion#GotoFile(<q-bang>,<q-args>, 0)
 command! -buffer -nargs=? -bang -complete=customlist,atplib#motion#GotoFileComplete Edit 	:call atplib#motion#GotoFile(<q-bang>,<q-args>, 0)
-command! -bang -nargs=? -complete=customlist,atplib#motion#GotoLabelCompletion GotoLabel  		:call GotoLabel(<q-bang>, <q-args>)
+command! -bang -nargs=? -complete=customlist,atplib#motion#GotoLabelCompletion GotoLabel  		:call atplib#motion#GotoLabel(<q-bang>, <q-args>)
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

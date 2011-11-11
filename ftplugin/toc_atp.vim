@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Tue Nov 08, 2011 at 15:13:41  +0000
+" Last Change: Fri Nov 11, 2011 at 06:55:18  +0000
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -106,6 +106,7 @@ command! -buffer GotoWinNr	:echo s:gotowinnr()
 
 function! GotoLine(closebuffer) "{{{
     let labels_window	= expand("%") == "__Labels__" ? 1 : 0
+    let g:labels_window = labels_window
     
     " if under help lines do nothing:
     let toc		= getbufline("%",1,"$")
@@ -121,6 +122,7 @@ function! GotoLine(closebuffer) "{{{
 
     " line to go to
     let nr	= atplib#tools#getlinenr(line("."), labels_window)
+    let g:nr	= nr
 
     " window to go to
     let gotowinnr= s:gotowinnr()
