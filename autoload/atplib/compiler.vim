@@ -587,6 +587,7 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
 
     let cmd=g:atp_Python." ".PythonMakeLatexPath.
 		\ " --texfile ".shellescape(atplib#FullPath(b:atp_MainFile)).
+		\ " --bufnr ".bufnr("%").
 		\ " --start ".a:start.
 		\ " --output-format ".ext.
 		\ " --verbose ".mode.
@@ -733,6 +734,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 		\ ." --tex-options ".shellescape(tex_options)
 		\ ." --verbose ".a:verbose
 		\ ." --file ".shellescape(atplib#FullPath(a:filename))
+		\ ." --bufnr ".bufnr("%")
 		\ ." --output-format ".ext
 		\ ." --runs ".a:runs
 		\ ." --servername ".v:servername
@@ -1056,7 +1058,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 
 " 	    let callback	= atplib#compiler#SidWrap('CallBack')
 	    let callback_cmd 	= v:progname . ' --servername ' . v:servername . ' --remote-expr ' . 
-				    \ shellescape('atplib#callback#CallBack').'\(\"'.a:verbose.'\",\"'.a:command.'\",\"'.a:bibtex.'\"\)'. " ; "
+				    \ shellescape('atplib#callback#CallBack').'\(\"'.bufnr("%").'\",\"'.a:verbose.'\",\"'.a:command.'\",\"'.a:bibtex.'\"\)'. " ; "
 
 	    let command = command . " " . callback_cmd
 

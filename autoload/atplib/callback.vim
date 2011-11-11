@@ -26,8 +26,18 @@ function! atplib#callback#MakeidxReturnCode(returncode,...)
 endfunction
 " }}}
 " atplib#callback#Signs {{{
-function! atplib#callback#Signs()
+function! atplib#callback#Signs(bufnr)
     if has("signs")
+	let g:bufnr = a:bufnr
+	let g:cbufnr = bufnr("%")
+	if a:bufnr != bufnr("%")
+	    if bufwinnr(str2nr(a:bufnr)) != -1
+		let cwinnr = bufwinnr(bufnr("%"))
+		exe bufwinnr(str2nr(a:bufnr))."wincmd w"
+	    else
+		return
+	    endif
+	endif
 	sign unplace *
 	" There is no way of getting list of defined signs in the current buffer.
 	" Thus there is no proper way of deleting them. I overwrite them using
@@ -50,6 +60,10 @@ function! atplib#callback#Signs()
 	    exe 'sign place '.i.' line='.item['lnum'].' name='.i.' file='.expand('%:p')
 	    let i+=1
 	endfor
+	if exists("cwinnr")
+	    exe cwinnr."wincmd w"
+	    unlet cwinnr
+	endif
     endif
 endfunction "}}}
 " atplib#callback#CallBack {{{
@@ -60,8 +74,9 @@ endfunction "}}}
 "
 " Uses b:atp_TexReturnCode which is equal to the value returned by tex
 " compiler.
-function! atplib#callback#CallBack(mode,...)
+function! atplib#callback#CallBack(bufnr,mode,...)
 
+    let g:bufnr = a:bufnr
     " If the compiler was called by autocommand.
     let AU 	= ( a:0 >= 1 ? a:1 : 'COM' )
     " Was compiler called to make bibtex
@@ -89,7 +104,7 @@ function! atplib#callback#CallBack(mode,...)
 
     " signs
     if g:atp_signs
-	call atplib#callback#Signs()
+	call atplib#callback#Signs(a:bufnr)
     endif
 
     if g:atp_debugCallBack
