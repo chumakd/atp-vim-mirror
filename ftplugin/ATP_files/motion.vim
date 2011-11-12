@@ -12,10 +12,12 @@ function! CTOC(...)
 
     let winsavedview = winsaveview()
     try
-	if bufloaded(b:atp_MainFile)
+	if bufloaded(atplib#FullPath(b:atp_MainFile))
 	    let file = getbufline(bufnr(atplib#FullPath(b:atp_MainFile)), 0, "$")
+	elseif filereadable(atplib#FullPath(b:atp_MainFile))
+	    let file = readfile(atplib#FullPath(b:atp_MainFile))
 	else
-	    let file = readfile(b:atp_MainFile) 
+	    let s:document_class = ""
 	endif
 	for fline in file
 	    if fline =~# '^\([^%]\|\\%\)*\\documentclass\>'
