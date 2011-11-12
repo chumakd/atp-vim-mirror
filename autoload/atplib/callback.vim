@@ -28,8 +28,6 @@ endfunction
 " atplib#callback#Signs {{{
 function! atplib#callback#Signs(bufnr)
     if has("signs")
-	let g:bufnr = a:bufnr
-	let g:cbufnr = bufnr("%")
 	if a:bufnr != bufnr("%")
 	    if bufwinnr(str2nr(a:bufnr)) != -1
 		let cwinnr = bufwinnr(bufnr("%"))
@@ -39,6 +37,33 @@ function! atplib#callback#Signs(bufnr)
 	    endif
 	endif
 	sign unplace *
+	" This unplaces also signs not in the current buffer
+
+	" This unplaces only signs in the current buffer, but uses 
+	" redir => var | signs place buffer=a:bufnr | redir END
+	" construct which shows signs on the srceen for a second.
+	"
+	" There should be a function which lists signs.
+	"
+" 	let more = &more
+" 	let lz	= &lz
+" 	set nomore
+" 	setl lz
+" 	redir => unplace_signs
+" 	silent exe "sign place buffer=".a:bufnr
+" 	redir END
+" 	let &more = more
+" 	let &lz = lz
+" 	let signs = split(unplace_signs, "\n")
+" 	call map(signs, 'matchstr(v:val, ''\<id=\>\zs\d\+\ze'')')
+" 	for sign in signs
+" 	    exe "sign unplace ".sign." buffer=".a:bufnr
+" 	endfor
+" 	unlet sign
+" 	unlet signs
+" 	unlet unplace_signs
+
+
 	" There is no way of getting list of defined signs in the current buffer.
 	" Thus there is no proper way of deleting them. I overwrite them using
 	" numbers as names. The vim help tells that there might be at most 120
@@ -46,7 +71,6 @@ function! atplib#callback#Signs(bufnr)
 	
 	" But this is not undefineing signs.
 	let qflist=getqflist()
-	let g:qflist=qflist
 	let i=1
 	for item in qflist
 	    if item['type'] == 'E'
@@ -382,11 +406,15 @@ if len(pids) > 0:
 EOL
 endfunction "}}}
 "{{{ atplib#callback#ProgressBar
-function! atplib#callback#ProgressBar(value,pid)
+function! atplib#callback#ProgressBar(value,pid,bufnr)
     if a:value != 'end'
-	let b:atp_ProgressBar[a:pid]=a:value
+	let progress_bar = getbufvar(a:bufnr, "atp_ProgressBar")
+	let progress_bar[a:pid]=a:value
+	call setbufvar(a:bufnr, "atp_ProgressBar", progress_bar)
     else
-	call remove(b:atp_ProgressBar, a:pid)
+	let progress_bar = copy(getbufvar(a:bufnr, "atp_ProgressBar"))
+	call remove(progress_bar, a:pid)
+	call setbufvar(a:bufnr, "atp_ProgressBar", progress_bar)
     endif
     redrawstatus
 endfunction "}}}

@@ -215,9 +215,9 @@ def latex_progress_bar(cmd):
                 stack.popleft()
             match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))
             if match:
-                vim_remote_expr(servername, "atplib#callback#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+")")
+                vim_remote_expr(servername, "atplib#callback#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+","+str(bufnr)+")")
     child.wait()
-    vim_remote_expr(servername, "atplib#callback#ProgressBar('end',"+str(pid)+")")
+    vim_remote_expr(servername, "atplib#callback#ProgressBar('end',"+str(pid)+","+str(bufnr)+")")
     vim_remote_expr(servername, "atplib#callback#PIDsRunning(\"b:atp_LatexPIDs\")")
     return child
 
