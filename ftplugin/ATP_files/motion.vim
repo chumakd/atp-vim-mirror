@@ -10,6 +10,10 @@ let s:sourced = ( !exists("s:sourced") ? 0 : 1 )
 " {{{1 CTOC
 function! CTOC(...)
 
+    if &l:filetype !~ 'tex$'
+	return ""
+    endif
+
     let winsavedview = winsaveview()
     try
 	if bufloaded(atplib#FullPath(b:atp_MainFile))

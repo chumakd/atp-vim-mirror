@@ -1724,4 +1724,60 @@ function! atplib#motion#JMotion(flag)
     endif
 endfunction
 " }}}1
+" atplib#motion#ParagraphNormalMotion {{{1
+function! atplib#motion#ParagraphNormalMotion(backward,count)
+    let g:count = a:count." ".a:backward
+    if a:backward != "b"
+	for i in range(1,a:count)
+	    call search('\(^\(\n\|\s\)*\n\s*\zs\S\|\zs\\par\>\|\%'.line("$").'l$\)', 'W')
+	endfor
+    else
+	for i in range(1,a:count)
+	    call search('\(^\(\n\|\s\)*\n\s*\zs\S\|\zs\\par\>\|^\%1l\)', 'Wb')
+	endfor
+    endif
+endfunction
+nmap <buffer> <Plug>ParagraphNormalMotionForward 	:<C-U>call atplib#motion#ParagraphNormalMotion('', v:count1)<CR>
+nmap <buffer> <Plug>ParagraphNormalMotionBackward	:<C-U>call atplib#motion#ParagraphNormalMotion('b', v:count1)<CR>
+" atplib#motion#StartVisualMode {{{1
+function! atplib#motion#StartVisualMode(mode)
+    let g:atp_visualstartpos = getpos(".")
+    if a:mode ==# 'v'
+	normal! v
+    elseif a:mode ==# 'V'
+	normal! V
+    elseif a:mode ==# 'cv'
+	exe "normal! \<c-v>"
+    endif
+endfunction
+" atplib#motion#ParagraphVisualMotion {{{1
+function! atplib#motion#ParagraphVisualMotion(backward,count)
+    let cond = !atplib#CompareCoordinates(g:atp_visualstartpos[1:2],getpos("'>")[1:2])
+"     let g:pos = string(g:atp_visualstartpos)." ".string(getpos("'<"))." ".string(getpos("'>"))." ".cond
+    let bpos = g:atp_visualstartpos
+    if a:backward != "b"
+	if cond
+	    call cursor(getpos("'<")[1:2])
+	else
+	    call cursor(getpos("'>")[1:2])
+	endif
+	for i in range(1,a:count)
+	    let epos = searchpos('\(^\(\n\|\s\)*\n\ze\|\(\_s*\)\=\\par\>\|\%'.line("$").'l$\)', 'Wn')
+	endfor
+    else 
+	if cond
+	    call cursor(getpos("'<")[1:2])
+	else
+	    call cursor(getpos("'>")[1:2])
+	endif
+	for i in range(1,a:count)
+	    let epos = searchpos('\(^\(\n\|\s\)*\n\ze\|\(\_s*\)\=\\par\>\|^\%1l\ze\)', 'Wnb')
+	endfor
+    endif
+    call cursor(bpos[1:2])
+    exe "normal ".visualmode()
+    call cursor(epos)
+endfunction
+vmap <buffer> <silent> <Plug>ParagraphVisualMotionForward 	:<C-U>call atplib#motion#ParagraphVisualMotion('',v:count1)<CR>
+vmap <buffer> <silent> <Plug>ParagraphVisualMotionBackward 	:<C-U>call atplib#motion#ParagraphVisualMotion('b',v:count1)<CR>
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
