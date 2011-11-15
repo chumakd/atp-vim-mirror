@@ -2387,7 +2387,7 @@ function! atplib#compiler#ShowErrors(...)
 
     " signs
     if g:atp_signs
-	call atplib#callback#Signs()
+	call atplib#callback#Signs(bufnr("%"))
     endif
 
     " final stuff
