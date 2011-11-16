@@ -1477,7 +1477,7 @@ endfunction
 " 	(1) skip empty lines between comments
 function! atplib#motion#SkipComment(flag, mode, ...)
     let flag 	= ( a:flag =~ 'b' ? 'b' : '' ) 
-    let nr	= ( a:flag =~ 'b' ? '-1' : 1 )
+    let nr	= ( a:flag =~ 'b' ? -1 : 1 )
     call search('^\zs\s*%', flag)
     call cursor(line("."), ( nr == -1 ? 1 : len(getline(line(".")))))
 
