@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Fri Nov 18, 2011 at 08:58:14  +0000
+" Last Change: Fri Nov 18, 2011 at 09:05:44  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen()
@@ -483,11 +483,11 @@ command! -buffer 	ListPrinters				:echo atplib#various#ListPrinters("", "", "")
 " List Packages:
 command! -buffer 	ShowPackages				:let b:atp_PackageList = atplib#search#GrepPackageList() | echo join(b:atp_PackageList, "\n")
 if &l:cpoptions =~# 'B'
-    command! -buffer -nargs=? -complete=buffer -bang ToDo	:call ToDo('\c\<to\s*do\s*\>','\s*%\s*$\|\s*%\c.*\<note:\>',<q-bang>, <f-args>)
-    command! -buffer -nargs=? -complete=buffer -bang Note	:call ToDo('\c\<note\s*\>','\s*%\s*$\|\s*%\c.*\<to\s*do:\>', <q-bang>, <f-args>)
+    command! -buffer -nargs=? -complete=buffer -bang ToDo	:call ToDo('\c\<to\s*do\s*\>','\s*%\s*$\|\s*%\c.*\<note\>',<q-bang>, <f-args>)
+    command! -buffer -nargs=? -complete=buffer -bang Note	:call ToDo('\c\<note\s*\>','\s*%\s*$\|\s*%\c.*\<to\s*do\>', <q-bang>, <f-args>)
 else
-    command! -buffer -nargs=? -complete=buffer ToDo		:call ToDo('\\c\\<to\\s*do>','\\s*%\\s*$\\|\\s*%\\c.*\\<note:\\>',<f-args>)
-    command! -buffer -nargs=? -complete=buffer Note		:call ToDo('\\c\\<note\\>','\\s*%\\s*$\\|\\s*%\\c.*\\<to\\s*do:\\>',<f-args>)
+    command! -buffer -nargs=? -complete=buffer ToDo		:call ToDo('\\c\\<to\\s*do>','\\s*%\\s*$\\|\\s*%\\c.*\\<note\\>',<f-args>)
+    command! -buffer -nargs=? -complete=buffer Note		:call ToDo('\\c\\<note\\>','\\s*%\\s*$\\|\\s*%\\c.*\\<to\\s*do\\>',<f-args>)
 endif
 command! -buffer ReloadATP					:call atplib#various#ReloadATP("!")
 command! -bang -buffer -nargs=1 AMSRef				:call atplib#various#AMSRef(<q-bang>, <q-args>)
