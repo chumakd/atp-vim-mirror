@@ -835,6 +835,10 @@ function! atplib#bibsearch#showresults(bibresults, flags, pattern, bibdict)
     let b:ListOfBibKeys = l:listofkeys
     let b:BufNr		= BufNr
 
+    " Resize if the window height is too big.
+    if line("$") <= winheight(0)
+	exe "resize ".line("$")
+    endif
     return l:listofkeys
 endfunction
 "}}}
