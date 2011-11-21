@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Nov 06, 2011 at 10:12:55  +0000
+" Last Change: Mon Nov 21, 2011 at 12:59:52  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2020,11 +2020,14 @@ function! atplib#various#WordCount(bang, range)
 
     let g:atp_WordCount = {}
 
-    if a:range == [ line("."), line(".") ]
+    if a:bang == "!"
 	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input''')) + [ b:atp_MainFile ]
-	    let wcount = substitute(system("detex -n " . fnameescape(file) . " | wc -w "), '\D', '', 'g')
+	    let wcount = substitute(system("detex -n " . fnameescape(atplib#FullPath(file)) . " | wc -w "), '\D', '', 'g')
 	    call extend(g:atp_WordCount, { file : wcount })
 	endfor
+    elseif a:range == [ string(line(".")), string(line(".")) ] 
+	let wcount = system("echo '".join(getbufline(bufnr("%"), 0, "$"), "\n")."'|detex -n|wc -w")
+	call extend(g:atp_WordCount, { expand("%") : wcount } )
     else
 	let wcount = system("echo '".join(getbufline(bufnr("%"), a:range[0], a:range[1]), "\n")."'|detex -n|wc -w")
 	call extend(g:atp_WordCount, { expand("%") : wcount } )

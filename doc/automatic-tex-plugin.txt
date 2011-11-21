@@ -1980,7 +1980,7 @@ ToDo({keyword}, {stop}, [bufname])			*atp-function-ToDo*
 	prepended to the patterns.
 
   							*atp-:WordCount*
-:[range]WordCount[!] 					
+:[range]WordCount[!]
 	The command to compute the number of words. With bang [!] it will show
 	the word count of each input file. It uses 'detex' program (which is
 	present in 'texlive') to remove the latex markups prior to word
@@ -1988,7 +1988,7 @@ ToDo({keyword}, {stop}, [bufname])			*atp-function-ToDo*
 	first save the file. 
 
 	If [range] is not given (or is the current line) it counts words in
-	whole project, otherwise counts words in the given range.
+	whole file, otherwise counts words in the given range.
 
 							*atp-:Babel*
 							*g:atp_babel*
