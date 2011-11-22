@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Nov 21, 2011 at 12:59:52  +0000
+" Last Change: Tue Nov 22, 2011 at 00:32:44  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -592,14 +592,10 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 
     " omit pattern
     let omit=join(g:atp_no_toggle_environments,'\|')
-    let open_pos=searchpairpos('\\begin\s*{','','\\end\s*{[^}]*}\zs','bnW','getline(".") =~ "\\\\begin\\s*{".omit."}"',from_line)
+    let open_pos=searchpairpos('\\begin\s*{','','\\end\s*{[^}]*}\zs','bcnW','getline(".") =~ "\\\\begin\\s*{".omit."}"',from_line)
     let env_name=matchstr(strpart(getline(open_pos[0]),open_pos[1]),'begin\s*{\zs[^}]*\ze}')
 
     let label=matchstr(strpart(getline(open_pos[0]),open_pos[1]),'\\label\s*{\zs[^}]*\ze}')
-    " DEBUG
-"     let b:line=strpart(getline(open_pos[0]),open_pos[1])
-"     let b:label=label
-"     let b:env_name=env_name
     if open_pos == [0, 0] || index(g:atp_no_toggle_environments,env_name) != -1
 	return
     endif
@@ -645,13 +641,6 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 	    let new_env_name = add
 	endif
     endif
-
-    " DEBUG
-"     let g:i=i
-"     let g:env_idx=env_idx
-"     let g:env_name=env_name
-"     let g:add = add
-"     let g:new_env_name=new_env_name
 
     let env_name=escape(env_name,'*')
     let close_pos=searchpairpos('\\begin\s*{'.env_name.'}','','\\end\s*{'.env_name.'}\zs','nW',"",to_line)
