@@ -310,7 +310,7 @@ function! atplib#motion#showtoc(toc)
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
-	    silent exe "%delete"
+	    silent exe "%delete _"
     else
 	" Open new window if its width is defined (if it is not the code below
 	" will put toc in the current buffer so it is better to return.
