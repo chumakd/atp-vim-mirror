@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Nov 16, 2011 at 08:37:03  +0000
+" Last Change: Fri Nov 25, 2011 at 18:31:08  +0000
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -305,26 +305,26 @@ if !exists("g:atp_no_tab_map") || g:atp_no_tab_map == 0
     if !hasmapto("<C-R>=atplib#complete#TabCompletion(0)<CR>", 'i')
 	imap <silent> <buffer> <S-Tab> 		<C-R>=atplib#complete#TabCompletion(0)<CR>
     endif
-" 	if !hasmapto("atplib#complete#TabCompletion(1,1)<CR>", 'n')
-" 	    nmap <silent> <buffer> <Tab>		:call atplib#complete#TabCompletion(1,1)<CR>
-" 	endif
-    if !hasmapto("atplib#complete#TabCompletion(0,1)<CR>", 'i')
-	nnoremap <silent> <buffer> <S-Tab>	:call atplib#complete#TabCompletion(0,1)<CR> 
-    endif
+"     if !hasmapto("atplib#complete#TabCompletion(1,1)<CR>", 'n')
+" 	nmap <silent> <buffer> <Tab>		:call atplib#complete#TabCompletion(1,1)<CR>
+"     endif
+"     if !hasmapto("atplib#complete#TabCompletion(0,1)<CR>", 'i')
+" 	nnoremap <silent> <buffer> <S-Tab>	:call atplib#complete#TabCompletion(0,1)<CR> 
+"     endif
 else 
     "Non Default Completion Maps:
-    if !hasmapto("<C-R>=atplib#complete#TabCompletion(1)<CR>", 'i')
-	imap <silent> <buffer> <F7> 		<C-R>=atplib#complete#TabCompletion(1)<CR>
-    endif
-    if !hasmapto(" atplib#complete#TabCompletion(1,1)<CR>", 'n')
-	nnoremap <silent> <buffer> <F7>		:call atplib#complete#TabCompletion(1,1)<CR>
-    endif
+"     if !hasmapto("<C-R>=atplib#complete#TabCompletion(1)<CR>", 'i')
+" 	imap <silent> <buffer> <F7> 		<C-R>=atplib#complete#TabCompletion(1)<CR>
+"     endif
     if !hasmapto("<C-R>=atplib#complete#TabCompletion(0)<CR>", 'i')
-	imap <silent> <buffer> <S-F7> 		<C-R>=atplib#complete#TabCompletion(0)<CR>
+	imap <silent> <buffer> <F7> 		<C-R>=atplib#complete#TabCompletion(0)<CR>
     endif
-    if !hasmapto(" atplib#complete#TabCompletion(0,1)<CR>", 'n')
-	nnoremap <silent> <buffer> <S-F7>	:call atplib#complete#TabCompletion(0,1)<CR> 
-    endif
+"     if !hasmapto(" atplib#complete#TabCompletion(1,1)<CR>", 'n')
+" 	nnoremap <silent> <buffer> <F7>		:call atplib#complete#TabCompletion(1,1)<CR>
+"     endif
+"     if !hasmapto(" atplib#complete#TabCompletion(0,1)<CR>", 'n')
+" 	nnoremap <silent> <buffer> <S-F7>	:call atplib#complete#TabCompletion(0,1)<CR> 
+"     endif
 endif
 if !hasmapto(":Wrap { } begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"

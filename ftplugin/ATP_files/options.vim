@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Oct 31, 2011 at 11:19:18  +0000
+" Last Change: Fri Nov 25, 2011 at 18:32:31  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -388,6 +388,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_no_tab_map")
+    let g:atp_no_tab_map = 1
+endif
 if !exists("g:atp_folding")
     let g:atp_folding = 0
 endif
@@ -1047,7 +1050,7 @@ if !exists("g:atp_algorithmic_dict")
     let g:atp_algorithmic_dict = { 'IF' : 'ENDIF', 'FOR' : 'ENDFOR', 'WHILE' : 'ENDWHILE' }
 endif
 if !exists("g:atp_bracket_dict")
-    let g:atp_bracket_dict = { '(' : ')', '{' : '}', '[' : ']', '\lceil' : '\rceil', '\lfloor' : '\rfloor', '\langle' : '\rangle', '\lgroup' : '\rgroup', '<' : '>' }
+    let g:atp_bracket_dict = { '(' : ')', '{' : '}', '[' : ']', '\lceil' : '\rceil', '\lfloor' : '\rfloor', '\langle' : '\rangle', '\lgroup' : '\rgroup', '<' : '>', '\begin' : '\end' }
 endif
 if !exists("g:atp_LatexBox")
     let g:atp_LatexBox		= 1
@@ -2538,7 +2541,7 @@ endfunction
     if (exists("g:atp_StatusLine") && g:atp_StatusLine == '1') || !exists("g:atp_StatusLine")
 	augroup ATP_Status
 	    au!
-	    au BufEnter,BufWinEnter,TabEnter 	*.tex 	call ATPStatus(0,1)
+	    au BufEnter,BufWinEnter,TabEnter *.tex 	call ATPStatus(0,1)
 	augroup END
     endif
 
@@ -2682,7 +2685,7 @@ endif
 " {{{1 ATP_SyntaxGroups
 function! <SID>ATP_SyntaxGroups()
     if &filetype == ""
-	" this is for :Dsearch window
+	" this is important for :Dsearch window
 	return
     endif
     " add texMathZoneT syntax group for tikzpicture environment:

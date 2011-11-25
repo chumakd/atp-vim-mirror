@@ -134,7 +134,6 @@ TABLE OF CONTENTS 					*atp*
 	|atp-bibtex|			File type plugin for bibtex.
 	|atp-bibsearch|			Searching in bib files.
 	|atp-completion|       		How to use and configure completion
-	|atp-omnicompletion|		    and omni completion.
 	|atp-configure| 		How to configure to your needs.
 	|atp-ProjectFiles|		A note how to write project files within ATP.
 	|atp-ProjectScript|		A script executing project specific settings.
@@ -168,6 +167,21 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.6.2
 <
+ Omni completion	-- ATP Tab completion now works as Omnicompletion, see
+			   |compl-omni|, the non expert mode completion is
+			   mapped to <F7> key. The <Tab> key is not mapped. If
+			   you want to use <Tab> and <S-Tab> for completion,
+			   as it was done before, just put 'let
+			   g:atp_no_tab_map=0' in your |vimrc| or |atprc|
+			   files.
+
+			   Note that omni completion might give the 'Pattern
+			   not found' error, when closeing environments or
+			   brackets - you can ignore this message (it is not
+			   possible to turn it off, and working it around will
+			   take to much time).
+	
+
  |atp-:Yank| and |atp-:Paste| (inside bib search) changed.  Also yanking in
  toc (the section key) is in more vim style.
 
@@ -2734,9 +2748,9 @@ COMPLETION MODES		                       	*atp-completion-modes*
 		see. The third column contains the value of the counter. It is
 		put in brackets () if it comes from equation counter.
 
-		There is also omni completion (CTRL-X CTRL-O, see
-		|i_CTRL-X_CTRL-O|) for \cite command. Check it out, as it is
-		very nice (especially in gvim!) and very fast. 
+		There is also omni completion (see |i_CTRL-X_CTRL-O|) for
+		\cite command. Check it out, as it is very nice (especially in
+		gvim!) and very fast. 
 
 		For both completion and omni completion for the cite command,
 		the text after \cite{  [ or after a comma after \cite{ ] is
@@ -3185,129 +3199,6 @@ put it here).
 	If you reinstall, add or remove tex classes/packages from your tex
 	distribution it is enough to unlet these variables. ATP will find new
 	values when it will need them for the first time. 
-
-
-================================================================================
-OMNI-COMPLETION 					*atp-omnicompletion*
-by David Munger (LatexBox plugin)
-
-Completion is achieved through omni completion |compl-omni|, with default
-bindings CTRL-X CTRL-O. There are four types of completion:
-
-
-
-------------------------------------------------------------------------------
-
-							*atp-omnicompletion-commands*
-Commands ~
-
-Command completion is triggered by the '\' character.  For example, >
-	\beg<CTRL-X><CTRL-O>
-completes to >
-	\begin{
-
-Associated settings:
-	|atp-g:LatexBox_completion_commands|
-	|atp-g:LatexBox_completion_close_braces|
-
-
-------------------------------------------------------------------------------
-
-							*atp-omnicompletion-environments*
-Environments ~
-
-Environment completion is triggered by '\begin{'.  For example, >
-	\begin{it<CTRL-X><CTRL-O>
-completes to >
-	\begin{itemize}
-
-Completion of '\end{' automatically closes the last open environment.
-
-Associated settings:
-	|atp-g:LatexBox_completion_environments|
-	|atp-g:LatexBox_completion_close_braces|
-
-
-------------------------------------------------------------------------------
-
-							*atp-omnicompletion-labels*
-Labels ~
-
-Label completion is triggered by '\ref{' or '\eqref{'.  For example, >
-	\ref{sec:<CTRL-X><CTRL-O>
-offers a list of all matching labels, with their associated value and page number.
-Labels are read from the aux file, so label completion works only after
-compilation.
-
-It matches:
-	1. Labels: >
-		\ref{sec:<CTRL-X><CTRL-O>
-<	2. Numbers: >
-		\eqref{2<CTRL-X><CTRL-O>
-<	3. Labels and numbers together (separated by white space): >
-		\eqref{eq 2<CTRL-X><CTRL-O>
-	
-
-Associated settings:
-	|atp-g:LatexBox_ref_pattern|
-	|atp-g:LatexBox_completion_close_braces|
-
-
-------------------------------------------------------------------------------
-
-							*atp-omnicompletion-bibtex*
-BibTeX entries ~
-
-BibTeX completion is triggered by '\cite{', '\citep{' or '\citet{'.
-For example, assume you have in your .bib files an entry looking like: >
-
-	@book {	knuth1981,
-		author = "Donald E. Knuth",
-		title = "Seminumerical Algorithms",
-		publisher = "Addison-Wesley",
-		year = "1981" }
-
-Then, try: >
-
-	\cite{Knuth 1981<CTRL-X><CTRL-O>
-	\cite{algo<CTRL-X><CTRL-O>
-
-You can also use regular expressions (or Vim patterns) after '\cite{'.
-
-Associated settings:
-*atp-g:LatexBox_cite_pattern*		Default: '\\cite\(p\|t\)\?\*\?\_\s*{'
-*atp-g:LatexBox_ref_pattern*		Default: '\\v\?\(eq\|page\)\?ref\*\?\_\s*{'
-
-	Patterns to match \cite and \ref commands for BibTeX and label completion.
-	Must include the trailing '{'.
-	To match all commands that contain 'cite' (case insensitive), use: >
-		let g:LatexBox_cite_pattern = '\c\\\a*cite\a*\*\?\_\s*{'
-<	To match all commands that end with 'ref' (case insensitive): >
-		let g:LatexBox_ref_pattern = '\c\\\a*ref\*\?\_\s*{'
-<	Both examples match commands with a trailing star too.
-
-*atp-g:LatexBox_bibtex_wild_spaces*		Default: 1
-
-	If nonzero, spaces act as wild cards ('.*') in completion.
-	For example, if nonzero, >
-		\cite{Knuth 1981
-<	is equivalent to >
-		\cite{Knuth.*1981
-
-*atp-g:LatexBox_completion_close_braces*	Default: 1
-
-	If nonzero, omni completion will add closing brackets where relevant.
-	For example, if nonzero, >
-		\begin{itemize
-<	completes to >
-		\begin{itemize}
-
-*atp-g:LatexBox_completion_environments*
-*atp-g:LatexBox_completion_commands*
-
-	Static completion lists for environments
-	|atp-omnicompletion-environments| and commands
-	|atp-omnicompletion-commands|.
 
 
 ================================================================================
