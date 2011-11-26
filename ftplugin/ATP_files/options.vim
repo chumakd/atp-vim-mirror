@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Nov 25, 2011 at 18:32:31  +0000
+" Last Change: Sat Nov 26, 2011 at 00:07:58  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -190,8 +190,11 @@ endif
 " }}}
 
 " Make CTRL-A, CTRL-X work over alphabetic characters:
+if has("eval")
+    setl omnifunc=atplib#complete#OmniComplete
+endif
 setl nrformats=alpha
-setl backupskip+=*.project.vim
+set  backupskip+=*.tex.project.vim
 
 " The vim option 'iskeyword' is adjust just after g:atp_separator and
 " g:atp_no_separator variables are defined.

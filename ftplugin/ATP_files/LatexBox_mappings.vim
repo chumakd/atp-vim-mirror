@@ -21,6 +21,3 @@ vmap <buffer> im <Plug>LatexBox_SelectInlineMathInner
 vmap <buffer> am <Plug>LatexBox_SelectInlineMathOuter
 omap <buffer> im :normal vim<CR>
 omap <buffer> am :normal vam<CR>
-
-setlocal omnifunc=LatexBox_Complete
-
