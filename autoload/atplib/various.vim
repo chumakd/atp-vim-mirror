@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Nov 22, 2011 at 00:32:44  +0000
+" Last Change: Sat Nov 26, 2011 at 09:55:08  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2010,15 +2010,56 @@ function! atplib#various#WordCount(bang, range)
     let g:atp_WordCount = {}
 
     if a:bang == "!"
-	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input''')) + [ b:atp_MainFile ]
+	let g:debug = 1
+	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input'''))
 	    let wcount = substitute(system("detex -n " . fnameescape(atplib#FullPath(file)) . " | wc -w "), '\D', '', 'g')
 	    call extend(g:atp_WordCount, { file : wcount })
 	endfor
+	let temp 	= tempname()
+	let bufnr 	= bufnr("%")
+	let winview	= winsaveview()
+	if expand("%:p") != atplib#FullPath(b:atp_MainFile)
+	    keepalt silent! "edit ".fnameescape(atplib#FullPath(b:atp_MainFile))
+	endif
+	keepalt silent! "saveas ".temp
+	" Delete the preambule
+	if &l:filetype == "tex"
+	    0
+	    let preambule	= search('\\begin{\s*document\s*', 'n')
+	    exe '"_d'.preambule.'j'
+	endif
+	let wcount = substitute(system("detex -n " . fnameescape(fnamemodify(bufname("%"), ":p")) . " | wc -w "), '\D', '', 'g')
+	silent! exe "b ".bufnr
+	keepjumps call winrestview(winview)
+	call extend(g:atp_WordCount, { expand("%") : wcount } )
     elseif a:range == [ string(line(".")), string(line(".")) ] 
-	let wcount = system("echo '".join(getbufline(bufnr("%"), 0, "$"), "\n")."'|detex -n|wc -w")
+	let g:debug = 2
+	let temp 	= tempname()
+	let bufnr 	= bufnr("%")
+	let winview	= winsaveview()
+	keepalt silent! "saveas ".temp
+	" Delete the preambule
+	if &l:filetype == "tex"
+	    0
+	    let preambule	= search('\\begin{\s*document\s*', 'n')
+	    exe '"_d'.preambule.'j'
+	endif
+	let wcount = substitute(system("detex -n " . fnameescape(fnamemodify(bufname("%"), ":p")) . " | wc -w "), '\D', '', 'g')
+	silent! exe "b ".bufnr
+	keepjumps call winrestview(winview)
 	call extend(g:atp_WordCount, { expand("%") : wcount } )
     else
-	let wcount = system("echo '".join(getbufline(bufnr("%"), a:range[0], a:range[1]), "\n")."'|detex -n|wc -w")
+	let g:debug = 3
+	let temp 	= tempname()
+	let range 	= getbufline(bufnr("%"), a:range[0], a:range[1])
+	let bufnr 	= bufnr("%")
+	let winview	= winsaveview()
+	keepalt silent! exe "edit ".temp
+	call append(0,range)
+	silent! update
+	let wcount = substitute(system("detex -n " . fnameescape(fnamemodify(bufname("%"), ":p")) . " | wc -w "), '\D', '', 'g')
+	silent! exe "b ".bufnr
+	keepjumps call winrestview(winview)
 	call extend(g:atp_WordCount, { expand("%") : wcount } )
     endif
 

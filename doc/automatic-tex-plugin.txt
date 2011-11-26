@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 25 November 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 26 November 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.2)
 			by Marcin Szamotulski
@@ -189,9 +189,10 @@ NEWS							*atp-news*
 
  At the end of |atp-tips| I show how to make w b and aw work slightly better. 
 
- |atp-:ChangeLabel| 	-- a new command.
+ |atp-:ChangeLabel|       -- a new command.
 
- |atp-:WordCount|		-- range added.
+ |atp-:WordCount|         -- range added, if the file type is 'tex' also
+			   doesn't count the preambule.
 
  omap % added. Now to delete an environment just put the cursor over \begin or \end
  command and use d%. The same will work if you want to delete (:),[:],{:} or
