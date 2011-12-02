@@ -486,14 +486,14 @@ function! atplib#tools#getlinenr(...) "{{{
 
     if labels == 0
 	let bnr = bufnr("__ToC__")
-	let g:bkr = bnr
 	if len(getbufvar(bnr, "atp_Toc"))
 	    return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[1]
 	endif
     else
 	let bnr = bufnr("__Labels__")
-	if len(getbufvar(bnr, "atp_Lables"))
-	    return get(getbufvar(bnr, "atp_Labels"), line, ["", ""])[1]
+	let dict=getbufvar(bnr, "atp_Labels")
+	if len(dict)
+	    return get(dict, line, ["", ""])[1]
 	endif
     endif
 endfunction "}}}

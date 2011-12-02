@@ -707,7 +707,7 @@ elseif l:close == "environment"
 endif
 
     if g:atp_debugCloseLastEnvironment
-	let g:line = exists("l:line") ? l:line : 0
+	let g:line = ( exists("l:line") ? l:line : 0 )
 	call atplib#Log('CloseLastEnvironment.log', "g:line=".g:line)
     endif
 
@@ -724,7 +724,7 @@ let l:eindent=atplib#complete#CopyIndentation(l:line)
 	" unless it starts in a serrate line,
 	" \( \): close in the same line. 
 	"{{{3 close environment in the same line
-	if l:line !~ '^\s*\%(\$\|\$\$\|[^\\]\\%(\|\\\@<!\\\[\)\?\s*\\begin\s*{[^}]*}\s*\%((.*)\s*\|{.*}\s*\|\[.*\]\s*\)\{,3}\%(\s*\\label\s*{[^}]*}\s*\|\s*\\hypertarget\s*{[^}]*}\s*{[^}]*}\s*\)\{0,2}$'
+	if l:line != "" && l:line !~ '^\s*\%(\$\|\$\$\|[^\\]\\%(\|\\\@<!\\\[\)\?\s*\\begin\s*{[^}]*}\s*\%((.*)\s*\|{.*}\s*\|\[.*\]\s*\)\{,3}\%(\s*\\label\s*{[^}]*}\s*\|\s*\\hypertarget\s*{[^}]*}\s*{[^}]*}\s*\)\{0,2}$'
 	    " I use \[.*\] instead of \[[^\]*\] which doesn't work with nested
 	    " \[:\] the same for {:} and (:).
 " 	    	This pattern matches:
@@ -1310,6 +1310,7 @@ function! atplib#complete#CheckBracket(bracket_dict)
 
 	if g:atp_debugCheckBracket >= 1
 	    call atplib#Log("CheckBracket.log", ket." check_".i."=".string(check_{i}))
+	    let g:check_{i} = check_{i}
 	    let g:arg_{i}=[escape(ket,'\[]'), '\%('.escape(a:bracket_dict[ket],'\[]').'\|\\\.\)', begin_line, 1, 2*g:atp_completion_limits[4],2]
 	endif
 	" check_dot_{i} is 1 if the bracket is closed with a dot (\right.) . 
@@ -3663,6 +3664,7 @@ function! atplib#complete#OmniComplete(findstart, base)
 	    " Close environments
 	    else
 		call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
+		let s:env_name = 0
 		set omnifunc=atplib#complete#OmniCompleteCloseEnvironment
 		let s:append = append
 		let s:line_nr = 0
@@ -3735,6 +3737,7 @@ function! atplib#complete#OmniComplete(findstart, base)
 		if env_name !~# '^\s*document\s*$'
 		    let s:append = append
 		    let s:line_nr = line_nr
+		    let s:env_name = env_name
 		    set omnifunc=atplib#complete#OmniCompleteCloseEnvironment
 		    return col(".")
 		else
@@ -4535,6 +4538,7 @@ function! atplib#complete#OmniCompleteCloseEnv()
 	    if env_name !~# '^\s*document\s*$'
 		let s:append = append
 		let s:line_nr = line_nr
+		let s:env_name = env_name
 		set omnifunc=atplib#complete#OmniCompleteCloseEnvironment
 		return col(".")
 	    else
@@ -5107,11 +5111,14 @@ function! atplib#complete#OmniCompleteCloseEnvironment(findstart, base)
     let line_nr = s:line_nr
     let g:line_nr = line_nr
     unlet s:line_nr
+    let env_name = s:env_name
+    let g:env_name = env_name
+    unlet s:env_name
     " Todo: atplib#complete#CloseLastEnvironment is not yet only returrning.
     if line_nr
-	call atplib#complete#CloseLastEnvironment(append, 'environment', 0, [line_nr, 0])
+	call atplib#complete#CloseLastEnvironment(append, 'environment', env_name, [line_nr, 0])
     else
-	call atplib#complete#CloseLastEnvironment(append, 'environment', 0)
+	call atplib#complete#CloseLastEnvironment(append, 'environment', env_name)
     endif
     return []
 endfunction
