@@ -64,6 +64,9 @@ function! s:JumpToMatch(mode, ...)
 	    let backward = 0
 	endif
 
+	" add current position to the jump-list (see :help jump-motions)
+	normal! m`
+
 	let sflags = backward ? 'cbW' : 'cW'
 
 	" selection is lost upon function call, reselect
@@ -78,9 +81,7 @@ function! s:JumpToMatch(mode, ...)
 	let two_dollar_pat 	= '\\\@<!\$\$'
 
 	let saved_pos = getpos('.')
-	let g:saved_pos = saved_pos
 	let beg_of_line  = strpart(getline('.'), 0, searchpos('\>', 'n')[1]-1)
-" 	    let g:beg_of_line = beg_of_line
 
 	" move to the left until not on alphabetic characters
 	call search('\A', 'cbW', line('.'))
@@ -141,27 +142,21 @@ function! s:JumpToMatch(mode, ...)
 		let open_pat = open_pats[i]
 		let close_pat = close_pats[i]
 		let mid_pat = ( open_pat  == '\\begin\>' ? '\C\\item\>' : '' )
-		let g:cpos = getpos('.')
 
 		if mid_pat != "" && beg_of_line =~ '\C\%(' . mid_pat . '\)$'
-		" if on mid pattern
-" 		    call setpos(".", saved_pos)
-" 		    call search('\\\<', 'bc')
+		    " if on mid pattern
 		    call search('\C'.mid_pat, 'Wbc', line("."))
 		    call searchpair('\C'.open_pat, mid_pat, '\C'.close_pat, 'W'.(backward ? 'b' : ''), 'LatexBox_InComment()')
-		    let g:debug = 1." ".'\C'.open_pat." ". mid_pat." ". '\C'.close_pat." ". 'W'.(backward ? 'b' : '')." ". 'LatexBox_InComment()'
 		    break
 		elseif rest_of_line =~ '^\C\%(' . open_pat . '\)'
-		" if on opening pattern, go to closing pattern
+		    " if on opening pattern, go to closing pattern
 		    call searchpair('\C'.open_pat, 
 				\ (!backward && (saved_pos[1] == line('.') && saved_pos[2] >= col('.')) ? mid_pat : ''),
 				\ '\C'.close_pat, 'W', 'LatexBox_InComment()')
-		    let g:debug = 2." ".'\C'.open_pat." ". (!backward  && ( saved_pos[1] == line('.') && saved_pos[2] >= col('.') )? mid_pat : '')." ". '\C'.close_pat." ". 'W'." ". 'LatexBox_InComment()'
 		    break
 		elseif rest_of_line =~ '^\C\%(' . close_pat . '\)'
-		" if on closing pattern, go to opening pattern
+		    " if on closing pattern, go to opening pattern
 		    call searchpair('\C'.open_pat, (!backward ? '' : mid_pat), '\C'.close_pat, 'Wb', 'LatexBox_InComment()')
-" 		    let g:debug = 3." ".'\C'.open_pat." ". (!backward ? '' : mid_pat)." ". '\C'.close_pat." ". 'Wb'." ". 'LatexBox_InComment()'
 		    break
 		endif
 
