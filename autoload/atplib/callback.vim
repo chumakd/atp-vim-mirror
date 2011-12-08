@@ -352,9 +352,9 @@ endfunction "}}}
 "{{{ atplib#callback#LatexPID
 "Store LatexPIDs in a variable
 function! atplib#callback#LatexPID(pid)
+    let g:bufnr = bufnr("%")
     call add(b:atp_LatexPIDs, a:pid)
-"     call atplib#callback#PIDsRunning("b:atp_BitexPIDs")
-    let b:atp_LastLatexPID =a:pid
+    let b:atp_LastLatexPID=a:pid
 endfunction "}}}
 "{{{ atplib#callback#BibtexPID
 "Store BibtexPIDs in a variable

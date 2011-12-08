@@ -2,7 +2,7 @@
 " Description: This script has functions which have to be called before ATP_files/options.vim 
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Nov 12, 2011 at 07:28:39  +0000
+" Last Change: Tue Dec 06, 2011 at 13:31:10  +0000
 
 " This file contains set of functions which are needed to set to set the atp
 " options and some common tools.
@@ -148,7 +148,7 @@ function! ATPRunning() "{{{
 		endif
 	    endfor
 
-	    if exists("b:atp_ProgressBar") && b:atp_ProgressBar != {}
+	    if exists("b:atp_ProgressBar") && type(b:atp_ProgressBar) == 4 && b:atp_ProgressBar != {}
 		let max = max(values(b:atp_ProgressBar))
 		let progress_bar="[".max."]".( g:atp_statusOutDir ? " " : "" )
 	    else

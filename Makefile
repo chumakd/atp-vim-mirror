@@ -72,6 +72,7 @@ SOURCE += ftplugin/ATP_files/packages/libgreek.vim
 SOURCE += ftplugin/ATP_files/packages/longtable.vim
 SOURCE += ftplugin/ATP_files/packages/mathdesign.vim
 SOURCE += ftplugin/ATP_files/packages/mathtools.vim
+SOURCE += ftplugin/ATP_files/packages/memoir.vim
 SOURCE += ftplugin/ATP_files/packages/ntheorem.vim
 SOURCE += ftplugin/ATP_files/packages/standard_classes.vim
 SOURCE += ftplugin/ATP_files/packages/stmaryrd.vim

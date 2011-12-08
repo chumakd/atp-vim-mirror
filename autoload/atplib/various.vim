@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Nov 26, 2011 at 09:55:08  +0000
+" Last Change: Mon Dec 05, 2011 at 20:31:38  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -390,7 +390,7 @@ function! atplib#various#TexAlign(bang)
 
     let balign=searchpair('\\begin\s*{\s*array\s*}', '', '\\end\s*{\s*array\s*}', 'bnW')
 "     let [bmatrix, bmatrix_col]=searchpairpos('\\matrix\s*\%(\[[^]]*\]\s*\)\=\zs{', '', '}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
-    let [bmatrix, bmatrix_col]=searchpos('\\matrix\s*\%(\[[^]]*\]\s*\)\=\zs{', 'bW', max([1, (line(".")-g:atp_completion_limits[2])]))
+    let [bmatrix, bmatrix_col]=searchpos('^\%([^%]\|\\%\)*\\matrix\s*\%(\[[^]]*\]\s*\)\=\zs{', 'bW', max([1, (line(".")-g:atp_completion_limits[2])]))
     if bmatrix != 0
 	normal %
 	let bmatrix = ( line(".") >= save_pos[1] ? bmatrix : 0 )
@@ -466,7 +466,6 @@ function! atplib#various#TexAlign(bang)
 	let AlignSep = '&'
 	let env = "table"
     else
-	let g:env="no_env"
 	return
     endif
 
