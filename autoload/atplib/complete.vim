@@ -1226,8 +1226,13 @@ function! atplib#complete#CheckBracket(bracket_dict)
 	if ket != '{' && ket != '(' && ket != '['
 	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', begin_line)
 		let bslash = ( ket != '{' ? '\\\@<!' : '' )
-		let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
-			\ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", begin_line)
+		if ket != '\begin'
+		    let pair_{i}	= searchpairpos(bslash.escape(ket,'\[]').'\zs','', bslash.escape(a:bracket_dict[ket], '\[]'). 
+			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", begin_line)
+		else
+		    let pair_{i}	= searchpairpos(bslash.'\zs'.escape(ket,'\[]'),'', bslash.escape(a:bracket_dict[ket], '\[]'). 
+			    \ ( ket_pattern != "" ? '\|'.ket_pattern.'\.' : '' ) , 'bnW', "", begin_line)
+		endif
 	    else
 		let pair_{i}	= [0, 0]
 	    endif

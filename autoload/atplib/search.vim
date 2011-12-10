@@ -604,7 +604,7 @@ endfunction
 " }}}
 
 " Search in all input files recursively.
-" {{{ Recursice Search
+" {{{ Recursive Search
 "
 " Variables are used to pass them to next runs (this function calls it self) 
 " a:main_file	= b:atp_MainFile
@@ -1476,6 +1476,7 @@ endfunction
 " a:1		= path	
 " 			if set to "" then kpsewhich will find the path.
 " a:2		= count (as for findfile())
+" 		  when count < 0 returns a list of all files found
 " a:3		= modifiers 
 " a:4		= positive filter for path (see KpsewhichGLob a:1)
 " a:5		= negative filter for path (see KpsewhichFind a:2)

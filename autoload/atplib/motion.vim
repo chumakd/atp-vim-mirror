@@ -1257,42 +1257,44 @@ function! atplib#motion#GotoFile(bang,args,...)
     " \usepackege{...,<package_name>,...}
     if line =~ '\\usepackage' && g:atp_developer
 	let method = "usepackage"
-	    let ext 	= '.sty'
+	let ext 	= '.sty'
 
-	    let fname   = atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
-	    let file 	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1)
-	    let file_l	= [ file ]
+	let fname   	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
+	let g:fname	= fname
+	let file 	= atplib#search#KpsewhichFindFile('tex', fname, '', 1)
+	let file_l	= [ file ]
 
-	    let message = "Pacakge: "
-	    let options = ""
+	let message = "Pacakge: "
+	let options = ""
 
     " \input{...}, \include{...}
     elseif line =~ '\\\(input\|include\)\s*{' 
 	let method = "input{"
-	    let ext 	= '.tex'
+	let ext 	= '.tex'
 
-	    " \input{} doesn't allow for {...,...} many file path. 
-	    let fname 	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), '.tex')
+	" \input{} doesn't allow for {...,...} many file path. 
+	let fname 	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), '.tex')
 
-	    " The 'file . ext' might be already a full path.
-	    if fnamemodify(fname, ":p") != fname
-		let file_l 	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\|miktex\)')
-		let file	= get(file_l, 0, 'file_missing')
-	    else
-		let file_l	= [ fname ] 
-		let file	= fname
-	    endif
+	" The 'file . ext' might be already a full path.
+	if fnamemodify(fname, ":p") != fname
+	    let file_l 	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\|miktex\)')
+	    let file	= get(file_l, 0, 'file_missing')
+	else
+	    let file_l	= [ fname ] 
+	    let file	= fname
+	endif
 
-	    let message = "File: "
-	    let options = ""
+
+	let message = "File: "
+	let options = ""
 
     " \input 	/without {/
     elseif line =~ '\\input\s*{\@!'
 	let method = "input"
-	    let fname	= atplib#append_ext(matchstr(getline(line(".")), '\\input\s*\zs\f*\ze'), '.tex')
-	    let file_l	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
-	    let file	= get(file_l, 0, "file_missing")
-	    let options = ' +setl\ ft=' . &l:filetype  
+	let fname	= atplib#append_ext(matchstr(getline(line(".")), '\\input\s*\zs\f*\ze'), '.tex')
+	let file_l	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
+	let file	= get(file_l, 0, "file_missing")
+	let options = ' +setl\ ft=' . &l:filetype  
 
     " \documentclass{...}
     elseif line =~ '\\documentclass' && g:atp_developer
@@ -1307,10 +1309,18 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let classname 	= strpart(getline("."), bcol, ecol-bcol-1)
 
 	let fname	= atplib#append_ext(classname, '.cls')
-	let file	= atplib#search#KpsewhichFindFile('tex', fname,  g:atp_texinputs, ':p')
+	let file	= atplib#search#KpsewhichFindFile('tex', fname,  g:atp_texinputs, 1, ':p')
 	let file_l	= [ file ]
 	let options	= ""
-    else
+    elseif line =~ '\\RequirePackage' && g:atp_developer
+	let method = "requirepackage"
+	let ext 	= '.sty'
+	let fname	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
+	let g:fname = fname
+	let file	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1, ':p')
+	let file_l	= [ file ]
+	let options = ' +setl\ ft=' . &l:filetype  
+    else 
 	" If not over any above give a list of input files to open, like
 	" EditInputFile  
 	let method	= "all"
@@ -1320,6 +1330,8 @@ function! atplib#motion#GotoFile(bang,args,...)
     endif
 
     let g:file_l = copy(file_l)
+    let g:method = method
+    let g:line 	= line
 
     if len(file_l) > 1 && file =~ '^\s*$'
 	if method == "all"
@@ -1443,7 +1455,7 @@ function! atplib#motion#GotoFile(bang,args,...)
     else
 	echohl ErrorMsg
 	redraw
-	if file != "file_missing"
+	if file != "file_missing" && exists("fname")
 	    echo "File \'".fname."\' not found."
 	else
 	    echo "Missing file."

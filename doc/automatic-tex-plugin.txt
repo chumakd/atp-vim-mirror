@@ -1243,7 +1243,7 @@ nmap gf
 
 	If g:atp_developer = 1 (default 0) then the map 'gf' can also open
 	package files and document class files, but only when using 'gf' over
-	\usepackage or \documentclass tex commands.
+	\usepackage, \documentclass, and \RequirePackage commands.
 
 	With bang "!" this command regenerates tree of files (this is
 	important only in files with input lines), without it uses cached
