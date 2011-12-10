@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 26 November 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 10 December 2011
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.2)
 			by Marcin Szamotulski
@@ -115,7 +115,7 @@ TABLE OF CONTENTS 					*atp*
 		|atp-:ErrorFormat|
 		|atp-:Kill|
 	    viewer ~
-		|atp-:ViewOutput|
+		|atp-:View|
 		|atp-:SyncTex|		forward searching,
 	    diff ~
 		|atp-:Wdiff|
@@ -181,22 +181,34 @@ NEWS							*atp-news*
 			   possible to turn it off, and working it around will
 			   take to much time).
 	
+ 	completion	-- memoir document class completion: document class options,
+			   and some commands,
+			-- bibref package added.
+
+ % motion		-- changes the jump list (this is vim compatible
+			   bhaviour (see |jump-motions|)
+			-- omap % added. Now to delete an environment just put
+			   the cursor over \begin or \end command and use 'd%'.
+			   The same will work if you want to delete (:), [:],
+			   {:} or $:$ pairs.
+
+ { and } normal motions	-- also work in visual mode (see |}| and |{|).
 
  |atp-:Yank| and |atp-:Paste| (inside bib search) changed.  Also yanking in
  toc (the section key) is in more vim style.
 
  |atp-:PasteSection| with bang "!" puts section before rather than after.
 
- At the end of |atp-tips| I show how to make w b and aw work slightly better. 
+ At the end of |atp-tips| I show how to make w b and aw work slightly better
+ (this is experimental code). 
 
- |atp-:ChangeLabel|       -- a new command.
+ |atp-:ChangeLabel|       -- a new command for changing labels accross the
+			   project.
 
  |atp-:WordCount|         -- range added, if the file type is 'tex' also
 			   doesn't count the preambule.
 
- omap % added. Now to delete an environment just put the cursor over \begin or \end
- command and use d%. The same will work if you want to delete (:),[:],{:} or
- $:$ pairs.
+ |atp-:View| 		-- instead of :ViewOutput command.
 >
  ======================
  Changes in version 10.6.1
@@ -231,7 +243,7 @@ visible with :imap command.
  ======================
  Changes in version 10.6
 <
- The command |atp-:ViewOutput| with bang (also <F3> map) opens and makes forward search.
+ The command |atp-:View| with bang (also <F3> map) opens and makes forward search.
  Reverse search (atplib#FindAndOpen() function) sets the "'" mark before
  changing text position.
 
@@ -1104,7 +1116,7 @@ automatically using autocommand group |CursorMoved|.
 	autocommand group |CursorMoved|). You can also use the command
 	:SyncXpdf or :Xpdf in the log buffer which does the same.
 
-:ViewOutput[!] 						*atp-:ViewOutput*
+:View[!] 						*atp-:View*
 map <LocalLeader>v,map <F3>, imap <F3>  
 	You would like to see what you are editing use this function. It will
 	use the program defined in the variable b:atp_Viewer. See |b:atp_Viewer|,
@@ -4385,7 +4397,7 @@ LOG FILE MAPS						*atp-maps-log*
 	]f, [f		- go to next/previous font info message in log file 
 	]p, [p		- go to next/previous font package message in log file 
 	]P, [P		- go to next/previous page in log file
-	%		- searchpair for (:).
+	%		- searchpair for brackets: (:), [:], {:}, ... .
 <	You can use |n| and |N| Vim normal commands to repeat previous search [count] times.
 
 
@@ -4778,7 +4790,7 @@ Xdvi ~
 	options '-watchfile 1' see man xdvi for explanations). You can set
 	forward/reverse searching by the command |SetXdvi| then use
 	|atp-:SyncTex| for forward searching (Vim->Xdvi). To get reverse
-	searching Xdvi must be opened by ATP (:ViewOutput, or any other
+	searching Xdvi must be opened by ATP (:View, or any other
 	command)
 
 	If you want to use Vim you have to run it with the command: >
