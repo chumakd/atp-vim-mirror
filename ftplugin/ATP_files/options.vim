@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Dec 11, 2011 at 08:52:46  +0000
+" Last Change: Mon Dec 12, 2011 at 10:11:29  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2044,6 +2044,7 @@ endif
 	\ "\\medskip", "\\smallskip", "\\vskip", "\\vfil", "\\vfill", "\\vspace{", "\\vbox",
 	\ "\\hrule", "\\hrulefill", "\\dotfill", "\\hbox",
 	\ "\\thispagestyle{", "\\mathnormal", "\\markright{", "\\markleft{", "\\pagestyle{", "\\pagenumbering{",
+	\ "\\addtocounter{",
 	\ "\\author{", "\\address{", "\\date{", "\\thanks{", "\\title{",
 	\ "\\maketitle",
 	\ "\\marginpar", "\\indent", "\\par", "\\sloppy", "\\pagebreak", "\\nopagebreak",
@@ -2198,8 +2199,6 @@ endif
 		    \ "\\rightmark", "\\leftmark", "\\markboth{", 
 		    \ "\\chaptermark", "\\sectionmark", "\\subsectionmark",
 		    \ "\\fancyheadoffset", "\\fancyfootoffset", "\\fancyhfoffset"]
-
-	let g:atp_makeidx_commands=[ "\\makeindex", "\\index{", "\\printindex" ]
 
 
 	" ToDo: remove tikzpicture from above and integrate the
