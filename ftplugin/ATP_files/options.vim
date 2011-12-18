@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Dec 12, 2011 at 10:11:29  +0000
+" Last Change: Wed Dec 14, 2011 at 16:26:26  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -1891,7 +1891,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleTab		:call ATP_ToggleTab()<CR>
 inoremap <silent> <buffer> 	<Plug>ToggleTab		<C-O>:call ATP_ToggleTab()<CR>
 "}}}
 
-" Tab Completion Variables:
+" TabCompletion Variables:
 " {{{ TAB COMPLETION variables
 " ( functions are in autoload/atplib.vim )
 "
@@ -2067,7 +2067,7 @@ endif
 	\ "\\bibliography{", "\\bibliographystyle{", "\\baselineskip",
 	\ "\\flushbottom", "\\onecolumn", "\\raggedbottom", "\\twocolumn",  
 	\ "\\alph{", "\\Alph{", "\\arabic{", "\\fnsymbol{", "\\reversemarginpar",
-	\ "\\exhyphenpenalty",
+	\ "\\exhyphenpenalty", "\\frontmatter", "\\mainmatter", "\\backmatter",
 	\ "\\topmargin", "\\oddsidemargin", "\\evensidemargin", "\\headheight", "\\headsep", 
 	\ "\\textwidth", "\\textheight", "\\marginparwidth", "\\marginparsep", "\\marginparpush", "\\footskip", "\\hoffset",
 	\ "\\voffset", "\\paperwidth", "\\paperheight", "\\columnsep", "\\columnseprule", 

@@ -2,49 +2,11 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Dec 11, 2011 at 21:44:45  +0000
+" Last Change: Sun Dec 18, 2011 at 16:49:21  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
 " Replace function (like :normal! r)
-function! atplib#various#Replace() "{{{
-    " It will not work with <:> since with the default settings "normal %" is not
-    " working with <:>, possibly because g:atp_bracket_dict doesn't contain this
-    " pair.
-    let char =  nr2char(getchar())
-    let f_char = getline(line("."))[col(".")-1]
-    if f_char =~ '^[(){}\[\]]$'
-	if f_char =~ '^[({\[]$'
-	    let bracket_dict = { '{' : '}',
-			\  '(' : ')',
-			\  '[' : ']',}
-	else
-	    let bracket_dict = { '}' : '{',
-			\  ')' : '(',
-			\  ']' : '[',}
-	endif
-	let c_bracket = get(bracket_dict,char, "")
-	if c_bracket == ""
-	    exe "normal! r".char
-	    return
-	endif
-	let [b_line, b_col] = [line("."), col(".")]
-	exe "normal! %"
-	let [e_line, e_col] = [line("."), col(".")]
-	if b_line == e_line && b_col == e_col
-	    exe "normal! r".char
-	    return
-	endif
-	call cursor(b_line, b_col)
-	exe "normal! r".char
-	call cursor(e_line, e_col)
-	exe "normal! r".c_bracket
-	call cursor(b_line, b_col)
-	return
-    else
-	exe "normal! r".char
-    endif
-endfunction 
 "}}}
 
 " This is the wrap selection function.
@@ -950,8 +912,8 @@ function! atplib#various#OpenLog()
 	nnoremap <silent> <buffer> [c :call atplib#various#Search('\CLaTeX Warning: Citation', 'bW')<CR>
 	nnoremap <silent> <buffer> ]r :call atplib#various#Search('\CLaTeX Warning: Reference', 'W')<CR>
 	nnoremap <silent> <buffer> [r :call atplib#various#Search('\CLaTeX Warning: Reference', 'bW')<CR>
-	nnoremap <silent> <buffer> ]e :call atplib#various#Search('^[^!].*\n\zs!', 'W')<CR>
-	nnoremap <silent> <buffer> [e :call atplib#various#Search('^[^!].*\n\zs!', 'bW')<CR>
+	nnoremap <silent> <buffer> ]e :call atplib#various#Search('^!', 'W')<CR>
+	nnoremap <silent> <buffer> [e :call atplib#various#Search('^!', 'bW')<CR>
 	nnoremap <silent> <buffer> ]f :call atplib#various#Search('\CFont \%(Info\\|Warning\)', 'W')<CR>
 	nnoremap <silent> <buffer> [f :call atplib#various#Search('\CFont \%(Info\\|Warning\)', 'bW')<CR>
 	nnoremap <silent> <buffer> ]p :call atplib#various#Search('\CPackage', 'W')<CR>
@@ -1674,8 +1636,16 @@ function! atplib#various#Dictionary(word)
     let cmd=g:atp_Python." ".shellescape(URLquery_path)." ".shellescape(url)." ".shellescape(wget_file)
     call system(cmd)
     let loclist		= getloclist(0)
-    exe 'lvimgrep /\CMathematical English Usage - a Dictionary/j '.fnameescape(wget_file)
-    let entry=readfile(wget_file)[getloclist(0)[0]['lnum']+1]
+    exe 'silent! lvimgrep /\CMathematical English Usage - a Dictionary/j '.fnameescape(wget_file)
+    let entry=get(readfile(wget_file),get(get(getloclist(0),0,{}),'lnum',-1)+1, -1)
+    if entry == -1
+	call delete(wget_file)
+	redraw
+	echohl WarningMsg
+	echomsg "[ATP:] internet connection seems to be broken."
+	echohl Normal
+	return
+    endif
     call setloclist(0, loclist)
     let entry		= substitute(entry, '<p>', "\n", 'g')
     let entry		= substitute(entry, '<h4>\zs\([0-9]\+\)\ze</h4>', "\n\\1", 'g')
@@ -1718,6 +1688,7 @@ function! atplib#various#Dictionary(word)
 	endif
 	let i+=1
     endfor
+    call delete(wget_file)
 endfunction
 
 function! atplib#various#Complete_Dictionary(ArgLead, CmdLine, CursorPos)
