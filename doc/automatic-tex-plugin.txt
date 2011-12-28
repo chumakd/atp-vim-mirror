@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 11 December 2011
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 28 December 2011
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.3)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.4)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 -----------------------------------------------------------------------------
@@ -167,8 +167,19 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.6.4
 <
- ATP normal r map is working now better, that is |.| works well with |atp-r| map.
+ ATP normal r map is working better, that is |.| works well with |atp-r| map.
 
+ |g:atp_OpenAndSyncSleepTime| = "500m"	-- sleep time between the time when
+ ATP finds the viewer working and syncing (forward searching) for the command
+ |atp-:View|! (with bang) (this is time left for the viewer to open the file).
+
+ Plus some new package files for completion: showidx, makeidx, syntonly and
+ a better completion for the \includeonly{} command (which removes items from
+ completion menu which are already included).
+
+ Count added to |atp-]%| and |atp-[%|.
+
+ |atp-:TexAlign| works with smallmatrix environment.
 >
  ======================
  Changes in version 10.6.3
@@ -1152,6 +1163,10 @@ map <LocalLeader>v,map <F3>, imap <F3>
 	With bang (and <F3> maps) opens viewer at the cursor position in vim
 	(forward search). This will only work for viewers that support forward
 	searching (xpdf, xdvi, okular, skim).
+							*g:atp_OpenAndSyncSleepTime*
+let |g:atp_OpenAndSyncSleepTime|="500m"
+	Give 500 milliseconds for the viewer to read the file, before
+	|atp-:View|! command will do a forward search.
 
 :SyncTex[!]						*atp-:SyncTex* *atp-\f*
 map <LocalLeader>f, map <S-LeftMouse>

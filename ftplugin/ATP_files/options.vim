@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Dec 14, 2011 at 16:26:26  +0000
+" Last Change: Tue Dec 27, 2011 at 10:06:34  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -388,6 +388,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_OpenAndSyncSleepTime")
+    let g:atp_OpenAndSyncSleepTime = "750m"
+endif
 if !exists("g:atp_tab_map")
     let g:atp_tab_map = 0
 endif

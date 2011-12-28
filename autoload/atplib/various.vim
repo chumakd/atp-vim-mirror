@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sun Dec 18, 2011 at 16:49:21  +0000
+" Last Change: Mon Dec 26, 2011 at 12:01:47  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -350,7 +350,8 @@ function! atplib#various#TexAlign(bang)
     let save_pos = getpos(".")
     let synstack = map(synstack(line("."), col(".")), 'synIDattr( v:val, "name")')
 
-    let balign=searchpair('\\begin\s*{\s*array\s*}', '', '\\end\s*{\s*array\s*}', 'bnW')
+    let barray=searchpair('\\begin\s*{\s*array\s*}', '', '\\end\s*{\s*array\s*}', 'bnW', '',max([1,line('.')-500]))
+    let bsmallmatrix=searchpair('\\begin\s*{\s*smallmatrix\s*}', '', '\\end\s*{\s*smallmatrix\s*}', 'bnW', '',max([1,line('.')-500]))
 "     let [bmatrix, bmatrix_col]=searchpairpos('\\matrix\s*\%(\[[^]]*\]\s*\)\=\zs{', '', '}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
     let [bmatrix, bmatrix_col]=searchpos('^\%([^%]\|\\%\)*\\matrix\s*\%(\[[^]]*\]\s*\)\=\zs{', 'bW', max([1, (line(".")-g:atp_completion_limits[2])]))
     if bmatrix != 0
@@ -365,13 +366,20 @@ function! atplib#various#TexAlign(bang)
 	let AlignCtr = 'l+'
 	let AlignSep = '&\|\\pgfmatrixnextcell'
 	let env = "matrix"
-    elseif balign
+    elseif barray
 	let bpat = '\\begin\s*{\s*array\s*}'
-	let bline = balign+1
+	let bline = barray+1
 	let epat = '\\end\s*{\s*array\s*}'
 	let AlignCtr = 'l+'
 	let AlignSep = '&'
 	let env = "array"
+    elseif bsmallmatrix
+	let bpat = '\\begin\s*{\s*smallmatrix\s*}'
+	let bline = bsmallmatrix+1
+	let epat = '\\end\s*{\s*smallmatrix\s*}'
+	let AlignCtr = 'l+'
+	let AlignSep = '&'
+	let env = "smallmatrix"
     elseif count(synstack, 'texMathZoneA') || count(synstack, 'texMathZoneAS')
 	let bpat = '\\begin\s*{\s*align\*\=\s*}' 
 	let epat = '\\end\s*{\s*align\*\=\s*}' 

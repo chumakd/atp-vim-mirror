@@ -10,7 +10,7 @@
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
 PLUGIN 	= AutomaticTexPlugin
-VERSION = 10.6.3
+VERSION = 10.6.4
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
 # entries. I use pathogen, so my setting is more complicated:
