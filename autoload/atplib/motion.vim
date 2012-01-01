@@ -1241,7 +1241,7 @@ function! atplib#motion#GotoFile(bang,args,...)
     let line		= ( check_line ? getline(".") : "" )
     if check_line
 	let beg_line	= strpart(line, 0,col(".")-1)
-	" Find the begining columnt of the file name:
+	" Find the begining column of the file name:
 	let bcol	= searchpos('\%({\|,\)', 'bn',  line("."))[1]
 	if bcol == 0
 	    let bcol 	= searchpos('{', 'n', line("."))[1]
@@ -1295,7 +1295,6 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let file_l	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
 	let file	= get(file_l, 0, "file_missing")
 	let options = ' +setl\ ft=' . &l:filetype  
-
     " \documentclass{...}
     elseif line =~ '\\documentclass' && g:atp_developer
 	let method = "documentclass"
@@ -1307,7 +1306,6 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let ecol	= col(".")
 	call cursor(saved_pos[0], saved_pos[1])
 	let classname 	= strpart(getline("."), bcol, ecol-bcol-1)
-
 	let fname	= atplib#append_ext(classname, '.cls')
 	let file	= atplib#search#KpsewhichFindFile('tex', fname,  g:atp_texinputs, 1, ':p')
 	let file_l	= [ file ]
@@ -1319,6 +1317,18 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let g:fname = fname
 	let file	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1, ':p')
 	let file_l	= [ file ]
+	let options = ' +setl\ ft=' . &l:filetype  
+    elseif line =~ '\\bibliography\>'
+	let method 	= "bibliography"
+	setl iskeyword +=\
+	let fname	= expand("<cword>")
+	setl iskeyword -=\
+	if fname == "\\bibliography"
+	    let fname 	= matchstr(getline(line(".")), '\\bibliography{\zs[^},]*\ze\%(,\|}\)')
+	endif
+	let fname 	= atplib#append_ext(fname, '.bib')
+	let file_l	= atplib#search#KpsewhichFindFile('bib', fname, g:atp_bibinputs, -1, ':p', '^\(\/home\|\.\)', '\%(^\/usr\|kpsewhich\|texlive\)')
+	let file	= get(file_l, 0, "file_missing")
 	let options = ' +setl\ ft=' . &l:filetype  
     else 
 	" If not over any above give a list of input files to open, like
