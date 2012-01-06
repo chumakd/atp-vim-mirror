@@ -907,30 +907,12 @@ function! atplib#various#OpenLog()
 	let projectVarDict = SaveProjectVariables()
 	let s:winnr	= bufwinnr("")
 	let atp_TempDir	= b:atp_TempDir
-	exe "rightbelow split +setl\\ nospell\\ ruler\\ syn=log_atp\\ autoread " . fnameescape(&l:errorfile)
+	exe "rightbelow split " . fnameescape(&l:errorfile)
+	" Settings for the log file are read by plugin/tex_atp.vim
+	" autocommand.
 	let b:atp_TempDir = atp_TempDir
 	call RestoreProjectVariables(projectVarDict)
 
-	map <buffer> q :<C-U>bd!<CR>
-	nnoremap <silent> <buffer> ]m :call atplib#various#Search('\CWarning\\|^!', 'W')<CR>
-	nnoremap <silent> <buffer> [m :call atplib#various#Search('\CWarning\\|^!', 'bW')<CR>
-	nnoremap <silent> <buffer> ]w :call atplib#various#Search('\CWarning', 'W')<CR>
-	nnoremap <silent> <buffer> [w :call atplib#various#Search('\CWarning', 'bW')<CR>
-	nnoremap <silent> <buffer> ]c :call atplib#various#Search('\CLaTeX Warning: Citation', 'W')<CR>
-	nnoremap <silent> <buffer> [c :call atplib#various#Search('\CLaTeX Warning: Citation', 'bW')<CR>
-	nnoremap <silent> <buffer> ]r :call atplib#various#Search('\CLaTeX Warning: Reference', 'W')<CR>
-	nnoremap <silent> <buffer> [r :call atplib#various#Search('\CLaTeX Warning: Reference', 'bW')<CR>
-	nnoremap <silent> <buffer> ]e :call atplib#various#Search('^!', 'W')<CR>
-	nnoremap <silent> <buffer> [e :call atplib#various#Search('^!', 'bW')<CR>
-	nnoremap <silent> <buffer> ]f :call atplib#various#Search('\CFont \%(Info\\|Warning\)', 'W')<CR>
-	nnoremap <silent> <buffer> [f :call atplib#various#Search('\CFont \%(Info\\|Warning\)', 'bW')<CR>
-	nnoremap <silent> <buffer> ]p :call atplib#various#Search('\CPackage', 'W')<CR>
-	nnoremap <silent> <buffer> [p :call atplib#various#Search('\CPackage', 'bW')<CR>
-	nnoremap <silent> <buffer> ]P :call atplib#various#Search('\[\_d\+\zs', 'W')<CR>
-	nnoremap <silent> <buffer> [P :call atplib#various#Search('\[\_d\+\zs', 'bW')<CR>
-	nnoremap <silent> <buffer> ]i :call atplib#various#Search('\CInfo', 'W')<CR>
-	nnoremap <silent> <buffer> [i :call atplib#various#Search('\CInfo', 'bW')<CR>
-	nnoremap <silent> <buffer> % :call atplib#various#Searchpair('(', '', ')', 'W')<CR>
 
 "	This prevents vim from reloading with 'autoread' option: the buffer is
 "	modified outside and inside vim.
@@ -939,20 +921,6 @@ function! atplib#various#OpenLog()
 	    silent! execute "keepjumps normal ''"
 	catch /E486:/ 
 	endtry
-		   
-	command! -buffer -bang SyncTex		:call atplib#various#SyncTex(<q-bang>)
-	nnoremap <buffer> <Enter>		:<C-U>SyncTex<CR>
-	nnoremap <buffer> <LocalLeader>f	:<C-U>SyncTex<CR>	
-	augroup ATP_SyncLog
-	    au CursorMoved *.log :call atplib#various#SyncTex("", 1)
-	augroup END
-
-	command! -buffer SyncXpdf 	:call atplib#various#SyncXpdfLog(0)
-	command! -buffer Xpdf 		:call atplib#various#SyncXpdfLog(0)
-	map <buffer> <silent> <F3> 	:<C-U>SyncXpdf<CR>
-	augroup ATP_SyncXpdfLog
-	    au CursorMoved *.log :call atplib#various#SyncXpdfLog(1)
-	augroup END
     else
 	echo "No log file"
     endif
@@ -972,7 +940,9 @@ function! atplib#various#SyncXpdfLog(...)
 
     let pageNr	= substitute(matchstr(line, '\[\zs\_d\+\ze\%({[^}]*}\)\=\]'), "\n", "", "g")
 
-	call system(cmd)
+    if pageNr	!= ""
+	let cmd = "xpdf -remote " . b:atp_XpdfServer . " " . fnamemodify(atp_MainFile, ":r") . ".pdf " . pageNr . " &"
+    call system(cmd)
     endif
 endfunction
 function! atplib#various#SyncTex(bang,...)
@@ -1132,8 +1102,19 @@ function! atplib#various#SyncTex(bang,...)
 	    exe bufwinnr . " wincmd w"
 	    exe ':'.lineNr
 	    exe 'normal zz'
-	else
+	elseif exists("s:winnr")
 	    exe s:winnr . " wincmd w"
+	    if buflisted(bufnr)
+		exe "b " . bufnr
+		exe ':'.lineNr
+		exe 'normal zz'
+	    else
+		exe "edit " . fname
+		exe ':'.lineNr
+		exe 'normal zz'
+	    endif
+	    exe 'normal zz'
+	else
 	    if buflisted(bufnr)
 		exe "b " . bufnr
 		exe ':'.lineNr

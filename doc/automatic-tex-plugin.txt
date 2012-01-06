@@ -165,6 +165,14 @@ for all the defined functions :help atp*()CTRL-d, mappings: :help atp-mapCTRL-d
 NEWS							*atp-news*
 >
  ======================
+ Changes in version 10.6.5
+<
+ TOC and Labels windows are clicable: acts like <space> = go to section and
+ leave TOC/Labels window open.
+
+ |atp-gf| works well with \bibliography{} command.
+>
+ ======================
  Changes in version 10.6.4
 <
  ATP normal r map is working better, that is |.| works well with |atp-r| map.
@@ -2187,8 +2195,8 @@ TABLE OF CONTENTS WINDOW				*atp-toc-window*
 			    chapter/section under the cursor,
 	    'q' 	to quit, 
 	    <Enter> 	to go to the section under the cursor and close ToC.
-	    <space> 	to go to the section under the cursor but leave ToC
-			    open.
+   <space>, <LeftMouse> to go to the section under the cursor but
+			leave ToC open.
 	    '_' 	to go to the section under the cursor and return to 
 			ToC afterwards.
 	    'zc'	to fold section/chapter/... . You can mark several
@@ -3953,32 +3961,38 @@ there might be some differences). The easy way to change imap leaders is by
 using the variables:
 							*g:atp_imap_leader_1*
 >
-	    g:atp_imap_leader_1 == "#"
+	    g:atp_imap_leader_1 = "#"
 <	    	for Greak letters and some math commands,
 							*g:atp_imap_leader_2*
 >
-	    g:atp_imap_leader_2 == "##"
+	    g:atp_imap_leader_2 = "##"
 <	    	for font commands, (another good choice is "_") 
 							*g:atp_imap_leader_3*
 >
-	    g:atp_imap_leader_3 == "]"
+	    g:atp_imap_leader_3 = "]"
 <	    	for environments, 
 							*g:atp_imap_leader_4*
 >
-	    g:atp_imap_leader_4 == "["
+	    g:atp_imap_leader_4 = "["
 <	    	for extra environments in the old layout (this will be removed).
-
+							*g:atp_imap_over_leader*
+>
+	    g:atp_imap_over_leader = "`"
+<		for imaps of all sort of accents. See |atp-imaps-diacritics|,
+		some maps in |atp-imaps-math-misc|, and also in vmaps:
+		|atp-vmap-WrapSelection-accents|.
 							|g:atp_map_forward_motion_leader|
 >
-	    g:atp_map_forward_motion_leader == ">"
+	    g:atp_map_forward_motion_leader = ">"
 <		for maps to |atp-:NInput|, |atp-:NSec|, .... , |atp->E|, |atp->e|.
 							|g:atp_map_backward_motion_leader|
 >
-	    g:atp_map_backward_motion_leader == "<"
+	    g:atp_map_backward_motion_leader = "<"
 <		for maps to |atp-:PInput|, |atp-:PSec|, .... , |atp-<E|, |atp-<e|. 
 
-Note: the best way to list mappings with leader '#' in insert mode is to use
-      ':imap #<CR>'.
+
+Note: the best way to search for (insert) maps is to use the |atp-:Imap|
+command.
 
 If you want change the map the best way is to copy the rhs of map provided by
 ATP, since before loading maps the script tests if map to such rhs already
@@ -4526,7 +4540,7 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 <
 							*atp-vmap-WrapSelection-accents*
 							*atp-vmap-InteligentWrapSelection-accents*
-	Accent wrappers: are using the value of *g:atp_imap_over_leader* as
+	Accent wrappers: are using the value of |g:atp_imap_over_leader| as
 	a map leader, by default it is '`':
 >
 	    vmap <silent><buffer> `'	:<C-U>IngeligentWrapSelection ["\\'{"],["\\acute{"]<CR>

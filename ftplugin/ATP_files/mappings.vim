@@ -29,8 +29,8 @@ endif
 " if !g:atp_VimCompatible && !hasmapto("<Plug>Replace")
 "     nnoremap <buffer> <silent> r <Plug>Replace
 " endif
-nn <silent> r :<C-U>call <SID>Replace("<SID>")<CR>
-nn <silent> <SID>InputRestore  :call inputrestore()<CR>
+nn <buffer> <silent> r :<C-U>call <SID>Replace("<SID>")<CR>
+nn <buffer> <silent> <SID>InputRestore  :call inputrestore()<CR>
 function! <SID>Replace(sid,...) "{{{
     " It will not work with <:> since with the default settings "normal %" is not
     " working with <:>, possibly because g:atp_bracket_dict doesn't contain this

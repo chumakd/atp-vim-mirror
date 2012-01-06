@@ -318,16 +318,22 @@ endfunction
 function! atplib#ServerListOfFiles()
     exe "redir! > " . g:atp_TempDir."/ServerListOfFiles.log"
     let file_list = []
-    for nr in range(1, bufnr('$')-1)
+    for nr in range(1, bufnr('$'))
 	" map fnamemodify(v:val, ":p") is not working if we are in another
 	" window with file in another dir. So we are not using this (it might
 	" happen that we end up in a wrong server though).
-	let files 	= getbufvar(nr, "ListOfFiles")
+	if exists("main_file")
+	    unlet main_file
+	endif
 	let main_file 	= getbufvar(nr, "atp_MainFile")
-	if string(files) != "" 
+	if exists("files")
+	    unlet files
+	endif
+	let files 	= getbufvar(nr, "ListOfFiles")
+	if string(main_file) != "" 
 	    call add(file_list, main_file)
 	endif
-	if string(main_file) != ""
+	if type(files) == 3
 	    call extend(file_list, files)
 	endif
     endfor
@@ -362,6 +368,8 @@ function! atplib#FindAndOpen(file, line, ...)
     if use_server == ""
 	let use_server=get(use_servers, 0, "")
     endif
+    let g:use_servers = use_servers
+    let g:use_server = use_server
     if use_server != ""
 	call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
 " 	Test this for file names with spaces
@@ -394,6 +402,7 @@ function! atplib#FindAndOpen(file, line, ...)
 
 	" Set the ' mark, cursor position and redraw:
 	call remote_send(use_server, "<Esc>:normal! 'm `'<CR>:call cursor(".a:line.",".a:col.")<CR>:redraw<CR>")
+	endif
     endif
     return use_server
 endfunction
