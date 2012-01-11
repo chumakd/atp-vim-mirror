@@ -348,6 +348,7 @@ endfunction
 " This needs Aling vim plugin.
 function! atplib#various#TexAlign(bang)
     let save_pos = getpos(".")
+    let winsaveview = winsaveview()
     let synstack = map(synstack(line("."), col(".")), 'synIDattr( v:val, "name")')
 
     let barray=searchpair('\\begin\s*{\s*array\s*}', '', '\\end\s*{\s*array\s*}', 'bnW', '',max([1,line('.')-500]))
@@ -453,7 +454,7 @@ function! atplib#various#TexAlign(bang)
 
     if a:bang == "!" && eline-1 > bline
 	" Join lines (g:atp_TexAlign_join_lines)
-	execute 'keepjumps silent! '.(bline).','.(eline-1).'g/\%(\\\\\s*\|\\intertext.*\)\@<!\n/s/\n//'
+	execute 'keepjumps silent! '.(bline).','.(eline-1).'g/\%(\\\\\s*\%(\[[^\]]*\]\|\\hline\|\\hrule\)*\s*\|\\intertext.*\)\@<!\n/s/\n//'
 	call histdel("search", -1)
 	let @/ = histget("search", -1)
 	if env != "matrix"
@@ -478,6 +479,7 @@ function! atplib#various#TexAlign(bang)
     endif
 
     call setpos(".", save_pos) 
+    call winrestview(winsaveview)
 endfunction
 "}}}
 " Editing Toggle Functions
@@ -639,7 +641,7 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 	let pos_save=getpos(".")
 
 	" Test if the new label exists.
-	let test = search('\m\C\\\(label\|\%(eq\|page\)\?ref\)\s*{'.new_label.'}','nwc')
+	let test = search('\m\C\\label\s*{'.new_label.'}','nwc')
 
 	if !test && new_label != label
 	    let hidden = &hidden
@@ -669,7 +671,7 @@ function! atplib#various#ToggleEnvironment(ask, ...)
 	    execute "keepalt buffer " . file
 	    keepjumps call setpos(".", pos_save)
 	    let &hidden = hidden
-	elseif n != 0 && new_label != label
+	elseif test && new_label != label
 	    redraw
 	    echohl WarningMsg
 	    echomsg "[ATP:] labels not changed, new label: ".new_label." is in use!"

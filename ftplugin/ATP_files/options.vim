@@ -614,6 +614,20 @@ if !exists("g:atp_imap_enumerate")
 	let g:atp_imap_enumerate="enu"
     endif
 endif
+if !exists("g:atp_imap_tabular")
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_tabular="T"
+    else
+	let g:atp_imap_tabular="tab"
+    endif
+endif
+if !exists("g:atp_imap_table")
+    if g:atp_imap_ShortEnvIMaps
+	let g:atp_imap_table=""
+    else
+	let g:atp_imap_table="Tab"
+    endif
+endif
 if !exists("g:atp_imap_itemize")
     if g:atp_imap_ShortEnvIMaps
 	let g:atp_imap_itemize="I"

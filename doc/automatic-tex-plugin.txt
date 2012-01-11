@@ -1878,10 +1878,11 @@ nmap <F4>
 	prefixes of labels (if there is one, which belongs to
 	g:atp_shortnames_dict) and all ref's (\ref, \eqref and \pageref).  You
 	have to turn on this feature by putting g:atp_toggle_labels=1 (by
-	default it is 0).  Check if it works for you!  If there is a label or
-	reference to which it wants to change it doesn't change labels and
-	issue a Warning Message, thus I believe it should work for every one,
-	but as this changes your file it is turned off by default.) 
+	default it is 0). If there is a label (\label{...}) to which it wants
+	to change it doesn't change labels and issue a Warning Message but as
+	this changes your file it is turned off by default. It will still
+	change the labels if there is a reference \(\ref{...}, \eqref{...},
+	etc) (with undefined label).
 
 	In project files this is done in all files belonging to the project.
 	Changes are not saved by default (ATP uses |'hidden'| option, so when

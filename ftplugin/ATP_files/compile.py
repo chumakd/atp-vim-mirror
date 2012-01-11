@@ -42,7 +42,7 @@ parser.add_option("--viewer",           dest="viewer",          default="xpdf"  
 parser.add_option("--xpdf-server",      dest="xpdf_server",                                             )
 parser.add_option("--viewer-options",   dest="viewer_opt",      default=""                              )
 parser.add_option("--keep",             dest="keep",            default="aux,toc,bbl,ind,pdfsync,synctex.gz")
-parser.add_option("--env",              dest="env", default="default"  )
+parser.add_option("--env",              dest="env",             default=""  )
 parser.add_option("--logdir",           dest="logdir")
 # Boolean switches:
 parser.add_option("--reload-viewer",    action="store_true",    default=False,  dest="reload_viewer")
@@ -241,9 +241,8 @@ def vim_remote_expr(servername, expr):
 # expr must be well quoted:
 #       vim_remote_expr('GVIM', "atplib#callback#TexReturnCode()")
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
-    devnull=open(os.devnull, "w+")
-    subprocess.Popen(cmd, stdout=devnull, stderr=debug_file).wait()
-    devnull.close()
+    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).wait()
+
 
 ####################################
 #
@@ -331,7 +330,7 @@ try:
 # Can we test if xpdf started properly?  okular doesn't behave nicely even with
 # --unique switch.
 
-# Latex might not run this might happedn with bibtex (?)
+# Latex might not run this might happen with bibtex (?)
     latex_returncode=0
     if bibtex and os.path.exists(tmpaux):
         if bibcommand == 'biber':
@@ -504,6 +503,7 @@ try:
 #
 ####################################
 except Exception:
+    latex_returncode = 0
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     traceback.print_exc(None, debug_file)
     vim_remote_expr(servername, "atplib#callback#Echo(\"[ATP:] error in compile.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in compile.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
