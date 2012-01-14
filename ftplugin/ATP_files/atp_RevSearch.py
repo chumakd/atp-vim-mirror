@@ -53,6 +53,7 @@ output  = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
 servers = output.stdout.read().decode()
 match   = re.match('(.*)(\\\\n)?', servers)
 file    = args[0]
+output_file = file
 if not options.synctex:
     line=args[1]
     # Get the column (it is an optional argument)
@@ -92,6 +93,10 @@ else:
         else:
             line        = "-1"
             column      = "-1"
+        match_pos=re.findall("Input:(.*)",synctex_output)
+        f.write(">>>X "+str(match_pos))
+        if len(match_pos):
+            file = match_pos[0]
     else:
         print("synctex return code: "+str(synctex.returncode))
         line    = "-1"
@@ -105,7 +110,7 @@ if match != None:
     server = server_list[0]
     f.write(">>> server: "+server+"\n")
     # Call atplib#FindAndOpen()     
-    cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+line+"','"+column+"')\""
+    cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+output_file+"','"+line+"','"+column+"')\""
     findandopen=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     vim_server=re.split("\n",findandopen.stdout.read())[0]
     f.write('>>> vim server: '+vim_server+"\n")

@@ -18,5 +18,5 @@ let g:atp_enumitem_environment_options={
     \ '\<\%(enumerate\|itemize\|description\)\>' : s:env_options
     \ }
 let g:atp_enumitem_command_values={
-    \ '\\set\%(list\|enumerate\|description\|itemize\){' : s:env_options
+    \ '\\set\%(list\%(\[[^\]]*\]\)\=\|enumerate\|description\|itemize\){' : s:env_options
     \ }

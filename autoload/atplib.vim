@@ -341,19 +341,24 @@ function! atplib#ServerListOfFiles()
     redir end
     return file_list
 endfunction
-function! atplib#FindAndOpen(file, line, ...)
+function! atplib#FindAndOpen(file, output_file, line, ...)
     let col		= ( a:0 >= 1 && a:1 > 0 ? a:1 : 1 )
-    let file		= ( fnamemodify(a:file, ":e") == "tex" ? a:file : fnamemodify(a:file, ":p:r") . ".tex" )
+    let file		= ( fnamemodify(simplify(a:file), ":e") == "tex" ? simplify(a:file) : fnamemodify(simplify(a:file), ":p:r") . ".tex" )
     let file_t		= fnamemodify(file, ":t")
+    let main_file	= ( fnamemodify(simplify(a:output_file), ":e") == "tex" ? simplify(a:output_file) : fnamemodify(simplify(a:output_file), ":p:r") . ".tex" )
+    let main_file_t	= fnamemodify(file, ":t")
     let server_list	= split(serverlist(), "\n")
     exe "redir! > /tmp/FindAndOpen.log"
     if len(server_list) == 0
 	return 1
     endif
+    let open		= "buffer"
     let use_server	= ""
     let use_servers	= []
     for server in server_list
 	let file_list=split(remote_expr(server, 'atplib#ServerListOfFiles()'), "\n")
+	" Note: atplib#ServerListOfFiles returns all the files loaded by the
+	" server plus all corresponding values of b:ListOfFiles
 	let cond_1 = (index(file_list, file) != "-1")
 	let cond_2 = (index(file_list, file_t) != "-1")
 	if cond_1
@@ -368,40 +373,48 @@ function! atplib#FindAndOpen(file, line, ...)
     if use_server == ""
 	let use_server=get(use_servers, 0, "")
     endif
-    let g:use_servers = use_servers
-    let g:use_server = use_server
     if use_server != ""
-	call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
-" 	Test this for file names with spaces
-	let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
-	if bufwinnr 	== "-1"
-" 	    " The buffer is in a different tab page.
-	    let tabpage	= 1
-" 	    " Find the correct tabpage:
-	    for tabnr in range(1, remote_expr(use_server, 'tabpagenr("$")'))
-		let tabbuflist = split(remote_expr(use_server, 'tabpagebuflist("'.tabnr.'")'), "\n")
-		let tabbuflist_names = split(remote_expr(use_server, 'map(tabpagebuflist("'.tabnr.'"), "bufname(v:val)")'), "\n")
-		if count(tabbuflist_names, file) || count(tabfublist_names, file_t)
-		    let tabpage = tabnr
-		    break
-		endif
-	    endfor
-	    " Goto to the tabpage:
-	    if remote_expr(use_server, 'tabpagenr()') != tabpage
-		call remote_send(use_server, '<Esc>:tabnext '.tabpage.'<CR>')
-	    endif
-	    " Check the bufwinnr once again:
-	    let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
-	endif
-
-	" winnr() doesn't work remotely, this is a substitute:
-	let remote_file = remote_expr(use_server, 'expand("%:t")')
-	if remote_file  != file_t
-	    call remote_send(use_server, "<Esc>:".bufwinnr."wincmd w<CR>")
+	if !remote_expr(use_server, 'bufloaded("'.file.'")')
+	    call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
 	else
+	    " Test this for file names with spaces
+	    let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
+	    let bufnr		= remote_expr(use_server, "bufnr('".file."')")
+	    if bufwinnr 	== "-1"
+ 	    " The buffer is in a different tab page.
+		let tabpage	= 0
+ 	    " Find the correct tabpage:
+		for tabnr in range(1, remote_expr(use_server, 'tabpagenr("$")'))
+		    let tabbuflist = split(remote_expr(use_server, 'tabpagebuflist("'.tabnr.'")'), "\n")
+		    let tabbuflist_names = split(remote_expr(use_server, 'map(tabpagebuflist("'.tabnr.'"), "bufname(v:val)")'), "\n")
+		    if count(tabbuflist_names, file) || count(tabfublist_names, file_t)
+			let tabpage = tabnr
+			break
+		    endif
+		endfor
+		" Goto to the tabpage:
+		if tabpage && remote_expr(use_server, 'tabpagenr()') != tabpage
+		    call remote_send(use_server, '<Esc>:tabnext '.tabpage.'<CR>')
+		elseif !tabpage
+		    " The file is not present in any file, but the buffer is
+		    " loaded.
+		    call remote_send(use_server, '<Esc>:buffer '.bufnr)
+		endif
+		" Check the bufwinnr once again:
+		let bufwinnr 	= remote_expr(use_server, 'bufwinnr("'.file.'")')
+	    endif
 
-	" Set the ' mark, cursor position and redraw:
-	call remote_send(use_server, "<Esc>:normal! 'm `'<CR>:call cursor(".a:line.",".a:col.")<CR>:redraw<CR>")
+	    " winnr() doesn't work remotely, this is a substitute:
+	    let remote_file = remote_expr(use_server, 'expand("%:t")')
+	    if string(remote_file) != string(file_t)
+		if bufwinnr != -1
+		    call remote_send(use_server, "<Esc>:".bufwinnr."wincmd w<CR>")
+		else
+		    call remote_send(use_server, "<Esc>:buffer ".bufnr."<CR>")
+		endif
+	    endif
+	    " Set the ' mark, cursor position and redraw:
+	    call remote_send(use_server, "<Esc>:normal! 'm `'<CR>:call cursor(".a:line.",".col.")<CR>:redraw<CR>")
 	endif
     endif
     return use_server

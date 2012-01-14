@@ -1998,7 +1998,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     "{{{3 --------- command values
     " this is at the end because there are many command completions done
     " before - they would not work if this would be on the top.
-    elseif (l =~ '\%(\\\w\+\({\%([^}]\|{[^}]*}\)*\)\?{\%([^}]\|{[^}]*}\)*$\|\\renewcommand{[^}]*}{[^}]*$\)' && !normal_mode) &&
+    elseif (l =~ '\%(\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*}\)*}\)*}\)\?{\%([^}]\|{\%([^}]\|{[^}]*}\)*}\)*$\|\\renewcommand{[^}]*}{[^}]*$\)' && !normal_mode) &&
 		\ index(g:atp_completion_active_modes, 'environment names') != -1 
 	    let completion_method="command values"
 	    " DEBUG:
@@ -2480,10 +2480,11 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     " {{{3 ------------ COMMAND VALUES
     elseif completion_method == 'command values'
 	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
-	    let command = matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}}\)*}\)*{\ze\%([^}]\|{[^}]*}\)*$')
+	    let command = matchstr(l, '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\ze\%([^}]\|{\%([^}]\|{[^}]*}\)*}\)*$')
 	else
 	    let command = matchstr(l, '.*\\renewcommand{\s*\zs\\\?\w*\ze\s*}')
 	endif
+	let g:command = command
 	let completion_list = []
 	let command_pat='\\\w\+[{\|\[]'
 	for package in g:atp_packages
@@ -3069,8 +3070,9 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     " {{{3 command values
     elseif  !normal_mode && ( completion_method == 'command values' )
 	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
-" 	    let col=max([len(matchstr(l, '.*'.command_pat.'\ze')), len(matchstr(l, '.*'.command_pat.'\%([^}]\|{[^}]*}\)*,\ze'))])
-	    let col=max([len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\)*{\ze')), len(matchstr(l, '.*\\\w\+\%({\%([^}]\|{[^}]*}\)*}\)*{\%([^}]\|{[^}]*}\)*,\ze'))])
+	    let col=max([
+			\ len(matchstr(l,  '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\ze')), 
+			\ len(matchstr(l,  '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\%([^}]\|{\%([^}]\|{\%([^}]\|{[^}]*\)*}\)*}\)*,\ze'))])
 	else
 	    let col=len(matchstr(l, '.*\\renewcommand{[^}]*}{\ze'))
 	endif
