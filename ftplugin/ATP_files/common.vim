@@ -260,7 +260,6 @@ let s:errormsg = 0
 " a:command = 1/0: 1 if run by a command, then a:1=bang, a:2=ctoc, 
 " if a:command = 0, then a:1=ctoc.
 function! ATPStatus(command,...) "{{{
-
     if expand("%") == "[Command Line]" || &l:filetype == "qf"
 	" If one uses q/ or q? this status function should not be used.
 	return

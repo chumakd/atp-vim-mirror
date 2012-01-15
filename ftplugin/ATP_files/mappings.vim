@@ -20,6 +20,11 @@ else
     let s:bbackslash="\\\\\\\\"
 endif
 
+if g:atp_mapNn
+    silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
+    silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
+endif
+
 " Dicronary map
 if !hasmapto("<Plug>Dictionray")
     nmap <buffer> <silent> =d <Plug>Dictionary

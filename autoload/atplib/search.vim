@@ -663,8 +663,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	" This makes it work faster when the input files were not yet opened by vim 
 	" some of them will not be shown to the user.
+	" Note: but sometimes files are loaded without filetype what messes up
+	" things. It is possible to make it work I think, but this might not
+	" be needed (speed seems to be fine).
 " 	syntax off
-	filetype off 
+" 	filetype off 
 	" there are many errors in /tmp/ATP_rs_debug file due to this which are not
 	" important.
 
@@ -1010,8 +1013,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		endif
 		exe "lcd " . fnameescape(cwd)
 " 		syntax enable
-		filetype on
-		filetype detect
+" 		filetype on
+" 		filetype detect
 
 	    return
 
@@ -1051,6 +1054,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent echo "Alternate (before open) " . bufname("#")
 		endif
 		silent! execute open . fnameescape(file)
+" 		if &l:filetype != "tex"
+" 		    setl filetype=tex
+" 		endif
 	    else
 		echoerr "Recursive Search: swap file: " . swapfile . " exists. Aborting." 
 		return
@@ -1156,6 +1162,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent echo "Alternate (before open) " . bufname("#")
 		endif
 		silent! execute open
+" 		if &l:filetype != "tex"
+" 		    setl filetype=tex
+" 		endif
 	    else
 		echoerr "Recursive Search: swap file: " . swapfile . " exists. Aborting." 
 		return
@@ -1228,8 +1237,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    endif
 	    exe "lcd " . fnameescape(cwd)
 " 	    syntax enable
-	    filetype on
-	    filetype detect
+" 	    filetype on
+" 	    filetype detect
 
 	    return
 
@@ -1247,8 +1256,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    endif
 	    exe "lcd " . fnameescape(cwd)
 " 	    syntax enable
-	    filetype on
-	    filetype detect
+" 	    filetype on
+" 	    filetype detect
 
 	    " restore the window and buffer!
 	    let keepalt = ( @# == '' ? '' : 'keepalt' )
@@ -1307,27 +1316,28 @@ endtry
 " }}}
 
 function! atplib#search#ATP_ToggleNn(...) " {{{
+" With bang it is only used in RecursiveSearch function (where it is used
+" twice in a row).
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_mapNn )
-    let g:on	= on
-	if !on
-	    silent! nunmap <buffer> n
-	    silent! nunmap <buffer> N
-	    silent! aunmenu LaTeX.Toggle\ Nn\ [on]
-	    let g:atp_mapNn	= 0
-	    nmenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		:ToggleNn<CR>
-	    imenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		<Esc>:ToggleNn<CR>a
-	    tmenu LaTeX.Toggle\ Nn\ [off] atp maps to n,N.
-	    echomsg "[ATP:] vim nN maps"  
-	else
-	    silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
-	    silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
-	    silent! aunmenu LaTeX.Toggle\ Nn\ [off]
-	    let g:atp_mapNn	= 1
-	    nmenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			:ToggleNn<CR>
-	    imenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			<Esc>:ToggleNn<CR>a
-	    tmenu LaTeX.Toggle\ Nn\ [on] n,N vim normal commands.
-	    echomsg "[ATP:] atp nN maps"
-	endif
+    if !on
+	silent! nunmap <buffer> n
+	silent! nunmap <buffer> N
+	silent! aunmenu LaTeX.Toggle\ Nn\ [on]
+	let g:atp_mapNn	= 0
+	nmenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		:ToggleNn<CR>
+	imenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		<Esc>:ToggleNn<CR>a
+	tmenu LaTeX.Toggle\ Nn\ [off] atp maps to n,N.
+	echomsg "[ATP:] vim nN maps"  
+    else
+	silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
+	silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
+	silent! aunmenu LaTeX.Toggle\ Nn\ [off]
+	let g:atp_mapNn	= 1
+	nmenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			:ToggleNn<CR>
+	imenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			<Esc>:ToggleNn<CR>a
+	tmenu LaTeX.Toggle\ Nn\ [on] n,N vim normal commands.
+	echomsg "[ATP:] atp nN maps"
+    endif
 endfunction
 function! atplib#search#SearchHistCompletion(ArgLead, CmdLine, CursorPos)
     let search_history=[]

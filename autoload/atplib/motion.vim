@@ -52,8 +52,11 @@ endfunction
 " {{{2 atplib#motion#maketoc 
 " this will store information: 
 " { 'linenumber' : ['chapter/section/..', 'sectionnumber', 'section title', '0/1=not starred/starred'] }
-function! atplib#motion#maketoc(filename)
+" a:0 >= 1 avoid using atplib#search#SearchPackage('biblatex') (requires that b:atp_MainFile exists)
+function! atplib#motion#maketoc(filename,...)
     let toc={}
+    let search_package = ( a:0 >= 1 ? a:1 : 1 ) 
+    let g:search_package = search_package
 
     " if the dictinary with labels is not defined, define it
     if !exists("t:atp_labels")
@@ -81,8 +84,8 @@ function! atplib#motion#maketoc(filename)
     endfor
     " make a filter
     let j = 0
-    let biblatex	= ( atplib#search#SearchPackage("biblatex") )
-    " When \usepackge{biblatex} do not search for \bibliography{} commands -- they are placed in ther preambule.
+    let biblatex	= ( search_package ? atplib#search#SearchPackage("biblatex") : 0 )
+    " When \usepackge{biblatex} do not search for \bibliography{} commands -- they are placed in the preambule.
     let key_list 	= ( biblatex ? filter(keys(g:atp_sections), "v:val != 'bibliography'") : keys(g:atp_sections) ) 
     for section in key_list
 	let filter = ( j == 0 ? g:atp_sections[section][0] . '' : filter . '\|' . g:atp_sections[section][0] )
@@ -253,10 +256,9 @@ function! atplib#motion#buflist()
     endif
     return t:atp_toc_buflist
 endfunction
-" {{{2 tplib#motion#RemoveFromBufList
+" {{{2 tplib#motion#RemoveFromToC
 function! atplib#motion#RemoveFromToC(file)
     if a:file == ""
-	let g:debug = 1
 	if exists("b:atp_MainFile")
 	    let list = filter(copy(t:atp_toc_buflist), "v:val != fnamemodify(b:atp_MainFile, ':p')")
 	else
@@ -270,7 +272,6 @@ function! atplib#motion#RemoveFromToC(file)
 	    endfor
 	    let which=input("Which file to remove (press <Enter> for none)")
 	    if which == ""
-		let g:debug=3
 		return
 	    endif
 	    let which=t:atp_toc_buflist[which-1]
@@ -289,7 +290,7 @@ function! atplib#motion#RemoveFromToC(file)
     endif
     let winnr=winnr()
     if index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__') != -1
-	call atplib#motion#TOC("!", 0)
+	call atplib#motion#TOC("!", 0, 0)
     endif
     exe winnr."wincmd w"
 endfunction
@@ -585,12 +586,13 @@ function! atplib#motion#TOC(bang,...)
     if a:0 == 0 
 	call atplib#motion#buflist()
     endif
+    let search_package = ( a:0 >= 2 ? a:2 : 1 ) " avoid using atplib#search#SearchPackage() in atplib#motion#maketoc()
     " for each buffer in t:atp_toc_buflist (set by atplib#motion#buflist)
     if ( a:bang == "!" || !exists("t:atp_toc") )
 	let t:atp_toc = {}
 	for buffer in t:atp_toc_buflist 
 " 	    let b:atp_toc=atplib#motion#maketoc(buffer)
-	    call extend(t:atp_toc, atplib#motion#maketoc(buffer))
+	    call extend(t:atp_toc, atplib#motion#maketoc(buffer,search_package))
 	endfor
     endif
     call atplib#motion#showtoc(t:atp_toc)

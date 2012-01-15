@@ -3885,6 +3885,10 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	This works similarly to |:ijump|. But also goes back to the root file
 	(b:atp_MainFile).
 
+	Note: this command is very fragil on the variable b:TreeOfFiles. It
+	should be uptodate if you use it (use the bang :S! or
+	|atp-:InputFiles| command).
+
 	It sets the alternate file to the buffer from which the search begun.
 	Note that this means that if nothing was found the alternate file
 	before search will be lost.

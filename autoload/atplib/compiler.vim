@@ -121,14 +121,23 @@ function! atplib#compiler#GetSyncData(line, col)
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
-	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".fnamemodify(b:atp_MainFile, ":p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"
+	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".expand("%:p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"
 
 	" SyncTex is fragile for the file name: if it is file name or full path, it
 	" must agree literally with what is written in .synctex.gz file
-	" first we try with full path then with file name without path.
+	" first we try with full path then fullpath with /./ included and then with file name without path.
 	let synctex_output=split(system(synctex_cmd), "\n")
 	if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
 	    " Write better test (above)
+	    let path = expand("%:p:h")."/./".expand("%:t")
+	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
+	    let synctex_output=split(system(synctex_cmd), "\n")
+" 	    call add(g:debug,get(synctex_output, 1, ''))
+	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
+		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
+	    endif
+	    let synctex_output=split(system(synctex_cmd), "\n")
+	else
 	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
 	    let synctex_output=split(system(synctex_cmd), "\n")
 " 	    call add(g:debug,get(synctex_output, 1, ''))
