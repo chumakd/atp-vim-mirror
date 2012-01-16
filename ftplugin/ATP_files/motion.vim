@@ -16,9 +16,9 @@ function! CTOC(...)
 
     let winsavedview = winsaveview()
     try
-	if bufloaded(atplib#FullPath(b:atp_MainFile))
+	if exists("b:atp_MainFile") && bufloaded(atplib#FullPath(b:atp_MainFile))
 	    let file = getbufline(bufnr(atplib#FullPath(b:atp_MainFile)), 0, "$")
-	elseif filereadable(atplib#FullPath(b:atp_MainFile))
+	elseif exists("b:atp_MainFile") && filereadable(atplib#FullPath(b:atp_MainFile))
 	    let file = readfile(atplib#FullPath(b:atp_MainFile))
 	else
 	    let s:document_class = ""
@@ -72,12 +72,13 @@ function! CTOC(...)
     let section_name	= get(names, 1, '')
     let subsection_name	= get(names, 2, '')
 
+
     if chapter_name == "" && section_name == "" && subsection_name == ""
 
-	if a:0 == '0'
-	    echo "" 
-	else
+	if a:0 != 0
 	    return ""
+	else
+	    echo "" 
 	endif
 	
     elseif chapter_name != ""

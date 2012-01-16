@@ -388,6 +388,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_LogStatusLine")
+    let g:atp_LogStatusLine = 1
+endif
 if !exists("g:atp_OpenAndSyncSleepTime")
     let g:atp_OpenAndSyncSleepTime = "750m"
 endif
@@ -2558,9 +2561,15 @@ endfunction
     augroup END
 
     if (exists("g:atp_StatusLine") && g:atp_StatusLine == '1') || !exists("g:atp_StatusLine")
+	" Note: ctoc doesn't work in include files (and it is slow there).
+	if exists("b:TypeDict")
+	    let ctoc = !( len(filter(copy(b:TypeDict), 'v:val == "input"')) )
+	else
+	    let ctoc = atplib#FullPath(b:atp_MainFile) != expand("%:p")
+	endif
 	augroup ATP_Status
 	    au!
-	    au BufEnter,BufWinEnter,TabEnter *.tex 	call ATPStatus(0,1)
+	    au BufEnter,BufWinEnter,TabEnter *.tex 	call ATPStatus(0,ctoc)
 	augroup END
     endif
 

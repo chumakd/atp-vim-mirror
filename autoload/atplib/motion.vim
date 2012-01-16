@@ -56,7 +56,6 @@ endfunction
 function! atplib#motion#maketoc(filename,...)
     let toc={}
     let search_package = ( a:0 >= 1 ? a:1 : 1 ) 
-    let g:search_package = search_package
 
     " if the dictinary with labels is not defined, define it
     if !exists("t:atp_labels")
@@ -644,9 +643,9 @@ function! atplib#motion#ctoc()
     " if t:atp_toc(t:atp_bufname) exists use it otherwise make it 
     if !exists("t:atp_toc") || !has_key(t:atp_toc, t:atp_bufname) 
 	if !exists("t:atp_toc")
-	    let t:atp_toc={}
+	    let t:atp_toc = {}
 	endif
-	silent call extend(t:atp_toc, atplib#motion#maketoc(t:atp_bufname))
+	call extend(t:atp_toc, atplib#motion#maketoc(t:atp_bufname))
     endif
 
     " l:count where the preambule ends

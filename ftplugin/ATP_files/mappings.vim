@@ -21,8 +21,7 @@ else
 endif
 
 if g:atp_mapNn
-    silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
-    silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
+    call atplib#search#ATP_ToggleNn(1,"on")
 endif
 
 " Dicronary map

@@ -76,7 +76,7 @@ endif
 
 command! -buffer -bang 		LocalCommands					:call LocalCommands(1, "", <q-bang>)
 command! -buffer -bang -nargs=* -complete=customlist,DsearchComp Dsearch	:call atplib#search#Dsearch(<q-bang>, <q-args>)
-command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleNn	:call atplib#search#ATP_ToggleNn(<f-args>)
+command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleNn	:call atplib#search#ATP_ToggleNn(0,<f-args>)
 command! -buffer -bang -nargs=* BibSearch					:call atplib#search#BibSearch(<q-bang>, <q-args>)
 
 " Search map:

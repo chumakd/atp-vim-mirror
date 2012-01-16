@@ -1054,6 +1054,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent echo "Alternate (before open) " . bufname("#")
 		endif
 		silent! execute open . fnameescape(file)
+		if g:atp_mapNn
+		    call atplib#search#ATP_ToggleNn(1,"on")
+		else
+		    call atplib#search#ATP_ToggleNn(1,"off")
+		endif
 " 		if &l:filetype != "tex"
 " 		    setl filetype=tex
 " 		endif
@@ -1136,6 +1141,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    	" restore the window and buffer!
 		let keepalt = ( @# == '' ? '' : 'keepalt' )
 		silent execute keepalt. " keepjumps edit #" . a:bufnr
+		if g:atp_mapNn
+		    call atplib#search#ATP_ToggleNn(1,"on")
+		else
+		    call atplib#search#ATP_ToggleNn(1,"off")
+		endif
 		call winrestview(a:winsaveview)
 		if g:atp_debugRS
 		    redir END
@@ -1162,6 +1172,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent echo "Alternate (before open) " . bufname("#")
 		endif
 		silent! execute open
+		if g:atp_mapNn
+		    call atplib#search#ATP_ToggleNn(1,"on")
+		else
+		    call atplib#search#ATP_ToggleNn(1,"off")
+		endif
 " 		if &l:filetype != "tex"
 " 		    setl filetype=tex
 " 		endif
@@ -1221,6 +1236,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 		it is better to remember bufnumber
 	    let keepalt = ( @# == '' ? '' : 'keepalt' )
 	    silent execute "keepjumps ".keepalt." edit #" . a:bufnr
+	    if g:atp_mapNn
+		call atplib#search#ATP_ToggleNn(1,"on")
+	    else
+		call atplib#search#ATP_ToggleNn(1,"off")
+	    endif
 
 	    call winrestview(a:winsaveview)
 
@@ -1262,6 +1282,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    " restore the window and buffer!
 	    let keepalt = ( @# == '' ? '' : 'keepalt' )
 	    silent execute "keepjumps ".keepalt." edit #" . a:bufnr
+	    if g:atp_mapNn
+		call atplib#search#ATP_ToggleNn(1,"on")
+	    else
+		call atplib#search#ATP_ToggleNn(1,"off")
+	    endif
 	    call winrestview(a:winsaveview)
 
 	    return 
@@ -1315,10 +1340,10 @@ catch /E127: Cannot redefine function/
 endtry
 " }}}
 
-function! atplib#search#ATP_ToggleNn(...) " {{{
+function! atplib#search#ATP_ToggleNn(silent,...) " {{{
 " With bang it is only used in RecursiveSearch function (where it is used
 " twice in a row).
-    let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !g:atp_mapNn )
+    let on	= ( a:0 >=1 ? ( a:1 == 'on' || string(a:1) == '1' ? 1 : 0 ) : !g:atp_mapNn )
     if !on
 	silent! nunmap <buffer> n
 	silent! nunmap <buffer> N
@@ -1327,7 +1352,9 @@ function! atplib#search#ATP_ToggleNn(...) " {{{
 	nmenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		:ToggleNn<CR>
 	imenu 550.79 &LaTeX.Toggle\ &Nn\ [off]<Tab>:ToggleNn		<Esc>:ToggleNn<CR>a
 	tmenu LaTeX.Toggle\ Nn\ [off] atp maps to n,N.
-	echomsg "[ATP:] vim nN maps"  
+	if !a:silent
+	    echomsg "[ATP:] vim nN maps"  
+	endif
     else
 	silent! nmap <buffer> <silent> n    <Plug>RecursiveSearchn
 	silent! nmap <buffer> <silent> N    <Plug>RecursiveSearchN
@@ -1336,7 +1363,9 @@ function! atplib#search#ATP_ToggleNn(...) " {{{
 	nmenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			:ToggleNn<CR>
 	imenu 550.79 &LaTeX.Toggle\ &Nn\ [on]<Tab>:ToggleNn			<Esc>:ToggleNn<CR>a
 	tmenu LaTeX.Toggle\ Nn\ [on] n,N vim normal commands.
-	echomsg "[ATP:] atp nN maps"
+	if !a:silent
+	    echomsg "[ATP:] atp nN maps"
+	endif
     endif
 endfunction
 function! atplib#search#SearchHistCompletion(ArgLead, CmdLine, CursorPos)
@@ -1596,25 +1625,6 @@ function! atplib#search#SearchPackage(name,...)
 " 	let file=readfile(a:filename)
 "     endif
 
-    if a:0 != 0
-	let stop_line	= a:1
-    else
-	if expand("%:p") == atp_MainFile
-	    let saved_pos=getpos(".")
-	    keepjumps call setpos(".", [0,1,1,0])
-	    keepjumps let stop_line=search('\\begin\s*{\s*document\s*}','nW')
-	else
-	    if &l:filetype == 'tex'
-		let saved_loclist	= getloclist(0)
-		silent! execute '1lvimgrep /\\begin\s*{\s*document\s*}/j ' . fnameescape(atp_MainFile)
-		let stop_line	= get(get(getloclist(0), 0, {}), 'lnum', 0)
-		call setloclist(0, saved_loclist) 
-	    else
-		let stop_line = 0
-	    endif
-	endif
-    endif
-
     let com	= a:0 >= 2 ? a:2 : 'usepackage\s*\%(\[[^\]]*\]\?\)\?'
 
     " If the current file is the atp_MainFile
@@ -1623,24 +1633,18 @@ function! atplib#search#SearchPackage(name,...)
 	if !exists("saved_pos")
 	    let saved_pos=getpos(".")
 	endif
+	keepjumps call setpos(".",[0,1,1,0])
+	let stop_line	= search('^\([^%]\|\\%]\)*\\begin\s*{\s*document\s*}', 'ncW')
 	if stop_line != 0
-
-	    keepjumps call setpos(".",[0,1,1,0])
 	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
 	    keepjump call setpos(".",saved_pos)
-
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
-
 	else
-
-	    keepjumps call setpos(".",[0,1,1,0])
 	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
 	    keepjump call setpos(".", saved_pos)
-
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
-
 	endif
 
     " If the current file is not the mainfile
@@ -1648,9 +1652,6 @@ function! atplib#search#SearchPackage(name,...)
 	" Cache the Preambule / it is not changing so this is completely safe /
 	if !exists("s:Preambule")
 	    let s:Preambule = readfile(atp_MainFile) 
-	    if stop_line != 0
-		silent! call remove(s:Preambule, stop_line+1, -1)
-	    endif
 	endif
 	let lnum = 1
 	for line in s:Preambule
@@ -1659,6 +1660,13 @@ function! atplib#search#SearchPackage(name,...)
 " 		echo reltimestr(reltime(time))
 		exe "lcd " . fnameescape(cwd)
 		return lnum
+	    endif
+	    if line =~ '^\([^%]\|\\%\)*\\begin\s*{\s*document\s*}'
+		if lnum < len(s:Preambule)
+		    call remove(s:Preambule, lnum-1, -1)
+		endif
+		exe "lcd " . fnameescape(cwd)
+		return 0
 	    endif
 	    let lnum += 1
 	endfor

@@ -649,11 +649,9 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 		" Remove the oldest PIDs (the first in the b:atp_PythonPIDs) /works nicely/
 		let pids=remove(b:atp_LatexPIDs, 0, max([len(b:atp_PythonPIDs)-b:atp_MaxProcesses-1,0]))
 	    endif
-	    echomsg string(a)." ".string(pids)." ".string(b:atp_LatexPIDs)
 	    call atplib#KillPIDs(pids)
 	catch E684:
 	endtry
-	echomsg string(b:atp_LatexPIDs)
     endif
 
     " Set biber setting on the fly

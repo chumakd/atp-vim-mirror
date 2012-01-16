@@ -1228,11 +1228,12 @@ endfunction
     let pfile		= ( a:0 == 0 || (a:0 >= 1 && a:1 == "" ) ? b:atp_OutDir . fnamemodify(expand("%"),":t:r") . ext : a:1 )
 
     " set the printing command
-    let lprcommand	= g:atp_lprcommand
     if a:0 >= 2
 	let arg_list	= copy(a:000)
 	call remove(arg_list,0)
-	let print_options	= join(arg_list, " ")
+	let print_options	= " ".join(arg_list, " ")
+    else
+	let print_options	= ""
     endif
 
     " print locally or remotely
@@ -1243,7 +1244,7 @@ endfunction
     echomsg "[ATP:] file   " . pfile
 
     if server =~ 'localhost'
-	let cmd	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
+	let cmd	= g:atp_lprcommand . " " . print_options . " " .  fnameescape(pfile)
 
 	redraw!
 	echomsg "[ATP:] printing ...  " . cmd
@@ -1251,7 +1252,7 @@ endfunction
 "     " print over ssh on the server g:atp_ssh with the printer a:1 (or the
     " default system printer if a:0 == 0
     else 
-	let cmd="cat " . fnameescape(pfile) . " | ssh " . g:atp_ssh . " " . lprcommand . " " . print_options
+	let cmd="cat " . fnameescape(pfile) . " | ssh " . g:atp_ssh . " " . g:atp_lprcommand . print_options
 	call system(cmd)
     endif
 endfunction
@@ -1282,13 +1283,14 @@ function! atplib#various#Lpr(...)
     let pfile		= ( a:0 == 0 || (a:0 >= 1 && a:1 == "" ) ? b:atp_OutDir . fnamemodify(expand("%"),":t:r") . ext : a:1 )
     
     " set the printing command
-    let lprcommand	= g:atp_lprcommand
     if a:0 >= 1
 	let arg_list	= copy(a:000)
-	let print_options	= join(arg_list, " ")
+	let print_options	= " ".join(arg_list, " ")." "
+    else
+	let print_options	= " "
     endif
 
-    let cmd	= lprcommand . " " . print_options . " " .  fnameescape(pfile)
+    let cmd	= g:atp_lprcommand . print_options . fnameescape(pfile)
 
     redraw!
     echomsg "[ATP:] printing ...  " . cmd

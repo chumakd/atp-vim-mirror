@@ -266,16 +266,15 @@ function! ATPStatus(command,...) "{{{
     endif
 
     if a:command >= 1
-"     if a:0 >= 1 && a:1 != -1
 	" This is run be the command :Status (:ATPStatus)
-	if a:0 >= 1 && a:1 == ""
+	if a:0 >= 1 && a:1
 	    let g:status_OutDir = s:StatusOutDir()
 	    let g:atp_statusOutDir = 1
 	else
 	    let g:status_OutDir = ""
 	    let g:atp_statusOutDir = 0
 	endif
-	let ctoc = ( a:0 >= 2 && a:2 ? 1 : 0 )
+	let ctoc = ( a:0 >= 2 ? a:2 : 0 )
     else
 	" This is run by the autocommand group ATP_Status
 	if g:atp_statusOutDir
@@ -283,8 +282,11 @@ function! ATPStatus(command,...) "{{{
 	else
 	    let g:status_OutDir = ""
 	endif
-	let ctoc = ( a:0 >= 1 && a:1 ? 1 : 0 )
+	let ctoc = ( a:0 >= 1 ? a:1 : 0 )
     endif
+    " There is a bug in CTOC() which prevents statusline option from being set right.
+    " This is a dirty workaround:
+"     silent echo CTOC("return")
     let status_CTOC	= ( ctoc && &l:filetype =~ '^\(ams\)\=tex' ? '%{CTOC("return")}' : '' )
     if g:atp_statusNotifHi > 9 || g:atp_statusNotifHi < 0
 	let g:atp_statusNotifHi = 9
@@ -306,9 +308,9 @@ function! ATPStatus(command,...) "{{{
     set statusline=%!g:atp_StatusLine
 endfunction
 try
-    command -buffer -bang Status	:call ATPStatus(1,<q-bang>) 
+    command -buffer -bang Status	:call ATPStatus(1,(<q-bang> == "")) 
 catch /E174:/
-    command! -buffer -bang ATPStatus	:call ATPStatus(1,<q-bang>) 
+    command! -buffer -bang ATPStatus	:call ATPStatus(1,(<q-bang> == "!")) 
 endtry
 " }}}
 "}}}

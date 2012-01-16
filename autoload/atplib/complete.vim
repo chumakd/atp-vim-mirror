@@ -2270,7 +2270,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     " {{{3 ------------ TIKZ KEYWORDS
     elseif completion_method == 'tikzpicture keywords'
 
-	let completion_list=deepcopy(g:atp_tikz_keywords)
+	let completion_list=[]
 	" TODO: add support for all tikz libraries 
 	let tikz_libraries	= atplib#search#GrepPackageList('\\use\%(tikz\|pgf\)library\s*{')
 	call map(tikz_libraries, "substitute(v:val, '\\..*$', '', '')")
@@ -2279,6 +2279,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 		call extend(completion_list,g:atp_tikz_library_{lib}_keywords)
 	    endif   
 	endfor
+	call extend(completion_list, deepcopy(g:atp_tikz_keywords))
     " {{{3 ------------ TIKZ COMMANDS
     elseif completion_method	== 'tikzpicture commands'
 	let completion_list 	= []

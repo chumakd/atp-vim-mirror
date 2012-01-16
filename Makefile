@@ -1,7 +1,7 @@
 # This is a Makefile for Automatic Tex Plugin project.
 # Written by Marcin Szamotulski.
 
-# Usage:
+# Usage:	Please adjust the INSTALL_DIR variable before using.
 # make 		-- generate vbm as well as tar.gz file,
 # 		   it will also update time stamps in various places.
 # make test	-- list files in *.tar.gz bundle
@@ -13,8 +13,8 @@ PLUGIN 	= AutomaticTexPlugin
 VERSION = 10.6.4
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${INSTALL_DIR} variable should point to one of your vim 'runtimepath'
-# entries. I use pathogen, so my setting is more complicated:
-INSTALL_DIR = ${HOME}/.vim/addons/AutomaticLaTexPlugin
+# entries. I use VAM plugin, so this setting is more complicated:
+INSTALL_DIR = ${HOME}/.vim/vam-addons/AutomaticLaTexPlugin
 
 SOURCE =  autoload/atplib.vim
 SOURCE += autoload/atplib/bibsearch.vim

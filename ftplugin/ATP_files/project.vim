@@ -630,7 +630,10 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
 	endif
     endfor
     " Save project script file:
-    silent w
+    if getline(1) !~# '" ATP project vim script'
+	call append(0, '" ATP project vim script: '.strftime( "%a %b %d, %Y at %I:%M %p %z").".")
+    endif
+    silent write
     let projectscript_bufnr	= bufnr("%")
     exe "silent keepalt keepjumps b " . bufnr
     exe "bdelete " . projectscript_bufnr

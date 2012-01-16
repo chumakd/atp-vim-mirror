@@ -4,6 +4,29 @@
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 
 " Set options and maps for tex log file.
+function! TexLogCurrentFile()
+    let saved_pos = getpos(".")
+    let savedview = winsaveview()
+    call searchpair('(', '', ')', 'cbW')
+    let file = matchstr(getline(".")[col("."):], '^\f*')
+    if filereadable(file)
+	call setpos(".", saved_pos)
+	call winrestview(savedview) 
+	return file
+    else
+	call searchpair('(', '', ')', 'bW')
+	let file = matchstr(getline(".")[col("."):], '^\f*')
+	call setpos(".", saved_pos)
+	call winrestview(savedview) 
+	call setpos(".", saved_pos)
+	call winrestview(savedview) 
+	if filereadable(file)
+	    return file
+	else
+	    return ""
+	endif
+    endif
+endfunction
 function! <SID>TexLogSettings(fname)
     " This function should also have the SyncTex section of
     " atplib#various#OpenLog, but since it requires b:atp_ProjectDir and
@@ -36,6 +59,13 @@ function! <SID>TexLogSettings(fname)
 	nnoremap <silent> <buffer> % :call atplib#various#Searchpair('(', '', ')', 'W')<CR>
  
 	call atplib#ReadATPRC()
+	if !exists("g:atp_LogStatusLine")
+	    let g:atp_LogStatusLine = 1
+	endif
+	if g:atp_LogStatusLine
+	    let atplog_StatusLine = '%<%f %(%h%m%r%) %#User6#%{TexLogCurrentFile()}%*%=  %-14.16(%l,%c%V%)%P'
+	    let &l:statusline=atplog_StatusLine
+	endif
 	let b:atp_ProjectDir = expand("%:p:h")
 	let b:atp_MainFile   = expand("%:p:r").".tex" 
 	if !exists("g:atp_debugST")
