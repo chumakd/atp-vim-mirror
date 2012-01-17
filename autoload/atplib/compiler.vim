@@ -132,17 +132,16 @@ function! atplib#compiler#GetSyncData(line, col)
 	    let path = expand("%:p:h")."/./".expand("%:t")
 	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
 	    let synctex_output=split(system(synctex_cmd), "\n")
-" 	    call add(g:debug,get(synctex_output, 1, ''))
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
 	    endif
 	    let synctex_output=split(system(synctex_cmd), "\n")
-	else
-	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
-	    let synctex_output=split(system(synctex_cmd), "\n")
-" 	    call add(g:debug,get(synctex_output, 1, ''))
-	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
-		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
+	    if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
+		let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
+		let synctex_output=split(system(synctex_cmd), "\n")
+		if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
+		    return [ "no_sync", get(synctex_output, 1, ''), 0 ]
+		endif
 	    endif
 	endif
 
