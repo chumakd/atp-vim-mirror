@@ -389,7 +389,7 @@ lockvar b:atp_autex_wait
 " Global Variables: (almost all)
 " {{{ global variables 
 if !exists("g:atp_LogStatusLine")
-    let g:atp_LogStatusLine = 1
+    let g:atp_LogStatusLine = 0
 endif
 if !exists("g:atp_OpenAndSyncSleepTime")
     let g:atp_OpenAndSyncSleepTime = "750m"

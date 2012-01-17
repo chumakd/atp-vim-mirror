@@ -1269,7 +1269,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let options = ""
 
     " \input{...}, \include{...}
-    elseif line =~ '\\\(input\|include\)\s*{' 
+    elseif line =~ '\\\(input\|include\|subfile\)\s*{' 
 	let method = "input{"
 	let ext 	= '.tex'
 

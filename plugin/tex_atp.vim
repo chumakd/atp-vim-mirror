@@ -64,7 +64,7 @@ function! <SID>TexLogSettings(fname)
 	endif
 	if g:atp_LogStatusLine
 	    let atplog_StatusLine = '%<%f %(%h%m%r%) %#User6#%{TexLogCurrentFile()}%*%=  %-14.16(%l,%c%V%)%P'
-	    let &l:statusline=atplog_StatusLine
+	    let &statusline=atplog_StatusLine
 	endif
 	let b:atp_ProjectDir = expand("%:p:h")
 	let b:atp_MainFile   = expand("%:p:r").".tex" 

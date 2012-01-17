@@ -1827,7 +1827,7 @@ function! atplib#search#TreeOfFiles_vim(main_file,...)
     if run_nr == 1 
 	let pattern = '^[^%]*\\\(input\s*{\=\|include\s*{'
 	if '\subfile{' !~ g:atp_inputfile_pattern && atplib#search#SearchPackage('subfiles')
-	    let pattern .= '\|subfiles\s*{'
+	    let pattern .= '\|subfile\s*{'
 	endif
 	let biblatex = atplib#search#SearchPackage('biblatex')
 	if biblatex
@@ -2199,8 +2199,8 @@ try:
     mainfile_ob = open(filename, 'r')
     mainfile    = mainfile_ob.read().split("\n")
     mainfile_ob.close()
-    if scan_preambule(mainfile, re.compile('\\\\usepackage\s*\[.*\]\s*{\s*subfiles\s*}')):
-	pat_str='^[^%]*(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?|subfiles)\s*{([^}]*)})'
+    if scan_preambule(mainfile, re.compile('\\\\usepackage\s*{\s*subfiles\s*}')):
+	pat_str='^[^%]*(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?|subfile)\s*{([^}]*)})'
 	pattern=re.compile(pat_str)
     else:
 	pat_str='^[^%]*(?:\\\\input\s+([\w_\-\.]*)|\\\\(?:input|include(?:only)?)\s*{([^}]*)})'

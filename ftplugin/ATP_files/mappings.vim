@@ -114,30 +114,31 @@ exe "cmap <buffer> <expr> <M-c> '^'.(getcmdline() =~ '\\\\v' ? '' : '".s:backsla
 if has("gui")
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) ) 
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) ) 
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
     endif
 else
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[?/]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[\/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+" OK
     endif
 endif
 if maparg("<F2>", "n") == ""
