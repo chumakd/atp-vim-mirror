@@ -1617,15 +1617,7 @@ function! atplib#search#SearchPackage(name,...)
 	call SetProjectName()
     endif
 
-"     let time	= reltime()
-
-"     if bufloaded("^" . a:file . "$")
-" 	let file=getbufline("^" . a:file . "$", "1", "$")
-"     else
-" 	let file=readfile(a:filename)
-"     endif
-
-    let com	= a:0 >= 2 ? a:2 : 'usepackage\s*\%(\[[^\]]*\]\?\)\?'
+    let com	= a:0 >= 2 ? a:2 : 'usepackage\s*\%(\[[^\]]*\]\)\?'
 
     " If the current file is the atp_MainFile
     if expand("%:p") == atp_MainFile
@@ -1636,12 +1628,12 @@ function! atplib#search#SearchPackage(name,...)
 	keepjumps call setpos(".",[0,1,1,0])
 	let stop_line	= search('^\([^%]\|\\%]\)*\\begin\s*{\s*document\s*}', 'ncW')
 	if stop_line != 0
-	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW', stop_line)
+	    keepjumps let ret = search('\C^[^%]*\\'.com.'\s*{[^}]*'.a:name,'ncW', stop_line)
 	    keepjump call setpos(".",saved_pos)
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
 	else
-	    keepjumps let ret = search('\C^[^%]*\\'.com."\s*{[^}]*".a:name,'ncW')
+	    keepjumps let ret = search('\C^[^%]*\\'.com.'\s*{[^}]*'.a:name,'ncW')
 	    keepjump call setpos(".", saved_pos)
 	    exe "lcd " . fnameescape(cwd)
 	    return ret
@@ -1655,9 +1647,8 @@ function! atplib#search#SearchPackage(name,...)
 	endif
 	let lnum = 1
 	for line in s:Preambule
-	    if line =~ '^[^%]*\\'.com."\s*{[^}]*\C".a:name
+	    if line =~ '^[^%]*\\'.com.'\s*{[^}]*\C'.a:name
 
-" 		echo reltimestr(reltime(time))
 		exe "lcd " . fnameescape(cwd)
 		return lnum
 	    endif

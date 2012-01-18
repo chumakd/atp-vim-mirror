@@ -1382,7 +1382,6 @@ function! atplib#various#CompleteLocal_lpr(ArgLead, CmdLine, CPos)
     return ""
 endfunction
 " }}}
-
 " {{{  atplib#various#ReloadATP
 " ReloadATP() - reload all the tex_atp functions and delete all autoload functions from
 " autoload/atplib.vim

@@ -103,14 +103,25 @@ function! atplib#compiler#ViewOutput(bang,...)
     endif
 endfunction
 "}}}
-
+"{{{ atplib#compiler#LocalViewOutput
+function! atplib#compiler#LocalViewOutput(file)
+    if b:atp_Viewer == "xpdf"	
+	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_LocalXpdfServer)
+    else
+	let viewer	= b:atp_Viewer . " "
+    endif
+    let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
+    let localview_cmd 	= viewer." ".shellescape(fnamemodify(a:file, ":t:r").ext) . " &"
+    call system(localview_cmd)
+endfunction
+"}}}
 " Forward Search:
 " {{{ atplib#compiler#GetSyncData
-function! atplib#compiler#GetSyncData(line, col)
+function! atplib#compiler#GetSyncData(line, col, file)
 
-     	if !filereadable(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").'.synctex.gz') 
+     	if !filereadable(fnamemodify(atplib#FullPath(a:file), ":r").'.synctex.gz') 
 	    redraw!
-	    let cmd=b:atp_TexCompiler." ".join(split(b:atp_TexOptions, ','), " ")." ".shellescape(atplib#FullPath(b:atp_MainFile))
+	    let cmd=b:atp_TexCompiler." ".join(split(b:atp_TexOptions, ','), " ")." ".shellescape(atplib#FullPath(a:file))
 	    if b:atp_TexOptions !~ '\%(-synctex\s*=\s*1\|-src-specials\>\)'
 		echomsg "[SyncTex:] b:atp_TexOptions does not contain -synctex=1 or -src-specials switches!"
 		return
@@ -121,7 +132,7 @@ function! atplib#compiler#GetSyncData(line, col)
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
-	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".expand("%:p"). "' -o '".fnamemodify(b:atp_MainFile, ":p:r").".pdf'"
+	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".expand("%:p"). "' -o '".fnamemodify(a:file, ":p:r").".pdf'"
 
 	" SyncTex is fragile for the file name: if it is file name or full path, it
 	" must agree literally with what is written in .synctex.gz file
@@ -130,14 +141,14 @@ function! atplib#compiler#GetSyncData(line, col)
 	if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
 	    " Write better test (above)
 	    let path = expand("%:p:h")."/./".expand("%:t")
-	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
+	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(a:file, ":r").".pdf'"
 	    let synctex_output=split(system(synctex_cmd), "\n")
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
 	    endif
 	    let synctex_output=split(system(synctex_cmd), "\n")
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
-		let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".b:atp_MainFile. "' -o '".fnamemodify(b:atp_MainFile, ":r").".pdf'"
+		let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".a:file. "' -o '".fnamemodify(a:file, ":r").".pdf'"
 		let synctex_output=split(system(synctex_cmd), "\n")
 		if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		    return [ "no_sync", get(synctex_output, 1, ''), 0 ]
@@ -195,7 +206,7 @@ function! atplib#compiler#SyncShow( page_nr, y_coord)
     endif
 endfunction "}}}
 " {{{ atplib#compiler#SyncTex
-function! atplib#compiler#SyncTex(bang, mouse, ...)
+function! atplib#compiler#SyncTex(bang, mouse, main_file, XpdfServer, ...)
     if g:atp_debugSyncTex
 	exe "redir! > ".g:atp_TempDir."/SyncTex.log"
     endif
@@ -205,9 +216,9 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
     " Mouse click <S-LeftMouse> is mapped to <LeftMouse>... => thus it first changes
     " the cursor position.
     let [ line, col ] 	= [ line("."), col(".") ]
-    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let main_file	= atplib#FullPath(a:main_file)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
-    let output_file	= fnamemodify(atp_MainFile,":p:r") . ext
+    let output_file	= fnamemodify(main_file,":p:r") . ext
     if !filereadable(output_file) && output_check
 	" Here should be a test if viewer is running, this can be made with python.
 	" this is way viewer starts not well when using :SyncTex command while Viewer
@@ -222,20 +233,20 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
        echohl None
        return 2
     endif
-    let atp_MainFile         = atplib#FullPath(b:atp_MainFile)
-    let ext		     = get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
-    let link=resolve(atp_MainFile)
+    let main_file         = atplib#FullPath(a:main_file)
+    let ext		  = get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
+    let link=resolve(main_file)
     if link != ""
         let outfile     = fnamemodify(link,":r") . ext
     else
-        let outfile     = fnamemodify(atp_MainFile,":r"). ext 
+        let outfile     = fnamemodify(main_file,":r"). ext 
     endif
 
     if IsRunning_check
-	if (!atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(outfile), b:atp_XpdfServer) && output_check) 
+	if (!atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(outfile), a:XpdfServer) && output_check) 
 	    "Note: I should test here if Xpdf is not holding a file (it might be not
 	    "visible through cmdline arguments -> this happens if file is opened in
-	    "another server. We can use: xpdf -remote b:atp_XpdfServer "run('echo %f')"
+	    "another server. We can use: xpdf -remote a:XpdfServer "run('echo %f')"
 	    echohl WarningMsg
 	    echomsg "[SyncTex:] please open the file first. (if file is opend add bang \"!\")"
 	    echohl None
@@ -244,11 +255,11 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
     endif
 
     if b:atp_Viewer == "xpdf"
-	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col)
-	let sync_cmd_page = "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
-	let sync_cmd_y 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
-        let sync_cmd_x 	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
-" 	let sync_cmd	= "xpdf -remote " . shellescape(b:atp_XpdfServer) . " -exec 'gotoPage(".page_nr.")'"." -exec 'scrollDown(".y_coord.")'"." -exec 'scrollRight(".x_coord.")'"
+	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col, a:main_file)
+	let sync_cmd_page = "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
+	let sync_cmd_y 	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
+        let sync_cmd_x 	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
+" 	let sync_cmd	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'gotoPage(".page_nr.")'"." -exec 'scrollDown(".y_coord.")'"." -exec 'scrollRight(".x_coord.")'"
 	" There is a bug in xpdf. We need to sleep between sending commands:
 	let sleep    = ( g:atp_XpdfSleepTime ? 'sleep '.string(g:atp_XpdfSleepTime).'s;' : '' )
 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.")&"
@@ -257,7 +268,7 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)
 	endif
     elseif b:atp_Viewer == "okular"
-	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col)
+	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col, a:main_file)
 	" This will not work in project files. (so where it is mostly needed.) 
 	let sync_cmd = "okular --unique ".shellescape(expand("%:p:r")).".pdf\\#src:".line.shellescape(expand("%:p"))." &"
 	let sync_args = " ".shellescape(expand("%:p:r")).".pdf\\#src:".line.shellescape(expand("%:p"))." "
@@ -266,14 +277,14 @@ function! atplib#compiler#SyncTex(bang, mouse, ...)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)
 	endif
     elseif b:atp_Viewer == "skim"
-	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col)
+	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col, a:main_file)
 	let sync_cmd = "displayline ".line." ".shellescape(expand("%:p:r")).".pdf ".shellescape(expand("%:p"))." &"
 	if !dryrun
 	    call system(sync_cmd)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)
 	endif
 "     elseif b:atp_Viewer == "evince"
-" 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(b:atp_MainFile). " -o ".fnameescape(fnamemodify(b:atp_MainFile, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
+" 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(main_file). " -o ".fnameescape(fnamemodify(main_file, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
     elseif b:atp_Viewer =~ '^\s*xdvi\>'
 	let options = (exists("g:atp_xdviOptions") ? " ".join(g:atp_xdviOptions, " ") : " " ) ." ".join(getbufvar(bufnr(""), "atp_xdviOptions"), " ")
@@ -788,6 +799,50 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     endif
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "END b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
+    endif
+endfunction
+" }}}
+" {{{ atplib#compiler#LocalCompiler()
+function! atplib#compiler#LocalCompiler(mode)
+    let subfiles = atplib#search#SearchPackage('subfiles')
+    let file = expand("%:p:t")
+    let tmpdir = b:atp_TempDir . matchstr(tempname(), '\/\w\+\/\d\+')
+    let extensions = [ 'aux', 'bbl' ]
+    if a:mode == "n" && subfiles
+	" if subfiles package is used.
+	" compilation is done in the current directory.
+python << ENDPYTHON
+import vim, os.path, shutil
+
+extensions = vim.eval("extensions")
+file = vim.eval("file")
+basename = os.path.splitext(file)[0]
+mainfile_base = os.path.splitext(vim.eval("b:atp_MainFile"))[0]
+for ext in extensions:
+    if os.path.exists(mainfile_base+"."+ext):
+	shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
+ENDPYTHON
+	let cmd = b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " " . shellescape(expand("%:p"))
+	if has("win16") || has("win32") || has("win64")
+	    call system(cmd)
+	else
+	    call system(cmd . " &")
+	endif
+"     else
+" " compilation is done in a temporary directory (why?)
+" " copy files
+" python << ENDPYTHON
+" import vim, os.path, shutil
+" 
+" extensions = vim.eval("extensions")
+" tmpdir = vim.eval("tmpdir")
+" file = vim.eval("file")
+" basename = os.path.basename(file)
+" mainfile_base = os.path.basename(vim.eval("b:atp_MainFile"))
+" for ext in extensions:
+"     if os.path.exists(mainfile_base+"."+ext):
+" 	shutil.copy(mainfile_base+"."+ext, os.path.join(tmpdir, basename+"."+ext))
+" ENDPYTHON
     endif
 endfunction
 " }}}
@@ -1985,6 +2040,10 @@ augroup END
 " 		  (g:atp_DefaultDebugMode).
 function! atplib#compiler#TeX(runs, bang, ...)
 
+"     if a:bang == "!"
+" 	call atplib#compiler#LocalCompiler("n")
+" 	return
+"     endif
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
     if !exists("t:atp_DebugMode")
@@ -2031,8 +2090,10 @@ function! atplib#compiler#TeX(runs, bang, ...)
     endif
     if g:atp_Compiler == 'python'
         if g:atp_devversion == 0
+"             call atplib#compiler#PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, "")
             call atplib#compiler#PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
         else
+"             call atplib#compiler#ThreadedCompiler(0,0, a:runs, mode, "COM", atp_MainFile, "")
             call atplib#compiler#ThreadedCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
         endif
     else

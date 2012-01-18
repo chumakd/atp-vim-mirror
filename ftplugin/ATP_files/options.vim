@@ -304,6 +304,7 @@ let s:optionsDict= {
 		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
+		\ "atp_LocalXpdfServer" 	: expand("%:t:r"), 
 		\ "atp_okularOptions"		: ["--unique"],
 		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),

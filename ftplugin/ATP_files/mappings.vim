@@ -183,6 +183,9 @@ endif
 if !hasmapto("<Plug>SyncTexKeyStroke", "n")
     nmap <buffer> <silent> <LocalLeader>f	<Plug>SyncTexKeyStroke
 endif
+if !hasmapto("<Plug>SyncTexLKeyStroke", "n")
+    nmap <buffer> <silent> <LocalLeader>F	<Plug>SyncTexLKeyStroke
+endif
 if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
     nmap <buffer> <S-LeftMouse> 		<LeftMouse><Plug>SyncTexMouse
 endif
