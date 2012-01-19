@@ -47,19 +47,21 @@ for pid in pids:
 END
 endfunction "}}}
 " Write:
-function! atplib#write(...) "{{{
+function! atplib#write(command,...) "{{{
     let backup		= &backup
     let writebackup	= &writebackup
     let project		= b:atp_ProjectScript
 
-    " In this way lastchange plugin will work better (?):
-"     let eventignore 	= &eventignore
-"     setl eventigonre	+=BufWritePre
 
     " Disable WriteProjectScript
+    if a:command =~# '^\(AU\|nobackup\)$'
+	set nobackup
+	set nowritebackup
+	" In this way lastchange plugin will work better (?):
+" 	let eventignore 	= &eventignore
+" 	setl eventigonre	+=BufWritePre
+    endif
     let b:atp_ProjectScript = 0
-    set nobackup
-    set nowritebackup
 
     if a:0 > 0 && a:1 == "silent"
 	silent! update
@@ -67,10 +69,12 @@ function! atplib#write(...) "{{{
 	update
     endif
 
+    if a:command =~# '^\(AU\|nobackup\)$'
+	let &backup		= backup
+	let &writebackup	= writebackup
+"         let &eventignore	= eventignore
+    endif
     let b:atp_ProjectScript = project
-    let &backup		= backup
-    let &writebackup	= writebackup
-"     let &eventignore	= eventignore
 endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1

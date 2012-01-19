@@ -111,8 +111,14 @@ function! atplib#compiler#LocalViewOutput(file)
 	let viewer	= b:atp_Viewer . " "
     endif
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
-    let localview_cmd 	= viewer." ".shellescape(fnamemodify(a:file, ":t:r").ext) . " &"
-    call system(localview_cmd)
+    if filereadable(fnameescape(fnamemodify(a:file, ":t:r").ext))
+	let localview_cmd 	= viewer." ".shellescape(fnamemodify(a:file, ":t:r").ext) . " &"
+	call system(localview_cmd)
+    else
+	echohl WarningMsg
+	echomsg "[ATP:] file ".fnamemodify(a:file, ":t:r").ext." not readable."
+	echohl Normal
+    endif
 endfunction
 "}}}
 " Forward Search:
@@ -633,7 +639,7 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
     lockvar g:atp_TexCommand
 
     " Write file
-    call atplib#write("silent")
+    call atplib#write("COM", "silent")
 
     if mode == "verbose"
 	exe ":!".cmd
@@ -646,7 +652,12 @@ endfunction
 
 "}}}
 " {{{ atplib#compiler#PythonCompiler
-function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, filename, bang)
+function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, filename, bang, ...)
+    " a:1	= b:atp_XpdfServer (default value)
+
+    if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log"
+	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log"
+    endif
 
     " Kill comiple.py scripts if there are too many of them.
     if len(b:atp_PythonPIDs) >= b:atp_MaxProcesses && b:atp_MaxProcesses
@@ -749,6 +760,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     let no_progress_bar 	= ( g:atp_ProgressBar ? '' : ' --no-progress-bar ' )
     let bibliographies 		= join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')
     let autex_wait		= ( b:atp_autex_wait ? ' --autex_wait ' : '') 
+    let xpdf_server		= ( a:0 >= 1 ? a:1 : b:atp_XpdfServer )
 
     " Set the command
     let cmd=g:atp_Python." ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
@@ -761,7 +773,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 		\ ." --servername ".v:servername
 		\ ." --start ".a:start 
 		\ ." --viewer ".shellescape(b:atp_Viewer)
-		\ ." --xpdf-server ".shellescape(b:atp_XpdfServer)
+		\ ." --xpdf-server ".shellescape(xpdf_server)
 		\ ." --viewer-options ".shellescape(viewer_options) 
 		\ ." --keep ". shellescape(join(g:atp_keep, ','))
 		\ ." --progname ".v:progname
@@ -776,8 +788,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
-
-    call atplib#write("silent")
+    call atplib#write(a:command,"silent")
 
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "POST WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
@@ -822,11 +833,23 @@ for ext in extensions:
     if os.path.exists(mainfile_base+"."+ext):
 	shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
 ENDPYTHON
-	let cmd = b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " " . shellescape(expand("%:p"))
-	if has("win16") || has("win32") || has("win64")
-	    call system(cmd)
+	if g:atp_Compiler == 'python'
+	    call  atplib#compiler#PythonCompiler(0,0,1,'silent','COM',expand("%:p"),"",b:atp_LocalXpdfServer)
 	else
-	    call system(cmd . " &")
+	    let cmd = b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " " . shellescape(expand("%:p"))
+
+	    " Reload xpdf if it is running:
+	    if b:atp_Viewer == "xpdf" && atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(fnamemodify(file, ":r").".pdf"), b:atp_LocalXpdfServer)
+		let cmd .=  " ; xpdf -remote ".shellescape(b:atp_LocalXpdfServer)." -reload" 
+	    endif
+
+	    update
+
+	    if has("win16") || has("win32") || has("win64")
+		call system(cmd)
+	    else
+		call system("( ".cmd. " ) &")
+	    endif
 	endif
 "     else
 " " compilation is done in a temporary directory (why?)
@@ -858,6 +881,10 @@ endfunction
 " 		2 start viewer and make reverse search
 "
 function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang)
+
+	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log"
+	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log"
+	endif
     
 	" Set biber setting on the fly
 	call atplib#compiler#SetBiberSettings()
@@ -1145,7 +1172,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	    silent echomsg "BEFORE WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
 	endif
 
-	call atplib#write("silent")
+	call atplib#write(a:command, "silent")
 
 	if g:atp_debugCompiler
 	    silent echomsg "AFTER WRITING: b:changedtick=" . b:changedtick . " b:atp_changedtick=" . b:atp_changedtick . " b:atp_running=" .  b:atp_running
@@ -1178,7 +1205,7 @@ function! atplib#compiler#ThreadedCompiler(bibtex, start, runs, verbose, command
 	call atplib#Log("ThreadedCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
 
-    call atplib#write("silent")
+    call atplib#write(a:command, "silent")
 
     if g:atp_debugPythonCompiler
 	call atplib#Log("ThreadedCompiler.log", "POST WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
@@ -1958,13 +1985,16 @@ function! atplib#compiler#auTeX(...)
 	    
 "
 " 	if atplib#compiler#NewCompare()
-	let g:debug=0
 	    if g:atp_Compiler == 'python'
-                if g:atp_devversion == 0
-                    call atplib#compiler#PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
-                else
-                    call atplib#compiler#ThreadedCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
-                endif
+		if b:atp_autex == 1
+		    if g:atp_devversion == 0
+			call atplib#compiler#PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+		    else
+			call atplib#compiler#ThreadedCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+		    endif
+		else
+		    call atplib#compiler#LocalCompiler("n")
+		endif
 	    else
 		call atplib#compiler#Compiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
 	    endif

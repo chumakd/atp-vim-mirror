@@ -287,7 +287,7 @@ function! atplib#search#LocalCommands_py(write, ...)
     exe "cd ".fnameescape(b:atp_ProjectDir)
 
     if a:write
-	call atplib#write()
+	call atplib#write("nobackup")
     endif
 
 
@@ -402,7 +402,7 @@ endfunction "}}}
 "{{{ atplib#search#Dsearch
 function! atplib#search#Dsearch(bang,...)
 
-    call atplib#write()
+    call atplib#write("nobackup")
 
     let time		= reltime()
     let o_pattern	= a:0 >= 1 ? matchstr(a:1, '\/\=\zs.*[^\/]\ze\/\=') : ''
@@ -2229,7 +2229,7 @@ endfunction
 function! atplib#search#FindInputFiles(MainFile,...)
 
 "     let time=reltime()
-    call atplib#write()
+    call atplib#write("nobackup")
 
     let cached_Tree	= a:0 >= 1 ? a:1 : 0
 

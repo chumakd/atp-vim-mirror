@@ -1967,7 +1967,7 @@ function! atplib#various#WordCount(bang, range)
     " given part of the text (this is the default range for the commmand.
     " range is [ <line1>, <line2> ]
 
-    call atplib#write()
+    call atplib#write("nobackup")
 
     let g:atp_WordCount = {}
 

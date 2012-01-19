@@ -17,6 +17,7 @@ nmap <buffer> <Plug>SyncTexMouse	:call atplib#compiler#SyncTex("", 1, b:atp_Main
 nmap <buffer> <Plug>SyncTexLKeyStroke	:call atplib#compiler#SyncTex("", 0, expand("%:t"), b:atp_LocalXpdfServer)<CR>
 nmap <buffer> <Plug>SyncTexLMouse	:call atplib#compiler#SyncTex("", 1, expand("%:t"), b:atp_LocalXpdfServer)<CR>
 noremap <silent> <Plug>ATP_TeXCurrent	:<C-U>call atplib#compiler#TeX(v:count1, "", t:atp_DebugMode)<CR>
+noremap <silent> <Plug>ATP_TeXLocal	:<C-U>call atplib#compiler#LocalCompiler("n")<CR>
 noremap <silent> <Plug>ATP_TeXDefault	:<C-U>call atplib#compiler#TeX(v:count1, "", 'default')<CR>
 noremap <silent> <Plug>ATP_TeXSilent	:<C-U>call atplib#compiler#TeX(v:count1, "", 'silent')<CR>
 noremap <silent> <Plug>ATP_TeXDebug	:<C-U>call atplib#compiler#TeX(v:count1, "", 'Debug')<CR>

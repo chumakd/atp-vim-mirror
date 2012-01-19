@@ -917,6 +917,9 @@ endif
 if !hasmapto("<Plug>ATP_TeXCurrent", "n")
     nmap  <silent> <buffer> <LocalLeader>l 		<Plug>ATP_TeXCurrent
 endif
+if !hasmapto("<Plug>ATP_TeXLocal", "n")
+    nmap <silent> <buffer> <LocalLeader>k		<Plug>ATP_TeXLocal
+endif
 if !hasmapto("<Plug>ATP_TeXdebug", "n")
     nmap  <silent> <buffer> <LocalLeader>d 		<Plug>ATP_TeXdebug
 endif
