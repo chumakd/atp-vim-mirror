@@ -1340,9 +1340,9 @@ function! atplib#motion#GotoFile(bang,args,...)
 	call extend(level_d, { atp_MainFile : 0 })
     endif
 
-    let g:file_l = copy(file_l)
-    let g:method = method
-    let g:line 	= line
+"     let g:file_l = copy(file_l)
+"     let g:method = method
+"     let g:line 	= line
 
     if len(file_l) > 1 && file =~ '^\s*$'
 	if method == "all"
@@ -1379,7 +1379,6 @@ function! atplib#motion#GotoFile(bang,args,...)
 	endfor
 	" Ask the user which file to edit:
 	redraw
-	let g:input_l = copy(input_l)
 	if len([ msg ] + input_l) < &l:lines
 	    for f in  [ msg ] + input_l
 		" echo highlighted message
@@ -1427,7 +1426,7 @@ function! atplib#motion#GotoFile(bang,args,...)
 	    exe "lcd " . fnameescape(cwd)
 	    return
 	endif
-	let file 	= file_l[choice-1]
+	let file 	= atplib#FullPath(file_l[choice-1])
 	let fname 	= file
     elseif file !~ '^\s*$'
 	let file 	= atplib#FullPath(file)

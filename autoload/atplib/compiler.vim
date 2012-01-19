@@ -125,6 +125,7 @@ endfunction
 " {{{ atplib#compiler#GetSyncData
 function! atplib#compiler#GetSyncData(line, col, file)
 
+    let g:file = a:file
      	if !filereadable(fnamemodify(atplib#FullPath(a:file), ":r").'.synctex.gz') 
 	    redraw!
 	    let cmd=b:atp_TexCompiler." ".join(split(b:atp_TexOptions, ','), " ")." ".shellescape(atplib#FullPath(a:file))
@@ -138,7 +139,7 @@ function! atplib#compiler#GetSyncData(line, col, file)
  	endif
 	" Note: synctex view -i line:col:tex_file -o output_file
 	" tex_file must be full path.
-	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".expand("%:p"). "' -o '".fnamemodify(a:file, ":p:r").".pdf'"
+	let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".expand("%:p"). "' -o '".fnamemodify(atplib#FullPath(a:file), ":r").".pdf'"
 
 	" SyncTex is fragile for the file name: if it is file name or full path, it
 	" must agree literally with what is written in .synctex.gz file
@@ -146,15 +147,18 @@ function! atplib#compiler#GetSyncData(line, col, file)
 	let synctex_output=split(system(synctex_cmd), "\n")
 	if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
 	    " Write better test (above)
-	    let path = expand("%:p:h")."/./".expand("%:t")
-	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(a:file, ":r").".pdf'"
+	    let cwd = getcwd()
+	    exe "lcd ".fnameescape(b:atp_ProjectDir)
+	    let path = getcwd()."/./".expand("%:.")
+	    exe "lcd ".fnameescape(cwd)
+	    let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".path. "' -o '".fnamemodify(atplib#FullPath(a:file), ":r").".pdf'"
 	    let synctex_output=split(system(synctex_cmd), "\n")
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		return [ "no_sync", get(synctex_output, 1, ''), 0 ]
 	    endif
 	    let synctex_output=split(system(synctex_cmd), "\n")
 	    if get(synctex_output, 1, '') =~ '^SyncTex Warning: No tag for'
-		let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".a:file. "' -o '".fnamemodify(a:file, ":r").".pdf'"
+		let synctex_cmd="synctex view -i ".a:line.":".a:col.":'".a:file. "' -o '".fnamemodify(atplib#FullPath(a:file), ":r").".pdf'"
 		let synctex_output=split(system(synctex_cmd), "\n")
 		if get(synctex_output, 1, '') =~ '^SyncTex Warning:'
 		    return [ "no_sync", get(synctex_output, 1, ''), 0 ]
