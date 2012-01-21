@@ -830,7 +830,6 @@ main_aux_file.close()
 # There is no sens of comparing main_aux and local_aux!
 pattern = re.compile('^\\\\newlabel.*$', re.M)
 local_labels = re.findall(pattern, "".join(local_aux))
-print(local_labels)
 def get_labels(line):
     return re.match('\\\\newlabel\s*{([^}]*)}', line).group(1)
 local_labels_names = map(get_labels, local_labels)
@@ -854,7 +853,6 @@ main_aux_file.close()
 extensions = vim.eval("extensions")
 for ext in extensions:
     if os.path.exists(mainfile_base+"."+ext):
-        print(mainfile_base+"."+ext+" TO "+basename+"."+ext)
         shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
 ENDPYTHON
 	if g:atp_Compiler == 'python'
