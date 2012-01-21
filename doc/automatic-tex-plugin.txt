@@ -171,6 +171,12 @@ NEWS							*atp-news*
  leave TOC/Labels window open.
 
  |atp-gf| works well with \bibliography{} command.
+
+ See ':help atp-omap-<C-d>' for the defined operator maps. 
+ |atp-vi(|, ... , |atp-va}| maps.
+
+ Compilation of parts of a project (using subfiles package).
+ |atp-:TEXL|, |atp-:ViewL|, |atp-:SyncTexL|, see also |b:atp_autex|.
 >
  ======================
  Changes in version 10.6.4
@@ -599,10 +605,13 @@ which points to a unique temporary file in a temporary directory |b:atp_TempDir|
 							*b:atp_autex*
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
 the local to buffer variable |b:atp_autex|=1 (on) |b:atp_autex|=0 (off). It is
-useful in some situations turn automatic compiling off. The key <S-F5> calls
-the command |atp-:ToggleAuTeX| which sets the variable |b:atp_autex| and issue
-a message. You can also set this variable to 0 for some files that are not
-supposed to be processed, for example:
+useful in some situations turn automatic compiling off. 
+    Note: if you set |b:atp_autex|=2 the the automatic compilation will
+    compile the currently edited subfile of your project (for this you need to
+    use the subfiles package).
+The key <S-F5> calls the command |atp-:ToggleAuTeX| which sets the variable
+|b:atp_autex| and issue a message. You can also set this variable to 0 for
+some files that are not supposed to be processed, for example:
 >
 	au BufRead texmf/*.tex let b:atp_autex=0
 <
@@ -918,6 +927,24 @@ map [runs]<LocalLeader>l, map [runs]<LocalLeader>d
 	\d is mapped to :TEX debug and \l to :TEX (thus it uses your default
 	debug mode).
 
+:{runs}TEXL [debug_mode]					*atp-:TEXL*
+map <LocalLeader>k
+	This command compiles the current subfile (L - comes from "local") of
+	the project (you have to use subfiles package). 
+	
+	Note that ATP is coping the project aux file (if present) and using it
+	for compilation of subfiles. In this way you get all the labels and
+	references. If you add new labels to the subfile then ATP will copy
+        the corresponding entries from the subfile aux file to the main aux
+        file. However, it will not work if the label (its value) was changed
+        or removed. Then you need to compile the project with |atp-:TEX|
+        command.
+
+	Note: the advantage of using subfiles package is that you
+	can use |atp-:SyncTexL| command for forward searching in the local
+	output.
+
+
 :{runs}DTEX 							*atp-:DTEX*
 map [runs]<LocalLeader>d 
 	This is equivalent to ':TEX debug'.
@@ -1161,7 +1188,7 @@ automatically using autocommand group |CursorMoved|.
 	:SyncXpdf or :Xpdf in the log buffer which does the same.
 
 :View[!] 						*atp-:View*
-map <LocalLeader>v,map <F3>, imap <F3>  
+map <LocalLeader>v, map <F3>, imap <F3>  
 	You would like to see what you are editing use this function. It will
 	use the program defined in the variable b:atp_Viewer. See |b:atp_Viewer|,
 	|g:atp_XpdfServer|, |atp-xpdfOptions|. When there is no output file it will run
@@ -1171,15 +1198,26 @@ map <LocalLeader>v,map <F3>, imap <F3>
 	With bang (and <F3> maps) opens viewer at the cursor position in vim
 	(forward search). This will only work for viewers that support forward
 	searching (xpdf, xdvi, okular, skim).
+
 							*g:atp_OpenAndSyncSleepTime*
 let |g:atp_OpenAndSyncSleepTime|="500m"
 	Give 500 milliseconds for the viewer to read the file, before
-	|atp-:View|! command will do a forward search.
+	|atp-:View|! and |atp-:ViewL|! commands will do a forward search.
+
+:ViewL[!]						*atp-:ViewL*
+map <LocalLeader>V, map <S-F3>, imap <S-F3>  
+	With this command you can view the subfile comiled by |atp-:TEXL|
+	command (or with |b:atp_autex|=2). "L" comes from "local".
+
+	Bang and [i]map <S-F3> works as in |atp-:View|! command (and its <F3>
+	map).
 
 :SyncTex[!]						*atp-:SyncTex* *atp-\f*
 map <LocalLeader>f, map <S-LeftMouse>
 	Which makes an forward search (vim->Viewer). As for now ATP supports Okular,
 	Xpdf and Xdvi with this feature (Evince is not yet supported).
+
+	With bang |atp-:SyncTex| will not check if the viewer is running.
 
 	Note: you can also set reverse search for Okular and Xdvi, see
 	|atp-Viewers-Okular| and |atp-Viewers-Xdvi| for an instruction how to
@@ -1196,9 +1234,16 @@ map <LocalLeader>f, map <S-LeftMouse>
 	then first it will be generated. It can also open the document if it
 	is not yet opened.
 
-	Note: with bang |atp-:SyncTex| will not check if viewer is running.
-
 	Read |atp-:SyncTex_with_Okular| if you use Okular.
+
+:SyncTexL[!]						*atp-:SyncTexL* *atp-\F*
+map <LocalLeader>F
+	Forward search from the subfile to its output (as compiled with
+	|atp-:TEXL| or |b:atp_autex|=2).
+
+	With bang |atp-:SyncTexL| will not check if the viewer is running.
+
+
 
 :Viewer {viewer-program}				 *atp-:Viewer*
     Command which help to set b:atp_Viewer variable (with nice completion).
@@ -4636,20 +4681,46 @@ DEBUGGING						*atp-errors*
 EDITING TOOLS							*atp-editing*
 
 							*atp-visual*
-	visual mode: ie, iE, ae, im, am, ip, ap, iS, aS, <LocalLeader>sc normal
+	visual mode: i), i(, a), a(, i], i[, a], a[, i}, i{, a}, a{,
+	ie, iE, ae, im, am, ip, ap, iS, aS, <LocalLeader>sc normal
 	and mode: <LocalLeader>sc. 
 
 	They select the current environment in two ways: >
-	    i 	- inner
-	    a 	- outer
-	    e 	- environment 
-	    p	- paragraph	  
-	    m	- math zones: \(:\), $:$, \[:\], $$:$$, 
-		      or math environment \begin:\end.ard
-		      search is set by ATP
-	    )	- bracket
+	    i 		- inner
+	    a 		- outer
+	    e 		- environment 
+	    p		- paragraph	  
+	    m		- math zones: \(:\), $:$, \[:\], $$:$$, 
+			  or math environment \begin:\end.ard
+			  search is set by ATP
+	    (,),{,},[,]	- brackets
 	    s	- syntax
-<							*atp-vie* *atp-viE* *atp-vae*
+<							*atp-vi)* *atp-vi(*
+							*atp-vi]* *atp-vi[*
+	i), i(, i], i[ -- select between (:) and [:] without the bracket
+	sizes, i.e. '\left(XXX\right)' i( and i) will select 'XXX'. These maps
+	will not select between \(:\), and \[:\] (for these use |atp-im|)
+							*atp-vi}* *atp-vi{*
+	i}, i{ -- select between {:} and \{:\} (omitting sizes as above)
+ 							*atp-va)* *atp-va(*
+							*atp-va]* *atp-va[*
+	a), a(, a], a[ -- select between (:) and [:] together with the
+	brackets and the bracket sizes, i.e. a) and a( over '\left(XXX\right)'
+	will select whole sequence. These map will not select \(:\) and \[:\]
+	(use |atp-am| instead)
+							*atp-va}* *atp-va{*
+	a}, a{ -- select between {:}, \{:\} together with the sizes.
+
+							*atp-omap-i)* *atp-omap-i(*
+							*atp-omap-i]* *atp-omap-i[*
+							*atp-omap-i}* *atp-omap-i{*
+ 							*atp-omap-a)* *atp-omap-a(*
+							*atp-omap-a]* *atp-omap-a[*
+							*atp-omap-a}* *atp-omap-a{*
+	The corresponding operator maps are defined. For example you can use
+	ci( to change the inner part of \left(...\right), etc.
+
+							*atp-vie* *atp-viE* *atp-vae*
 	ie, iE, ae select environment: from the nearest \begin (top) to the nearest \end (bottom).	
 
 		'viE' selects a bit more than 'vie' but less than 'vae', it
@@ -4672,6 +4743,11 @@ EDITING TOOLS							*atp-editing*
 <						
 	ip over a commented line will match all the comment like =c
 
+							*atp-omap-im* *atp-omap-am*
+							*atp-omap-ip* *atp-omap-ap*
+	The correspondin operator maps are defined. For example you can use
+	xim to delete the inner part of math mode \(:\), etc.
+
 							*atp-viS* *atp-vaS*
 	iS, aS	selects using syntax stack (see |synstack()|), inner is the
 		top element in the syntax stack (the highlighted area will be
@@ -4688,6 +4764,10 @@ EDITING TOOLS							*atp-editing*
 		variables g:atp_MapSelectComment (this can be only changed in
 		atprc or vimrc file, you need restart Vim, or use
 		|atp-:ReloadATP|) .
+							*atp-omap-=c*
+		The corresponding operator map is defined, e.g. you can use
+		d=c to delete the comment.
+
 
 							*atp-gw*	
 nmap gw

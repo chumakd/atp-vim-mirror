@@ -302,10 +302,16 @@ endfunction
 " catch E127
 " endtry "}}}
 
-" Toggle On/Off Completion 
+" Toggle on/off Completion 
 " {{{1 atplib#OnOffComp
 function! atplib#OnOffComp(ArgLead, CmdLine, CursorPos)
     return filter(['on', 'off'], 'v:val =~ "^" . a:ArgLead') 
+endfunction
+"}}}1
+" Toggle on/off/local Completion 
+" {{{1 atplib#OnOffComp
+function! atplib#OnOffLocalComp(ArgLead, CmdLine, CursorPos)
+    return filter(['on', 'off', 'local'], 'v:val =~ "^" . a:ArgLead') 
 endfunction
 "}}}1
 

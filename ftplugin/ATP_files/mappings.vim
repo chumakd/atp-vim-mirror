@@ -821,6 +821,9 @@ endif
 if !hasmapto("v<Plug>vSelectComment", "n")
     exe "nmap <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
 endif
+if !hasmapto(g:atp_MapSelectComment, "o")
+    exe "omap <silent> <buffer>".g:atp_MapSelectComment." :normal ".g:atp_MapSelectComment."<CR>"
+endif
 " Select Frame: (beamer)
 " This is done by a function, because it has to be run through an autocommand
 " otherwise atplib#search#DocumentClass is not working.
@@ -902,8 +905,15 @@ if !hasmapto("<Plug>ATP_ViewOutput", "n")
     nmap  <silent> <buffer> <F3>        		<Plug>ATP_ViewOutput_sync
     nmap  <silent> <buffer> <LocalLeader>v		<Plug>ATP_ViewOutput_nosync
 endif
+if !hasmapto("<Plug>ATP_ViewLocalOutput", "n")
+    nmap  <silent> <buffer> <S-F3>        		<Plug>ATP_ViewLocalOutput_sync
+    nmap  <silent> <buffer> <LocalLeader>V		<Plug>ATP_ViewLocalOutput_nosync
+endif
 if !hasmapto("<Plug>ATP_ViewOutput", "i")
     imap  <silent> <buffer> <F3> 			<C-O><Plug>ATP_ViewOutput_sync
+endif
+if !hasmapto("<Plug>ATP_ViewLocalOutput", "i")
+    imap  <silent> <buffer> <S-F3> 			<C-O><Plug>ATP_ViewLocalOutput_sync
 endif
 if !hasmapto("<Plug>Getpid", "n")
     nmap  <silent> <buffer> <LocalLeader>g 		<Plug>Getpid

@@ -1555,19 +1555,32 @@ if !s:did_options || g:atp_reload_functions
 " {{{ ATP_ToggleAuTeX
 " command! -buffer -count=1 TEX	:call TEX(<count>)		 
 function! ATP_ToggleAuTeX(...)
-  let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : !b:atp_autex )
+    if a:0 && ( a:1 == 2 || a:1 == "local" )
+	let b:atp_autex=2
+	echo "[ATP:] LOCAL"
+	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
+	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
+	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
+	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
+	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
+	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
+	return
+    endif
+    let on = ( a:0 ? ( a:1 == 'on' ? 1 : 0 ) : !b:atp_autex )
     if on
 	let b:atp_autex=1	
 	echo "[ATP:] ON"
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
-	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
+	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
+	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex		:<C-U>ToggleAuTeX<CR>
 	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
 	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
     else
 	let b:atp_autex=0
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
 	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
+	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
 	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
 	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
 	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
@@ -1886,7 +1899,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleIMaps		:call ATP_ToggleIMaps(0, "!")<CR>
 inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<C-O>:call ATP_ToggleIMaps(0, "!")<CR>
 " inoremap <silent> <buffer> 	<Plug>ToggleIMaps		<Esc>:call ATP_ToggleIMaps(1, "")<CR>
 
-command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
+command! -buffer -nargs=? -complete=customlist,atplib#OnOffLocalComp ToggleAuTeX 	:call ATP_ToggleAuTeX(<f-args>)
 nnoremap <silent> <buffer> 	<Plug>ToggleAuTeX 		:call ATP_ToggleAuTeX()<CR>
 
 command! -buffer -nargs=? -complete=customlist,atplib#OnOffComp ToggleSpace 	:echo ATP_ToggleSpace(<f-args>)

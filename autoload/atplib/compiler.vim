@@ -16,9 +16,9 @@ let s:runlimit		= 9
 " {{{ atplib#compiler#ViewOutput
 " a:1 == "RevSearch" 	if run from RevSearch() function and the output file doesn't
 " exsists call compiler and RevSearch().
-function! atplib#compiler#ViewOutput(bang,...)
+function! atplib#compiler#ViewOutput(bang,tex_file,xpdf_server,...)
 
-    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let tex_file	= atplib#FullPath(a:tex_file)
 
     let fwd_search	= ( a:bang == "!" ? 1 : 0 )
 
@@ -32,15 +32,15 @@ function! atplib#compiler#ViewOutput(bang,...)
     let local_options 	= join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), " ")
 
     " Follow the symbolic link
-    let link=resolve(atp_MainFile)
+    let link=resolve(tex_file)
     if link != ""
 	let outfile	= fnamemodify(link,":r") . ext
     else
-	let outfile	= fnamemodify(atp_MainFile,":r"). ext 
+	let outfile	= fnamemodify(tex_file,":r"). ext 
     endif
 
     if b:atp_Viewer == "xpdf"	
-	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer)
+	let viewer	= b:atp_Viewer . " -remote " . shellescape(a:xpdf_server)
     else
 	let viewer	= b:atp_Viewer . " "
     endif
@@ -69,15 +69,15 @@ function! atplib#compiler#ViewOutput(bang,...)
 	echomsg "[ATP:] output file do not exists. Calling " . b:atp_TexCompiler
 	if fwd_search
 	    if g:atp_Compiler == 'python'
-		call atplib#compiler#PythonCompiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
+		call atplib#compiler#PythonCompiler( 0, 2, 1, 'silent' , "AU" , tex_file, "")
 	    else
-		call atplib#compiler#Compiler( 0, 2, 1, 'silent' , "AU" , atp_MainFile, "")
+		call atplib#compiler#Compiler( 0, 2, 1, 'silent' , "AU" , tex_file, "")
 	    endif
 	else
 	    if g:atp_Compiler == 'python'
-		call atplib#compiler#PythonCompiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
+		call atplib#compiler#PythonCompiler( 0, 1, 1, 'silent' , "AU" , tex_file, "")
 	    else
-		call atplib#compiler#Compiler( 0, 1, 1, 'silent' , "AU" , atp_MainFile, "")
+		call atplib#compiler#Compiler( 0, 1, 1, 'silent' , "AU" , tex_file, "")
 	    endif
 	endif
     endif
@@ -94,30 +94,12 @@ function! atplib#compiler#ViewOutput(bang,...)
 	endwhile
 	exe "sleep ".g:atp_OpenAndSyncSleepTime
 	if i<=max
-	    call atplib#compiler#SyncTex("", 0)
+	    call atplib#compiler#SyncTex("", 0, a:tex_file, a:xpdf_server)
 	else
 	    echohl WarningMsg
 	    echomsg "[SyncTex:] viewer is not running"
 	    echohl None
 	endif
-    endif
-endfunction
-"}}}
-"{{{ atplib#compiler#LocalViewOutput
-function! atplib#compiler#LocalViewOutput(file)
-    if b:atp_Viewer == "xpdf"	
-	let viewer	= b:atp_Viewer . " -remote " . shellescape(b:atp_LocalXpdfServer)
-    else
-	let viewer	= b:atp_Viewer . " "
-    endif
-    let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
-    if filereadable(fnameescape(fnamemodify(a:file, ":t:r").ext))
-	let localview_cmd 	= viewer." ".shellescape(fnamemodify(a:file, ":t:r").ext) . " &"
-	call system(localview_cmd)
-    else
-	echohl WarningMsg
-	echomsg "[ATP:] file ".fnamemodify(a:file, ":t:r").ext." not readable."
-	echohl Normal
     endif
 endfunction
 "}}}
@@ -216,7 +198,7 @@ function! atplib#compiler#SyncShow( page_nr, y_coord)
     endif
 endfunction "}}}
 " {{{ atplib#compiler#SyncTex
-function! atplib#compiler#SyncTex(bang, mouse, main_file, XpdfServer, ...)
+function! atplib#compiler#SyncTex(bang, mouse, main_file, xpdf_server, ...)
     if g:atp_debugSyncTex
 	exe "redir! > ".g:atp_TempDir."/SyncTex.log"
     endif
@@ -228,7 +210,7 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, XpdfServer, ...)
     let [ line, col ] 	= [ line("."), col(".") ]
     let main_file	= atplib#FullPath(a:main_file)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf")
-    let output_file	= fnamemodify(main_file,":p:r") . ext
+    let output_file	= fnamemodify(main_file,":r") . ext
     if !filereadable(output_file) && output_check
 	" Here should be a test if viewer is running, this can be made with python.
 	" this is way viewer starts not well when using :SyncTex command while Viewer
@@ -253,10 +235,10 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, XpdfServer, ...)
     endif
 
     if IsRunning_check
-	if (!atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(outfile), a:XpdfServer) && output_check) 
+	if (!atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(outfile), a:xpdf_server) && output_check) 
 	    "Note: I should test here if Xpdf is not holding a file (it might be not
 	    "visible through cmdline arguments -> this happens if file is opened in
-	    "another server. We can use: xpdf -remote a:XpdfServer "run('echo %f')"
+	    "another server. We can use: xpdf -remote a:xpdf_server "run('echo %f')"
 	    echohl WarningMsg
 	    echomsg "[SyncTex:] please open the file first. (if file is opend add bang \"!\")"
 	    echohl None
@@ -266,10 +248,10 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, XpdfServer, ...)
 
     if b:atp_Viewer == "xpdf"
 	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col, a:main_file)
-	let sync_cmd_page = "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'gotoPage(".page_nr.")'"
-	let sync_cmd_y 	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'scrollDown(".y_coord.")'"
-        let sync_cmd_x 	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'scrollRight(".x_coord.")'"
-" 	let sync_cmd	= "xpdf -remote " . shellescape(a:XpdfServer) . " -exec 'gotoPage(".page_nr.")'"." -exec 'scrollDown(".y_coord.")'"." -exec 'scrollRight(".x_coord.")'"
+	let sync_cmd_page = "xpdf -remote " . shellescape(a:xpdf_server) . " -exec 'gotoPage(".page_nr.")'"
+	let sync_cmd_y 	= "xpdf -remote " . shellescape(a:xpdf_server) . " -exec 'scrollDown(".y_coord.")'"
+        let sync_cmd_x 	= "xpdf -remote " . shellescape(a:xpdf_server) . " -exec 'scrollRight(".x_coord.")'"
+" 	let sync_cmd	= "xpdf -remote " . shellescape(a:xpdf_server) . " -exec 'gotoPage(".page_nr.")'"." -exec 'scrollDown(".y_coord.")'"." -exec 'scrollRight(".x_coord.")'"
 	" There is a bug in xpdf. We need to sleep between sending commands:
 	let sleep    = ( g:atp_XpdfSleepTime ? 'sleep '.string(g:atp_XpdfSleepTime).'s;' : '' )
 	let sync_cmd = "(".sync_cmd_page.";".sleep.sync_cmd_y.")&"
@@ -817,43 +799,68 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     endif
 endfunction
 " }}}
-" {{{ atplib#compiler#LocalCompiler()
-function! atplib#compiler#LocalCompiler(mode)
+" {{{ atplib#compiler#LocalCompiler
+function! atplib#compiler#LocalCompiler(mode, ...)
+    let debug_mode = ( a:0 && a:1 != ""  ? a:1 : 'silent' )
+
     let subfiles = atplib#search#SearchPackage('subfiles')
-    let file = expand("%:p:t")
+    let file = expand("%:p")
     let tmpdir = b:atp_TempDir . matchstr(tempname(), '\/\w\+\/\d\+')
     let extensions = [ 'aux', 'bbl' ]
+    let main_file = atplib#FullPath(b:atp_MainFile)
     if a:mode == "n" && subfiles
 	" if subfiles package is used.
 	" compilation is done in the current directory.
 python << ENDPYTHON
-import vim, os.path, shutil
+import vim, os, os.path, shutil, re
 
-extensions = vim.eval("extensions")
 file = vim.eval("file")
 basename = os.path.splitext(file)[0]
-mainfile_base = os.path.splitext(vim.eval("b:atp_MainFile"))[0]
+mainfile_base = os.path.splitext(vim.eval("main_file"))[0]
+# read the local aux file (if present) find all new \newlabel{} commands
+# if they are present in the original aux file substitute them (this part is
+# not working) if not add them at the end. Note that after running pdflatex
+# the local aux file becomes agian short.
+local_aux_file = open(basename+".aux", "r")
+local_aux = local_aux_file.readlines()
+local_aux_file.close()
+main_aux_file  = open(mainfile_base+".aux", "r")
+main_aux = main_aux_file.readlines()
+main_aux_file.close()
+# There is no sens of comparing main_aux and local_aux!
+pattern = re.compile('^\\\\newlabel.*$', re.M)
+local_labels = re.findall(pattern, "".join(local_aux))
+print(local_labels)
+def get_labels(line):
+    return re.match('\\\\newlabel\s*{([^}]*)}', line).group(1)
+local_labels_names = map(get_labels, local_labels)
+local_labels_dict = dict(zip(local_labels_names, local_labels))
+values = {}
+for label in local_labels_names:
+    match = re.search('^\\\\newlabel\s*{'+re.escape(label)+'}.*', "\n".join(main_aux), re.M)
+    if not match:
+        main_aux.append(local_labels_dict[label]+"\n")
+#     elif match.group(0) != local_labels_dict[label]:
+#         print("A "+match.group(0))
+#         print("A "+local_labels_dict[label])
+#         print("\n".join(main_aux))
+#         main_aux.remove(match.group(0))
+#         main_aux.append(local_labels_dict[label])
+main_aux_file  = open(mainfile_base+".aux", "w")
+main_aux_file.write("".join(main_aux))
+main_aux_file.close()
+
+# copy the main aux file to local directory
+extensions = vim.eval("extensions")
 for ext in extensions:
     if os.path.exists(mainfile_base+"."+ext):
-	shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
+        print(mainfile_base+"."+ext+" TO "+basename+"."+ext)
+        shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
 ENDPYTHON
 	if g:atp_Compiler == 'python'
-	    call  atplib#compiler#PythonCompiler(0,0,1,'silent','COM',expand("%:p"),"",b:atp_LocalXpdfServer)
+	    call  atplib#compiler#PythonCompiler(0,0,1,debug_mode,'COM',expand("%:p"),"",b:atp_LocalXpdfServer)
 	else
-	    let cmd = b:atp_TexCompilerVariable . " " . b:atp_TexCompiler . " " . b:atp_TexOptions . " " . shellescape(expand("%:p"))
-
-	    " Reload xpdf if it is running:
-	    if b:atp_Viewer == "xpdf" && atplib#compiler#IsRunning(b:atp_Viewer, atplib#FullPath(fnamemodify(file, ":r").".pdf"), b:atp_LocalXpdfServer)
-		let cmd .=  " ; xpdf -remote ".shellescape(b:atp_LocalXpdfServer)." -reload" 
-	    endif
-
-	    update
-
-	    if has("win16") || has("win32") || has("win64")
-		call system(cmd)
-	    else
-		call system("( ".cmd. " ) &")
-	    endif
+	    call atplib#compiler#Compiler(0,0,1,debug_mode, 'COM', expand(":p"), "", b:atp_LocalXpdfServer)
 	endif
 "     else
 " " compilation is done in a temporary directory (why?)
@@ -884,8 +891,9 @@ endfunction
 " 		1 start viewer
 " 		2 start viewer and make reverse search
 "
-function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang)
-
+function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang, ...)
+	" a:1	= b:atp_XpdfServer (default value)
+	let XpdfServer = ( a:0 >= 1 ? a:1 : b:atp_XpdfServer )
 	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log"
 	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log"
 	endif
@@ -990,7 +998,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	if b:atp_Viewer =~ '^\s*xpdf\>' && reload_viewer
 	    if a:start
 		"if xpdf is not running and we want to run it.
-		let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . shellescape(outfile) . " ; "
+		let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(XpdfServer) . " " . shellescape(outfile) . " ; "
 	    else
 " TIME: this take 1/3 of time! 0.039
 		call atplib#compiler#xpdfpid()
@@ -1000,7 +1008,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 		    "if xpdf is running (then we want to reload it).
 		    "This is where I use 'ps' command to check if xpdf is
 		    "running.
-		    let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " -reload ; "
+		    let Reload_Viewer = b:atp_Viewer . " -remote " . shellescape(XpdfServer) . " -reload ; "
 		else
 		    "if xpdf is not running (but we do not want
 		    "to run it).
@@ -1033,7 +1041,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 "	only xpdf needs to be run before (we are going to reload it)
 	if a:start && b:atp_Viewer == "xpdf"
 	    let xpdf_options	= ( exists("g:atp_xpdfOptions")  ? join(g:atp_xpdfOptions, " ") : "" )." ".(exists("b:xpdfOptions") ? join(getbufvar(0, "atp_xpdfOptions"), " ") : " ")
-	    let start 	= b:atp_Viewer . " -remote " . shellescape(b:atp_XpdfServer) . " " . xpdf_options . " & "
+	    let start 	= b:atp_Viewer . " -remote " . shellescape(XpdfServer) . " " . xpdf_options . " & "
 	else
 	    let start = ""	
 	endif

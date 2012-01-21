@@ -265,6 +265,84 @@ vnoremap <silent> <Plug>LatexBox_SelectInlineMathInner :<C-U>call <SID>SelectInl
 vnoremap <silent> <Plug>LatexBox_SelectInlineMathOuter :<C-U>call <SID>SelectInlineMath('outer')<CR>
 " }}}
 
+" {{{ select bracket
+function! <SID>LatexBox_SelectBracket(inner, bracket, bracket_sizes)
+    " a:bracket_sizes a dictionary of matching bracket sizse { '\bigl' : '\bigr' }.
+
+    " This prevents from matching \(:\) and \[:\] (but not \{:\})
+    if a:bracket == '(' || a:bracket == '['
+	let pat = '\\\@<!'
+    else
+	let pat = ''
+    endif
+
+    let begin_pos = searchpairpos(pat.escape(a:bracket, '[]\'), '', pat.escape(g:atp_bracket_dict[a:bracket], '[]\'), 'bW')
+    if !begin_pos[0]
+	let begin_pos=searchpos(pat.escape(a:bracket, '[]\'), 'W', line('.'))
+    endif
+
+    if !begin_pos[0]
+	return
+    endif
+
+    let o_size = matchstr(getline(line("."))[0:col(".")-2], '\\\w*\ze\s*$')
+    let b_len = len(matchstr(getline(line("."))[0:col(".")-2], '\\\w*\s*$'))
+    let c_size = get(a:bracket_sizes, o_size, "")
+
+    " In the case of \{ 
+    if o_size == "\\"
+	let add = 1
+	let o_size = matchstr(getline(line("."))[0:col(".")-3], '\\\w*\ze\s*$')
+	let b_len = len(matchstr(getline(line("."))[0:col(".")-3], '\\\w*\s*$'))+1
+	let c_size = get(a:bracket_sizes, o_size, "")
+    else 
+	let add = 0
+    endif
+
+    if a:inner == 'inner'
+	call cursor(line("."), col(".")+1)
+    else
+	if c_size != ""
+	    let s_pos = [line("."), col(".")]
+	    call cursor(line("."), col(".")-b_len)
+	endif
+    endif
+    let begin_pos  = [ line("."), col(".") ]
+
+    if exists("s_pos")
+	call cursor(s_pos)
+    endif
+
+    let b_pos = [ line("."), col(".") ]
+
+    let end_pos = searchpairpos(pat.escape(a:bracket, '[]\'), '', pat.escape(g:atp_bracket_dict[a:bracket], '[]\'), 'nW')
+    call cursor(end_pos)
+    let len	= len(matchstr(getline(".")[0:col(".")-1], 
+		    \ escape(c_size, '\'). '\s*'.(add ? '\\': '').'\ze'.escape(g:atp_bracket_dict[a:bracket], '[]\')))
+
+    if a:inner == 'inner'
+	let end_pos[1] -= len+1
+    endif
+
+    call cursor(begin_pos)
+
+    if visualmode() ==# 'V'
+	    normal! V
+    else
+	    normal! v
+    endif
+
+    call cursor(end_pos)
+
+endfunction
+vnoremap <silent> <Plug>LatexBox_SelectBracketInner_1 :<C-U>call <SID>LatexBox_SelectBracket('inner', '(', g:atp_sizes_of_brackets)<CR>
+vnoremap <silent> <Plug>LatexBox_SelectBracketOuter_1 :<C-U>call <SID>LatexBox_SelectBracket('outer', '(', g:atp_sizes_of_brackets)<CR>
+vnoremap <silent> <Plug>LatexBox_SelectBracketInner_2 :<C-U>call <SID>LatexBox_SelectBracket('inner', '{', g:atp_sizes_of_brackets)<CR>
+vnoremap <silent> <Plug>LatexBox_SelectBracketOuter_2 :<C-U>call <SID>LatexBox_SelectBracket('outer', '{', g:atp_sizes_of_brackets)<CR>
+vnoremap <silent> <Plug>LatexBox_SelectBracketInner_3 :<C-U>call <SID>LatexBox_SelectBracket('inner', '[', g:atp_sizes_of_brackets)<CR>
+vnoremap <silent> <Plug>LatexBox_SelectBracketOuter_3 :<C-U>call <SID>LatexBox_SelectBracket('outer', '[', g:atp_sizes_of_brackets)<CR>
+" }}}
+
 " {{{ select syntax
 " syntax groups 'texDocZone' and 'texSectionZone' need to be synchronized
 " before ':syntax sync fromstart' which is quite slow. It is better to provide

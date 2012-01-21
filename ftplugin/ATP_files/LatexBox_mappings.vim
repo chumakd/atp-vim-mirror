@@ -6,7 +6,7 @@
 
 let s:loaded = ( !exists("s:loaded") ? 1 : s:loaded+1 )
 
-" begin/end pairs {{{
+" begin/end pairs [[[
 nmap <buffer> % <Plug>LatexBox_JumpToMatch
 nmap <buffer> g% <Plug>LatexBox_BackJumpToMatch
 xmap <buffer> % <Plug>LatexBox_JumpToMatch
@@ -21,3 +21,30 @@ vmap <buffer> im <Plug>LatexBox_SelectInlineMathInner
 vmap <buffer> am <Plug>LatexBox_SelectInlineMathOuter
 omap <buffer> im :normal vim<CR>
 omap <buffer> am :normal vam<CR>
+
+vmap <buffer> i( <Plug>LatexBox_SelectBracketInner_1
+omap <buffer> i( :normal vi(<CR>
+vmap <buffer> a( <Plug>LatexBox_SelectBracketOuter_1
+omap <buffer> a( :normal va(<CR>
+vmap <buffer> i) <Plug>LatexBox_SelectBracketInner_1
+omap <buffer> i) :normal vi)<CR>
+vmap <buffer> a) <Plug>LatexBox_SelectBracketOuter_1
+omap <buffer> a) :normal va)<CR>
+
+vmap <buffer> i{ <Plug>LatexBox_SelectBracketInner_2
+omap <buffer> i{ :normal vi{<CR>
+vmap <buffer> a{ <Plug>LatexBox_SelectBracketOuter_2
+omap <buffer> a{ :normal va{<CR>
+vmap <buffer> i} <Plug>LatexBox_SelectBracketInner_2
+omap <buffer> i} :normal vi}<CR>
+vmap <buffer> a} <Plug>LatexBox_SelectBracketOuter_2
+omap <buffer> a} :normal va}<CR>
+
+vmap <buffer> i[ <Plug>LatexBox_SelectBracketInner_3
+omap <buffer> i[ :normal vi[<CR>
+vmap <buffer> a[ <Plug>LatexBox_SelectBracketOuter_3
+omap <buffer> a[ :normal va[<CR>
+vmap <buffer> i] <Plug>LatexBox_SelectBracketInner_3
+omap <buffer> i] :normal vi]<CR>
+vmap <buffer> a] <Plug>LatexBox_SelectBracketOuter_3
+omap <buffer> a] :normal va]<CR>
