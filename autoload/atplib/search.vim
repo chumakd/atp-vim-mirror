@@ -775,7 +775,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	else
 	    let stop_line	= pat_pos[0]
 	endif
-	keepjumps let input_pos	= searchpos('\m^[^%]*\\input\s*{', flag_i . 'n', stop_line )
+	keepjumps let input_pos	= searchpos('^[^%]*\\\(input\|include\|subfile\)\s*{', flag_i . 'n', stop_line )
 
 		if g:atp_debugRS > 1
 		    silent echo "TIME2:" . reltimestr(reltime(time0))
@@ -958,7 +958,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		    " variables are not needed. This seems to be the best way.
 		    " 	There is no need to use this feature for
 		    " 	\input <file_name> 	files.
-		    if pattern =~ '\\\\input' || pattern =~ '\\\\include'
+		    if pattern =~ '\\\\input' || pattern =~ '\\\\include' || pattern =~ '\\\\subfile'
 " 			if getline(input_pos[0]) =~ pattern || getline(".") =~ pattern
 			let goto_s	= "DOWN_ACCEPT"
 		    endif
@@ -1021,10 +1021,14 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	" when going UP
 	elseif goto_s == 'UP'
-	    call setpos(".", [ 0, input_pos[0], input_pos[0], 0])
+	    call setpos(".", [ 0, input_pos[0], input_pos[1], 0])
 	    " Open file and Search in it"
 	    " This should be done by kpsewhich:
-	    let file = matchstr(getline(input_pos[0]), '\\input\s*{\zs[^}]*\ze}')
+	    let file = matchstr(getline(input_pos[0]), '\\\(input\|subfile\|include\)\s*{\zs[^}]*\ze}')
+	    if g:atp_debugRS
+		silent echo " ------ file=".file." ".getline(input_pos[0])
+		silent echo " ------ input_pos=".string(input_pos)
+	    endif
 	    let file = atplib#append_ext(file, '.tex')
 
 	    let keepalt = ( @# == '' ? '' : 'keepalt' )
@@ -1053,6 +1057,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    if empty(swapfile) || bufexists(file)
 		if g:atp_debugRS >= 2
 		silent echo "Alternate (before open) " . bufname("#")
+		silent echo " XXXXXXXX file=".file
 		endif
 		silent! execute open . fnameescape(file)
 		if g:atp_mapNn
@@ -1196,7 +1201,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 " 	    call cursor(g:ATP_branch_line, 1)
 	    if flags_supplied !~# 'b'
-		keepjumps call search('\m\\input\s*{[^}]*}', 'e', line(".")) 
+		keepjumps call search('\m\\\(input\|\include\|subfile\)\s*{[^}]*}', 'e', line(".")) 
 	    endif
 
 		if g:atp_debugRS
@@ -1345,7 +1350,7 @@ endtry
 function! atplib#search#ATP_ToggleNn(silent,...) " {{{
 " With bang it is only used in RecursiveSearch function (where it is used
 " twice in a row).
-    let on	= ( a:0 >=1 ? ( a:1 == 'on' || string(a:1) == '1' ? 1 : 0 ) : !g:atp_mapNn )
+    let on	= ( a:0 ? ( a:1 == 'on' || string(a:1) == '1' ? 1 : 0 ) : !g:atp_mapNn )
     if !on
 	silent! nunmap <buffer> n
 	silent! nunmap <buffer> N
