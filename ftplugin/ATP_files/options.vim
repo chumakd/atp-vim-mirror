@@ -327,7 +327,6 @@ let s:optionsDict= {
 		\ "atp_MakeidxReturnCode"	: 0,
 		\ "atp_BibtexOutput"		: "",
 		\ "atp_MakeidxOutput"		: "",
-		\ "atp_ProgressBar"		: {},
 		\ "atp_DocumentClass"		: atplib#search#DocumentClass(b:atp_MainFile)}
 
 " the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
@@ -389,6 +388,15 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+if !exists("g:atp_ProgressBarValues")
+    let g:atp_ProgressBarValues = {}
+endif
+if get(g:atp_ProgressBarValues,bufnr("%"),{}) == {}
+    call extend(g:atp_ProgressBarValues, { bufnr("%") : {} })
+endif
+if !exists("g:atp_TempDir")
+    call atplib#TempDir()
+endif
 if !exists("g:atp_LogStatusLine")
     let g:atp_LogStatusLine = 0
 endif
@@ -1227,7 +1235,7 @@ let g:atp_SavedProjectLocalVariables = [
 		\ "b:atp_updatetime_insert", 	"b:atp_updatetime_normal", 
 		\ "b:atp_ErrorFormat", 	"b:atp_LastLatexPID",	"b:atp_LatexPIDs",
 		\ "b:atp_LatexPIDs",	"b:atp_BibtexPIDs",	"b:atp_MakeindexPIDs",
-		\ "b:atp_ProgressBar"]
+		\ ]
 
 " }}}1
 
@@ -2493,15 +2501,15 @@ if !s:did_options
 function! <SID>Rmdir(dir)
 if executable("rmdir")
     call system("rmdir ".shellescape(a:dir))
-elseif has("python") && executable(g:atp_Python)
+elseif has("python")
 python << EOF
 import shutil, errno
 dir=vim.eval('a:dir')
 try:
-	shutil.rmtree(dir)
+    shutil.rmtree(dir)
 except OSError, e:
-	if errno.errorcode[e.errno] == 'ENOENT':
-		pass
+    if errno.errorcode[e.errno] == 'ENOENT':
+        pass
 EOF
 else
     echohl ErrorMsg
@@ -2577,13 +2585,13 @@ endfunction
     if (exists("g:atp_StatusLine") && g:atp_StatusLine == '1') || !exists("g:atp_StatusLine")
 	" Note: ctoc doesn't work in include files (and it is slow there).
 	if exists("b:TypeDict")
-	    let ctoc = !( len(filter(copy(b:TypeDict), 'v:val == "input"')) )
+	    let g:atp_ctoc = !( len(filter(copy(b:TypeDict), 'v:val == "input"')) )
 	else
-	    let ctoc = atplib#FullPath(b:atp_MainFile) != expand("%:p")
+	    let g:atp_ctoc = atplib#FullPath(b:atp_MainFile) != expand("%:p")
 	endif
 	augroup ATP_Status
 	    au!
-	    au BufEnter,BufWinEnter,TabEnter *.tex 	call ATPStatus(0,ctoc)
+	    au BufEnter,BufWinEnter,TabEnter *.tex 	call ATPStatus(0,g:atp_ctoc)
 	augroup END
     endif
 
@@ -3017,26 +3025,25 @@ endif
 " }}}
 
 " Remove g:atp_TempDir tree where log files are stored.
-" {{{
-function! <SID>RmTempDir()
-if has("python") && executable(g:atp_Python)
+function! <SID>RmTempDir() "{{{
+if has("python")
 python << END
 import shutil
 temp=vim.eval("g:atp_TempDir")
-print(temp)
 shutil.rmtree(temp)
 END
-elseif has("unix") && has("macunix")
+elseif has("unix") || has("macunix")
     call system("rm -rf ".shellescape(g:atp_TempDir))
 else
     echohl ErrorMsg
-    echomsg "[ATP:] Leaving temporary directory ".g:atp_TempDir
+    echoerr "[ATP:] leaving temporary directory ".g:atp_TempDir
     echohl None
+    sleep 1
+endif
+if isdirectory(g:atp_TempDir)
+    echoerr "[ATP]: g:atp_TempDir=".g:atp_TempDir." is not deleted."
 endif
 endfunction "}}}
-if g:atp_reload_functions == 0
-    call atplib#TempDir()
-endif
 
 " Set vim path option: 
 exe "setlocal path+=".substitute(g:texmf."/tex,".join(filter(split(globpath(b:atp_ProjectDir, '**'), "\n"), "isdirectory(expand(v:val))"), ","), ' ', '\\\\\\\ ', 'g')

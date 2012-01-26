@@ -430,9 +430,9 @@ function! atplib#various#TexAlign(bang)
 	let AlignCtr = 'l+'
 	let AlignSep = '&'
 	let env = "tabular"
-    elseif searchpair('\\begin\s*{\s*table\s*\}', '', '\\end\s*{\s*table\s*}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
-	let bpat = '\\begin\s*{\s*table\*\=\s*}' 
-	let epat = '\\end\s*{\s*table\*\=\s*}' 
+    elseif searchpair('\\begin\s*{\s*\%(long\)\=table\s*\}', '', '\\end\s*{\s*\%(long\)\=table\s*}', 'bnW', '', max([1, (line(".")-g:atp_completion_limits[2])]))
+	let bpat = '\\begin\s*{\s*\%(long\)\=table\*\=\s*}' 
+	let epat = '\\end\s*{\s*\%(long\)\=table\*\=\s*}' 
 	let AlignCtr = 'l+'
 	let AlignSep = '&'
 	let env = "table"

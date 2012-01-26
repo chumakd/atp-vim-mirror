@@ -176,7 +176,11 @@ NEWS							*atp-news*
  |atp-vi(|, ... , |atp-va}| maps.
 
  Compilation of parts of a project (using subfiles package).
- |atp-:TEXL|, |atp-:ViewL|, |atp-:SyncTexL|, see also |b:atp_autex|.
+ |atp-:TEXL|, |atp-:ViewL|, |atp-:SyncTexL|, see also |b:atp_autex| (when set
+ to 2 automatic compilations of subfiles is turned on).
+
+ |atp-:S| command has additional flag 'x', when used the
+ |v:searchforward| value will not be changed.
 >
  ======================
  Changes in version 10.6.4
@@ -601,7 +605,6 @@ Tex compiler is run with one options:
 	-output-directory 
 which points to a unique temporary file in a temporary directory |b:atp_TempDir| 
 
-							*atp-:ToggleAuTeX*
 							*b:atp_autex*
 You can switch off/on the function s:auTeX by pressing <S-F5> or by letting
 the local to buffer variable |b:atp_autex|=1 (on) |b:atp_autex|=0 (off). It is
@@ -615,10 +618,16 @@ some files that are not supposed to be processed, for example:
 >
 	au BufRead texmf/*.tex let b:atp_autex=0
 <
-On start up b:atp_autex is set to 1 if the path of opened file is not under any
+On start up |b:atp_autex| is set to 1 if the path of opened file is not under any
 tex directory ('kpsewhich -show-path tex', except the current dir). For example,
 files located under your local texmf tree will have b:atp_autex=0. Also for
 files with other extension than the standard "tex" it will be set to 0.
+
+							*atp-:ToggleAuTeX*
+:ToggleAuTeX {arg}
+	The {arg} is one of off/on/local. It sets b:atp_autex to 0/1/2
+	respecively. If {arg} is omitted it changes: local->off (2->0),
+	on->off (1->0) and off->on (0->1).
 
 The second important variable |b:atp_TexCompiler| configures if you use TeX,
 PdfTeX, LaTeX, PdfLaTeX and it should point to the program name so please do
@@ -781,7 +790,7 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	in Vim).
 
 	If there are many background processes the number which is shown
-	belongs to the oldest process. (|b:atp_ProgressBar| is a dictionary
+	belongs to the oldest process. (|g:atp_ProgressBarValues| is a dictionary
 	{ 'pid' : 'pagenr' } - status line shows max of pagenr's).
 
 	Note: the time between you start to compile and when [1] appears in
@@ -792,13 +801,19 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	Progress Bar doesn't like when you switch windows while the
 	compilation takes time. You might need to use |atp-:Kill| command. 
 >
- b:atp_ProgressBar
-<	It is equal to empty dictionary {} if compilation is not going on, and
-	while compilation it contains the PID number and page number where
-	this compilation is.
-	Note: If you compile and the progress bar starts at some page > 1, and
-	you can use 'let |b:atp_ProgressBar|={}'. You should also check if there
-	is any LaTeX process in the system.
+ g:atp_ProgressBarValues
+<	This is a dictionary of dictionaries:
+	    { 'bufnr' : {dict}, ... }
+	Every buffer gets its entry (by |bufnr()|). The {dict} is a dictionary
+	which is an empty dictionary {} if compilation is not going on, and
+	while compilation it contains the dictionary of PID number and page
+	number where the compilator actually is doining its job.
+
+	Note: If you compile and the progress bar starts at page > 1, you can
+	use 'let |g:atp_ProgressBarValues|={}' to reset the progress bar. You
+	should check if there is any LaTeX process running in the system.
+	You can also use the |atp-:Kill| command which will reset the
+	progress bar and kill the corresponding processes.
 
 						    	*g:atp_DebugModeQuickFixHeight*
 >
@@ -927,10 +942,13 @@ map [runs]<LocalLeader>l, map [runs]<LocalLeader>d
 	\d is mapped to :TEX debug and \l to :TEX (thus it uses your default
 	debug mode).
 
-:{runs}TEXL [debug_mode]					*atp-:TEXL*
+:TEXL [debug_mode]						*atp-:TEXL*
 map <LocalLeader>k
 	This command compiles the current subfile (L - comes from "local") of
 	the project (you have to use subfiles package). 
+
+	This commands also sets 'errorfile' option (using |atp-:TEX| will set
+	it back to the main log file).
 	
 	Note that ATP is coping the project aux file (if present) and using it
 	for compilation of subfiles. In this way you get all the labels and
@@ -1016,7 +1034,7 @@ map <LocalLeader>b
     unlet them and restart vim when you change your TeX distribution, so that
     ATP will rebuild them.
 
-							*atplib-:Kill*
+							*atp-:Kill*
 :Kill							
 	Kill python scripts running (b:atp_PythonPIDs) and all pids in
 	|b:atp_LatexPIDs|. This only works with |g:atp_Compiler|="python".
@@ -2076,7 +2094,7 @@ vmap <F4>
 	compilation: see |atp-status-line-notification|, |g:atp_ProgressBar|.
 	This function is called at startup unless the variable
 	'|g:atp_statusline|=0' is set. The status is set by the autocommand: >
-		au BufWinEnter *.tex :call ATPStatus()
+	    au BufWinEnter,BufWinEnter,TabEnter *.tex :call ATPStatus()
 <	In this way every opened window with a '*.tex' file will get the correct
 	status line.
 
@@ -3516,11 +3534,25 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 							*g:atp_XpdfServer* 
 >
  let b:atp_XpdfServer=fnamemodify(expand("%"),":t")		
-<	Used by function: ViewOutput() (map <LocalLeader>v, map <F3>, imap <F3>)
+<	This variables stores the name of Xpdf server (if you use xpdf to view
+	pdf files).
 
-	It is equal to the name of the source file. You do not need escape
-	spaces in the name (shellescape() function is used before it is send
-	to the shell).
+	Used by the command |atp-:View| (map <LocalLeader>v, map <F3>, 
+	imap <F3>) and also |atp-:SyncTex| (map <LocalLeader>f).
+
+	You do not need escape spaces in the name (shellescape() function is
+	used before it is send to the shell).
+							*g:atp_LocalXpdfServer* 
+>
+ let b:atp_LocalXpdfServer=fnamemodify(expand("%"),":t")		
+<	This variables stores the name of Xpdf server which will host compiled 
+	subfiles.	
+	
+	Used by the command |atp-:ViewL| (map <LocalLeader>V, map <S-F3>, 
+	imap <S-F3>) and also |atp-:SyncTexL| (map <LocalLeader>F).
+
+	You do not need escape spaces in the name (shellescape() function is
+	used before it is send to the shell).
 							*b:atp_OpenViewer*	
 >
  let b:atp_OpenViewer	= 1					
@@ -3690,6 +3722,16 @@ WRITING PROJECTS					*atp-ProjectFiles*
 	is search function: |atp-:S| which works better than the Vim |:ijump|
 	command, which cannot go above the current file in the tree of input
 	files /but |:ijump| is much faster/. 
+
+	If you write a project you might want to use subfiles package. Then
+	you can compile with |atp-:TEXL|, view with |atp-:ViewL| and forward
+	search with |atp-:SyncTexL|. Furthermore, you can still use completion
+	of labels by numbers if you add to the preambule of the subfile the
+	following command (requires ifthen package): >
+	    \ifthenelse{\value{chapter}=0}{\setcounter{chapter}{CHAPTER_NR}}{}
+<	This command will manually set the chapter number to CHAPTER_NR.
+	However, when you compile the whole project this command will not
+	affect the project.
 
 *b:atp_ProjectDir*
 	Stores the project directory, by default where |b:atp_MainFile| is
@@ -3941,8 +3983,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	The {pattern} is any Vim pattern as described in |pattern| (it was only
 	tested with 'magic' set on).
 			
-	The supported [flags] are 'bcewW'. Their meaning is the same as flags
-	for |search()| function. 
+	The supported [flags] are 'bcewWx'. Their meaning is the same as flags
+	for |search()| function, except the additional flag 'x'. When used the
+	|v:searchforward| value will not be changed.
 
 	You can enclose the pattern with any non-ID character (see
 	|'isident'|) instead of /, as far as it does not appear in the

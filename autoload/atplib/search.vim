@@ -315,7 +315,7 @@ function! atplib#search#LocalCommands_py(write, ...)
 	 endif
      endfor
 python << END
-import re, vim
+import re, vim, os.path
 
 pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>newcommand)|\\\\(?P<env>newenvironment)|\\\\(?P<nt>newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
 
@@ -630,9 +630,8 @@ endfunction
 			" if 2 show time
 " log file : /tmp/ATP_rs_debug
 " {{{ atplib#search#RecursiveSearch function
-let g:atp_swapexists = 0
 try
-function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, cur_branch, call_nr, wrap_nr, winsaveview, bufnr, strftime, vim_options, cwd, pattern, ... )
+function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, cur_branch, call_nr, wrap_nr, winsaveview, bufnr, strftime, vim_options, cwd, pattern, subfiles, ... )
 
     let main_file	= g:atp_RelativePath ? atplib#RelativePath(a:main_file, b:atp_ProjectDir) : a:main_file
 	
@@ -642,6 +641,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
     " foldenable	(unset to prevent opening the folds :h winsaveview)
     " comeback to the starting buffer
     if a:call_nr == 1 && a:wrap_nr == 1
+
+	" Erease message 'search hit TOP, continuing at BOTTOM':
+	echo ""
 
 	if a:vim_options	== { 'no_options' : 'no_options' }
 	    let vim_options 	=  { 'hidden'	: &l:hidden, 
@@ -675,6 +677,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	let vim_options		= a:vim_options
 	let cwd			= a:cwd
     endif
+
+    let subfiles = ( a:subfiles == "" ? atplib#search#SearchPackage('subfiles') : a:subfiles )
 
 	    " Redirect debuggin messages:
 	    if g:atp_debugRS
@@ -775,7 +779,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	else
 	    let stop_line	= pat_pos[0]
 	endif
-	keepjumps let input_pos	= searchpos('^[^%]*\\\(input\|include\|subfile\)\s*{', flag_i . 'n', stop_line )
+	if subfiles
+	    keepjumps let input_pos	= searchpos('^[^%]*\\\(input\|include\|subfile\)\s*{', flag_i . 'n', stop_line )
+	else
+	    keepjumps let input_pos	= searchpos('^[^%]*\\\(input\|include\)\s*{', flag_i . 'n', stop_line )
+	endif
 
 		if g:atp_debugRS > 1
 		    silent echo "TIME2:" . reltimestr(reltime(time0))
@@ -853,7 +861,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 				redir END
 				endif
 
-			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
+			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, new_flags) 
 
 			    return
 			else
@@ -935,7 +943,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 				redir END
 				endif
 
-			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, new_flags) 
+			    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, a:cur_branch, 1, a:wrap_nr+1, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, new_flags) 
 
 				if g:atp_debugRS > 1
 				    silent echo "TIME_END:" . reltimestr(reltime(time0))
@@ -1024,14 +1032,18 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	    call setpos(".", [ 0, input_pos[0], input_pos[1], 0])
 	    " Open file and Search in it"
 	    " This should be done by kpsewhich:
-	    let file = matchstr(getline(input_pos[0]), '\\\(input\|subfile\|include\)\s*{\zs[^}]*\ze}')
+	    if subfiles
+		let file = matchstr(getline(input_pos[0]), '\\\(input\|subfile\|include\)\s*{\zs[^}]*\ze}')
+	    else
+		let file = matchstr(getline(input_pos[0]), '\\\(input\|include\)\s*{\zs[^}]*\ze}')
+	    endif
 	    if g:atp_debugRS
 		silent echo " ------ file=".file." ".getline(input_pos[0])
 		silent echo " ------ input_pos=".string(input_pos)
 	    endif
 	    let file = atplib#append_ext(file, '.tex')
 
-	    let keepalt = ( @# == '' ? '' : 'keepalt' )
+	    let keepalt = ( @# == '' || expand("%:p") == a:start_file ? '' : 'keepalt' )
 	    let open =  flags_supplied =~ 'b' ? keepalt . ' edit + ' : keepalt.' edit +1 '
 	    let swapfile = globpath(fnamemodify(file, ":h"), ( has("unix") ? "." : "" ) . fnamemodify(file, ":t") . ".swp")
 
@@ -1106,9 +1118,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	    let flag	= flags_supplied =~ 'W' ? flags_supplied : flags_supplied . 'W'
 	    if @# == ''
-		keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
+		keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, flags_supplied, down_accept)
 	    else
-		keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied, down_accept)
+		keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, flags_supplied, down_accept)
 	    endif
 
 	    if g:atp_debugRS
@@ -1146,7 +1158,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent! echomsg "Going to file : " . g:ATP_branch . " ( g:ATP_branch ) "
 
 	    	" restore the window and buffer!
-		let keepalt = ( @# == '' ? '' : 'keepalt' )
+		let keepalt = ( @# == '' || expand("%:p") == a:start_file ? '' : 'keepalt' )
 		silent execute keepalt. " keepjumps edit #" . a:bufnr
 		if g:atp_mapNn
 		    call atplib#search#ATP_ToggleNn(1,"on")
@@ -1163,7 +1175,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	    let next_branch = atplib#FullPath(g:ATP_branch)
 	    let swapfile = globpath(fnamemodify(next_branch, ":h"), ( has("unix") ? "." : "" ) . fnamemodify(next_branch, ":t") . ".swp")
-	    let keepalt = ( @# == '' ? '' : 'keepalt' )
+	    let keepalt = ( @# == '' || expand("%:p") == a:start_file ? '' : 'keepalt' )
 	    if a:call_nr == 1 && a:wrap_nr == 1 
 		let open =  'silent '.keepalt.' edit +'.g:ATP_branch_line." ".fnameescape(next_branch)
 	    else
@@ -1201,7 +1213,11 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 " 	    call cursor(g:ATP_branch_line, 1)
 	    if flags_supplied !~# 'b'
-		keepjumps call search('\m\\\(input\|\include\|subfile\)\s*{[^}]*}', 'e', line(".")) 
+		if subfiles
+		    keepjumps call search('\m\\\(input\|\include\|subfile\)\s*{[^}]*}', 'e', line(".")) 
+		else
+		    keepjumps call search('\m\\\(input\|\include\)\s*{[^}]*}', 'e', line(".")) 
+		endif
 	    endif
 
 		if g:atp_debugRS
@@ -1223,9 +1239,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 	    let flag	= flags_supplied =~ 'W' ? flags_supplied : flags_supplied . 'W'
 	    if goto_s == 'DOWN'
 		if @# == ''
-		    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
+		    keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, flags_supplied)
 		else
-		    keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, flags_supplied)
+		    keepalt keepjumps call atplib#search#RecursiveSearch(main_file, a:start_file, "", tree_of_files, expand("%:p"), a:call_nr+1, a:wrap_nr, a:winsaveview, a:bufnr, a:strftime, vim_options, cwd, pattern, subfiles, flags_supplied)
 		endif
 	    endif
 
@@ -1241,7 +1257,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 " 	    restore the window and buffer!
 " 		it is better to remember bufnumber
-	    let keepalt = ( @# == '' ? '' : 'keepalt' )
+	    let keepalt = ( @# == '' || expand("%:p") == a:start_file ? '' : 'keepalt' )
 	    silent execute "keepjumps ".keepalt." edit #" . a:bufnr
 	    if g:atp_mapNn
 		call atplib#search#ATP_ToggleNn(1,"on")
@@ -1287,7 +1303,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 	    filetype detect
 
 	    " restore the window and buffer!
-	    let keepalt = ( @# == '' ? '' : 'keepalt' )
+	    let keepalt = ( @# == '' || expand("%:p") == a:start_file ? '' : 'keepalt' )
 	    silent execute "keepjumps ".keepalt." edit #" . a:bufnr
 	    if g:atp_mapNn
 		call atplib#search#ATP_ToggleNn(1,"on")
@@ -1308,6 +1324,7 @@ endtry
 " This functionn returns arguments from <q-args> - a list [ pattern, flag ]
 " It allows to pass arguments to atplib#search#Search in a similar way to :vimgrep, :ijump, ... 
 function! atplib#search#GetSearchArgs(Arg,flags)
+    let g:Arg = a:Arg
     if a:Arg =~ '^\/'
 	let pattern 	= matchstr(a:Arg, '^\/\zs.*\ze\/')
 	let flag	= matchstr(a:Arg, '\/.*\/\s*\zs['.a:flags.']*\ze\s*$')
@@ -1326,8 +1343,7 @@ try
 function! atplib#search#Search(Bang, Arg)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-    let [ pattern, flag ] = atplib#search#GetSearchArgs(a:Arg, 'bceswW')
-    let g:pattern = pattern
+    let [ pattern, flag ] = atplib#search#GetSearchArgs(a:Arg, 'bceswWx')
 
     if pattern == ""
 	echohl ErrorMsg
@@ -1336,10 +1352,12 @@ function! atplib#search#Search(Bang, Arg)
 	return
     endif
 
+    let subfiles = atplib#search#SearchPackage('subfiles')
+
     if a:Bang == "!" || !exists("b:TreeOfFiles")
-	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), 'make_tree', '', expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
+	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), 'make_tree', '', expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, subfiles, flag)
     else
-	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), '', deepcopy(b:TreeOfFiles),  expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, flag)
+	call atplib#search#RecursiveSearch(atp_MainFile, expand("%:p"), '', deepcopy(b:TreeOfFiles),  expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', pattern, subfiles, flag)
     endif
 
 endfunction
@@ -1823,7 +1841,7 @@ function! atplib#search#TreeOfFiles_vim(main_file,...)
 
     " Adjust g:atp_inputfile_pattern if it is not set right 
     if run_nr == 1 
-	let pattern = '^[^%]*\\\(input\s*{\=\|include\s*{'
+	let pattern = '^[^%]*\\\%(input\s*{\=\|include\s*{'
 	if '\subfile{' !~ g:atp_inputfile_pattern && atplib#search#SearchPackage('subfiles')
 	    let pattern .= '\|subfile\s*{'
 	endif

@@ -48,10 +48,11 @@ END
 endfunction "}}}
 " Write:
 function! atplib#write(command,...) "{{{
+    let time = reltime()
+
     let backup		= &backup
     let writebackup	= &writebackup
     let project		= b:atp_ProjectScript
-
 
     " Disable WriteProjectScript
     if a:command =~# '^\(AU\|nobackup\)$'
@@ -63,11 +64,17 @@ function! atplib#write(command,...) "{{{
     endif
     let b:atp_ProjectScript = 0
 
+    let main_file = atplib#FullPath(b:atp_MainFile)
+    let silent = ( a:0 ? a:1 : "" )
+
+    " This works for single files:
     if a:0 > 0 && a:1 == "silent"
 	silent! update
     else
 	update
     endif
+    " This works for projects, but it is too slow:
+"     bufdo call atplib#update(main_file, silent)
 
     if a:command =~# '^\(AU\|nobackup\)$'
 	let &backup		= backup
@@ -75,6 +82,21 @@ function! atplib#write(command,...) "{{{
 "         let &eventignore	= eventignore
     endif
     let b:atp_ProjectScript = project
+    let g:time_update = reltimestr(reltime(time))
+endfunction "}}}
+function! atplib#update(main_file, ...) "{{{
+    if !(exists("b:atp_MainFile") && a:main_file == atplib#FullPath(b:atp_MainFile))
+" 	echomsg "NO UPDATE: ".expand("%:p")
+	return
+    endif
+"     echomsg "UPDATE: ".expand("%:p")
+
+    if a:0 > 0 && a:1 == "silent"
+	silent! update
+    else
+	update
+    endif
+
 endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1
@@ -91,13 +113,12 @@ function! atplib#Log(file, string, ...) "{{{1
 endfunction "}}}1
 
 "Make g:atp_TempDir, where log files are stored.
-"{{{1
-function! atplib#TempDir() 
+function! atplib#TempDir() "{{{1
     " Return temporary directory, unique for each user.
 if has("python")
-function! ATP_SetTempDir(tmp)
-    let g:atp_TempDir=a:tmp
-endfunction
+    function! ATP_SetTempDir(tmp)
+	let g:atp_TempDir=a:tmp
+    endfunction
 python << END
 import vim, tempfile, os
 USER=os.getenv("USER")
@@ -211,8 +232,7 @@ function! atplib#PrintTable(list, spaces)
 endfunction
 "}}}
 
-" QFLength "{{{
-function! atplib#qflength() 
+function! atplib#qflength() "{{{
     let lines = 1
     " i.e. open with one more line than needed.
     for qf in getqflist()
@@ -222,9 +242,9 @@ function! atplib#qflength()
     return lines
 endfunction "}}}
 
-function! atplib#Let(varname, varvalue)
+function! atplib#Let(varname, varvalue) "{{{
     exe "let ".substitute(string(a:varname), "'", "", "g")."=".substitute(string(a:varvalue), "''\\@!", "", "g")
-endfunction
+endfunction "}}}
 
 " IMap Functions:
 " {{{

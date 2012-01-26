@@ -352,7 +352,6 @@ endfunction "}}}
 "{{{ atplib#callback#LatexPID
 "Store LatexPIDs in a variable
 function! atplib#callback#LatexPID(pid)
-    let g:bufnr = bufnr("%")
     call add(b:atp_LatexPIDs, a:pid)
     let b:atp_LastLatexPID=a:pid
 endfunction "}}}
@@ -360,7 +359,6 @@ endfunction "}}}
 "Store BibtexPIDs in a variable
 function! atplib#callback#BibtexPID(pid)
     call add(b:atp_BibtexPIDs, a:pid)
-"     call atplib#callback#PIDsRunning("b:atp_BibtexPIDs")
 endfunction "}}}
 "{{{ atplib#callback#MakeindexPID
 "Store MakeindexPIDs in a variable
@@ -372,7 +370,6 @@ endfunction "}}}
 "Store PythonPIDs in a variable
 function! atplib#callback#PythonPID(pid)
     call add(b:atp_PythonPIDs, a:pid)
-"     call atplib#callback#PIDsRunning("b:atp_PythonPIDs")
 endfunction "}}}
 "{{{ atplib#callback#MakeindexPID
 "Store MakeindexPIDs in a variable
@@ -407,16 +404,20 @@ EOL
 endfunction "}}}
 "{{{ atplib#callback#ProgressBar
 function! atplib#callback#ProgressBar(value,pid,bufnr)
-    if a:value != 'end'
-	let progress_bar = getbufvar(a:bufnr, "atp_ProgressBar")
-	let progress_bar[a:pid]=a:value
-	call setbufvar(a:bufnr, "atp_ProgressBar", progress_bar)
-    else
-	let progress_bar = copy(getbufvar(a:bufnr, "atp_ProgressBar"))
-	call remove(progress_bar, a:pid)
-	call setbufvar(a:bufnr, "atp_ProgressBar", progress_bar)
+    if !exists("g:atp_ProgressBarValues")
+	let g:atp_ProgressBarValues = { a:bufnr : {} }
     endif
-    redrawstatus
+    if !has_key(g:atp_ProgressBarValues, a:bufnr)
+	call extend(g:atp_ProgressBarValues, { a:bufnr, {} })
+    endif
+    if a:value != 'end'
+	let g:atp_ProgressBarValues[a:bufnr][a:pid] = a:value
+    else
+	call remove(g:atp_ProgressBarValues[a:bufnr], a:pid)
+    endif
+    if bufwinnr(a:bufnr) != -1
+	redrawstatus
+    endif
 endfunction "}}}
 "{{{ atplib#callback#redrawstatus
 function! atplib#callback#redrawstatus()

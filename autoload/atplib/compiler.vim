@@ -539,7 +539,7 @@ unlet s:return_is_running
 return l:return
 endfunction
 " }}}
-"{{{ atplib#compiler#KillAll
+"{{{ atplib#compiler#Kill
 " This function kills all running latex processes.
 " a slightly better approach would be to kill compile.py scripts
 " the argument is a list of pids
@@ -559,9 +559,10 @@ function! atplib#compiler#Kill(bang)
     if len(b:atp_PythonPIDs)
 	call atplib#KillPIDs(b:atp_PythonPIDs)
     endif
-    let b:atp_ProgressBar={}
+    if has_key(g:atp_ProgressBarValues, bufnr("%"))
+	let g:atp_ProgressBarValues[bufnr("%")]={}
+    endif
 endfunction
-
 "}}}
 
 " THE MAIN COMPILER FUNCTIONs:
@@ -821,33 +822,37 @@ mainfile_base = os.path.splitext(vim.eval("main_file"))[0]
 # if they are present in the original aux file substitute them (this part is
 # not working) if not add them at the end. Note that after running pdflatex
 # the local aux file becomes agian short.
-local_aux_file = open(basename+".aux", "r")
-local_aux = local_aux_file.readlines()
-local_aux_file.close()
-main_aux_file  = open(mainfile_base+".aux", "r")
-main_aux = main_aux_file.readlines()
-main_aux_file.close()
+if os.path.exists(basename+".aux"):
+    local_aux_file = open(basename+".aux", "r")
+    local_aux = local_aux_file.readlines()
+    local_aux_file.close()
+    if os.path.exists(mainfile_base+".aux"):
+        main_aux_file  = open(mainfile_base+".aux", "r")
+        main_aux = main_aux_file.readlines()
+        main_aux_file.close()
+    else:
+        main_aux = []
 # There is no sens of comparing main_aux and local_aux!
-pattern = re.compile('^\\\\newlabel.*$', re.M)
-local_labels = re.findall(pattern, "".join(local_aux))
-def get_labels(line):
-    return re.match('\\\\newlabel\s*{([^}]*)}', line).group(1)
-local_labels_names = map(get_labels, local_labels)
-local_labels_dict = dict(zip(local_labels_names, local_labels))
-values = {}
-for label in local_labels_names:
-    match = re.search('^\\\\newlabel\s*{'+re.escape(label)+'}.*', "\n".join(main_aux), re.M)
-    if not match:
-        main_aux.append(local_labels_dict[label]+"\n")
+    pattern = re.compile('^\\\\newlabel.*$', re.M)
+    local_labels = re.findall(pattern, "".join(local_aux))
+    def get_labels(line):
+        return re.match('\\\\newlabel\s*{([^}]*)}', line).group(1)
+    local_labels_names = map(get_labels, local_labels)
+    local_labels_dict = dict(zip(local_labels_names, local_labels))
+    values = {}
+    for label in local_labels_names:
+        match = re.search('^\\\\newlabel\s*{'+re.escape(label)+'}.*', "\n".join(main_aux), re.M)
+        if not match:
+            main_aux.append(local_labels_dict[label]+"\n")
 #     elif match.group(0) != local_labels_dict[label]:
 #         print("A "+match.group(0))
 #         print("A "+local_labels_dict[label])
 #         print("\n".join(main_aux))
 #         main_aux.remove(match.group(0))
 #         main_aux.append(local_labels_dict[label])
-main_aux_file  = open(mainfile_base+".aux", "w")
-main_aux_file.write("".join(main_aux))
-main_aux_file.close()
+    main_aux_file  = open(mainfile_base+".aux", "w")
+    main_aux_file.write("".join(main_aux))
+    main_aux_file.close()
 
 # copy the main aux file to local directory
 extensions = vim.eval("extensions")
@@ -2525,5 +2530,4 @@ function! atplib#compiler#ListErrorsFlags_A(A,L,P)
 endfunction
 endif
 "}}}
-
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

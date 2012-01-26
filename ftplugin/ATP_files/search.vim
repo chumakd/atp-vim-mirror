@@ -60,16 +60,16 @@ nnoremap <silent> <Plug>BibSearchLast		:call atplib#search#BibSearch("", b:atp_L
 "
 " Commands And Highlightgs:
 " {{{
-command! -buffer -bang -complete=customlist,atplib#search#SearchHistCompletion -nargs=* S 	:call atplib#search#Search(<q-bang>, <q-args>) | let v:searchforward = ( atplib#search#GetSearchArgs(<q-args>, 'bceswW')[1] =~# 'b' ? 0 : 1 )
-nmap <buffer> <silent> <Plug>RecursiveSearchn 	:call atplib#search#RecursiveSearch(atplib#FullPath(b:atp_MainFile), expand("%:p"), (exists("b:TreeOfFiles") ? "" : "make_tree"), (exists("b:TreeOfFiles") ? b:TreeOfFiles : {}), expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', @/, v:searchforward ? "" : "b") <CR>
-nmap <buffer> <silent> <Plug>RecursiveSearchN 	:call atplib#search#RecursiveSearch(atplib#FullPath(b:atp_MainFile), expand("%:p"), (exists("b:TreeOfFiles") ? "" : "make_tree"), (exists("b:TreeOfFiles") ? b:TreeOfFiles : {}), expand("%:p"), 1, 1, winsaveview(), bufnr("%"), reltime(), { 'no_options' : 'no_options' }, 'no_cwd', @/, !v:searchforward ? "" : "b") <CR>
+command! -buffer -bang -complete=customlist,atplib#search#SearchHistCompletion -nargs=* S 	:call atplib#search#Search(<q-bang>, <q-args>) | let v:searchforward = ( atplib#search#GetSearchArgs(<q-args>, 'bceswWx')[1] =~# 'x' ? v:searchforward :  ( atplib#search#GetSearchArgs(<q-args>, 'bceswWx')[1] =~# 'b' ? 0 : 1 ) )
+nnoremap <buffer> <silent> <Plug>RecursiveSearchn	:exe "S /".@/."/x".(v:searchforward ? "" : "b")<CR>
+nnoremap <buffer> <silent> <Plug>RecursiveSearchN	:exe "S /".@/."/x".(v:searchforward ? "b" : "")<CR>
 
 if g:atp_mapNn
 " These two maps behaves now like n (N): after forward search n (N) acts as forward (backward), after
 " backward search n acts as backward (forward, respectively).
 
-    nmap <buffer> <silent> n		<Plug>RecursiveSearchn
-    nmap <buffer> <silent> N		<Plug>RecursiveSearchN
+    nnoremap <buffer> <silent> n		<Plug>RecursiveSearchn
+    nnoremap <buffer> <silent> N		<Plug>RecursiveSearchN
 
     " Note: the final step if the mapps n and N are made is in atplib#search#LoadHistory 
 endif

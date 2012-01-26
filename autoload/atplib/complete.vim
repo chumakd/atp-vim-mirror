@@ -1818,7 +1818,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    let b:comp_method='environment_names'
 	    call atplib#Log("TabCompletion.log", "b:comp_method=".b:comp_method)
     "{{{3 --------- labels
-    elseif l =~ '\\\%(eq\)\?ref{[^}]*$' && !normal_mode &&
+    elseif l =~ '\\\%(eq\|page\|auto\|autopage\)\?ref\*\={[^}]*$\|\\hyperref\s*\[[^\]]*$' && !normal_mode &&
 		\ index(g:atp_completion_active_modes, 'labels') != -1 
 	    let completion_method='labels'
 	    " DEBUG:
@@ -2930,11 +2930,15 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 		
 		let aux_data	= atplib#tools#GrepAuxFile()
 		let completion_dict = []
-		let pattern 	= matchstr(l, '\%(.\|\\\%(eq\)\=ref\)*\\\%(eq\)\=ref\s*{\zs\S*$')
+		let pattern 	= matchstr(l, '\\\%(eq\|page\|auto\|autopage\)\=ref\*\=\s*{\zs\S*$\|\\hyperref\s*\[\zs\S*$')
 		for data in aux_data
 		    " match label by string or number
 		    if ( data[0] =~ '^' . pattern || data[1] =~ '^'. pattern ) && a:expert_mode || ( data[0] =~ pattern || data[1] =~ pattern ) && !a:expert_mode
-			let close = ( nchar == '}' ? '' : '}' )
+			if l =~ '\\\%(eq\|page\|auto\|autopage\)\=ref\*\=\s*{\S*$'
+			    let close = ( nchar == '}' ? '' : '}' )
+			else
+			    let close = ( nchar == ']' ? '' : ']' )
+			endif
 			call add(completion_dict, { "word" : data[0].close, "abbr" : data[0], "menu" : ( data[2] == 'equation' && data[1] != "" ? "(".data[1].")" : data[1] ) , "kind" : data[2][0] })
 		    endif
 		endfor 
@@ -3009,7 +3013,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	let column=col
     "{{{3 labels
     elseif completion_method == 'labels'
-	let col=match(l, '\%(.\|\\\%(eq\)\=ref\)*\\\(eq\)\=ref\s*{\zs\S*$')+1
+	let col=match(l, '\\\(eq\|page\|auto\|autopage\)\=ref\*\=\s*{\zs\S*$\|\\hyperref\s*\[\zs\S*$')+1
 	call complete(col, completion_dict)
 	let column=col
 	return ''

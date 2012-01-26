@@ -148,8 +148,8 @@ function! ATPRunning() "{{{
 		endif
 	    endfor
 
-	    if exists("b:atp_ProgressBar") && type(b:atp_ProgressBar) == 4 && b:atp_ProgressBar != {}
-		let max = max(values(b:atp_ProgressBar))
+	    if exists("g:atp_ProgressBarValues") && type(g:atp_ProgressBarValues) == 4 && get(g:atp_ProgressBarValues,bufnr("%"), {}) != {}
+		let max = max(values(get(g:atp_ProgressBarValues, bufnr("%"))))
 		let progress_bar="[".max."]".( g:atp_statusOutDir ? " " : "" )
 	    else
 		let progress_bar=""
