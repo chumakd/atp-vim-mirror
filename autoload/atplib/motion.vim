@@ -626,7 +626,7 @@ function! atplib#motion#NearestSection(section)
 endfunction
 " {{{2 atplib#motion#ctoc
 function! atplib#motion#ctoc()
-    if &l:filetype != 'tex' 
+    if &l:filetype != 'tex' || expand("%:e") != 'tex'
 " TO DO:
 " 	if  exists(g:tex_flavor)
 " 	    if g:tex_flavor != "latex"

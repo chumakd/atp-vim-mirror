@@ -904,12 +904,13 @@ function! atplib#various#Searchpair(start, middle, end, flag, ...)
 endfunction
 "}}}
 function! atplib#various#OpenLog()
-    if filereadable(&l:errorfile)
+    let errorfile = (g:atp_ParseLog ? substitute(&l:errorfile, '\~$', '', '') : &l:errorfile )
+    if filereadable(errorfile)
 
 	let projectVarDict = SaveProjectVariables()
 	let s:winnr	= bufwinnr("")
 	let atp_TempDir	= b:atp_TempDir
-	exe "rightbelow split " . fnameescape(&l:errorfile)
+	exe "rightbelow split " . fnameescape(errorfile)
 	" Settings for the log file are read by plugin/tex_atp.vim
 	" autocommand.
 	let b:atp_TempDir = atp_TempDir

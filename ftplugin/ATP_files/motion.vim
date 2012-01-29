@@ -10,7 +10,7 @@ let s:sourced = ( !exists("s:sourced") ? 0 : 1 )
 " {{{1 CTOC
 function! CTOC(...)
 
-    if &l:filetype !~ 'tex$'
+    if &l:filetype !~ 'tex$' || expand("%:e") != 'tex'
 	return ""
     endif
 

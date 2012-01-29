@@ -16,6 +16,8 @@
 import shutil, os.path, re, optparse, subprocess, traceback, psutil
 import tempfile, os, atexit, sys
 
+import latex_log
+
 from optparse import OptionParser
 from os import getcwd
 from signal import SIGKILL
@@ -430,7 +432,6 @@ try:
 # I guess some of the code done above have to be put inside the loop.
 # Maybe it would be nice to make functions from some parts of the code.
         while condition:
-            print("RUN "+str(run))
             if run == 1:
 # BIBTEX
                 if bibtex:
@@ -529,14 +530,14 @@ except Exception:
     traceback.print_exc(None, debug_file)
     vim_remote_expr(servername, "atplib#callback#Echo(\"[ATP:] error in makelatex.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in makelatex.log under g:atp_TempDir\",'echo','ErrorMsg')")
 
+# Rewrite the LaTeX log file.
+latex_log.rewrite_log(logfile, check_path=True, project_dir=texfile_dir, project_tmpdir=tmpdir)
+
 debug_file.write("PIDS="+str(pids))
 vim_remote_expr(servername, "atplib#callback#Echo('[ATP:] MakeLatex finished.', 'echomsg', 'Normal')")
 if did_bibtex and bibtex_returncode != 0:
     vim_remote_expr(servername, "atplib#callback#Echo('[MakeLatex:] bibtex returncode "+str(bibtex_returncode)+".', 'echo', 'Normal')")
 if did_makeidx and index_returncode != 0:
     vim_remote_expr(servername, "atplib#callback#Echo('[MakeLatex:] makeidx returncode "+str(index_returncode)+".', 'echo', 'Normal')")
-print("did_bibtex="+str(did_bibtex))
-print("did_makeidx="+str(did_makeidx))
-print("verbose="+str(options.verbose))
 vim_remote_expr(servername, "atplib#callback#CallBack('"+str(bufnr)+"','"+str(options.verbose)+"','COM','"+str(did_bibtex)+"','"+str(did_makeidx)+"')")
 sys.exit(latex.returncode)

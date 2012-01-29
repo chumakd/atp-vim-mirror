@@ -9,6 +9,8 @@ from os import chdir, mkdir, putenv, devnull
 from optparse import OptionParser
 from collections import deque
 
+import latex_log
+
 
 # readlink is not available on Windows.
 readlink=True
@@ -496,6 +498,9 @@ try:
             subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if start == 2:
             vim_remote_expr(servername, "atplib#SyncTex()")
+
+    # Rewrite LaTeX log file
+    latex_log.rewrite_log(os.path.splitext(mainfile_fp)[0]+".log", check_path=True, project_dir=mainfile_dir, project_tmpdir=tmpdir)
 
 ####################################
 #

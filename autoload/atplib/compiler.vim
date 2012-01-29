@@ -642,8 +642,8 @@ endfunction
 function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, filename, bang, ...)
     " a:1	= b:atp_XpdfServer (default value)
 
-    if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log"
-	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log"
+    if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
+	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
     endif
 
     " Kill comiple.py scripts if there are too many of them.
@@ -865,21 +865,6 @@ ENDPYTHON
 	else
 	    call atplib#compiler#Compiler(0,0,1,debug_mode, 'COM', expand(":p"), "", b:atp_LocalXpdfServer)
 	endif
-"     else
-" " compilation is done in a temporary directory (why?)
-" " copy files
-" python << ENDPYTHON
-" import vim, os.path, shutil
-" 
-" extensions = vim.eval("extensions")
-" tmpdir = vim.eval("tmpdir")
-" file = vim.eval("file")
-" basename = os.path.basename(file)
-" mainfile_base = os.path.basename(vim.eval("b:atp_MainFile"))
-" for ext in extensions:
-"     if os.path.exists(mainfile_base+"."+ext):
-" 	shutil.copy(mainfile_base+"."+ext, os.path.join(tmpdir, basename+"."+ext))
-" ENDPYTHON
     endif
 endfunction
 " }}}
@@ -897,8 +882,8 @@ endfunction
 function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang, ...)
 	" a:1	= b:atp_XpdfServer (default value)
 	let XpdfServer = ( a:0 >= 1 ? a:1 : b:atp_XpdfServer )
-	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log"
-	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log"
+	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
+	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
 	endif
     
 	" Set biber setting on the fly
@@ -2302,20 +2287,27 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
     endif
 
     let &l:errorformat=""
-    if ( carg =~ 'e' || carg =~# 'all' ) 
-" 	let efm = "!\ LaTeX\ %trror:\ %m,!\ %m,!pdfTeX %trror:\ %m"
-	let efm = "%E!\ LaTeX\ Error:\ %m,\%E!\ %m,%E!pdfTeX Error:\ %m"
+    if ( carg =~ 'e' || carg =~? 'all' ) 
+	if g:atp_ParseLog
+	    let efm = 'LaTeX\ %trror::%f::%l::%c::%m'
+	else
+	    let efm = "%E!\ LaTeX\ Error:\ %m,\%E!\ %m,%E!pdfTeX Error:\ %m"
+	endif
 	if &l:errorformat == ""
 	    let &l:errorformat= efm
 	else
 	    let &l:errorformat= &l:errorformat . "," . efm
 	endif
     endif
-    if ( carg =~ 'w' || carg =~# 'all' )
-	let efm='%WLaTeX\ %tarning:\ %m\ on\ input\ line\ %l%.,
+    if ( carg =~ 'w' || carg =~? 'all' )
+	if g:atp_ParseLog
+	    let efm = 'LaTeX\ %tarning::%f::%l::%c::%m'
+	else
+	    let efm='%WLaTeX\ %tarning:\ %m\ on\ input\ line\ %l%.,
 			\%WLaTeX\ %.%#Warning:\ %m,
 	    		\%Z(Font) %m\ on\ input\ line\ %l%.,
 			\%+W%.%#\ at\ lines\ %l--%*\\d'
+	endif
 " 	let efm=
 " 	    \'%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#,
 " 	    \%+W%.%#\ at\ lines\ %l--%*\\d,
@@ -2329,61 +2321,87 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 " 			\%+W%.%#\ at\ lines\ %l--%*\\d'
 	endif
     endif
-    if ( carg =~ '\Cc' || carg =~# 'all' )
+    if ( carg =~ '\Cc' || carg =~? 'all' )
 " NOTE:
 " I would like to include 'Reference/Citation' as an error message (into %m)
 " but not include the 'LaTeX Warning:'. I don't see how to do that actually. 
 " The only solution, that I'm aware of, is to include the whole line using
 " '%+W' but then the error messages are long and thus not readable.
-	if &l:errorformat == ""
-	    let &l:errorformat = "%WLaTeX\ Warning:\ Citation\ %m\ on\ input\ line\ %l%.%#"
+	if g:atp_ParseLog
+	    let efm = "Citation\ %tarning::%f::%l::%c::%m"
 	else
-	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Warning:\ Citation\ %m\ on\ input\ line\ %l%.%#"
+	    let efm = "%WLaTeX\ Warning:\ Citation\ %m\ on\ input\ line\ %l%.%#"
+	endif
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.",".efm
 	endif
     endif
-    if ( carg =~ '\Cr' || carg =~# 'all' )
-	if &l:errorformat == ""
-	    let &l:errorformat = "%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
+    if ( carg =~ '\Cr' || carg =~? 'all' )
+	if g:atp_ParseLog
+	    let efm = "Reference\ LaTeX\ %tarning::%f::%l::%c::%m"
 	else
-	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
+	    let efm = "%WLaTeX\ Warning:\ Reference %m on\ input\ line\ %l%.%#,%WLaTeX\ %.%#Warning:\ Reference %m,%C %m on input line %l%.%#"
+	endif
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.",".efm
 	endif
     endif
-    if carg =~ '\Cf'
-	if &l:errorformat == ""
-	    let &l:errorformat = "%WLaTeX\ Font\ Warning:\ %m,%Z(Font) %m on input line %l%.%#"
+    if carg =~ '\Cf' || carg =~# 'All'
+	if g:atp_ParseLog
+	    let efm = "LaTeX\ Font\ %tarning::%f::%l::%c::%m"
 	else
-	    let &l:errorformat = &l:errorformat . ",%WLaTeX\ Font\ Warning:\ %m,%Z(Font) %m on input line %l%.%#"
+	    let efm = "%WLaTeX\ Font\ Warning:\ %m,%Z(Font) %m on input line %l%.%#"
+	endif
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.",".efm
 	endif
     endif
-    if carg =~ '\Cfi'
-	if &l:errorformat == ""
-	    let &l:errorformat = '%ILatex\ Font\ Info:\ %m on input line %l%.%#,
-			\%ILatex\ Font\ Info:\ %m,
-			\%Z(Font) %m\ on input line %l%.%#,
-			\%C\ %m on input line %l%.%#'
+    if carg =~ '\Cfi' || carg =~# 'All'
+	if g:atp_ParseLog
+	    let efm = 'LaTeX\ Font %tnfo::%f::%l::%c::%m'
 	else
-	    let &l:errorformat = &l:errorformat . ',%ILatex\ Font\ Info:\ %m on input line %l%.%#,
-			\%ILatex\ Font\ Info:\ %m,
-			\%Z(Font) %m\ on input line %l%.%#,
-			\%C\ %m on input line %l%.%#'
+	    let efm = '%ILatex\ Font\ Info:\ %m on input line %l%.%#,
+				\%ILatex\ Font\ Info:\ %m,
+				\%Z(Font) %m\ on input line %l%.%#,
+				\%C\ %m on input line %l%.%#'
+	endif
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.','.efm
 	endif
     endif
-    if carg =~ '\CF'
-	let efm = '%+P)%#%\\s%#(%f,File: %m,Package: %m,Document Class: %m,LaTeX2e %m'
+    if carg =~ '\CF' || carg =~# 'All'
+	if g:atp_ParseLog
+	    let efm = "%tnput File::%f::%l::%c::%m,%tnput Package::%f::%l::%c::%m"
+	else
+	    let efm = '%+P)%#%\\s%#(%f,File: %m,Package: %m,Document Class: %m,LaTeX2e %m'
+	endif
 	if &l:errorformat == ""
 	    let &l:errorformat = efm
 	else
 	    let &l:errorformat = &l:errorformat . ',' . efm
 	endif
     endif
-    if carg =~ '\Cp'
-	if &l:errorformat == ""
-	    let &l:errorformat = 'Package: %m'
+    if carg =~ '\Cp' || carg =~# 'All'
+	if g:atp_ParseLog
+	    let efm = "%tnput Package::0::%l::%c::%m"
 	else
-	    let &l:errorformat = &l:errorformat . ',Package: %m'
+	    let efm = 'Package: %m'
+	endif
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.','.efm
 	endif
     endif
-    if &l:errorformat != ""
+    if &l:errorformat != "" && !g:atp_ParseLog
 
 " 	let pm = ( g:atp_show_all_lines == 1 ? '+' : '-' )
 
@@ -2438,8 +2456,12 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
     if a:cgetfile
 	try
 	    cgetfile
+	    call atplib#compiler#FilterQuickFix()
 	catch E40:
 	endtry
+	if g:atp_signs
+	    call atplib#callback#Signs(bufnr("%"))
+	endif
     endif
     if t:atp_QuickFixOpen
 	let winnr=winnr()
@@ -2451,6 +2473,21 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
     if add != "0"
 	echo "[ATP:] current error format: ".b:atp_ErrorFormat 
     endif
+endfunction
+"}}}
+"{{{
+function! atplib#compiler#FilterQuickFix()
+    if !g:atp_ParseLog
+	return
+    endif
+    let qflist = getqflist()
+    call filter(qflist, 'v:val["type"] != ""')
+    let new_qflist = []
+    for item in qflist
+	call remove(item, "valid")
+	call add(new_qflist, item)
+    endfor
+    call setqflist(new_qflist)
 endfunction
 "}}}
 "{{{ ShowErrors
@@ -2474,16 +2511,18 @@ function! atplib#compiler#ShowErrors(...)
 
     let log=readfile(errorfile)
 
-    let nr=1
-    for line in log
-	if line =~ "LaTeX Warning:" && log[nr] !~ "^$" 
-	    let newline=line . log[nr]
-	    let log[nr-1]=newline
-	    call remove(log,nr)
-	endif
-	let nr+=1
-    endfor
-    call writefile(log, errorfile)
+    if !g:atp_ParseLog
+	let nr=1
+	for line in log
+	    if line =~ "LaTeX Warning:" && get(log, nr, '') !~ "^$" 
+		let newline=line . log[nr]
+		let log[nr-1]=newline
+		call remove(log,nr)
+	    endif
+	    let nr+=1
+	endfor
+	call writefile(log, errorfile)
+    endif
     
     " set errorformat 
     let l:arg = ( a:0 >= 1 ? a:1 : b:atp_ErrorFormat )
@@ -2500,6 +2539,7 @@ function! atplib#compiler#ShowErrors(...)
 
     " read the log file
     cgetfile
+    call atplib#compiler#FilterQuickFix()
 
     " signs
     if g:atp_signs

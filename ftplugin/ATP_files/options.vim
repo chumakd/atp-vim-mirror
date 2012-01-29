@@ -388,6 +388,9 @@ lockvar b:atp_autex_wait
 
 " Global Variables: (almost all)
 " {{{ global variables 
+" if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
+"     let g:atp_ParseLog = has("python")
+" endif
 if !exists("g:atp_ProgressBarValues")
     let g:atp_ProgressBarValues = {}
 endif
@@ -416,7 +419,7 @@ if !exists("g:atp_completion_tikz_expertmode")
     let g:atp_completion_tikz_expertmode = 1
 endif
 if !exists("g:atp_signs")
-    let g:atp_signs = 1
+    let g:atp_signs = 0
 endif
 if !exists("g:atp_TexAlign_join_lines")
     let g:atp_TexAlign_join_lines = 0
@@ -2538,6 +2541,7 @@ endfunction
 	au FileType qf let w:atp_qf_errorfile=&l:errorfile
 	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarnningMsg#%{ErrorMsg('W')}\ %#ErrorMsg#%{ErrorMsg('E')}
 	au FileType qf exe "resize ".min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])
+	au QuickFixCmdPost
     augroup END
 
     function! <SID>BufEnterCgetfile()
@@ -2547,6 +2551,7 @@ endfunction
 	if g:atp_cgetfile 
 	    try
 		cgetfile
+		call atplib#compiler#FilterQuickFix()
 		" cgetfile needs:
 		exe "ErrorFormat ".b:atp_ErrorFormat
 	    catch /E40:/ 
@@ -2928,6 +2933,7 @@ function! <SID>SetDebugMode(bang,...)
 	else
 	    try
 		cgetfile
+		call atplib#compiler#FilterQuickFix()
 	    catch /E40/
 		echohl WarningMsg 
 		echo "[ATP:] log file missing."
@@ -2946,6 +2952,7 @@ function! <SID>SetDebugMode(bang,...)
 	exe winnr . "wincmd w"
 	try
 	    cgetfile
+	    call atplib#compiler#FilterQuickFix()
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."
@@ -2960,6 +2967,7 @@ function! <SID>SetDebugMode(bang,...)
 	exe winnr . "wincmd w"
 	try
 	    cgetfile
+	    call atplib#compiler#FilterQuickFix()
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."

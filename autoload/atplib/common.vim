@@ -103,7 +103,10 @@ endfunction
 
 " This function sets vim 'errorfile' option.
 "{{{ atplib#common#SetErrorFile
-" let &l:errorfile=b:atp_OutDir . fnameescape(fnamemodify(expand("%"),":t:r")) . ".log"
+" let &l:errorfile=b:atp_OutDir . fnameescape(fnamemodify(expand("%"),":t:r")) . ".log".(g:atp_ParseLog ? "~" : "")
+if !exists("g:atp_ParseLog")
+    let g:atp_ParseLog = has("python")
+endif
 function! atplib#common#SetErrorFile()
 
     " set b:atp_OutDir if it is not set
@@ -121,9 +124,9 @@ function! atplib#common#SetErrorFile()
     " vim doesn't like escaped spaces in file names ( cg, filereadable(),
     " writefile(), readfile() - all acepts a non-escaped white spaces)
     if has("win16") || has("win32") || has("win64") || has("win95")
-	let errorfile	= substitute(atplib#append(b:atp_OutDir, '\') . fnamemodify(atp_MainFile,":t:r") . ".log", '\\\s', ' ', 'g') 
+	let errorfile	= substitute(atplib#append(b:atp_OutDir, '\') . fnamemodify(atp_MainFile,":t:r") . ".log", '\\\s', ' ', 'g').(g:atp_ParseLog ? "~" : "") 
     else
-	let errorfile	= substitute(atplib#append(b:atp_OutDir, '/') . fnamemodify(atp_MainFile,":t:r") . ".log", '\\\s', ' ', 'g') 
+	let errorfile	= substitute(atplib#append(b:atp_OutDir, '/') . fnamemodify(atp_MainFile,":t:r") . ".log", '\\\s', ' ', 'g').(g:atp_ParseLog ? "~" : "") 
     endif
     let &l:errorfile	= errorfile
     return &l:errorfile

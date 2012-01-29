@@ -167,6 +167,13 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.6.5
 <
+ If you set |g:atp_ParseLog| and |g:atp_Compiler|="python", then ATP will
+ rewrite the log file so that the output is readable for vim |quickfix| using
+ |errorformat|. The advantage is for project files, where it is important to
+ correctly read the file position of the error.
+
+ |g:atp_Signs|=0 by default.
+
  TOC and Labels windows are clicable: acts like <space> = go to section and
  leave TOC/Labels window open.
 
@@ -691,8 +698,8 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 			vim --servername VIM 
 < 	you have additional functionalities:
 							*atp-signs*
-							*g:atp-signs*
-        * if you set |g:atp_signs| to 1 (the default is 1) call back and
+							*g:atp-Signs*
+        * if you set |g:atp_Signs| to 1 (the default is 0) call back and
 	  |atp-:ShowErrors| will use |signs| to mark errors and warnings.
 
 							*atp-status-line-notification*
@@ -1104,6 +1111,13 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 	Note: this command works in quickfix window. It will change
 	errorformat but will not reload quickfix list. Better use
 	|atp-:ErrorFormat| instead.
+
+							*g:atp_ParseLog*
+g:atp_ParseLog = 1
+	If |g:atp_ParseLog| is 1 (|g:atp_Compiler|="python"), then ATP will
+	parse the log file. So that |quickfix| will show you corrent file
+	names for the errors. This is particullary usefull for project 
+	files.
 
 							*g:atp_DefaultErrorFormat*
 g:atp_DefaultErrorFormat = 'erc' 

@@ -57,7 +57,7 @@ endif
 
 augroup ATP_SetErrorFile
     au BufEnter 	*.tex 		call atplib#common#SetErrorFile()
-    au BufEnter 	$l:errorfile 	setl autoread 
+"     au BufEnter 	$l:errorfile 	setl autoread 
 augroup END
 
 " TreeOfFiles
@@ -260,7 +260,7 @@ let s:errormsg = 0
 " a:command = 1/0: 1 if run by a command, then a:1=bang, a:2=ctoc, 
 " if a:command = 0, then a:1=ctoc.
 function! ATPStatus(command,...) "{{{
-    if expand("%") == "[Command Line]" || &l:filetype == "qf"
+    if expand("%") == "[Command Line]" || &l:filetype == "qf" || expand("%:e") != "tex"
 	" If one uses q/ or q? this status function should not be used.
 	return
     endif

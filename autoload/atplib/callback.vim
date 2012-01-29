@@ -67,7 +67,7 @@ function! atplib#callback#Signs(bufnr)
 	" There is no way of getting list of defined signs in the current buffer.
 	" Thus there is no proper way of deleting them. I overwrite them using
 	" numbers as names. The vim help tells that there might be at most 120
-	" signs put.
+	" signs.
 	
 	" But this is not undefineing signs.
 	let qflist=getqflist()
@@ -81,7 +81,14 @@ function! atplib#callback#Signs(bufnr)
 		let hl = 'Normal'
 	    endif
 	    exe 'sign define '.i.' text='.item['type'].': texthl='.hl
-	    exe 'sign place '.i.' line='.item['lnum'].' name='.i.' file='.expand('%:p')
+	    if g:atp_ParseLog
+		let file = bufname(item['bufnr'])
+		if file != "" && bufloaded(file)
+		    exe 'sign place '.i.' line='.item['lnum'].' name='.i.' file='.file
+		endif
+	    else
+		exe 'sign place '.i.' line='.item['lnum'].' name='.i.' file='.expand('%:p')
+	    endif
 	    let i+=1
 	endfor
 	if exists("cwinnr")
@@ -125,6 +132,7 @@ function! atplib#callback#CallBack(bufnr,mode,...)
 
     " Read the log file
     cgetfile
+    call atplib#compiler#FilterQuickFix()
 
     " signs
     if g:atp_signs

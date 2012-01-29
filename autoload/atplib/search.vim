@@ -429,9 +429,7 @@ function! atplib#search#Dsearch(bang,...)
 	setl syntax=tex
 
 	let defi_list 	= []
-	let g:defi_list	= defi_list
 	let signs	= []
-	let g:signs	= signs
 
 	for inputfile in keys(defi_dict)
 	    let ifile	= readfile(inputfile)
