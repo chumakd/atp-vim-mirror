@@ -160,9 +160,6 @@ function! LatexBox_LatexmkClean(cleanall)
 
 	echomsg "[LatexBox:] latexmk clean finished"
 
-
-	silent execute '! ' . l:cmd
-	echomsg "[LatexBox:] latexmk clean finished"
 endfunction
 " }}}
 

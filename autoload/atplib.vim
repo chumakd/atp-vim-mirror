@@ -58,9 +58,10 @@ function! atplib#write(command,...) "{{{
     if a:command =~# '^\(AU\|nobackup\)$'
 	set nobackup
 	set nowritebackup
-	" In this way lastchange plugin will work better (?):
-" 	let eventignore 	= &eventignore
-" 	setl eventigonre	+=BufWritePre
+	" eventsignore, for example updateing tags with this BufWrite...
+	" groups will be disabled.
+	let eventignore	= &eventignore
+	let &eventignore.=(&eventignore == "" ? "" : ",").g:atp_write_eventignore
     endif
     let b:atp_ProjectScript = 0
 
@@ -72,6 +73,9 @@ function! atplib#write(command,...) "{{{
 	silent! update
     else
 	update
+    endif
+    if a:command == 'AU'
+	let b:atp_changedtick = b:changedtick
     endif
     " This works for projects, but it is too slow:
 "     bufdo call atplib#update(main_file, silent)
@@ -166,7 +170,22 @@ function! atplib#FullPath(file_name) "{{{1
 	    let file_path = fnamemodify(a:file_name, ":p")
 	    exe "lcd " . fnameescape(cwd)
 	catch /E344:/
+	    " If b:atp_ProjectDir points to non existing path
+	    " this will show not the right place:
+	    echohl ErrorMsg
+	    echomsg "E344: in atplib#FullPath(): b:atp_ProjectDir=".b:atp_ProjectDir." does not exist."
+	    echohl Normal
+" 	    let choice = input('Do you want to make dir/delete buffer [m/d]? ')
+" 	    if choice ==? "m"
+" 		call mkdir(b:atp_ProjectDir, 'p')
+" 	    else
+" 		" This makes lots of errors!
+" 		bd!
+" 		return a:file_name
+" 	    endif
+" 	    exe "lcd " . fnameescape(b:atp_ProjectDir)
 	    let file_path = fnamemodify(a:file_name, ":p")
+" 	    exe "lcd " . fnameescape(cwd)
 	endtry
     else
 	let file_path = fnamemodify(a:file_name, ":p")

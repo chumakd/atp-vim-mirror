@@ -838,7 +838,9 @@ function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
     return map(labels, "v:val.'\\>'")
 endfunction
 " atplib#motion#LatexTags {{{1
-function! atplib#motion#LatexTags(bang)
+function! atplib#motion#LatexTags(bang,...)
+    " a:1 == 1 :  silent
+    let silent = ( ( a:0 ? a:1 : 0 ) ? ' --silent ' : ' ' )
     let hyperref_cmd = ( atplib#search#SearchPackage("hyperref") ? " --hyperref " : "" )
     if has("clientserver")
 	let servername 	= " --servername ".v:servername." "
@@ -848,16 +850,12 @@ function! atplib#motion#LatexTags(bang)
 	let progname	= ""
     endif
     let bibtags = ( a:bang == "" ? " --bibtags " : "" )
-    " Write file (disable project file):
-    let project=b:atp_ProjectScript
-    let b:atp_ProjectScript=0
-    silent! write
-    let b:atp_ProjectScript=project
+    " Write file:
+    call atplib#write('nobackup')
 
     let latextags=split(globpath(&rtp, "ftplugin/ATP_files/latextags.py"), "\n")[0]
     let files=join(
-		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"),
-		    \ 'atplib#FullPath(v:val)')
+		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), 'atplib#FullPath(v:val)')
 		\ , ";")
     
     if len(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'")) >= 1
@@ -879,7 +877,7 @@ function! atplib#motion#LatexTags(bang)
 		\ " --files ".shellescape(files).
 		\ " --auxfile ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".aux").
 		\ " --dir ".shellescape(dir).
-		\ bib . cite .
+		\ bib . cite . silent .
 		\ hyperref_cmd . servername . progname . bibtags . " &"
     if g:atp_debugLatexTags
 	let g:cmd=cmd
@@ -1182,7 +1180,7 @@ endfunction
 
 " atplib#motion#Input {{{1 
 function! atplib#motion#Input(flag)
-    let pat 	= ( &l:filetype == "plaintex" ? '\\input\s*{' : '\%(\\input\>\|\\include\s*{\)' )
+    let pat 	= ( &l:filetype == "plaintex" ? '\\input\s*{' : '\%(\\input\s*{\=\>'.(atplib#search#SearchPackage('subfiles') ?  '\|\\subfile\s*{' : '' ).'\|\\include\s*{\)' )
     let @/	= '^\([^%]\|\\\@<!\\%\)*' . pat
     if g:atp_mapNn
 	exe ':S /^\([^%]\|\\\@<!\\%\)*' .  pat . '/ ' . a:flag

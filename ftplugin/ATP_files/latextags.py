@@ -1,19 +1,20 @@
 #!/usr/bin/python
 
-import re, optparse, subprocess, os
+import re, optparse, subprocess, os, traceback
 from optparse import OptionParser
 from time import strftime, localtime
 import locale
 
 # ToDoList:
-# I can use synstack function remotely to get tag_type.
-# I can scan bib files to get bibkeys (but this might be slow)!
-#       this could be written to seprate file (does vim support using multiple tag file)
+# (1) Use synstack function remotely to get tag_type.
+# (2) Scan bib files to get bibkeys (but this might be slow)!
+#       this could be written to seprate file.
 
 # OPTIONS:
 usage   = "usage: %prog [options]"
 parser  = OptionParser(usage=usage)
 parser.add_option("--files",    dest="files"    )
+parser.add_option("--silent",   dest="silent",          default=False, action="store_true")
 parser.add_option("--auxfile",  dest="auxfile"  )
 parser.add_option("--hyperref", dest="hyperref",        default=False,  action="store_true")
 parser.add_option("--servername", dest="servername",    default=""      )
@@ -108,120 +109,136 @@ def comma_split(arg_list):
         ret_list.extend(element.split(","))
     return ret_list
 
+try:
 # Read tex files:
-file_dict={}
+    file_dict={}
 # { 'file_name' : list_of_lines }
-for file in file_list:
-    file_object=open(file, "r")
-    file_dict[file]=file_object.read().split("\n")
-    file_object.close()
+    for file in file_list:
+        file_object=open(file, "r")
+        file_dict[file]=file_object.read().split("\n")
+        file_object.close()
 
 # Read bib files:
-if len(bib_list) > 1:
-    bib_dict={}
-    # { 'bib_name' : list_of_lines } 
-    for bibfile in bib_list:
-        bibobject=open(bibfile, "r")
-        bib_dict[bibfile]=bibobject.read().split("\n")
-        bibobject.close()
+    if len(bib_list) > 1:
+        bib_dict={}
+        # { 'bib_name' : list_of_lines } 
+        for bibfile in bib_list:
+            bibobject=open(bibfile, "r")
+            bib_dict[bibfile]=bibobject.read().split("\n")
+            bibobject.close()
 
 # GENERATE TAGS:
 # From \label{} and \hypertarget{}{} commands:
-tags=[]
-tag_dict={}
-for file_name in file_list:
-    file_ll=file_dict[file_name]
-    linenr=0
-    p_line=""
-    for line in file_ll:
-        linenr+=1
-        # Find LABELS in the current line:
-        matches=re.findall('^(?:[^%]|\\\\%)*\\\\label{([^}]*)}', line)
-        for match in matches:
-            tag=str(match)+"\t"+file_name+"\t"+str(linenr)
-            # Set the tag type:
-            tag_type=get_tag_type(line, match, "label")
+    tags=[]
+    tag_dict={}
+    for file_name in file_list:
+        file_ll=file_dict[file_name]
+        linenr=0
+        p_line=""
+        for line in file_ll:
+            linenr+=1
+            # Find LABELS in the current line:
+            matches=re.findall('^(?:[^%]|\\\\%)*\\\\label{([^}]*)}', line)
+            for match in matches:
+                tag=str(match)+"\t"+file_name+"\t"+str(linenr)
+                # Set the tag type:
+                tag_type=get_tag_type(line, match, "label")
 #             print(line)
-            if tag_type == "":
-                tag_type=get_tag_type(p_line+line, match, "label")
-            tag+=";\"\tinfo:"+tag_type+"\tkind:label"
-            # Add tag:
-            tags.extend([tag])
-            tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'label']
-        # Find HYPERTARGETS in the current line:        /this could be switched on/off depending on useage of hyperref/
-        if options.hyperref:
-            matches=re.findall('^(?:[^%]|\\\\%)*\\\\hypertarget{([^}]*)}', line)
-            for match in matches:
-                # Add only if not yet present in tag list:
-                if not tag_dict.has_key(str(match)):
-                    tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'hyper']
-                    tag_type=get_tag_type(line, match, 'hypertarget')
-                    if tag_type == "":
-                        tag_type=get_tag_type(p_line+line, match, "label")
-                    tags.extend([str(match)+"\t"+file_name+"\t"+str(linenr)+";\"\tinfo:"+tag_type+"\tkind:hyper"])
-        # Find CITATIONS in the current line:
-        if options.bibtags and not options.bibtags_env:
-            # There is no support for \citealias comman in natbib.
-            # complex matches are slower so I should pass an option if one uses natbib.
-            matches=re.findall(cite_pattern, line)
-            matches=comma_split(matches)
-            for match in matches:
-                if not tag_dict.has_key(str(match)):
-                    if len(bib_list) == 1:
-                        tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/;\"\tkind:cite"
-                        tag_dict[str(match)]=['', bib_list[0], '', 'cite']
-                        tags.extend([tag])
-                    elif len(bib_list) > 1:
-                        bib_file=""
-                        [ bib_file, bib_linenr, bib_type ] = find_in_filelist(re.compile(str(match)), bib_dict, True, re.compile('\s*@(.*){'))
-                        if bib_file != "":
-#                             tag=str(match)+"\t"+bib_file+"\t/"+match+"/;\"\tkind:cite\tinfo:"+bib_type
-                            tag=str(match)+"\t"+bib_file+"\t"+str(bib_linenr)+";\"\tkind:cite\tinfo:"+bib_type
-                            tag_dict[str(match)]=['', bib_file, bib_type, 'cite']
+                if tag_type == "":
+                    tag_type=get_tag_type(p_line+line, match, "label")
+                tag+=";\"\tinfo:"+tag_type+"\tkind:label"
+                # Add tag:
+                tags.extend([tag])
+                tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'label']
+            # Find HYPERTARGETS in the current line:        /this could be switched on/off depending on useage of hyperref/
+            if options.hyperref:
+                matches=re.findall('^(?:[^%]|\\\\%)*\\\\hypertarget{([^}]*)}', line)
+                for match in matches:
+                    # Add only if not yet present in tag list:
+                    if not tag_dict.has_key(str(match)):
+                        tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'hyper']
+                        tag_type=get_tag_type(line, match, 'hypertarget')
+                        if tag_type == "":
+                            tag_type=get_tag_type(p_line+line, match, "label")
+                        tags.extend([str(match)+"\t"+file_name+"\t"+str(linenr)+";\"\tinfo:"+tag_type+"\tkind:hyper"])
+            # Find CITATIONS in the current line:
+            if options.bibtags and not options.bibtags_env:
+                # There is no support for \citealias comman in natbib.
+                # complex matches are slower so I should pass an option if one uses natbib.
+                matches=re.findall(cite_pattern, line)
+                matches=comma_split(matches)
+                for match in matches:
+                    if not tag_dict.has_key(str(match)):
+                        if len(bib_list) == 1:
+                            tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/;\"\tkind:cite"
+                            tag_dict[str(match)]=['', bib_list[0], '', 'cite']
                             tags.extend([tag])
-        if options.bibtags and options.bibtags_env:
-            matches=re.findall(cite_pattern, line)
-            matches=comma_split(matches)
-            for match in matches:
-                if not tag_dict.has_key(str(match)):
-                    [ r_file, r_linenr ] = find_in_filelist(re.compile("\\\\bibitem(?:\s*\[.*\])?\s*{"+str(match)+"}"), file_dict)
-                    tag=str(match)+"\t"+r_file+"\t"+str(r_linenr)+";\"\tkind:cite"
-                    tag_dict[str(match)]=[str(r_linenr), r_file, '', 'cite']
-                    tags.extend([tag])
-        p_line=line
+                        elif len(bib_list) > 1:
+                            bib_file=""
+                            [ bib_file, bib_linenr, bib_type ] = find_in_filelist(re.compile(str(match)), bib_dict, True, re.compile('\s*@(.*){'))
+                            if bib_file != "":
+#                             tag=str(match)+"\t"+bib_file+"\t/"+match+"/;\"\tkind:cite\tinfo:"+bib_type
+                                tag=str(match)+"\t"+bib_file+"\t"+str(bib_linenr)+";\"\tkind:cite\tinfo:"+bib_type
+                                tag_dict[str(match)]=['', bib_file, bib_type, 'cite']
+                                tags.extend([tag])
+            if options.bibtags and options.bibtags_env:
+                matches=re.findall(cite_pattern, line)
+                matches=comma_split(matches)
+                for match in matches:
+                    if not tag_dict.has_key(str(match)):
+                        [ r_file, r_linenr ] = find_in_filelist(re.compile("\\\\bibitem(?:\s*\[.*\])?\s*{"+str(match)+"}"), file_dict)
+                        tag=str(match)+"\t"+r_file+"\t"+str(r_linenr)+";\"\tkind:cite"
+                        tag_dict[str(match)]=[str(r_linenr), r_file, '', 'cite']
+                        tags.extend([tag])
+            p_line=line
 
 # From aux file:
-ioerror=False
-try:
-    auxfile_list=open(options.auxfile, "r").read().split("\n")
-    for line in auxfile_list:
-        if re.match('\\\\newlabel{[^}]*}{{[^}]*}', line):
-            [label, counter]=re.match('\\\\newlabel{([^}]*)}{{([^}]*)}', line).group(1,2)
-            counter=re.sub('{', '', counter)
-            counter=re.search('[0-9.]+', counter).group(0)
-            try:
-                [linenr, file, tag_type, kind]=tag_dict[label]
-            except KeyError:
-                [linenr, file, tag_type, kind]=["no_label", "no_label", "", ""]
-            except ValueError:
-                [linenr, file, tag_type, kind]=["no_label", "no_label", "", ""]
-            if linenr != "no_label" and counter != "":
-                tags.extend([str(counter)+"\t"+file+"\t"+linenr+";\"\tinfo:"+tag_type+"\tkind:"+kind])
-except IOError:
-    ioerror=True
-    pass
+    ioerror=False
+    try:
+        auxfile_list=open(options.auxfile, "r").read().split("\n")
+        for line in auxfile_list:
+            if re.match('\\\\newlabel{[^}]*}{{[^}]*}', line):
+                [label, counter]=re.match('\\\\newlabel{([^}]*)}{{([^}]*)}', line).group(1,2)
+                counter=re.sub('{', '', counter)
+                if re.search('[0-9.]+', counter):
+                    # Arabic Numbered counter:
+                    counter=re.search('[0-9.]+', counter).group(0)
+                elif re.search('[ivx]+\)?$', counter):
+                    # Roman numberd counter:
+                    counter=re.search('\(?([ivx]+)\)?$', counter).group(1)
+                else:
+                    counter=""
+                try:
+                    [linenr, file, tag_type, kind]=tag_dict[label]
+                except KeyError:
+                    [linenr, file, tag_type, kind]=["no_label", "no_label", "", ""]
+                except ValueError:
+                    [linenr, file, tag_type, kind]=["no_label", "no_label", "", ""]
+                if linenr != "no_label" and counter != "":
+                    tags.extend([str(counter)+"\t"+file+"\t"+linenr+";\"\tinfo:"+tag_type+"\tkind:"+kind])
+    except IOError:
+        ioerror=True
+        pass
 
 # SORT (vim works faster when tag file is sorted) AND WRITE TAGS
-time=strftime("%a, %d %b %Y %H:%M:%S +0000", localtime())
-tags_sorted=sorted(tags, key=str.lower)
-tags_sorted=['!_TAG_FILE_SORTED\t1\t/'+time]+tags_sorted
-os.chdir(options.directory)
-tag_file = open("tags", 'w')
-tag_file.write("\n".join(tags_sorted))
-tag_file.close()
+    time=strftime("%a, %d %b %Y %H:%M:%S +0000", localtime())
+    tags_sorted=sorted(tags, key=str.lower)
+    tags_sorted=['!_TAG_FILE_SORTED\t1\t/'+time]+tags_sorted
+    os.chdir(options.directory)
+    tag_file = open("tags", 'w')
+    tag_file.write("\n".join(tags_sorted))
+    tag_file.close()
 
 # Communicate to Vim:
-if options.servername != "":
-    vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] tags file written.\",'echo','')")
-if ioerror:
-    vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] no aux file.\",'echomsg', 'WarningMsg')")
+    if not options.silent:
+        if options.servername != "":
+            vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] tags file written.\",'echo','')")
+        if ioerror and options.servername:
+            vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] no aux file.\",'echomsg', 'WarningMsg')")
+except Exception:
+    # Send errors to vim is options.servername is non empty.
+    error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
+    if options.servername != "":
+        vim_remote_expr(options.servername, "atplib#callback#Echo(\"[ATP:] error in latex_tags.py, catched python exception:\n"+error_str+"\",'echo','ErrorMsg')")
+    else:
+        print(error_str)

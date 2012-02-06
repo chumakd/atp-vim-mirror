@@ -642,8 +642,8 @@ endfunction
 function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, filename, bang, ...)
     " a:1	= b:atp_XpdfServer (default value)
 
-    if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
-	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
+    if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
+	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
     endif
 
     " Kill comiple.py scripts if there are too many of them.
@@ -882,8 +882,8 @@ endfunction
 function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filename, bang, ...)
 	" a:1	= b:atp_XpdfServer (default value)
 	let XpdfServer = ( a:0 >= 1 ? a:1 : b:atp_XpdfServer )
-	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
-	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".log".(g:atp_ParseLog ? "~" : "")
+	if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
+	    exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
 	endif
     
 	" Set biber setting on the fly
@@ -1880,11 +1880,6 @@ endfunction "}}}
 " This function calls the compilers in the background. It Needs to be a global
 " function (it is used in options.vim, there is a trick to put function into
 " a dictionary ... )
-augroup ATP_changedtick
-    au!
-    au BufEnter 	*.tex 	:let b:atp_changedtick = b:changedtick
-    au BufWritePost 	*.tex 	:let b:atp_changedtick = b:changedtick
-augroup END 
 
 function! atplib#compiler#auTeX(...)
 
@@ -1957,7 +1952,7 @@ function! atplib#compiler#auTeX(...)
 	return "autex is off"
     endif
 
-    " if the file (or input file is modified) compile the document 
+    " If the file (or input file is modified) compile the document 
     if filereadable(expand("%"))
 " 	if !exists("b:atp_changedtick")
 " 	    let b:atp_changedtick = b:changedtick
@@ -2049,16 +2044,6 @@ function! atplib#compiler#auTeX(...)
     endif
     return "files does not differ"
 endfunction
-" function! ATP_auTeX()
-"     call atplib#compiler#auTeX()
-" endfunction
-
-" This is set by SetProjectName (options.vim) where it should not!
-augroup ATP_auTeX
-    au!
-    au CursorHold 	*.tex call atplib#compiler#auTeX()
-    au CursorHoldI 	*.tex call atplib#compiler#auTeX()
-augroup END 
 "}}}
 
 " Related Functions
@@ -2224,39 +2209,21 @@ endfunction
 " this functions sets errorformat according to the flag given in the argument,
 " possible flags:
 " e	- errors (or empty flag)
-" w	- all warning messages
+" w	- all warning messages (LaTeX warning, Citation warnings, Reference Warnings, Package warnings)
 " c	- citation warning messages
 " r	- reference warning messages
 " f	- font warning messages
 " fi	- font warning and info messages
 " F	- files
-" p	- package info messages
+" o	- open log file
+" O	- overfull \hbox /g:atp_ParseLog only/
+" p	- package info messages ('Package \w\+ Info: ') /g:atp_ParseLog only/
+" P	- packages (lines which start with 'Package: ')
 
 " {{{ atplib#compiler#SetErrorFormat
 " first argument is a word in flags 
 " the default is a:1=e /show only error messages/
 function! atplib#compiler#SetErrorFormat(cgetfile,...)
-
-    " This a:cgetfile == 1 only if run by the command :ErrorFormat 
-    let efm = ( a:0 >= 1 ? a:1 : '' )
-    if efm == "" || a:0 == 0
-	echo "[ATP:] current error format: ".getbufvar(bufnr(fnamemodify(&l:errorfile, ":r").".tex"), "atp_ErrorFormat") 
-	return
-    endif
-
-    let carg_raw = ( a:0 >= 1 ? a:1 : g:atp_DefaultErrorFormat )
-    let carg_list= split(carg_raw, '\zs')
-    if carg_list[0] =~ '^[+-]$'
-	let add=remove(carg_list,0)
-    else
-	let add=0
-    endif
-    for i in range(0, len(carg_list)-2)
-	if carg_list[i] == 'f' && get(carg_list,i+1, "") == "i"
-	    call remove(carg_list, i+1)
-	    let carg_list[i]="fi"
-	endif
-    endfor
 
     " Get the bufnr of tex file corresponding to the &l:errorfile
     let bufnr 	= bufnr(fnamemodify(&l:errorfile, ":r").".tex")
@@ -2264,23 +2231,50 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 		\ ? b:atp_ErrorFormat 
 		\ : getbufvar((bufnr), "atp_ErrorFormat")
     let atp_ErrorFormat = ( exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : getbufvar((bufnr), "atp_ErrorFormat") )
-    if carg_raw =~ '^+'
-	for flag in carg_list
-	    if flag != 'f' && atp_ErrorFormat !~ flag || flag == 'f' && atp_ErrorFormat !~ 'fi\@!'
-		let carg .= flag
-	    endif
-	endfor
-    elseif carg_raw =~ '^-'
-	for flag in carg_list
-	    if flag != 'f'
-		let carg=substitute(carg, flag, '', 'g')
-	    else
-		let carg=substitute(carg, 'fi\@!', '', 'g')
-	    endif
-	endfor
-    else
-	let carg=carg_raw
+
+    " This a:cgetfile == 1 only if run by the command :ErrorFormat 
+    let efm = ( a:0 >= 1 ? a:1 : '' )
+    if efm == "" || a:0 == 0
+	echo "[ATP:] current error format: ".atp_ErrorFormat
+	return
     endif
+
+    let carg_raw = ( a:0 >= 1 ? a:1 : g:atp_DefaultErrorFormat )
+    let carg_lists = split(carg_raw, '\ze[+-]')
+
+    let g:carg_lists = carg_lists
+    for carg_r in carg_lists
+	let carg_list= split(carg_r, '\zs')
+	if carg_list[0] =~ '^[+-]$'
+	    let add=remove(carg_list,0)
+	else
+	    let add=0
+	endif
+	for i in range(0, len(carg_list)-2)
+	    if carg_list[i] == 'f' && get(carg_list,i+1, "") == "i"
+		call remove(carg_list, i+1)
+		let carg_list[i]="fi"
+	    endif
+	endfor
+
+	if carg_r =~ '^+'
+	    for flag in carg_list
+		if flag !=# 'f' && atp_ErrorFormat !~# flag || flag == 'f' && atp_ErrorFormat !~# 'fi\@!'
+		    let carg .= flag
+		endif
+	    endfor
+	elseif carg_r =~ '^-'
+	    for flag in carg_list
+		if flag !=# 'f'
+		    let carg=substitute(carg, '\C'.flag, '', 'g')
+		else
+		    let carg=substitute(carg, '\Cfi\@!', '', 'g')
+		endif
+	    endfor
+	else
+	    let carg=carg_r
+	endif
+    endfor
     let b:atp_ErrorFormat = carg
     if exists("w:quickfix_title")
 	call setbufvar(bufnr, "atp_ErrorFormat", carg)
@@ -2301,7 +2295,7 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
     endif
     if ( carg =~ 'w' || carg =~? 'all' )
 	if g:atp_ParseLog
-	    let efm = 'LaTeX\ %tarning::%f::%l::%c::%m'
+	    let efm = 'LaTeX\ %tarning::%f::%l::%c::%m,Citation\ %tarning::%f::%l::%c::%m,Reference\ LaTeX\ %tarning::%f::%l::%c::%m,Package %tarning::%f::%l::0::%m'
 	else
 	    let efm='%WLaTeX\ %tarning:\ %m\ on\ input\ line\ %l%.,
 			\%WLaTeX\ %.%#Warning:\ %m,
@@ -2319,6 +2313,14 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 " 	    let &l:errorformat= &l:errorformat . ',%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#,
 " 			\%WLaTeX\ %.%#Warning:\ %m,
 " 			\%+W%.%#\ at\ lines\ %l--%*\\d'
+	endif
+    endif
+    if g:atp_ParseLog && ( carg =~# 'O' || carg =~? 'all' )
+	let efm = "Overfull %tarning::%f::%l::0::%m"
+	if &l:errorformat == ""
+	    let &l:errorformat=efm
+	else
+	    let &l:errorformat= &l:errorformat . ',' . efm
 	endif
     endif
     if ( carg =~ '\Cc' || carg =~? 'all' )
@@ -2389,9 +2391,17 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 	    let &l:errorformat = &l:errorformat . ',' . efm
 	endif
     endif
-    if carg =~ '\Cp' || carg =~# 'All'
+    if g:atp_ParseLog && (carg =~ '\Cp' || carg =~# 'All')
+	let efm = "Package %tnfo::%f::%l::0::%m"
+	if &l:errorformat == ""
+	    let &l:errorformat = efm
+	else
+	    let &l:errorformat = &l:errorformat.','.efm
+	endif
+    endif
+    if carg =~ '\CP' || carg =~# 'All'
 	if g:atp_ParseLog
-	    let efm = "%tnput Package::0::%l::%c::%m"
+	    let efm = "Input %tackage::%f::0::0::%m"
 	else
 	    let efm = 'Package: %m'
 	endif
@@ -2463,6 +2473,8 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 	    call atplib#callback#Signs(bufnr("%"))
 	endif
     endif
+    let eventignore=&eventignore
+    set eventignore=BufEnter,BufLeave
     if t:atp_QuickFixOpen
 	let winnr=winnr()
 	" Quickfix is opened, jump to it and change the size
@@ -2470,13 +2482,13 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 	exe "resize ".min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])
 	exe winnr."wincmd w"
     endif
+    let &eventignore=eventignore
     if add != "0"
 	echo "[ATP:] current error format: ".b:atp_ErrorFormat 
     endif
 endfunction
 "}}}
-"{{{
-function! atplib#compiler#FilterQuickFix()
+function! atplib#compiler#FilterQuickFix() "{{{
     if !g:atp_ParseLog
 	return
     endif
@@ -2490,7 +2502,7 @@ function! atplib#compiler#FilterQuickFix()
     call setqflist(new_qflist)
 endfunction
 "}}}
-"{{{ ShowErrors
+"{{{ atplib#compiler#ShowErrors
 " each argument can be a word in flags as for atplib#compiler#SetErrorFormat (except the
 " word 'whole') + two other flags: all (include all errors) and ALL (include
 " all errors and don't ignore any line - this overrides the variables
@@ -2527,7 +2539,7 @@ function! atplib#compiler#ShowErrors(...)
     " set errorformat 
     let l:arg = ( a:0 >= 1 ? a:1 : b:atp_ErrorFormat )
 
-    if l:arg =~ 'o'
+    if l:arg =~# 'o'
 	OpenLog
 	return
     elseif l:arg =~ 'b'
@@ -2560,13 +2572,22 @@ endfunction
 "}}}
 if !exists("*ListErrorsFlags")
 function! atplib#compiler#ListErrorsFlags(A,L,P)
-    return "all\nAll\nc\ne\nF\nf\nfi\no\nr\nw\nb"
+    if g:atp_ParseLog
+	let flags = "e\nw\nr\nc\nf\nfi\nF\nO\np\nP\no\nall\nAll"
+	return flags
+    else
+	let flags = "e\nw\nr\nc\nf\nfi\nF\no\nP\nall\nAll"
+    endif
 endfunction
 endif
 if !exists("*ListErrorsFlags_A")
 function! atplib#compiler#ListErrorsFlags_A(A,L,P)
     " This has no o flag.
-    return "all\nAll\nc\ne\nF\nf\nfi\nr\nw\nb"
+    if g:atp_ParseLog
+	return "e\nw\nr\nc\nf\nfi\nF\nO\np\nP\nall\nAll"
+    else
+	return "e\nw\nr\nc\nf\nfi\nF\nP\nall\nAll"
+    endif
 endfunction
 endif
 "}}}

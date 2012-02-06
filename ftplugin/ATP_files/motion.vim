@@ -29,7 +29,7 @@ function! CTOC(...)
 	    endif
 	endfor
 	let s:document_class = matchstr(fline, '\\documentclass\[.*\]{\s*\zs[^}]*\ze\s*}')
-    catch /E484:/
+    catch /E\(484\|121\):/
 	if !exists("s:document_class")
 	    let s:document_class = ""
 	endif

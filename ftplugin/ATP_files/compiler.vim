@@ -36,6 +36,7 @@ nnoremap <silent> <Plug>BibtexVerbose	:call atplib#compiler#Bibtex("!", "verbose
 "}}}
 " Commands And Autocommands: 
 " {{{
+command! 	 		Cgetfile		:cgetfile<bar>call atplib#compiler#FilterQuickFix()
 command! -buffer		HighlightErrors		:call atplib#callback#HighlightErrors()
 command! -buffer		ClearHighlightErrors	:call atplib#callback#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call atplib#compiler#Kill(<q-bang>)
@@ -63,17 +64,6 @@ augroup END
 
 command! -buffer -nargs=? -complete=custom,atplib#compiler#ListErrorsFlags_A 	ErrorFormat 	:call atplib#compiler#SetErrorFormat(1,<q-args>)
 let load_ef=(exists("t:atp_QuickFixOpen") ? !t:atp_QuickFixOpen : 1)
-" Note: the following code works nicly with :split (do not reloads the log file) but
-" this is not working with :edit
-" but one can use: au BufEnter *.tex :cgetfile
-if exists("t:atp_QuickFixOpen") && t:atp_QuickFixOpen
-    " If QuickFix is opened:
-    let load_ef = 0
-else
-    let load_ef = 1
-endif
-" let g:load_ef=load_ef
-call atplib#compiler#SetErrorFormat(load_ef, g:atp_DefaultErrorFormat)
 command! -buffer -nargs=? -complete=custom,atplib#compiler#ListErrorsFlags 	ShowErrors 	:call atplib#compiler#ShowErrors(<f-args>)
 " }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

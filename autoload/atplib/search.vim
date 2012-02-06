@@ -284,7 +284,11 @@ function! atplib#search#LocalCommands_py(write, ...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let pwd		= getcwd()
-    exe "cd ".fnameescape(b:atp_ProjectDir)
+    try
+	exe "cd ".fnameescape(b:atp_ProjectDir)
+    catch /E344:/
+	return
+    endtry
 
     if a:write
 	call atplib#write("nobackup")
@@ -385,17 +389,19 @@ function! atplib#search#LocalAbbreviations()
 	    let g:atp_no_local_abbreviations = no_abbrev
 	endif
     endif
-    for env in b:atp_LocalEnvironments
-	if !empty(maparg(g:atp_iabbrev_leader.env.g:atp_iabbrev_leader, "i", 1))
-    " 	silent echomsg "abbreviation " . g:atp_iabbrev_leader.env.g:atp_iabbrev_leader . " exists."
-	    continue
-	endif
-	if exists("g:atp_abbreviate_".env)
-	    execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}".get(g:atp_abbreviate_{env}, 0, "<CR>")."\\end{".env."}".get(g:atp_abbreviate_{env}, 1, "<Esc>O")
-	else
-	    execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}<CR>\\end{".env."}<Esc>O"
-	endif
-    endfor
+    if exists("b:atp_LocalEnvironments")
+	for env in b:atp_LocalEnvironments
+	    if !empty(maparg(g:atp_iabbrev_leader.env.g:atp_iabbrev_leader, "i", 1))
+	" 	silent echomsg "abbreviation " . g:atp_iabbrev_leader.env.g:atp_iabbrev_leader . " exists."
+		continue
+	    endif
+	    if exists("g:atp_abbreviate_".env)
+		execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}".get(g:atp_abbreviate_{env}, 0, "<CR>")."\\end{".env."}".get(g:atp_abbreviate_{env}, 1, "<Esc>O")
+	    else
+		execute "iabbrev <buffer> ".g:atp_iabbrev_leader.env.g:atp_iabbrev_leader." \\begin{".env."}<CR>\\end{".env."}<Esc>O"
+	    endif
+	endfor
+    endif
 endfunction "}}}
 
 " Search for Definition in the definition dictionary (atplib#search#make_defi_dict).

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 15 January 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 01 February 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.4)
 			by Marcin Szamotulski
@@ -170,7 +170,13 @@ NEWS							*atp-news*
  If you set |g:atp_ParseLog| and |g:atp_Compiler|="python", then ATP will
  rewrite the log file so that the output is readable for vim |quickfix| using
  |errorformat|. The advantage is for project files, where it is important to
- correctly read the file position of the error.
+ correctly read the file position of the error. In addition there is one more
+ |atp-:ShowErrors| flag 'O' which shows 'overfull \hbox' messages. Also note
+ that the flag 'w' (for warnings) excludes font warning messages.
+ See also |atp-:Cgetfile| (This command will be removed in the future if my
+ patch which introduces autocommands for |cgetfile| will become part of vim).
+
+ |atp-:ErrorFormat| accepts "+{+flag}-{-flag}" as an argument.
 
  |g:atp_Signs|=0 by default.
 
@@ -509,7 +515,7 @@ EasyMotion and ATP ~
     You can set |g:atp_Compare|="". Alternatively, if you want to use the
     fastest comparing method of ATP, you can add to last line of
     s:EasyMotion() function in plugin/EasyMotion.vim add >
-	    let g:atp_changedtick = b:changedtick
+	    let b:atp_changedtick = b:changedtick
 <   You might want to change g:EasyMotion_leader_key (see |easymotion-leader-key|
     if you have EasyMotion), because some maps of ATP are interfering with
     EasyMotion. For example "-" might be a good choice.  You can also try to
@@ -1088,6 +1094,7 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 >
 		e		- include errors
 		w		- include all warning messages
+					(with g:atp_ParseLog, font warning messages are excluded)
 		r		- include all reference warnings
 		c		- include all citations warnings
 		f		- include all font warnings
@@ -1095,12 +1102,15 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 		F		- show files listed in the log
 				    (messages which start with 'File: ')
 				    shows the files loaded by tex
-					for example fd files that LaTeX is using
-		p		- show packages loaded by tex 
+				    for example fd files that LaTeX is using
+		p		- show package info messages (g:atp_ParseLog only)
+		P		- show packages loaded by tex 
 				    (messages which start with 'Package: ')
-		all		- show all above,
-		All		- show All the log file,
+		O		- show 'overfull \hbox' messages (g:atp_ParseLog only)
 		o		- open the log file in a new buffer (split).
+		all		- all excluding f,fi,F,p,P
+		All		- with g:atp_ParseLog:  show all the above,
+				  with !g:atp_ParseLog: show whole log file.
 <
 	If none flag is given |g:atp_DefaultErrorFormat| value is used.  If
 	'o' flag is used the split buffer with log message has a map 'q' to
@@ -1112,12 +1122,21 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 	errorformat but will not reload quickfix list. Better use
 	|atp-:ErrorFormat| instead.
 
+							*atp-:Cgetfile*
+:Cgetfile	
+	This works like |:cgetfile| command, but also filters errors from
+	quick fix list which are not recognised by |errorformat| (it is done
+	by |atp-:ShowErrors|). This is only useful with |g:atp_ParseLog|=1.
+	Otherwise it acts like |:cgetfile|. If you use cmdalias plugin
+	(vimscript 746) you can alias this command to cg (|:cg|) in |atprc|
+	file.
+
 							*g:atp_ParseLog*
 g:atp_ParseLog = 1
 	If |g:atp_ParseLog| is 1 (|g:atp_Compiler|="python"), then ATP will
 	parse the log file. So that |quickfix| will show you corrent file
 	names for the errors. This is particullary usefull for project 
-	files.
+	files. The new log file is written with an extension '_log'.
 
 							*g:atp_DefaultErrorFormat*
 g:atp_DefaultErrorFormat = 'erc' 
@@ -1160,8 +1179,10 @@ This is not a texloganalyzer mapping but it is a good place to mention it:
 	As an argument you may use +{flag} and -{flag} then {flag} will be
 	added/removed from |b:atp_ErrorFormat|, example: >
 		:ErrorFormat +w
+		:ErrorFormat +w-f
+		:ErrorFormat -F+e
 <	will add 'w' to |b:atp_ErrorFormat|.		
-	Note: this command works in quickfix window.
+	Note: this command works in quickfix window as well.
 
 							*atp-:SetErrorFile*
 :SetErrorFile					

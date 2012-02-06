@@ -66,7 +66,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
 # (this is for the aux file)
 
     if output_fname == None:
-        output_fname = input_fname+"~"
+        output_fname = os.path.splitext(input_fname)[0]+"._log"
 
     log_file = open(input_fname, 'r')
     log_stream = log_file.read()
@@ -109,7 +109,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     col_nr = 1
 
     # Message Patterns:
-    latex_warning_pat = re.compile('LaTeX Warning: ')
+    latex_warning_pat = re.compile('(LaTeX Warning: )')
     latex_warning= "LaTeX Warning"
 
     font_warning_pat = re.compile('LaTeX Font Warning: ')
@@ -120,6 +120,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
 
     package_warning_pat = re.compile('Package (\w+) Warning: ')
     package_warning = "Package Warning"
+
+    package_info_pat = re.compile('Package (\w+) Info: ')
+    package_info = "Package Info"
 
     hbox_info_pat = re.compile('Overfull \\\\hbox')
     hbox_info = "Overfull Warning"
@@ -225,20 +228,42 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             # Log Message: 'Package (\w+) Warning: '
                 package = re.match(package_warning_pat, line).group(1)
                 input_line = re.search('on input line (\d+)', line)
-                if not input_line:
-                    nline = log_lines[line_nr]
-                    if re.match('\('+package+'\)', nline):
-                        input_line = re.search('on input line (\d+)', nline)
                 nline = log_lines[line_nr]
-                msg = str(re.sub(package_warning_pat,'', line))
-                if re.match('\('+package+'\)',nline):
-                    msg+=re.sub('\('+package+'\)\s*', '', nline)
+                msg = re.sub(package_warning_pat,'', line)
+                i=0
+                while re.match('\('+package+'\)',nline):
+                    msg+=re.sub('\('+package+'\)\s*', ' ', nline)
+                    if not input_line:
+                        input_line = re.search('on input line (\d+)', nline)
+                    i+=1
+                    nline = log_lines[line_nr+i]
                 if msg == "":
                     msg = " "
+                msg = re.sub(' on input line \d+', '', msg)
                 if input_line:
                     output_lines.append(package_warning+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg+" ("+package+")")
                 else:
                     output_lines.append(package_warning+"::"+last_file+"::0::0::"+msg+" ("+package+")")
+            elif re.match(package_info_pat, line):
+            # Log Message: 'Package (\w+) Info: '
+                package = re.match(package_info_pat, line).group(1)
+                input_line = re.search('on input line (\d+)', line)
+                nline = log_lines[line_nr]
+                msg = re.sub(package_info_pat,'', line)
+                i=0
+                while re.match('\('+package+'\)',nline):
+                    msg+=re.sub('\('+package+'\)\s*', ' ', nline)
+                    if not input_line:
+                        input_line = re.search('on input line (\d+)', nline)
+                    i+=1
+                    nline = log_lines[line_nr+i]
+                if msg == "":
+                    msg = " "
+                msg = re.sub(' on input line \d+', '', msg)
+                if input_line:
+                    output_lines.append(package_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg+" ("+package+")")
+                else:
+                    output_lines.append(package_info+"::"+last_file+"::0::0::"+msg+" ("+package+")")
             elif re.match(hbox_info_pat, line):
             # Log Message: 'Overfull \\\\hbox'
                 input_line = re.search('at lines (\d+)--(\d+)', line)

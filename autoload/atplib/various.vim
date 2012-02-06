@@ -904,7 +904,7 @@ function! atplib#various#Searchpair(start, middle, end, flag, ...)
 endfunction
 "}}}
 function! atplib#various#OpenLog()
-    let errorfile = (g:atp_ParseLog ? substitute(&l:errorfile, '\~$', '', '') : &l:errorfile )
+    let errorfile = (g:atp_ParseLog ? substitute(&l:errorfile, '_log$', 'log', '') : &l:errorfile )
     if filereadable(errorfile)
 
 	let projectVarDict = SaveProjectVariables()

@@ -391,6 +391,14 @@ lockvar b:atp_autex_wait
 " if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
 "     let g:atp_ParseLog = has("python")
 " endif
+if !exists("g:atp_write_eventignore")
+    " This is a comma separated list of events which will be ignored when 
+    " atp saved the file (for example before background compilation but not
+    " with :TEX command)
+    let g:atp_write_eventignore=""
+    " This was added to make:
+    " au BufWrite *.tex :call atplib#motion#LatexTags('', 1) "silently make tags file
+endif
 if !exists("g:atp_ProgressBarValues")
     let g:atp_ProgressBarValues = {}
 endif
@@ -1107,6 +1115,9 @@ if !exists("g:atp_no_math_command_completion")
 endif
 if !exists("g:atp_tex_extensions")
     let g:atp_tex_extensions	= ["tex.project.vim", "aux", "_aux", "log", "bbl", "blg", "bcf", "run.xml", "spl", "snm", "nav", "thm", "brf", "out", "toc", "mpx", "idx", "ind", "ilg", "maf", "glo", "mtc[0-9]", "mtc1[0-9]", "pdfsync", "synctex.gz" ]
+    if g:atp_ParseLog
+	call add(g:atp_tex_extensions, '_log')
+    endif
 endif
 for ext in g:atp_tex_extensions
     let suffixes = split(&suffixes, ",")
@@ -2045,10 +2056,10 @@ endif
 	if !exists("g:atp_no_separator")
 	    let g:atp_no_separator = 0
 	endif
-	if !g:atp_no_separator
-	    " This sets iskeyword vim option (see syntax/tex.vim file)
-	    let g:tex_isk ="48-57,a-z,A-Z,179-218,".g:atp_separator
-	endif
+" 	if !g:atp_no_separator
+" 	    " This sets iskeyword vim option (see syntax/tex.vim file)
+" 	    let g:tex_isk ="48-57,_,@,a-z,A-Z,192-255,".g:atp_separator
+" 	endif
 	if !exists("g:atp_no_short_names")
 	    let g:atp_env_short_names = 1
 	endif
@@ -2458,6 +2469,64 @@ endfunction
 
 if !s:did_options
     
+    augroup ATP_changedtick
+	au!
+	au BufEnter,BufWritePost 	*.tex 	:let b:atp_changedtick = b:changedtick
+    augroup END 
+
+    augroup ATP_auTeX
+	au!
+	au CursorHold 	*.tex call atplib#compiler#auTeX()
+	au CursorHoldI 	*.tex call atplib#compiler#auTeX()
+    augroup END 
+    " {{{ Setting ErrorFormat
+    " Is done using autocommands, if the opened file belongs to the same
+    " project as the previous file, then just copy the variables
+    " b:atp_ErrorFormat, other wise read the error file and set error format
+    " to g:atp_DefaultErrorFormat (done with
+    " atplib#compiler#SetErrorFormat()).
+    "
+    " For sty and cls files, always pretend they belong to the same project.
+    function! ATP_BufLeave()
+	let s:previous_file = ( &buftype != 'quickfix' ? expand("%:p") : &buftype )
+	let s:error_format = ( exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : 'no_error_format' )
+	let g:previous_file = s:previous_file
+	echomsg "PFILE ".s:previous_file." EFM ".s:error_format
+    endfunction
+    function! <SID>BufEnter()
+	if exists("s:previous_file")
+	    if s:previous_file == 'quickfix' || &buftype == 'quickfix'
+		return
+	    endif
+	    let same_project=(index(map(b:ListOfFiles, 'atplib#FullPath(v:val)'),s:previous_file) != -1) ||
+			\ index(['sty', 'cls'], expand("%:e")) != -1
+	    if !same_project
+		echomsg "OTHER PROJECT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
+		let errorflags = exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : g:atp_DefaultErrorFormat
+		call atplib#compiler#SetErrorFormat(1, errorflags)
+	    else
+		echomsg "SAME PROJECT ".s:error_format . " " . expand("%:p")
+		if s:error_format != 'no_error_format'
+		    call atplib#compiler#SetErrorFormat(0, s:error_format)
+" 		else
+" 		    call atplib#compiler#SetErrorFormat(0, g:atp_DefaultErrorFormat)
+		endif
+	    endif
+	    unlet s:previous_file
+	    unlet s:error_format
+	else
+	    echomsg "INIT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
+	    call atplib#compiler#SetErrorFormat(1, g:atp_DefaultErrorFormat)
+	endif
+    endfunction
+
+"     augroup ATP_ErrorFormat
+" 	au!
+" 	au BufLeave * :call ATP_BufLeave()
+" 	au BufEnter *.tex :call <SID>BufEnter()
+"     augroup END
+    "}}}
+
     augroup ATP_UpdateToCLine
 	au!
 	au CursorHold *.tex nested :call atplib#motion#UpdateToCLine()
@@ -2524,9 +2593,9 @@ endfunction
     function! ErrorMsg(type)
 	let errors		= len(filter(getqflist(),"v:val['type']==a:type"))
 	if errors > 1
-	    let type		= (a:type == 'E' ? 'errors' : 'warnnings')
+	    let type		= (a:type == 'E' ? 'errors' : 'warnings')
 	else
-	    let type		= (a:type == 'E' ? 'error' : 'warnning')
+	    let type		= (a:type == 'E' ? 'error' : 'warning')
 	endif
 	let msg			= ""
 	if errors
@@ -2539,29 +2608,59 @@ endfunction
 	au!
 	au FileType qf command! -bang -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
 	au FileType qf let w:atp_qf_errorfile=&l:errorfile
-	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarnningMsg#%{ErrorMsg('W')}\ %#ErrorMsg#%{ErrorMsg('E')}
+	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarningMsg#%{ErrorMsg('W')}\ %#ErrorMsg#%{ErrorMsg('E')}
 	au FileType qf exe "resize ".min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])
-	au QuickFixCmdPost
     augroup END
 
     function! <SID>BufEnterCgetfile()
 	if !exists("b:atp_ErrorFormat")
 	    return
 	endif
+	" Do not execute :cgetfile if we are moving out of a quickfix buffer,
+	" or switching between project files unless b:atp_autex == 2.
+	if exists("s:leaving_buffer") && 
+		    \ ( s:leaving_buffer == 'quickfix'
+		    \ ||(exists("b:ListOfFiles") && index(map(b:ListOfFiles, 'atplib#FullPath(v:val)'), s:leaving_buffer) != -1 ||
+		    \ exists("b:atp_MainFile") && atplib#FullPath(b:atp_MainFile) == s:leaving_buffer ) &&
+		    \ exists("b:atp_autex") && b:atp_autex < 2
+		    \ )
+	    unlet s:leaving_buffer
+	    return
+	endif
 	if g:atp_cgetfile 
 	    try
-		cgetfile
-		call atplib#compiler#FilterQuickFix()
-		" cgetfile needs:
+		" This command executes cgetfile:
 		exe "ErrorFormat ".b:atp_ErrorFormat
 	    catch /E40:/ 
 	    endtry
 	endif
     endfunction
+    function! <SID>BufLeave()
+	if &buftype == 'quickfix'
+	    let s:leaving_buffer='quickfix'
+	else
+	    let s:leaving_buffer=expand("%:p")
+	endif
+    endfunction
+if !exists("g:patched_vim") || g:patched_vim == 0
     augroup ATP_QuickFix_cgetfile
+"     When using cgetfile the position in quickfix-window is lost, which is
+"     annoying when changing windows. 
 	au!
+	au BufLeave *	:call <SID>BufLeave()
 	au BufEnter *.tex :call <SID>BufEnterCgetfile()
     augroup END
+else
+    function! <SID>Latex_Log() 
+	if exists("b:atp_MainFile")
+	    call system("python ".shellescape(split(globpath(&rtp, "ftplugin/ATP_files/latex_log.py"), "\n")[0])." ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".log"))
+	endif
+    endfunction
+    augroup ATP_QuickFix_cgetfile
+	au QuickFixCmdPre cgetfile,cfile,cfileadd :call <SID>Latex_Log()
+	au QuickFixCmdPost cgetfile,cfile,cfileadd :call atplib#compiler#FilterQuickFix()
+    augroup END
+endif
 
     augroup ATP_VimLeave
 	au!

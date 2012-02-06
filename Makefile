@@ -100,11 +100,11 @@ ${Plugin}_${VERSION}.vmb: ${SOURCE}
 	python stamp.py ${DATE} ${VERSION}
 	python version.py ${VERSION}
 	tar -czf ${PLUGIN}_${VERSION}.tar.gz ${SOURCE}
-	vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
+	/usr/bin/vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 
 install:
 	rsync -Rv ${SOURCE} ${INSTALL_DIR}
-	vim --cmd :helptags\ ${INSTALL_DIR}/doc --cmd q!
+	/usr/bin/vim --cmd :helptags\ ${INSTALL_DIR}/doc --cmd q!
 
 clean:		
 	rm ${PLUGIN}_[0-9.]*.*
