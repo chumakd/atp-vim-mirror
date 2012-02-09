@@ -13,6 +13,9 @@ let g:atp_beamer_environments = ["frame", "beamercolorbox", "onlyenv", "altenv",
 	    \ 'description', 'structureenv', 'alertenv', 'block', 'alertblock', 'exampleblock', 'beamercolorbox',
 	    \ 'beamerboxesrounded', 'columns', 'semiverbatim' ]
 
+let g:atp_beamer_environment_options = { 
+	    \ 'frame' : [ 'allowdisplaybreaks', 'allowframebreaks', 'b', 'c', 't', 'fragile', 'environment=', 'label=', 'sqeeze',  'plain', 'shrink' ]
+	    \ }
 let g:atp_beamer_commands = ["\\alert{", "\\frametitle{", "\\framesubtitle", "\\titlepage", "\\setbeamercolor{", 
 		    \ "\\pause", "\\onslide", "\\only", "\\uncover", "\\visible", "\\invisible", "\\temporal", "\\alt",
 		    \ "\\usebeamercolor{", "\\includeonlyframes{", "\\againframe", "\\setbeamersize{",
@@ -28,7 +31,6 @@ let g:atp_beamer_commands = ["\\alert{", "\\frametitle{", "\\framesubtitle", "\\
 		    \ '\usefonttheme{', '\note', '\AtBeginNote', '\AtEndNote', '\setbeameroption{',
 		    \ '\setbeamerfont{', "\\setbeamertemplate{", '\mode', '\insertframetitle' ]
 
-    
 let g:Local_BeamerThemes=
 	\ map(map(
 	    \ split(globpath(g:texmf."/tex/latex/beamer/themes/theme", "*.sty"), "\n"), 'fnamemodify(v:val, ":t:r")'),
@@ -62,10 +64,15 @@ let g:BeamerColorThemes = g:Local_BeamerColorThemes+[ "default", "structure", "s
 	    \ "dolphin" ]
 let g:BeamerFontThemes = g:Local_BeamerFontThemes+[ "default", "serif", "structurebold", "structureitalicserif",
 	    \ "structuresmallcapsserif" ]
+
+let g:BeamerElements = sort([ 'alerted text', 'background canvas', 'block body alerted', 'block body', 'block body example', 'block title alerted', 'block title', 'block title example', 'fine separation line', 'frametitle', 'item projected', 'palette sidebar primary', 'palette sidebar queternary', 'palette sidebar secondary', 'palette sidebar tertiary', 'section in sidebar', 'section in sidebar shaded', 'sidebar', 'structure', 'subsection in sidebar', 'subsection in sidebar shaded', 'title', 'titlelike', 'section in  head/foot', 'title in head/foot'])
+
 let g:atp_beamer_command_values = {
-	    \ '\\usetheme{$' : g:BeamerThemes,
-	    \ '\\useinnertheme{$' : g:BeamerInnerThemes,
-	    \ '\\useoutertheme{$' : g:BeamerOuterThemes,
-	    \ '\\usecolortheme{$' : g:BeamerColorThemes,
-	    \ '\\usefonttheme{$' : g:BeamerFontThemes
+	    \ '\\usetheme{$' 		: g:BeamerThemes,
+	    \ '\\useinnertheme{$' 	: g:BeamerInnerThemes,
+	    \ '\\useoutertheme{$' 	: g:BeamerOuterThemes,
+	    \ '\\usecolortheme{$' 	: g:BeamerColorThemes,
+	    \ '\\usefonttheme{$' 	: g:BeamerFontThemes,
+	    \ '\\\%(setbeamercolor\|setbeamertemplace\|setbeamerfont\)\s*{$' 	: g:BeamerElements,
+	    \ '\\setbeamercolor\s*{[^}]*}\s*{\%(.*=\)\?$' : 'GetColors'
 	    \ }

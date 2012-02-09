@@ -1719,6 +1719,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 
     " this matches for \...
     let begin		= strpart(l,nr+1)
+    let cmd_val_begin	= strpart(l,max([nr+1,r+1]))
     let color_begin	= strpart(l,color_nr+1)
     let cbegin		= strpart(l,nr)
     " and this for '\<\w*$' (beginning of last started word) -- used in
@@ -1759,6 +1760,8 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	call atplib#Log("TabCompletion.log", "line=".line)
 	let g:abegin	= abegin
 	call atplib#Log("TabCompletion.log", "abegin=".abegin)
+	let g:cmd_val_begin = cmd_val_begin
+	call atplib#Log("TabCompletion.log", "cmd_val_begin=".cmd_val_begin)
 	let g:tbegin	= tbegin
 	call atplib#Log("TabCompletion.log", "tbegin=".tbegin)
 	let g:cbegin	= cbegin
@@ -2192,10 +2195,11 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     " {{{3 ------------ ENVIRONMENT OPTIONS
     elseif completion_method == 'environment options'
 	let env_name = matchstr(l, '.*\\begin{\s*\zs\w\+\ze\s*}')
+	let g:env_name = env_name
 	let completion_list=[]
 	for package in g:atp_packages
-	    if exists("g:atp_".package."_environment_options") && atplib#search#SearchPackage(package)
-		echomsg package
+	    if exists("g:atp_".package."_environment_options") && 
+			\ (atplib#search#SearchPackage(package) || atplib#search#DocumentClass(b:atp_MainFile) == package)
 		for key in keys({"g:atp_".package."_environment_options"})
 		    if env_name =~ key
 			call extend(completion_list, {"g:atp_".package."_environment_options"}[key])
@@ -2481,6 +2485,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     " {{{3 ------------ COMMAND VALUES
     elseif completion_method == 'command values'
 	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
+" 	    let command = matchstr(l, '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\ze\%([^}]\|{\%([^}]\|{[^}]*}\)*}\)*$')
 	    let command = matchstr(l, '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\ze\%([^}]\|{\%([^}]\|{[^}]*}\)*}\)*$')
 	else
 	    let command = matchstr(l, '.*\\renewcommand{\s*\zs\\\?\w*\ze\s*}')
@@ -2849,7 +2854,6 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    " {{{4 --------- packages, package options, bibstyles, font (family, series, shapre, encoding), document class, documentclass options
 	    if (completion_method == 'package' 		||
 		    \ completion_method == 'package options'||
-		    \ completion_method == 'command values'||
 		    \ completion_method == 'environment options'||
 		    \ completion_method == 'documentclass options'||
 		    \ completion_method == 'bibstyles' 	||
@@ -2865,6 +2869,13 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 		    let completions	= filter(copy(completion_list),' v:val =~? "^".begin') 
 		else
 		    let completions	= filter(copy(completion_list),' v:val =~? begin') 
+		endif
+	    " {{{4 --------- command values
+	    elseif completion_method == 'command values' 
+		if a:expert_mode
+		    let completions	= filter(copy(completion_list),' v:val =~? "^".cmd_val_begin') 
+		else
+		    let completions	= filter(copy(completion_list),' v:val =~? cmd_val_begin') 
 		endif
 	    " {{{4 --------- package options values
 	    elseif ( completion_method == 'package options values' )
@@ -3074,13 +3085,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	let column = col+1
     " {{{3 command values
     elseif  !normal_mode && ( completion_method == 'command values' )
-	if l !~ '\\renewcommand{[^}]*}{[^}]*$'
-	    let col=max([
-			\ len(matchstr(l,  '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\ze')), 
-			\ len(matchstr(l,  '.*\\\w\+\%(\[\%([^\]]\|\[[^\]]*\]\)*\]\)\?\%({\%([^}]\|{\%([^}]\|{[^}]*\)*}}\)*}\)*{\%([^}]\|{\%([^}]\|{\%([^}]\|{[^}]*\)*}\)*}\)*,\ze'))])
-	else
-	    let col=len(matchstr(l, '.*\\renewcommand{[^}]*}{\ze'))
-	endif
+	let col = len(l)-len(cmd_val_begin)
 	call complete(col+1, completions)
 	let column = col+1
     " {{{3 package and document class options values
