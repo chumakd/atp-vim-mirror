@@ -61,6 +61,7 @@ if not options.synctex:
             column = str(args[2])
     else:
             column = str(1)
+    synctex_returncode  = 0
 else:
     # Run synctex
     page=args[1]
@@ -76,6 +77,7 @@ else:
     synctex_output      = synctex.stdout.read()
     synctex_error       = synctex.stderr.read()
     synctex_error_list  = re.split('\n',synctex_error)
+    synctex_returncode  = synctex.returncode
     error               = ""
     f.write('>>> synctex return code: '+str(synctex.returncode)+"\n")
     for error_line in synctex_error_list:
@@ -114,7 +116,7 @@ if match != None:
     findandopen=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     vim_server=re.split("\n",findandopen.stdout.read())[0]
     f.write('>>> vim server: '+vim_server+"\n")
-    if synctex.returncode != 0 and vim_server != "":
+    if synctex_returncode != 0 and vim_server != "":
         cmd=""
         if error != "":
             vim_remote_expr(vim_server, "atplib#callback#Echo('[ATP:] "+error+"','echomsg','WarninMsg', '1')")
