@@ -397,7 +397,7 @@ try:
             latex_returncode=latex.returncode
             debug_file.write("latex return code "+str(latex_returncode)+"\n")
             tempdir_list = os.listdir(tmpdir)
-            debug_file.write("JUST AFTER LATEX ls tmpdir "+str(tempdir_list)+"\n")
+            debug_file.write("JUST AFTER LATEX ls tmpdir ("+str(tmpdir)+") "+str(tempdir_list)+"\n")
         # Return code of compilation:
         if verbose != "verbose":
             vim_remote_expr(servername, "atplib#callback#TexReturnCode('"+str(latex_returncode)+"')")
@@ -441,7 +441,7 @@ try:
     for ext in list(filter(keep_filter_aux,keep))+[output_format]:
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
-            debug_file.write(file_cp+' ')
+            debug_file.write(file_cp+' \n')
             shutil.copy(file_cp, mainfile_dir)
 
 # Copy aux file if there were no compilation errors or if it doesn't exists in mainfile_dir.
@@ -484,18 +484,20 @@ try:
             run.extend(viewer_opt)
             run.append(output_fp)
             debug_file.write("D1: "+str(run)+"\n")
-            subprocess.Popen(run)
+            viewer_s=subprocess.Popen(run)
+            # We cannot read stderr, since if there is no error it will freeze the script.
         elif cond and ( reload_on_error or latex_returncode == 0 or bang ):
             run=['xpdf', '-remote', XpdfServer, '-reload']
-            subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            viewer_s=subprocess.Popen(run)
             debug_file.write("D2: "+str(['xpdf',  '-remote', XpdfServer, '-reload'])+"\n")
     else:
         if start >= 1:
             run=[viewer]
             run.extend(viewer_opt)
             run.append(output_fp)
+            print(run)
             debug_file.write("RUN "+str(run)+"\n")
-            subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if start == 2:
             vim_remote_expr(servername, "atplib#SyncTex()")
 

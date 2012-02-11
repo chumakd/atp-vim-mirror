@@ -68,12 +68,14 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     if output_fname == None:
         output_fname = os.path.splitext(input_fname)[0]+"._log"
 
-    log_file = open(input_fname, 'r')
+    try:
+        log_file = open(input_fname, 'r')
+    except IOError:
+        sys.exit(1)
     log_stream = log_file.read()
     log_file.close()
 
     dir = os.path.dirname(os.path.abspath(input_fname))
-    print(dir)
     os.chdir(dir)
 
     # Filter the log_stream: remoove all unbalanced brackets (:)
@@ -202,8 +204,12 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 msg = re.sub(' on input line \d+', '', re.sub(font_warning_pat,'', line))
                 if msg == "":
                     msg = " "
-                if re.match('\(Font\)', log_lines[line_nr]):
-                    msg += re.sub(' on input line \d+', '', re.sub('\(Font\)\s*', '. ', log_lines[line_nr]))
+                i=0
+                while re.match('\(Font\)', log_lines[line_nr+i]):
+                    msg += re.sub(' on input line \d+', '', re.sub('\(Font\)\s*', ' ', log_lines[line_nr]))
+                    i+=1
+                if not re.search("\.\s*$", msg):
+                    msg = re.sub("\s*$", ".", msg)
                 if input_line:
                     output_lines.append(font_warning+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
                 else:
@@ -218,8 +224,12 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 msg = re.sub(' on input line \d+', '', re.sub(font_info_pat,'', line))
                 if msg == "":
                     msg = " "
-                if re.match('\(Font\)', log_lines[line_nr]):
-                    msg += re.sub(' on input line \d+', '', re.sub('\(Font\)\s*', '. ', log_lines[line_nr]))
+                i=0
+                while re.match('\(Font\)', log_lines[line_nr+i]):
+                    msg += re.sub(' on input line \d+', '', re.sub('\(Font\)\s*', ' ', log_lines[line_nr]))
+                    i+=1
+                if not re.search("\.\s*$", msg):
+                    msg = re.sub("\s*$", ".", msg)
                 if input_line:
                     output_lines.append(font_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
                 else:
@@ -333,4 +343,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
 
 # Main call
 if __name__ == '__main__':
-    rewrite_log(sys.argv[1])
+    try:
+        rewrite_log(sys.argv[1])
+    except IOError:
+        pass

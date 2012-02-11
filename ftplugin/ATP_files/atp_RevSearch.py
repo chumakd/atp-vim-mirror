@@ -50,8 +50,11 @@ def vim_remote_expr(servername, expr):
 
 # Get list of vim servers.
 output  = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
-servers = output.stdout.read().decode()
-match   = re.match('(.*)(\\\\n)?', servers)
+servers = output.stdout.read().decode().split("\n")
+def filter_empty(val):
+    return len(val)
+server_list = filter(filter_empty,servers)
+print(server_list)
 file    = args[0]
 output_file = file
 if not options.synctex:
@@ -68,6 +71,7 @@ else:
     x=args[2]
     y=args[3]
     if x == "0" and y == "0":
+        f.close()
         sys.exit("-1")
     y=float(791.333)-float(y)
     synctex_cmd=["synctex", "edit", "-o", str(page)+":"+str(x)+":"+str(y)+":"+str(file)]
@@ -106,10 +110,9 @@ else:
 
 f.write(">>> args        "+file+":"+line+":"+column+"\n")
 
-if match != None:
-    servers=match.group(1)
-    server_list=servers.split('\\n')
+if len(server_list):
     server = server_list[0]
+
     f.write(">>> server: "+server+"\n")
     # Call atplib#FindAndOpen()     
     cmd=progname+" --servername "+server+" --remote-expr \"atplib#FindAndOpen('"+file+"','"+output_file+"','"+line+"','"+column+"')\""
@@ -123,7 +126,7 @@ if match != None:
         else:
             vim_remote_expr(vim_server, "atplib#callback#Echo(\"[SyncTex:] synctex return with exit code: "+str(synctex.returncode)+"\",'echo','WarninMsg', '1')")
 # Debug:
-if match != None:
+if len(server_list):
 	f.write(">>> file        "+file+"\n>>> line        "+line+"\n>>> column      "+column+"\n>>> cmd         "+cmd+"\n")
 else:
 	f.write(">>> file        "+file+"\n>>> line        "+line+"\n>>> column      "+column+"\n>>> server       not found\n")

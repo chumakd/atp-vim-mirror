@@ -258,7 +258,7 @@ def reload_xpdf():
 # Reload xpdf if asked,
 
     if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
-        cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_'] 
+        cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_']
         if cond and ( reload_on_error or latex.returncode == 0 or bang ):
             debug_file.write("reloading Xpdf\n")
             run=['xpdf', '-remote', XpdfServer, '-reload']

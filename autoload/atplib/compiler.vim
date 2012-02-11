@@ -28,8 +28,8 @@ function! atplib#compiler#ViewOutput(bang,tex_file,xpdf_server,...)
     let ext		= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
 
     " Read the global options from g:atp_{b:atp_Viewer}Options variables
-    let global_options 	= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), " ")
-    let local_options 	= join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), " ")
+    let global_options 	= join(map(copy(exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), 'shellescape(v:val)'), " ")
+    let local_options 	= join(map(copy(exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), 'shellescape(v:val)'), " ")
 
     " Follow the symbolic link
     let link=resolve(tex_file)
@@ -279,7 +279,14 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, xpdf_server, ...)
 " 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(main_file). " -o ".fnameescape(fnamemodify(main_file, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
 "     endif
     elseif b:atp_Viewer =~ '^\s*xdvi\>'
-	let options = (exists("g:atp_xdviOptions") ? " ".join(g:atp_xdviOptions, " ") : " " ) ." ".join(getbufvar(bufnr(""), "atp_xdviOptions"), " ")
+	if exists("g:atp_xdviOptions")
+	    let options = " ".join(map(copy(g:atp_xdviOptions), 'shellescape(v:val)'), " ")
+	elseif exists("b:atp_xdviOptions")
+	    let options = " ".join(map(copy(b:atp_xdviOptions), 'shellescape(v:val)'), " ")
+	else
+	    let options = " "
+	endif
+
 	let sync_cmd = "xdvi ".options.
 		\ " -editor '".v:progname." --servername ".v:servername.
 		\ " --remote-wait +%l %f' -sourceposition ". 
@@ -562,6 +569,7 @@ function! atplib#compiler#Kill(bang)
     if has_key(g:atp_ProgressBarValues, bufnr("%"))
 	let g:atp_ProgressBarValues[bufnr("%")]={}
     endif
+    let b:atp_running = 0
 endfunction
 "}}}
 
@@ -1028,7 +1036,7 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 " 	IF OPENING NON EXISTING OUTPUT FILE
 "	only xpdf needs to be run before (we are going to reload it)
 	if a:start && b:atp_Viewer == "xpdf"
-	    let xpdf_options	= ( exists("g:atp_xpdfOptions")  ? join(g:atp_xpdfOptions, " ") : "" )." ".(exists("b:xpdfOptions") ? join(getbufvar(0, "atp_xpdfOptions"), " ") : " ")
+	    let xpdf_options	= ( exists("g:atp_xpdfOptions")  ? join(map(copy(g:atp_xpdfOptions), 'shellescape(v:val)'), " ") : "" )." ".(exists("b:xpdfOptions") ? join(map(copy(getbufvar(0, "atp_xpdfOptions")), 'shellescape(v:val)'), " ") : " ")
 	    let start 	= b:atp_Viewer . " -remote " . shellescape(XpdfServer) . " " . xpdf_options . " & "
 	else
 	    let start = ""	
