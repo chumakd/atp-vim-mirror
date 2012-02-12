@@ -38,16 +38,20 @@ endfunction
 "}}}
 
 " Get the file name and its path from the LABELS/ToC list.
-function! s:file() "{{{
+function! s:file(...) "{{{
     let labels	= ( expand("%") == "__Labels__" ? 1 : 0 )
 
     if labels == 0
-	return get(b:atp_Toc, line("."), ["", ""])[0]
+        if a:0 >= 1 && a:1 == 'main_file'
+            return get(b:atp_Toc, line("."), ["", "", ""])[2]
+        else
+            return get(b:atp_Toc, line("."), ["", ""])[0]
+        endif
     else
 	return get(b:atp_Labels, line("."), ["", ""])[0]
     endif
 endfunction
-" command! -buffer File	:echo s:file()
+command! -buffer File	:echo s:file()
 "}}}
  
 " {{{1 s:gotowinnr
@@ -106,7 +110,6 @@ command! -buffer GotoWinNr	:echo s:gotowinnr()
 
 function! GotoLine(closebuffer) "{{{
     let labels_window	= expand("%") == "__Labels__" ? 1 : 0
-    let g:labels_window = labels_window
     
     " if under help lines do nothing:
     let toc		= getbufline("%",1,"$")
@@ -115,26 +118,28 @@ function! GotoLine(closebuffer) "{{{
 	return ''
     endif
 
-    let buf	= s:file()
-
     " remember the ToC window number
     let tocbufnr= bufnr("")
 
     " line to go to
-    let nr	= atplib#tools#getlinenr(line("."), labels_window)
-    let g:nr	= nr
+    if g:atp_python_toc
+	let [file,nr] = atplib#tools#getlinenr(line("."), labels_window)
+    else
+	let file = s:file()
+	let nr = atplib#tools#getlinenr(line("."), labels_window)
+    endif
 
     " window to go to
     let gotowinnr= s:gotowinnr()
 
     if gotowinnr != -1
  	exe gotowinnr . " wincmd w"
-	if fnamemodify(buf, ":p") != fnamemodify(bufname("%"), ":p")
-	    exe "e " . fnameescape(buf)
+	if fnamemodify(file, ":p") != fnamemodify(bufname("%"), ":p")
+	    exe "e " . fnameescape(file)
 	endif
     else
  	exe " wincmd w"
-	exe "e " . fnameescape(buf)
+	exe "e " . fnameescape(file)
     endif
 	
     "if we were asked to close the window
@@ -151,6 +156,7 @@ endfunction
 " }}}
 
 function! <SID>yank(arg, ...) " {{{
+    let time = reltime()
     let labels_window	= expand("%") == "__Labels__" ? 1 : 0
     let register	= ( a:0 >= 1 ? a:1 : '"' )
 
@@ -161,20 +167,29 @@ function! <SID>yank(arg, ...) " {{{
     endif
 
     let l:cbufnr=bufnr("")
-    let file_name=s:file()
+    if g:atp_python_toc || labels_window
+	let [ file_name, line_nr ] = atplib#tools#getlinenr(line("."), labels_window)
+    else
+	let file_name=s:file()
+    endif
 
     if !labels_window
-	if exists("t:atp_labels") || get(t:atp_labels, file_name, "nofile") != "nofile"	 
+	if !exists("t:atp_labels") || index(keys(t:atp_labels), file_name) == -1
 	    " set t:atp_labels variable
-	    call atplib#tools#generatelabels(getbufvar(s:file(), 'atp_MainFile'), 0)
+            if g:atp_python_toc
+                call atplib#tools#generatelabels(s:file('main_file'), 0)
+            else
+                call atplib#tools#generatelabels(getbufvar(file_name, 'atp_MainFile'), 0)
+            endif
 	endif
 
-	let line	= atplib#tools#getlinenr(line("."), labels_window)
-	let choice	= get(get(filter(get(deepcopy(t:atp_labels), file_name, []), 'v:val[0] ==  line'), 0, []), 1 , 'nokey')
+	if !g:atp_python_toc
+	    let line_nr	= atplib#tools#getlinenr(line("."), labels_window)
+	endif
+	let choice	= get(get(filter(get(deepcopy(t:atp_labels), file_name, []), 'v:val[0] ==  line_nr'), 0, []), 1 , 'nokey')
     else
-	if exists("t:atp_labels") || get(t:atp_labels, file_name, "nofile") != "nofile"
-	    let line_nr		= atplib#tools#getlinenr(line("."), labels_window)
-	    let choice_list	= filter(get(deepcopy(t:atp_labels), file_name), "v:val[0] == line_nr" )
+        if exists("t:atp_labels")
+	    let choice_list	= filter(get(deepcopy(t:atp_labels), file_name, []), "v:val[0] == line_nr" )
 	    " There should be just one element in the choice list
 	    " unless there are two labels in the same line.
 	    let choice	= choice_list[0][1]
@@ -273,6 +288,7 @@ function! <SID>yank(arg, ...) " {{{
 	    call setpos('.',[getpos('.')[0],getpos('.')[1],getpos('.')[2]+len(choice),getpos('.')[3]])
 	endif
     endif
+    let g:time_yank=reltimestr(reltime(time))
 endfunction
 command! -buffer P :call Yank("p")
 " }}}
@@ -303,18 +319,19 @@ function! ShowLabelContext()
     endif
 
     let cbuf_name	= bufname('%')
-    let buf_name	= s:file()
-    let buf_nr		= bufnr("^" . buf_name . "$")
-    let win_nr		= bufwinnr(buf_name)
-    let line		= atplib#tools#getlinenr(line("."), labels_window)
-    if !exists("t:atp_labels")
-	let t:atp_labels=UpdateLabels(buf_name)
+    if g:atp_python_toc || labels_window
+	let [ buf_name, line ]		= atplib#tools#getlinenr(line("."), labels_window)
+    else
+	let buf_name			= s:file()
+	let line 			= atplib#tools#getlinenr(line("."), 0)
     endif
-    exe win_nr . " wincmd w"
-" 	if win_nr == -1
-" 	    exe "e #" . buf_nr
-" 	endif
-    exe "split! #" . buf_nr
+    wincmd w
+    let buf_nr		= bufnr("^" . buf_name . "$")
+    if buf_nr != -1
+	exe "split #" . buf_nr
+    else
+	exe "split " . buf_name
+    endif
     call setpos('.', [0, line, 1, 0])
 endfunction
 endif
@@ -323,10 +340,13 @@ endif
 " {{{1 EchoLine
 if !exists("*EchoLine")
 function! EchoLine()
+    " Note: only shows the line of loaded buffers (loading buffer takes some
+    " time)
 
     " If we are not on a toc/label line 
     " return
-    if !atplib#tools#getlinenr(line("."))
+    if g:atp_python_toc && atplib#tools#getlinenr(line(".")) == ['', ''] ||
+		\ !g:atp_python_toc && atplib#tools#getlinenr(line(".")) == ''
 	return 0
     endif
 
@@ -338,14 +358,19 @@ function! EchoLine()
 " 	return 0
 "     endif
 
-    let buf_name	= s:file()
-    let g:buf_name	= buf_name
+    if labels_window
+        let line     = atplib#tools#getlinenr(line("."), labels_window)
+        let buf_name     = s:file()
+    elseif g:atp_python_toc
+        let [buf_name,line]     = atplib#tools#getlinenr(line("."), labels_window)
+    else
+        let line     = atplib#tools#getlinenr(line("."), labels_window)
+        let buf_name     = s:file()
+    endif
     let buf_nr		= bufnr("^" . buf_name . "$")
-    if !exists("t:atp_labels")
+    if labels_window && !exists("t:atp_labels")
 	let t:atp_labels[buf_name]	= UpdateLabels(buf_name)[buf_name]
     endif
-    let line		= atplib#tools#getlinenr(line("."), labels_window)
-    let g:line		= line
     let sec_line	= join(getbufline(buf_name,line))
     let i 		= 1
     while sec_line	!~ '\\\%(\%(sub\)\?paragraph\|\%(sub\)\{0,2}section\|chapter\|part\)\s*{.*}' && i <= 20
@@ -409,6 +434,7 @@ endfunction
 endif
 setl updatetime=200 
 augroup ATP_TOC
+    au!
     au CursorHold __ToC__ :call EchoLine()
 augroup END
 "}}}1

@@ -194,6 +194,10 @@ NEWS							*atp-news*
 
  |atp-:S| command has additional flag 'x', when used the
  |v:searchforward| value will not be changed.
+
+ |atp-:TOC| was rewritten in python so that it works well with project files.
+ If your vim is compiled without python the old ToC will be used. 
+
 >
  ======================
  Changes in version 10.6.4
@@ -471,6 +475,10 @@ If you use VAM you can checkout into your vim-addon directory
 (~/.vim/vim-addons/AutomaticLaTexPlugin) and VAM will update it using svn
 pull. In this way you will have always the most recent version of ATP.
 
+Note: If you use Pathogen or VAM you need to restart all your vim servers if
+you want revesre search to work, or at least use in each running server
+pathogen#infect('addons'), or similar command with VAM (:ActivateAddons
+AutomaticLatexPlugin).
 
      Necessary vim settings:
      |:filetype-plugin-on|

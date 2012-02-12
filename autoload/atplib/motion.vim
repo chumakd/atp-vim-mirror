@@ -238,6 +238,164 @@ function! atplib#motion#maketoc(filename,...)
 "     return t:atp_toc
     return { a:filename : toc }
 endfunction
+"
+" {{{2 atplib#motion#maketoc_py
+function! atplib#motion#maketoc_py(filename,...)
+    " filename is supposed to be b:atp_MainFile
+if exists("s:py_toc")
+    unlet s:py_toc
+endif
+python << END
+import vim, fileinput, sys, re, os, os.path
+
+# main file
+file_name = vim.eval("a:filename")
+# Change the directory to the main file
+main_dir = os.path.dirname(file_name)
+if main_dir != '':
+    os.chdir(main_dir)
+
+section_pattern = re.compile('^[^%]*\\\\(subsection|section|chapter|part)(\*)?\s*(\[[^\]]*\])?\s*({.*})')
+subfile_pattern = re.compile('^[^%]*\\\\(input|include|subfile)\s*{([^}]*)}')
+
+# the toc list:
+toc = []
+# toc = [ [file_name, line_nr, section_unit, title, short_title, star ], ... ]
+# after the section number will be computed (depending on section/parts/ ..., 
+# or it might be taken from the aux file)
+
+# the list of files:
+file_list = [[file_name, 'root', 0]]
+# file_list = [ [ file, subfile, lnr ], ... ]
+
+def map_none(val):
+    if val == None:
+	return ''
+    else:
+	return val
+
+def add_extension(fname):
+# add tex extension if the file has no extension,
+
+    if os.path.splitext(fname)[1] == '':
+        return os.path.join(main_dir,fname+".tex")
+    else:
+        return os.path.join(main_dir,fname)
+
+def find_in_brackets( string ):
+# find string in brackets {...},
+
+    if '{' in string:
+        match = string.split('{', 1)[1]
+        open = 1
+        for index in  xrange(len(match)):
+            if match[index] == '{':
+                open += 1
+            elif match[index] == '}':
+                open -= 1
+            if not open:
+                return match[:index]
+
+
+def scan_project(fname):
+# scan file for section units starting after line start_line,
+
+    file_o = open(add_extension(fname), 'r')
+    file = file_o.readlines()
+    lnr = 0
+    length = len(file)
+    for line in file:
+        lnr+=1
+        secu = re.search(section_pattern, line)
+        subf = re.search(subfile_pattern, line)
+        if secu:
+            # toc = [ [file_name, line_nr, section_unit, title, short_title, star, sec_nr ], ... ]
+            # sec_nr is added afterwards.
+            add = [ add_extension(fname), lnr, secu.group(1), find_in_brackets(secu.group(4)), secu.group(3), secu.group(2)]
+            toc.append(map(map_none,add))
+        if subf:
+            file_list.append(map(map_none,[add_extension(fname), subf.group(2), lnr]))
+            scan_project(subf.group(2))
+
+
+scan_project(file_name)
+
+def check_sec(sec_name,toc):
+# Check if there is a section sec_name in toc
+
+    def filter_toc(val):
+        if val[2] == sec_name:
+            return True
+        else:
+            return False
+    return len(filter(filter_toc,toc)) > 0
+
+has_part = check_sec('part', toc)
+has_chapter = check_sec('chapter', toc)
+has_section = check_sec('section', toc)
+if len(toc) > 0:
+    p_nr = 0
+    c_nr = 0
+    s_nr = 0
+    ss_nr = 0
+    sss_nr = 0
+    for i in range(0,len(toc)):
+        if toc[i][2] == 'part' and toc[i][5] == '':
+            p_nr += 1
+            c_nr = 0
+            s_nr = 0
+            ss_nr = 0
+            sss_nr = 0
+        elif toc[i][2] == 'chapter' and toc[i][5] == '':
+            c_nr += 1
+            s_nr = 0
+            ss_nr = 0
+            sss_nr = 0
+        elif toc[i][2] == 'section' and toc[i][5] == '':
+            s_nr += 1
+            ss_nr = 0
+            sss_nr = 0
+        elif toc[i][2] == 'subsection' and toc[i][5] == '':
+            ss_nr += 1
+            sss_nr = 0
+        elif toc[i][2] == 'subsubsection' and toc[i][5] == '':
+            sss_nr += 1
+        if toc[i][5] == '*':
+            sec_nr = "*"
+        else:
+            if has_part:
+                if toc[i][2] == 'part':
+                    sec_nr = str(p_nr)
+                elif toc[i][2] == 'chapter':
+                    sec_nr = str(p_nr)+"."+str(c_nr)
+                elif toc[i][2] == 'section':
+                    sec_nr = str(p_nr)+"."+str(c_nr)+"."+str(s_nr)
+                elif toc[i][2] == 'subsection':
+                    sec_nr = str(p_nr)+"."+str(c_nr)+"."+str(s_nr)+"."+str(ss_nr)
+                elif toc[i][2] == 'subsubsection':
+                    sec_nr = str(p_nr)+"."+str(c_nr)+"."+str(s_nr)+"."+str(ss_nr)+"."+str(sss_nr)
+            elif has_chapter:
+                if toc[i][2] == 'chapter':
+                    sec_nr = str(c_nr)
+                elif toc[i][2] == 'section':
+                    sec_nr = str(c_nr)+"."+str(s_nr)
+                elif toc[i][2] == 'subsection':
+                    sec_nr = str(c_nr)+"."+str(s_nr)+"."+str(ss_nr)
+                elif toc[i][2] == 'subsubsection':
+                    sec_nr = str(c_nr)+"."+str(s_nr)+"."+str(ss_nr)+"."+str(sss_nr)
+            elif has_section:
+                if toc[i][2] == 'section':
+                    sec_nr = str(s_nr)
+                elif toc[i][2] == 'subsection':
+                    sec_nr = str(s_nr)+"."+str(ss_nr)
+                elif toc[i][2] == 'subsubsection':
+                    sec_nr = str(s_nr)+"."+str(ss_nr)+"."+str(sss_nr)
+        toc[i] = toc[i]+[sec_nr]
+
+vim.command("let s:py_toc="+str(toc))
+END
+return { a:filename : s:py_toc }
+endfunction
 " {{{2 atplib#motion#buflist
 if !exists("t:atp_toc_buflist")
     let t:atp_toc_buflist=[]
@@ -249,9 +407,15 @@ function! atplib#motion#buflist()
     if !exists("t:atp_toc_buflist")
 	let t:atp_toc_buflist = []
     endif
-    let name=resolve(fnamemodify(bufname("%"),":p")) " add an entry to the list t:atp_toc_buflist if it is not there.
+    if g:atp_python_toc
+        let name = atplib#FullPath(b:atp_MainFile)
+    else
+        let name=resolve(fnamemodify(bufname("%"),":p")) " add an entry to the list t:atp_toc_buflist if it is not there.
+    endif
     if bufname("") =~ ".tex" && index(t:atp_toc_buflist,name) == -1
-	call add(t:atp_toc_buflist,name)
+        if index(t:atp_toc_buflist,name) == -1
+            call add(t:atp_toc_buflist,name)
+        endif
     endif
     return t:atp_toc_buflist
 endfunction
@@ -346,7 +510,6 @@ function! atplib#motion#showtoc(toc)
 	let secnr=0
 	let ssecnr=0
 	let sssecnr=0
-	let path=fnamemodify(bufname(""),":p:h")
 	for line in keys(a:toc[openfile])
 	    if a:toc[openfile][line][0] == 'chapter'
 		let chap_on=1
@@ -535,6 +698,157 @@ function! atplib#motion#showtoc(toc)
     endif
     lockvar 3 b:atp_Toc
 endfunction
+" {{{2 atplib#motion#show_pytoc
+function! atplib#motion#show_pytoc(toc)
+
+    " this is a dictionary of line numbers where a new file begins.
+    let cline=line(".")
+"     " Open new window or jump to the existing one.
+"     " Remember the place from which we are coming:
+"     let t:atp_bufname=bufname("")
+"     let t:atp_winnr=winnr()	 these are already set by TOC()
+    let bname="__ToC__"
+    let tocwinnr=bufwinnr(bufnr("^".bname."$"))
+    if tocwinnr != -1
+	" Jump to the existing window.
+	    exe tocwinnr . " wincmd w"
+	    silent exe "%delete _"
+    else
+	" Open new window if its width is defined (if it is not the code below
+	" will put toc in the current buffer so it is better to return.
+	if !exists("t:toc_window_width")
+	    let t:toc_window_width = g:atp_toc_window_width
+	endif
+	let toc_winnr=bufwinnr(bufnr("__Labels__"))
+	if toc_winnr == -1
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	else
+	    exe toc_winnr."wincmd w"
+	    let l:openbuffer= "keepalt above split +setl\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	endif
+	keepalt silent exe  openbuffer
+	" We are setting the address from which we have come.
+	silent call atplib#setwindow()
+    endif
+    let number=1
+    " this is the line number in ToC.
+    " number is a line number relative to the file listed in ToC.
+    " the current line number is linenumber+number
+    " there are two loops: one over linenumber and the second over number.
+    let numberdict	= {}
+    let s:numberdict	= numberdict
+    unlockvar b:atp_Toc
+    let b:atp_Toc	= {}
+    " this variable will be used to set the cursor position in ToC.
+    for openfile in keys(a:toc)
+	call extend(numberdict, { openfile : number })
+	" write the file name in ToC (with a full path in paranthesis)
+	call setline(number,fnamemodify(openfile,":t") . " (" . fnamemodify(openfile,":p:h") . ")")
+        " openfile is the project name
+	call extend(b:atp_Toc, { number : [ openfile, 1, openfile ]}) 
+	let number+=1
+        let lineidx = -1
+	for line_list in a:toc[openfile]
+            let line = line_list[1]
+	    call extend(b:atp_Toc,  { number : [ line_list[0], line, openfile ] })
+            let lineidx+=1
+	    let nlineidx=lineidx+1
+	    if nlineidx < len(a:toc[openfile])
+		let nline=a:toc[openfile][nlineidx][1]
+	    else
+		let nline=line("$")
+	    endif
+	    let lenght=len(line)
+	    if lenght == 0
+		let showline="     "
+	    elseif lenght == 1
+		let showline="    " . line
+	    elseif lenght == 2
+		let showline="   " . line
+	    elseif lenght == 3
+		let showline="  " . line
+	    elseif lenght == 4
+		let showline=" " . line
+	    elseif lenght>=5
+		let showline=line
+	    endif
+	    " Print ToC lines.
+	    if line_list[2] == 'abstract' || line_list[3] =~ '^\cabstract$'
+		call setline(number, showline . "\t" . "  " . "Abstract" )
+	    elseif line_list[2] =~ 'bibliography\|references'
+		call setline (number, showline . "\t" . "  " . a:toc[openfile][line][2])
+	    else
+		let secnr=get(line_list,6,"XXX") " there might not bee section number in the line_list
+                let nr=secnr 
+                if line_list[4] != ''
+                    call setline (number, showline . "\t" . nr . " " . line_list[4])
+                else
+                    call setline (number, showline . "\t" . nr . " " . line_list[3])
+                endif
+	    endif
+	    let number+=1
+	endfor
+    endfor
+    " set the cursor position on the correct line number.
+    " first get the line number of the begging of the ToC of t:atp_bufname
+    " (current buffer)
+    let MainFile    = atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile"))
+    let num 	= get(s:numberdict, MainFile, 'no_number')
+    if num == 'no_number'
+	return
+    endif
+    let sorted	= t:atp_pytoc[MainFile]
+    for line_l in sorted
+        if g:atp_python_toc
+            if !exists("f")
+                let f = (t:atp_bufname == line_l[0])
+                " f should reach value 2 when we go out of t:atp_bufname
+            else
+                if f
+                    let f+= (t:atp_bufname != line_l[0])
+                else
+                    let f+=  (t:atp_bufname == line_l[0])
+                endif
+            endif
+            let line = line_l[1]
+            if f == 0
+                let num+=1
+            elseif f == 1 && cline>=line
+                let num+=1
+            else
+                break
+            endif
+        else
+            let line = line_l
+            if cline>=line
+                let num+=1
+            else
+                break
+            endif
+        endif
+    endfor
+    keepjumps call setpos('.',[bufnr(""),num,1,0])
+   
+    " Help Lines:
+    if search('<Enter> jump and close', 'nW') == 0
+	call append('$', [ '', 			
+		\ '_       set',
+		\ '<Space> jump', 
+		\ '<Enter> jump and close', 	
+		\ 's       jump and split', 
+		\ 'y or c  yank label', 	
+		\ 'p       paste label', 
+		\ 'q       close', 		
+		\ 'zc	     fold section[s]',
+		\ ":'<,'>Fold",
+		\ ':YankSection', 
+		\ ':DeleteSection', 
+		\ ':PasteSection[!]', 		
+		\ ':SectionStack', 
+		\ ':Undo' ])
+    endif
+    lockvar 3 b:atp_Toc
+endfunction
 " {{{2 atplib#motion#ToCbufnr()
 " This function returns toc buffer number if toc window is not open returns -1.
 function! atplib#motion#ToCbufnr() 
@@ -555,19 +869,55 @@ function! atplib#motion#UpdateToCLine(...)
     let cbufnr 	= bufnr("")
     let cwinnr	= bufwinnr("")
     exe toc_bufnr."wincmd w"
-    let num 	= get(s:numberdict, t:atp_bufname, 'no_number')
+    if g:atp_python_toc
+        let MainFile    = atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile"))
+        let num 	= get(s:numberdict, MainFile, 'no_number')
+    else
+        let num 	= get(s:numberdict, t:atp_bufname, 'no_number')
+    endif
     if num == 'no_number'
 	exe cwinnr."wincmd w"
 	return
     endif
-    let sorted	= sort(keys(t:atp_toc[t:atp_bufname]), "atplib#CompareNumbers")
-    for line in sorted
-	if cline>=line
-	    let num+=1
-	endif
-	keepjumps call setpos('.',[bufnr(""),num,1,0])
-	call atplib#tools#CursorLine()
+    if g:atp_python_toc
+        let sorted	= t:atp_pytoc[MainFile]
+"         call filter(sorted, 'v:val[0] == t:atp_bufname')
+    else
+        let sorted	= sort(keys(t:atp_toc[t:atp_bufname]), "atplib#CompareNumbers")
+    endif
+    for line_l in sorted
+        if g:atp_python_toc
+            if !exists("f")
+                let f = (t:atp_bufname == line_l[0])
+                " f should reach value 2 when we go out of t:atp_bufname
+            else
+                if f
+                    let f+= (t:atp_bufname != line_l[0])
+                else
+                    let f+=  (t:atp_bufname == line_l[0])
+                endif
+            endif
+"             echomsg "f="+f
+"             echomsg string(line_l)
+            let line = line_l[1]
+            if f == 0
+                let num+=1
+            elseif f == 1 && cline>=line
+                let num+=1
+            else
+                break
+            endif
+        else
+            let line = line_l
+            if cline>=line
+                let num+=1
+            else
+                break
+            endif
+        endif
     endfor
+    keepjumps call setpos('.',[bufnr(""),num,1,0])
+    call atplib#tools#CursorLine()
 
     let eventignore=&eventignore
     set eventignore+=BufEnter
@@ -577,6 +927,7 @@ endfunction
 " This is User Front End Function 
 " atplib#motion#TOC {{{2
 function! atplib#motion#TOC(bang,...)
+    let time = reltime()
     " skip generating t:atp_toc list if it exists and if a:0 != 0
     if &l:filetype != 'tex' && &l:filetype != 'toc_atp'   
 	echoerr "Wrong 'filetype'. This command works only for latex documents."
@@ -587,14 +938,24 @@ function! atplib#motion#TOC(bang,...)
     endif
     let search_package = ( a:0 >= 2 ? a:2 : 1 ) " avoid using atplib#search#SearchPackage() in atplib#motion#maketoc()
     " for each buffer in t:atp_toc_buflist (set by atplib#motion#buflist)
-    if ( a:bang == "!" || !exists("t:atp_toc") )
+    if ( a:bang == "!" || !exists("t:atp_toc") || g:atp_python_toc )
 	let t:atp_toc = {}
+        let t:atp_pytoc = {}
 	for buffer in t:atp_toc_buflist 
 " 	    let b:atp_toc=atplib#motion#maketoc(buffer)
-	    call extend(t:atp_toc, atplib#motion#maketoc(buffer,search_package))
+            if g:atp_python_toc
+                call extend(t:atp_pytoc, atplib#motion#maketoc_py(buffer,search_package))
+            else
+                call extend(t:atp_toc, atplib#motion#maketoc(buffer,search_package))
+            endif
 	endfor
     endif
-    call atplib#motion#showtoc(t:atp_toc)
+    if g:atp_python_toc
+        call atplib#motion#show_pytoc(t:atp_pytoc)
+    else
+        call atplib#motion#showtoc(t:atp_toc)
+    endif
+    let g:time_TOC = reltimestr(reltime(time))
 endfunction
 nnoremap <Plug>ATP_TOC			:call atplib#motion#TOC("")<CR>
 

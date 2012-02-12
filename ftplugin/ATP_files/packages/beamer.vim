@@ -3,6 +3,8 @@
 " beamer loads hyperref and its options are available using
 " \documentclass[hyperref=<hyperref_option>"]{beamer}
 " The same for xcolor package.
+"
+" Todo: completion for \setbeamerfont command.
 let g:atp_beamer_options=["ucs", "utf8", "utf8x", "handout", "hyperref=", "xcolor=", "dvips", 
 	    \ "draft", "compress", "t", "c", "aspectratio=", "usepdftitle=", "envcountsect", "notheorems", "noamsthm", 
 	    \ "8pt", "9pt", '10pt', '11pt', '12pt', 'smaller', 'bigger', '14pt', '17pt', '20pt', 'trans',
@@ -66,6 +68,10 @@ let g:BeamerFontThemes = g:Local_BeamerFontThemes+[ "default", "serif", "structu
 	    \ "structuresmallcapsserif" ]
 
 let g:BeamerElements = sort([ 'alerted text', 'background canvas', 'block body alerted', 'block body', 'block body example', 'block title alerted', 'block title', 'block title example', 'fine separation line', 'frametitle', 'item projected', 'palette sidebar primary', 'palette sidebar queternary', 'palette sidebar secondary', 'palette sidebar tertiary', 'section in sidebar', 'section in sidebar shaded', 'sidebar', 'structure', 'subsection in sidebar', 'subsection in sidebar shaded', 'title', 'titlelike', 'section in  head/foot', 'title in head/foot'])
+let g:BeamerOption   = [ 'show notes', 'hide notes', 'show notes on second screen', 'show only notes', 
+	    \ 'second mode text on second screen', 'always typeset second mode', 'previous slide on second screen']
+let g:BeamerSizes    = [ 'sidebar width left=', 'sidebar width right=', 'mini frame size=', 'mini frame offset=', 
+	    \ 'text margin left=', 'text margin right=', 'description width=', 'description width of=' ]
 
 let g:atp_beamer_command_values = {
 	    \ '\\usetheme{$' 		: g:BeamerThemes,
@@ -73,6 +79,8 @@ let g:atp_beamer_command_values = {
 	    \ '\\useoutertheme{$' 	: g:BeamerOuterThemes,
 	    \ '\\usecolortheme{$' 	: g:BeamerColorThemes,
 	    \ '\\usefonttheme{$' 	: g:BeamerFontThemes,
-	    \ '\\\%(setbeamercolor\|setbeamertemplace\|setbeamerfont\)\s*{$' 	: g:BeamerElements,
-	    \ '\\setbeamercolor\s*{[^}]*}\s*{\%(.*=\)\?$' : 'GetColors'
+	    \ '\\\%(setbeamercolor\|setbeamertemplate\|setbeamerfont\)\s*{$' 	: g:BeamerElements,
+	    \ '\\setbeamercolor\s*{[^}]*}\s*{\%(.*=\)\?$' : 'GetColors',
+	    \ '\\setbeameroption{$'	: g:BeamerOption,
+	    \ '\\setbeamersize{$'	: g:BeamerSizes
 	    \ }

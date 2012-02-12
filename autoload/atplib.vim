@@ -74,16 +74,14 @@ function! atplib#write(command,...) "{{{
     else
 	update
     endif
-    if a:command == 'AU'
-	let b:atp_changedtick = b:changedtick
-    endif
+    let b:atp_changedtick = b:changedtick
     " This works for projects, but it is too slow:
 "     bufdo call atplib#update(main_file, silent)
 
     if a:command =~# '^\(AU\|nobackup\)$'
 	let &backup		= backup
 	let &writebackup	= writebackup
-"         let &eventignore	= eventignore
+        let &eventignore	= eventignore
     endif
     let b:atp_ProjectScript = project
     let g:time_update = reltimestr(reltime(time))
@@ -166,7 +164,8 @@ function! atplib#FullPath(file_name) "{{{1
 	let file_path = a:file_name
     elseif exists("b:atp_ProjectDir")
 	try
-	    exe "lcd " . fnameescape(b:atp_ProjectDir)
+	    let project_dir = b:atp_ProjectDir
+	    exe "lcd " . fnameescape(project_dir)
 	    let file_path = fnamemodify(a:file_name, ":p")
 	    exe "lcd " . fnameescape(cwd)
 	catch /E344:/

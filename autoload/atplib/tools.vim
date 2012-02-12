@@ -125,7 +125,11 @@ function! atplib#tools#GrepAuxFile(...)
 	" We should worn the user that there is no aux file
 	" /this is not visible ! only after using the command 'mes'/
 	echohl WarningMsg
-	echomsg "[ATP:] there is no aux file. Run ".b:atp_TexCompiler." first."
+        if exists("b:atp_TexCompiler")
+            echomsg "[ATP:] there is no aux file. Run ".b:atp_TexCompiler." first."
+        else
+            echomsg "[ATP:] there is no aux file. "
+        endif
 	echohl None
 	return []
 	" CALL BACK is not working
@@ -161,6 +165,7 @@ function! atplib#tools#GrepAuxFile(...)
 "     for line in aux_file
     for line in loc_list
     if line =~ '\\newlabel\>'
+	let line = substitute(line, '\\GenericError\s*\%({[^}]*}\)\{4}', '', 'g')
 	" line is of the form:
 	" \newlabel{<label>}{<rest>}
 	" where <rest> = {<label_number}{<title>}{<counter_name>.<counter_number>}
@@ -212,7 +217,9 @@ function! atplib#tools#GrepAuxFile(...)
 	elseif line =~ '\\M@TitleReference' 
 	    let label	= matchstr(line, '^\\newlabel\s*{\zs[^}]*\ze}')
 	    let number	= matchstr(line, '\\M@TitleReference\s*{\zs[^}]*\ze}') 
-	    let counter	= ""
+	    let number	= substitute(number, '\\\%(text\|math\)\?\%(rm\|sf\|it\|bf\)\>\s*', '', 'g')
+	    let number  = substitute(number, '(\|)', '', 'g')
+	    let counter	= matchstr(line, '{\zs[^}]*\ze}{[^}]*}}$')
 
 	elseif line =~ '\\newlabel{[^}]*}{.*\\relax\s}{[^}]*}{[^}]*}}'
 	    " THIS METHOD MIGHT NOT WORK WELL WITH: book document class.
@@ -284,9 +291,11 @@ endfunction
 " 		number 
 " 	   [ this is done using :vimgrep which is fast, when the buffer is not loaded ]
 function! atplib#tools#generatelabels(filename, ...)
+
+    let time=reltime()
     let s:labels	= {}
-    let bufname		= fnamemodify(a:filename,":t")
-    let auxname		= fnamemodify(a:filename,":p:r") . ".aux"
+    let bufname		= fnamemodify(a:filename, ':t')
+    let auxname		= fnamemodify(a:filename, ':r') . ".aux"
     let return_ListOfFiles	= a:0 >= 1 ? a:1 : 1
 
     let true=1
@@ -297,7 +306,7 @@ function! atplib#tools#generatelabels(filename, ...)
     let saved_pos	= getpos(".")
     call cursor(1,1)
 
-    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] 		= TreeOfFiles(a:filename)
+    let [ TreeOfFiles, ListOfFiles, TypeDict, LevelDict ] = TreeOfFiles(a:filename)
     let ListOfFiles_orig = copy(ListOfFiles)
     if count(ListOfFiles, a:filename) == 0
 	call add(ListOfFiles, a:filename)
@@ -306,28 +315,58 @@ function! atplib#tools#generatelabels(filename, ...)
     let saved_llist	= getloclist(0)
     call setloclist(0, [])
 
+    let InputFileList = filter(copy(ListOfFiles), "get(TypeDict, v:val, '') == 'input'")
+    call map(InputFileList, "atplib#FullPath(v:val)")
+
     " Look for labels in all input files.
-    for file in ListOfFiles
-	if get(TypeDict, file, 'input') == 'input'
-	    let file	= atplib#FullPath(file)
+    if !has("python")
+	for file in InputFileList
 	    silent! execute "keepjumps lvimgrepadd /\\label\s*{/j " . fnameescape(file)
+	endfor
+	let loc_list	= getloclist(0)
+	call setloclist(0, saved_llist)
+	call map(loc_list, '[ v:val["lnum"], v:val["text"], fnamemodify(bufname(v:val["bufnr"]), ":p") ]')
+    else
+" We should save all files before.
+" Using this python grep makes twice as fast.
+python << EOF
+import vim, re
+files = vim.eval("InputFileList")
+loc_list = []
+for file in files:
+    file_o = open(file, 'r')
+    file_l = file_o.readlines()
+    file_o.close()
+    lnr = 0
+    for line in file_l:
+        lnr += 1
+	matches = re.findall('^(?:[^%]*|\\\\%)\\\\label\s*{\s*([^}]*)\s*}', line)
+	for m in matches:
+            loc_list.append([ lnr, m, file])
+vim.command("let loc_list="+str(loc_list))
+EOF
 	endif
-    endfor
-    let loc_list	= getloclist(0)
-"     call setloclist(0, saved_llist)
-    call map(loc_list, '[ v:val["lnum"], v:val["text"], v:val["bufnr"] ]')
 
     let labels = {}
 
     for label in aux_labels
-	let dict		= filter(copy(loc_list), "v:val[1] =~ '\\label\s*{\s*'.escape(label[0], '*\/$.') .'\s*}'")
+        if !has("python")
+            let dict		= filter(copy(loc_list), "v:val[1] =~ '\\label\s*{\s*'.escape(label[0], '*\/$.') .'\s*}'")
+        else
+            let dict		= filter(copy(loc_list), "v:val[1] ==# label[0]")
+        endif
 	let line		= get(get(dict, 0, []), 0, "") 
-	let bufnr		= get(get(dict, 0, []), 2, "")
-	let bufname		= fnamemodify(bufname(bufnr), ":p")
-	if get(labels, bufname, []) == []
-	    let labels[bufname] = [ [line, label[0], label[1], label[2], bufnr ] ]
-	else
-	    call add(labels[bufname], [line, label[0], label[1], label[2], bufnr ]) 
+	let bufname		= get(get(dict, 0, []), 2, "")
+	let bufnr		= bufnr(bufname)
+	if line != ''
+	    " Add only labels which have a line number (i.e. the ones that are
+	    " present in the tex file: when ones deletes a label it will
+	    " disappear from aux file only after compilation).
+	    if get(labels, bufname, []) == []
+		let labels[bufname] = [ [line, label[0], label[1], label[2], bufnr ] ]
+	    else
+		call add(labels[bufname], [line, label[0], label[1], label[2], bufnr ]) 
+	    endif
 	endif
     endfor
 
@@ -335,27 +374,13 @@ function! atplib#tools#generatelabels(filename, ...)
 	call sort(labels[bufname], "atplib#tools#SortLabels")
     endfor
 
-"     let i=0
-"     while i < len(texfile)
-" 	if texfile[i] =~ '\\label\s*{'
-" 	    let lname 	= matchstr(texfile[i], '\\label\s*{.*', '')
-" 	    let start 	= stridx(lname, '{')+1
-" 	    let lname 	= strpart(lname, start)
-" 	    let end	= stridx(lname, '}')
-" 	    let lname	= strpart(lname, 0, end)
-"     "This can be extended to have also the whole environment which
-"     "could be shown.
-" 	    call extend(s:labels, { i+1 : lname })
-" 	endif
-" 	let i+=1 
-"     endwhile
-
     if exists("t:atp_labels")
 	call extend(t:atp_labels, labels, "force")
     else
 	let t:atp_labels	= labels
     endif
     keepjumps call setpos(".", saved_pos)
+    let g:time_generatelabels=reltimestr(reltime(time))
     if return_ListOfFiles
 	return [ t:atp_labels, ListOfFiles_orig ]
     else
@@ -487,13 +512,17 @@ function! atplib#tools#getlinenr(...) "{{{
     if labels == 0
 	let bnr = bufnr("__ToC__")
 	if len(getbufvar(bnr, "atp_Toc"))
-	    return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[1]
+            if g:atp_python_toc
+                return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[0:1]
+            else
+                return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[1]
+            endif
 	endif
     else
 	let bnr = bufnr("__Labels__")
 	let dict=getbufvar(bnr, "atp_Labels")
 	if len(dict)
-	    return get(dict, line, ["", ""])[1]
+	    return get(dict, line, ["", ""])[0:1]
 	endif
     endif
 endfunction "}}}
@@ -504,7 +533,11 @@ function! atplib#tools#CursorLine() "{{{
 	catch /E803:/
 	endtry
     endif
-    if atplib#tools#getlinenr(line(".")) 
+    if g:atp_python_toc && expand("%") == "__ToC__"
+        if atplib#tools#getlinenr(line(".")) != ['', '']
+            let t:cursorline_idmatch =  matchadd('CursorLine', '^\%'.line(".").'l.*$')
+        endif
+    elseif atplib#tools#getlinenr(line("."))
 	let t:cursorline_idmatch =  matchadd('CursorLine', '^\%'.line(".").'l.*$')
     endif
 endfunction "}}}

@@ -114,6 +114,22 @@ augroup ATP_BufList
     au!
     au BufEnter *.tex call atplib#motion#buflist()
 augroup END
+function! <SID>toc_onwrite()
+    if g:atp_python_toc
+	" check if there is a __ToC__ window:
+	let i=0
+	bufdo let i+= ( bufname("%") == "__ToC__" )
+	if i
+	    TOC!
+	    wincmd w
+	endif
+    endif
+endfunction
+augroup ATP_TOC_onwrite
+    au!
+    au BufWritePost *.tex call <SID>toc_onwrite()
+augroup END
+
 
 " {{{1
 if exists(":Tags") != 2

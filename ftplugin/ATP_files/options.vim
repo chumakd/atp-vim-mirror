@@ -257,14 +257,6 @@ endif
     if !exists("g:Align_xstrlen") && v:version >= 703 && &conceallevel 
 	let g:Align_xstrlen="ATP_strlen"
     endif
-    
-" This was throwing all autocommand groups to the command line on startup.
-" Anyway this is not very good.
-"     augroup ATP_makeprg
-" 	au!
-" 	au VimEnter *.tex let &l:makeprg="vim --servername " . v:servername . " --remote-expr 'Make()'"
-"     augroup END
-
 " }}}
 
 " Buffer Local Variables:
@@ -391,6 +383,9 @@ lockvar b:atp_autex_wait
 " if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
 "     let g:atp_ParseLog = has("python")
 " endif
+if !exists("g:atp_python_toc")
+    let g:atp_python_toc = has("python")
+endif
 if !exists("g:atp_write_eventignore")
     " This is a comma separated list of events which will be ignored when 
     " atp saved the file (for example before background compilation but not
@@ -1131,7 +1126,7 @@ endif
 if !exists("g:atp_keep")
     " Files with this extensions will be compied back and forth to/from temporary
     " directory in which compelation happens.
-    let g:atp_keep=[ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out" ]
+    let g:atp_keep=[ "log", "aux", "toc", "bbl", "ind", "idx", "synctex.gz", "blg", "loa", "toc", "lot", "lof", "thm", "out", "nav" ]
     " biber stuff is added before compelation, this makes it possible to change 
     " to biber on the fly
     if b:atp_BibCompiler =~ '^\s*biber\>'
@@ -1469,7 +1464,7 @@ function! <SID>SetXdvi()
     if exists("g:atp_xdviOptions")
 	let g:atp_xdviOptions	+= index(g:atp_xdviOptions, '-editor') != -1 && 
 		    \ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
-		    \ ? ["-editor", "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"] : []
+		    \ ? ["-editor", v:progname." --servername ".v:servername." --remote-wait +%l %f"] : []
 	if index(g:atp_xdviOptions, '-watchfile') != -1 && 
 	\ ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
 	    let g:atp_xdviOptions += [ '-watchfile', '1' ]
@@ -1477,7 +1472,7 @@ function! <SID>SetXdvi()
 
     else
 	if ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-editor') != -1 )
-	    let g:atp_xdviOptions = ["-editor",  "'".v:progname." --servername ".v:servername." --remote-wait +%l %f'"]
+	    let g:atp_xdviOptions = ["-editor",  v:progname." --servername ".v:servername." --remote-wait +%l %f"]
 	endif
 	if ( !exists("b:atp_xdviOptions") || exists("b:atp_xdviOptions") && index(b:atp_xdviOptions,  '-watchfile') != -1 )
 	    if exists("g:atp_xdviOptions")
