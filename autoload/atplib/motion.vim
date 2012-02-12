@@ -392,7 +392,8 @@ if len(toc) > 0:
                     sec_nr = str(s_nr)+"."+str(ss_nr)+"."+str(sss_nr)
         toc[i] = toc[i]+[sec_nr]
 
-vim.command("let s:py_toc="+str(toc))
+
+vim.command("let s:py_toc="+re.sub('\\\\\\\\', '\\\\', str(toc)))
 END
 return { a:filename : s:py_toc }
 endfunction
@@ -839,13 +840,14 @@ function! atplib#motion#show_pytoc(toc)
 		\ 'y or c  yank label', 	
 		\ 'p       paste label', 
 		\ 'q       close', 		
-		\ 'zc	     fold section[s]',
-		\ ":'<,'>Fold",
-		\ ':YankSection', 
-		\ ':DeleteSection', 
-		\ ':PasteSection[!]', 		
-		\ ':SectionStack', 
-		\ ':Undo' ])
+		\ ])
+" 		\ 'zc	     fold section[s]',
+" 		\ ":'<,'>Fold",
+" 		\ ':YankSection', 
+" 		\ ':DeleteSection', 
+" 		\ ':PasteSection[!]', 		
+" 		\ ':SectionStack', 
+" 		\ ':Undo' ])
     endif
     lockvar 3 b:atp_Toc
 endfunction

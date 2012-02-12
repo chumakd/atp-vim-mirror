@@ -371,13 +371,16 @@ function! EchoLine()
     if labels_window && !exists("t:atp_labels")
 	let t:atp_labels[buf_name]	= UpdateLabels(buf_name)[buf_name]
     endif
-    let sec_line	= join(getbufline(buf_name,line))
+    if buf_nr != -1
+	let sec_line	= get(getbufline(buf_name,line),0,"")
+    else
+	let sec_line	= get(readfile(buf_name),line-1,"")
+    endif
     let i 		= 1
     while sec_line	!~ '\\\%(\%(sub\)\?paragraph\|\%(sub\)\{0,2}section\|chapter\|part\)\s*{.*}' && i <= 20
 	let sec_line	= substitute(sec_line, '\s*$', '', '') . substitute(join(getbufline(buf_name, line+i)), '^\s*', ' ', '')
 	let i 		+= 1
     endwhile
-    let g:sec_line	= sec_line
     let sec_type	= ""
 
     if sec_line =~ '\\subparagraph[^\*]'
@@ -444,14 +447,15 @@ function! s:CompareNumbers(i1, i2)
     return str2nr(a:i1) == str2nr(a:i2) ? 0 : str2nr(a:i1) > str2nr(a:i2) ? 1 : -1
 endfunction "}}}1
 
-" YankSection, DeleteSection, PasteSection, SectionStack, Undo 
+" YankSection, DeleteSection, PasteSection, SectionStack, Undo.
 " {{{1
 " Stack of sections that were removed but not yet paste
 " each entry is a list [ section title , list of deleted lines, section_nr ]
 " where the section title is the one from t:atp_toc[filename][2]
 " section_nr is the section number before deletion
 " the recent positions are put in the front of the list
-if expand("%") == "__ToC__"
+if expand("%") == "__ToC__" &&
+	    \ ( !g:atp_python_toc || g:atp_developer )
     if !exists("t:atp_SectionStack")
 	let t:atp_SectionStack 	= []
     endif
@@ -567,7 +571,6 @@ if expand("%") == "__ToC__"
 	call extend(t:atp_SectionStack, [[title, type, yanked_section_list, section_nr]],0)
     endfunction
     command! -buffer -nargs=? YankSection	:call <SID>YankSection(<f-args>)
-
 
     function! <SID>DeleteSection()
 
@@ -813,12 +816,13 @@ endfunction " }}}1
 
 " ATP_CursorLine autocommand:
 " {{{1
-
 augroup ATP_CursorLine
     au CursorMoved,CursorMovedI __ToC__ call atplib#tools#CursorLine()
-augroup END " }}}1
+augroup END 
+" }}}1
 
 " Fold section
+" {{{1
 func! <SID>CompareNumbers(i1, i2)
     return str2nr(a:i1) == str2nr(a:i2) ? 0 : str2nr(a:i1) > str2nr(a:i2) ? 1 : -1
 endfunc
@@ -839,6 +843,7 @@ function! <SID>Section2Nr(section)
 	return 7
     endif
 endfunction
+" }}}1
 function! FoldClose(...) " {{{1
     let atp_toc	= deepcopy(t:atp_toc)
     let f_line = (a:0 >= 1 ? a:1 : line(".") )
