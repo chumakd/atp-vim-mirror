@@ -132,7 +132,7 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
 
     " Load once feature (if ch_load)	- this is used on starup
     if ch_load && get(get(s:project_Load, expand("%:p"), []), a:type, 0) >= 1
-	echomsg "[ATP:]  " . a:type . "project script already loaded for buffer " . expand("%:p") . "."
+	silent echomsg "[ATP:]  " . a:type . "project script already loaded for buffer " . expand("%:p") . "."
 	if g:atp_debugProject
 	    redir END
 	endif

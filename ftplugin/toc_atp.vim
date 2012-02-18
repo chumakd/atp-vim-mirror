@@ -8,9 +8,8 @@
 let b:did_ftplugin = 1
 
 function! ATP_TOC_StatusLine() " {{{
-    let l:return = ( expand("%") == "__ToC__" 		? "Table of Contents" 	: 0 )
-    let l:return = ( expand("%") == "__Labels__" 	? "List of Labels" 	: l:return )
-    return l:return
+    return ( expand("%:t") == "__ToC__" ? "Table of Contents" : 
+		\ ( expand("%:t") == "__Labels__" ? "List of Labels" : "" ) )
 endfunction
 setlocal statusline=%{ATP_TOC_StatusLine()}
 " }}}
@@ -312,8 +311,8 @@ command! -buffer -nargs=1 Y :call YankToReg(<f-arg>)
 " Show Label Context 
 " {{{1 ShowLabelContext
 if !exists("*ShowLabelContext")
-function! ShowLabelContext()
-    let labels_window	= expand("%") == "__Labels__" ? 1 : 0
+function! ShowLabelContext(height)
+    let labels_window	= ( expand("%:t") == "__Labels__" ? 1 : 0 )
 
     let toc	= getbufline("%",1,"$")
     let h_line	= index(reverse(copy(toc)),'')+1
@@ -330,12 +329,21 @@ function! ShowLabelContext()
     endif
     wincmd w
     let buf_nr		= bufnr("^" . buf_name . "$")
-    if buf_nr != -1
-	exe "split #" . buf_nr
+    let height		= ( !a:height ? "" : a:height )
+    " Note: using split without argument is faster than split #{bufnr} or 
+    " split {bufname}.
+    if buf_nr == bufnr("%")
+	let splitcmd = height."split"
+    elseif buf_nr != -1
+	let splitcmd = height."split #" . buf_nr
     else
-	exe "split " . buf_name
+	let splitcmd = height."split " . buf_name
     endif
+    silent exe splitcmd
     call setpos('.', [0, line, 1, 0])
+    if !labels_window
+	exe "normal! zt"
+    endif
 endfunction
 endif
 " }}}1
@@ -904,7 +912,7 @@ if !exists("no_plugin_maps") && !exists("no_atp_toc_maps")
     map <silent> <buffer> y 		:call YankToReg()<CR>
     map <silent> <buffer> p 		:call Paste()<CR>
     map <silent> <buffer> P 		:call <SID>yank("P")<CR>
-    map <silent> <buffer> s 		:call ShowLabelContext()<CR> 
+    map <silent> <buffer> s 		:<C-U>call ShowLabelContext(v:count)<CR> 
     map <silent> <buffer> e 		:call EchoLine()<CR>
     map <silent> <buffer> <F1>		:call Help()<CR>
 endif

@@ -723,7 +723,16 @@ function! atplib#motion#show_pytoc(toc)
 "     " Remember the place from which we are coming:
     let t:atp_bufname=atplib#FullPath(expand("%:t"))
     let bname="__ToC__"
-    let tocwinnr=bufwinnr("__ToC__")
+    let tabpagebufdict = {}
+    for bufnr in tabpagebuflist()
+	let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+    endfor
+    if index(keys(tabpagebufdict), "__ToC__") != -1
+	let tocwinnr = bufwinnr(tabpagebufdict["__ToC__"])
+    else
+	let tocwinnr = -1
+    endif
+
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
@@ -869,11 +878,16 @@ endfunction
 " {{{2 atplib#motion#ToCbufnr()
 " This function returns toc buffer number if toc window is not open returns -1.
 function! atplib#motion#ToCbufnr() 
-    if index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__') != -1
-	return bufnr("__ToC__")
+    let tabpagebufdict = {}
+    for bufnr in tabpagebuflist()
+	let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+    endfor
+    if index(keys(tabpagebufdict), "__ToC__") != -1
+	let tocbufnr = tabpagebufdict["__ToC__"]
     else
-	return -1
+	let tocbufnr = -1
     endif
+    return tocbufnr
 endfunction
 " atplib#motion#UpdateToCLine {{{2
 function! atplib#motion#UpdateToCLine(...)
@@ -1177,7 +1191,6 @@ function! atplib#motion#GotoLabel(bang,...)
 	echo "Which label to choose?"
 	echohl None
 " 	let mlabels= ( file ? extend([[' nr', 'LABEL', 'LABEL NR', 'FILE']], mlabels) : extend([[' nr', 'LABEL', 'LABEL NR']], mlabels) )
-	let g:mlabels=copy(mlabels)
 	for row in atplib#FormatListinColumns(atplib#Table(mlabels, [1,2]),2)
 	    echo join(row)
 	endfor
@@ -1217,7 +1230,6 @@ function! atplib#motion#GotoLabelCompletion(ArgLead, CmdLine, CursorPos)
 	    call extend(labels, map(deepcopy(t:atp_labels)[file], 'v:val[2]'))
 	endif
     endfor
-    let g:labels=copy(labels)
     call filter(labels, "v:val !~ '^\s*$' && v:val =~ a:ArgLead ")
 
     return map(labels, "v:val.'\\>'")
@@ -1242,7 +1254,6 @@ function! atplib#motion#LatexTags(bang,...)
     let files=join(
 		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), 'atplib#FullPath(v:val)')
 		\ , ";")
-    let g:files = split(files, ";")
     
     if len(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'")) >= 1
 	let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")
@@ -1293,7 +1304,6 @@ function! atplib#motion#FindDestinations()
     exe 'lvimgrep /\\hypertarget\>/gj ' . join(map(files, 'fnameescape(v:val)'), ' ') 
     let dests = []
     let loclist	= copy(getloclist(0))
-    let g:loclist = loclist
     call setloclist(0, saved_loclist)
     for loc in loclist
 	let destname = matchstr(loc['text'], '\\hypertarget\s*{\s*\zs[^}]*\ze}')
@@ -1421,7 +1431,6 @@ function! atplib#motion#GotoEnvironment(flag,count,...)
 endfunction
 " atplib#motion#GotoFrame {{{1
 function! atplib#motion#GotoFrame(f, count)
-    let g:Count=a:count
     let lz=&lazyredraw
     set lazyredraw
     if a:f == "backward"
@@ -1645,7 +1654,6 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let ext 	= '.sty'
 
 	let fname   	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
-	let g:fname	= fname
 	let file 	= atplib#search#KpsewhichFindFile('tex', fname, '', 1)
 	let file_l	= [ file ]
 
@@ -1699,7 +1707,6 @@ function! atplib#motion#GotoFile(bang,args,...)
 	let method = "requirepackage"
 	let ext 	= '.sty'
 	let fname	= atplib#append_ext(strpart(getline("."), bcol, col-bcol-1), ext)
-	let g:fname = fname
 	let file	= atplib#search#KpsewhichFindFile('tex', fname, g:atp_texinputs, 1, ':p')
 	let file_l	= [ file ]
 	let options = ' +setl\ ft=' . &l:filetype  
@@ -2138,7 +2145,6 @@ endfunction
 " }}}1
 " atplib#motion#ParagraphNormalMotion {{{1
 function! atplib#motion#ParagraphNormalMotion(backward,count)
-    let g:count = a:count." ".a:backward
     if a:backward != "b"
 	for i in range(1,a:count)
 	    call search('\(^\(\n\|\s\)*\n\s*\zs\S\|\zs\\par\>\|\%'.line("$").'l$\)', 'W')

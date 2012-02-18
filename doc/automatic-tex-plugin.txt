@@ -2313,9 +2313,12 @@ TABLE OF CONTENTS WINDOW				*atp-toc-window*
 			    to a register, if it exists,
 	    'p' 	to paste it directly to your tex file (just after the
 			    current cursor position), 
-	    's'		it splits the window with your tex source file and
+	    '[N]s'	it splits the window with your tex source file and
 			    sets the current line to the beginning of the
-			    chapter/section under the cursor,
+			    chapter/section or label under the cursor.
+			    If [N] fiven the new window will be that heigh
+			    (like with |:split| command). In ToC window |zt| is
+			    also used.
 	    'q' 	to quit, 
 	    <Enter> 	to go to the section under the cursor and close ToC.
    <space>, <LeftMouse> to go to the section under the cursor but
