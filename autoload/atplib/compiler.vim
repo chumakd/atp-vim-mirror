@@ -593,9 +593,9 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
     endif
 
     " and a:bang are not yet used by makelatex.py
-    let PythonMakeLatexPath = split(globpath(&rtp, "ftplugin/ATP_files/makelatex.py"), "\n")[0]
-    let interaction 	    = ( mode=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
-    let tex_options	    = shellescape(b:atp_TexOptions.',-interaction='.interaction)
+    let PythonMakeLatexPath 	= split(globpath(&rtp, "ftplugin/ATP_files/makelatex.py"), "\n")[0]
+    let interaction 	    	= ( mode=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
+    let tex_options	    	= shellescape(b:atp_TexOptions.',-interaction='.interaction)
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
     let global_options 		= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";")
@@ -627,6 +627,7 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
 		\ " --viewer-options ".shellescape(viewer_options).
 		\ " --progname ".v:progname.
 		\ " --tempdir ".shellescape(g:atp_TempDir).
+		\ (g:atp_callback ? "" : " --no-callback ").
 		\ (t:atp_DebugMode=='verbose'||mode=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
 		\ reload_viewer . reload_on_error
     unlockvar g:atp_TexCommand
@@ -703,11 +704,11 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 	let t:atp_DebugMode = g:atp_DefaultDebugMode
     endif
 
-    if t:atp_DebugMode != 'verbose' && a:verbose != 'verbose'
+    if t:atp_DebugMode !~ 'verbose$' && a:verbose !~ 'verbose$'
 	let b:atp_LastLatexPID = -1
     endif
     
-    if t:atp_DebugMode != "silent" && b:atp_TexCompiler !~ "luatex" &&
+    if t:atp_DebugMode !~ "silent$" && b:atp_TexCompiler !~ "luatex" &&
 		\ (b:atp_TexCompiler =~ "^\s*\%(pdf\|xetex\)" && b:atp_Viewer == "xdvi" ? 1 :  
 		\ b:atp_TexCompiler !~ "^\s*pdf" && b:atp_TexCompiler !~ "xetex" &&  (b:atp_Viewer == "xpdf" || b:atp_Viewer == "epdfview" || b:atp_Viewer == "acroread" || b:atp_Viewer == "kpdf"))
 	 
@@ -775,7 +776,9 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
 		\ ." --bibcommand ".b:atp_BibCompiler
 		\ ." --bibliographies ".shellescape(bibliographies)
 		\ ." --logdir ".shellescape(g:atp_TempDir)
-		\ .(t:atp_DebugMode=='verbose'||a:verbose=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
+		\ .(g:atp_callback ? "" : " --no-callback ")
+		\ ." --progressbar_file " . shellescape(g:atp_ProgressBarFile)
+		\ .(t:atp_DebugMode=~'verbose$'||a:verbose=~'verbose$'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable))
 		\ . bang . bibtex . reload_viewer . reload_on_error . gui_running . aucommand . no_progress_bar
 		\ . autex_wait
 
@@ -1951,7 +1954,8 @@ function! atplib#compiler#auTeX(...)
 
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
-    let mode 	= ( g:atp_DefaultDebugMode == 'verbose' ? 'debug' : g:atp_DefaultDebugMode )
+"     let mode 	= ( g:atp_DefaultDebugMode == 'verbose' ? 'debug' : g:atp_DefaultDebugMode )
+    let mode	= substitute(t:atp_DebugMode, 'verbose$', 'debug', '')
 
     if !b:atp_autex
 	if g:atp_debugauTeX
@@ -2079,6 +2083,9 @@ function! atplib#compiler#TeX(runs, bang, ...)
 	let mode = t:atp_DebugMode
     endif
 
+    let match = matchlist(mode, '^\(auto\)\?\(.*$\)')
+    let auto = match[1]
+    let mode = match[2]
     if mode =~# '^s\%[ilent]$'
 	let mode = 'silent'
     elseif mode =~# '^d\%[ebug]$'
@@ -2090,6 +2097,8 @@ function! atplib#compiler#TeX(runs, bang, ...)
     else
 	let mode = t:atp_DebugMode
     endif
+    let mode = auto . mode
+    let g:mode_0 = mode
 
     for cmd in keys(g:CompilerMsg_Dict) 
 	if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
@@ -2483,6 +2492,11 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
     endif
     let eventignore=&eventignore
     set eventignore=BufEnter,BufLeave
+    if !exists("t:atp_QuickFixOpen")
+	let t:atp_QuickFixOpen = 0
+	windo let t:atp_QuickFixOpen+= ( &buftype == 'quickfix' )
+	wincmd w
+    endif
     if t:atp_QuickFixOpen
 	let winnr=winnr()
 	" Quickfix is opened, jump to it and change the size

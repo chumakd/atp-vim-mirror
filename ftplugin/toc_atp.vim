@@ -76,11 +76,12 @@ function! s:gotowinnr()
     let labels_window	= ( expand("%") == "__Labels__" ? 1 : 0 )
 
     " This is the line number to which we will go.
-    let l:nr=atplib#tools#getlinenr(line("."), labels_window)
-    " t:atp_bufname
-    " t:atp_winnr		were set by TOC(), they should also be set by
-    " 			autocommands
-    let l:bufname=s:file()
+    if !labels_window && !g:atp_python_toc
+	let l:nr = atplib#tools#getlinenr(line("."), labels_window)
+	let l:bufname=s:file()
+    else
+	let [ l:bufname, l:nr ] =atplib#tools#getlinenr(line("."), labels_window)
+    endif
 
     if labels_window
 	" Find labels window to go in Labels window
@@ -131,6 +132,8 @@ function! GotoLine(closebuffer) "{{{
 
     " window to go to
     let gotowinnr= s:gotowinnr()
+
+    let g:gotowinnr = gotowinnr
 
     if gotowinnr != -1
  	exe gotowinnr . " wincmd w"
@@ -887,7 +890,7 @@ if !exists("no_plugin_maps") && !exists("no_atp_toc_maps")
     map <silent> <buffer> <space> 	:call GotoLine(0)<CR>
     map <silent> <buffer> <LeftRelease>   <LeftMouse><bar>:call GotoLine(0)<CR>
     if expand("%") == "__ToC__"
-	map <silent> <buffer> _		:call GotoLine(0)<bar>TOC<CR>
+	map <silent> <buffer> _		:call GotoLine(0)<bar>wincmd w<CR>
     else
 	map <silent> <buffer> _		:call GotoLine(0)<bar>Labels<CR>
     endif

@@ -108,7 +108,8 @@ function! CTOC(...)
     endif
 endfunction "}}}1
 
-" Commands And Maps:
+" AutoCommands:
+" {{{
 augroup ATP_BufList
     " Add opened files to t:atp_toc_buflist.
     au!
@@ -117,9 +118,7 @@ augroup END
 function! <SID>toc_onwrite()
     if g:atp_python_toc
 	" check if there is a __ToC__ window:
-	let i=0
-	bufdo let i+= ( bufname("%") == "__ToC__" )
-	if i
+	if index(map(tabpagebuflist(), 'bufname(v:val)'), "__ToC__") != -1
 	    TOC!
 	    wincmd w
 	endif
@@ -129,8 +128,9 @@ augroup ATP_TOC_onwrite
     au!
     au BufWritePost *.tex call <SID>toc_onwrite()
 augroup END
+" }}}
 
-
+" Commands And Maps:
 " {{{1
 if exists(":Tags") != 2
     let b:atp_LatexTags = 1

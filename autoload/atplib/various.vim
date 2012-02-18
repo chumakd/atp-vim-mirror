@@ -15,8 +15,34 @@ function! atplib#various#WrapSelection(...)
 
     let wrapper		= ( a:0 >= 1 ? a:1 : '{' )
     let end_wrapper 	= ( a:0 >= 2 ? a:2 : '}' )
+    if a:0 >=6 && a:6 || a:0 <= 5
+	if a:0 <= 5 || a:6 == 1 
+	    let s:lastwrapper_begin	= [ wrapper, wrapper ]
+	    let s:lastwrapper_end	= [ end_wrapper, end_wrapper ]
+	elseif a:6 == 2
+	    " Change only text wrapper:
+	    if exists("s:lastwrapper_begin")
+		let s:lastwrapper_begin[0] = wrapper
+		let s:lastwrapper_end[0] = wrapper
+	    else
+		let s:lastwrapper_begin	= [ wrapper, wrapper ]
+		let s:lastwrapper_end	= [ end_wrapper, end_wrapper ]
+	    endif
+	elseif a:6 == 3
+	    " Change only math wrapper:
+	    if exists("s:lastwrapper_begin")
+		let s:lastwrapper_begin[1] = wrapper
+		let s:lastwrapper_end[1] = wrapper
+	    else
+		let s:lastwrapper_begin	= [ wrapper, wrapper ]
+		let s:lastwrapper_end	= [ end_wrapper, end_wrapper ]
+	    endif
+	endif
+    endif
     let cursor_pos	= ( a:0 >= 3 ? a:3 : 'end' )
+    let s:lastwrapper_cursor_pos = cursor_pos
     let new_line	= ( a:0 >= 4 ? a:4 : 0 )
+    let s:lastwrapper_new_line = new_line
     let marks		= ( a:0 >= 5 ? a:5 : ["'<", "'>"])
 
 "     let b:new_line=new_line
@@ -41,9 +67,6 @@ function! atplib#various#WrapSelection(...)
     let l:begin_line=getline(l:begin[1])
     let l:end_line=getline(l:end[1])
 
-    let b:begin=l:begin[1]
-    let b:end=l:end[1]
-
     " ToDo: this doesn't work yet!
     let l:add_indent='    '
     if l:begin[1] != l:end[1]
@@ -59,14 +82,12 @@ function! atplib#various#WrapSelection(...)
 
 	if new_line == 0
 	    " inline
-" 	    let b:debug=0
 	    let l:begin_line=l:bbegin_line.wrapper.l:ebegin_line
 	    let l:end_line=l:bend_line.end_wrapper.l:eend_line
 	    call setline(l:begin[1],l:begin_line)
 	    call setline(l:end[1],l:end_line)
 	    let l:end[2]+=len(end_wrapper)
 	else
-" 	    let b:debug=1
 	    " in seprate lines
 	    let l:indent=atplib#complete#CopyIndentation(l:begin_line)
 	    if l:bbegin_line !~ '^\s*$'
@@ -128,10 +149,6 @@ function! atplib#various#WrapSelection(...)
 	    let l:end[2]+=len(wrapper)+1
 	else
 	    " in seprate lines
-	    let b:begin_l=l:begin_l
-	    let b:middle_l=l:middle_l
-	    let b:end_l=l:end_l
-
 	    let l:indent=atplib#complete#CopyIndentation(l:begin_line)
 
 	    if l:begin_l =~ '\S' 
@@ -165,6 +182,22 @@ function! atplib#various#WrapSelection(...)
 	let l:begin[2]+=len(wrapper)-1
 	keepjumps call setpos(".",l:begin)
     endif
+endfunction
+" }}}
+" {{{ RedoLastWrapSelection
+function! atplib#various#RedoLastWrapSelection(marks)
+    if !exists("s:lastwrapper_begin")
+	echo "[ATP:] no last wrapper."
+	return
+    endif
+    if atplib#IsInMath()
+	let lastwrapper_begin 	= s:lastwrapper_begin[1]
+	let lastwrapper_end 	= s:lastwrapper_end[1]
+    else
+	let lastwrapper_begin 	= s:lastwrapper_begin[0]
+	let lastwrapper_end 	= s:lastwrapper_end[0]
+    endif
+    call atplib#various#WrapSelection(lastwrapper_begin, lastwrapper_end,s:lastwrapper_cursor_pos,s:lastwrapper_new_line,a:marks,0)
 endfunction
 function! atplib#various#WrapSelection_compl(ArgLead, CmdLine, CursorPos)
     let variables = ["g:atp_Commands"]
@@ -225,8 +258,9 @@ endfunction
 " arguments must be lists).
 function! atplib#various#InteligentWrapSelection(text_wrapper, math_wrapper, ...)
 
-    let cursor_pos	= ( a:0 >= 1 ? a:2 : 'end' )
-    let new_line	= ( a:0 >= 2 ? a:3 : 0 )
+    let cursor_pos	= ( a:0 >= 1 ? a:1 : 'end' )
+    let new_line	= ( a:0 >= 2 ? a:2 : 0 )
+    let marks		= ( a:0 >= 3 ? a:3 : ["'<", "'>"] )
 
     if atplib#IsInMath()
 	let begin_wrapper 	= a:math_wrapper[0]
@@ -235,6 +269,8 @@ function! atplib#various#InteligentWrapSelection(text_wrapper, math_wrapper, ...
 	let begin_wrapper	= a:text_wrapper[0]
 	let end_wrapper		= get(a:text_wrapper,1, '}')
     endif
+    let s:lastwrapper_begin 	= [ a:text_wrapper[0], a:math_wrapper[0] ]
+    let s:lastwrapper_end 	= [ get(a:text_wrapper,1, '}'), get(a:math_wrapper,1, '}') ]
 
     " if the wrapper is empty return
     " useful for wrappers which are valid only in one mode.
@@ -242,7 +278,7 @@ function! atplib#various#InteligentWrapSelection(text_wrapper, math_wrapper, ...
 	return
     endif
 
-    call atplib#various#WrapSelection(begin_wrapper, end_wrapper, cursor_pos, new_line) 
+    call atplib#various#WrapSelection(begin_wrapper, end_wrapper, cursor_pos, new_line, marks,0) 
 endfunction
 "}}}
 " WrapEnvironment "{{{
@@ -260,7 +296,6 @@ function! atplib#various#WrapEnvironment(...)
 	endif
     else
 	let envs=sort(filter(EnvCompletion("","",""), "v:val !~ '\*$' && v:val != 'thebibliography'"))
-	let g:envs=envs
 	" adjust the list - it is too long.
 	let envs_a=copy(envs)
 	call map(envs_a, "index(envs_a, v:val)+1.'. '.v:val")
@@ -329,8 +364,7 @@ function! atplib#various#Unwrap()
 	normal! x
     endif
 endfunction "}}}
-
-" SetUpdateTimes
+" SetUpdateTimes "{{{
 function! atplib#various#UpdateTime(...)
     if a:0 == 0
 	" Show settings
@@ -341,8 +375,7 @@ function! atplib#various#UpdateTime(...)
 	let b:atp_updatetime_insert=(a:0>=2 ? a:2 : a:1)
 	echo "'updatetime' is set to:\nb:atp_updatetime_normal=".b:atp_updatetime_normal."\nb:atp_updatetime_insert=".b:atp_updatetime_insert
     endif
-endfunction
-
+endfunction "}}}
 " Inteligent Aling
 " TexAlign {{{
 " This needs Aling vim plugin.
@@ -1973,8 +2006,7 @@ function! atplib#various#WordCount(bang, range)
     let g:atp_WordCount = {}
 
     if a:bang == "!"
-	let g:debug = 1
-	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input'''))
+	for file in keys(filter(copy(b:TypeDict), 'v:val == ''input'''))+[b:atp_MainFile]
 	    let wcount = substitute(system("detex -n " . fnameescape(atplib#FullPath(file)) . " | wc -w "), '\D', '', 'g')
 	    call extend(g:atp_WordCount, { file : wcount })
 	endfor
@@ -1996,7 +2028,6 @@ function! atplib#various#WordCount(bang, range)
 	keepjumps call winrestview(winview)
 	call extend(g:atp_WordCount, { expand("%") : wcount } )
     elseif a:range == [ string(line(".")), string(line(".")) ] 
-	let g:debug = 2
 	let temp 	= tempname()
 	let bufnr 	= bufnr("%")
 	let winview	= winsaveview()
@@ -2012,7 +2043,6 @@ function! atplib#various#WordCount(bang, range)
 	keepjumps call winrestview(winview)
 	call extend(g:atp_WordCount, { expand("%") : wcount } )
     else
-	let g:debug = 3
 	let temp 	= tempname()
 	let range 	= getbufline(bufnr("%"), a:range[0], a:range[1])
 	let bufnr 	= bufnr("%")

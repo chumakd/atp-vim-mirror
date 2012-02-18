@@ -160,34 +160,50 @@ endfunction
 " Return fullpath
 function! atplib#FullPath(file_name) "{{{1
     let cwd = getcwd()
-    if a:file_name =~ '^\s*\/'
+    if a:file_name == fnamemodify(fnamemodify(a:file_name, ":t"), ":p") 
+	" if a:file_name is already a full path
+        " Note: fnamemodify(a:file_name, ":p") will not return what I need if
+        " a:file_name ="some_dir/file.tex"
+        "
+        " I should first change directory to ... to what? (i.e. before the if
+        " condition).
 	let file_path = a:file_name
-    elseif exists("b:atp_ProjectDir")
-	try
-	    let project_dir = b:atp_ProjectDir
-	    exe "lcd " . fnameescape(project_dir)
-	    let file_path = fnamemodify(a:file_name, ":p")
-	    exe "lcd " . fnameescape(cwd)
-	catch /E344:/
-	    " If b:atp_ProjectDir points to non existing path
-	    " this will show not the right place:
-	    echohl ErrorMsg
-	    echomsg "E344: in atplib#FullPath(): b:atp_ProjectDir=".b:atp_ProjectDir." does not exist."
-	    echohl Normal
-" 	    let choice = input('Do you want to make dir/delete buffer [m/d]? ')
-" 	    if choice ==? "m"
-" 		call mkdir(b:atp_ProjectDir, 'p')
-" 	    else
-" 		" This makes lots of errors!
-" 		bd!
-" 		return a:file_name
-" 	    endif
-" 	    exe "lcd " . fnameescape(b:atp_ProjectDir)
-	    let file_path = fnamemodify(a:file_name, ":p")
-" 	    exe "lcd " . fnameescape(cwd)
-	endtry
     else
-	let file_path = fnamemodify(a:file_name, ":p")
+	let project_dir = ""
+	if exists("b:atp_ProjectDir") && exists("b:ListOfFiles") &&
+		    \ index(map(copy(b:ListOfFiles)+[b:atp_MainFile], 'fnamemodify(v:val, ":t")'), fnamemodify(a:file_name, ":t")) != -1
+	    " check the current buffer.
+	    let project_dir = b:atp_ProjectDir
+	else
+	    " else, search in all buffer variables b:ListOfFiles for the correct
+	    " b:atp_ProjectDir variable.
+	    for i in filter(range(1,bufnr("$")), 'bufloaded(v:val)')
+		if type(getbufvar(i, "ListOfFiles")) == 3
+		    if index(map(getbufvar(i, "ListOfFiles")+[getbufvar(i,"atp_MainFile")], 'fnamemodify(v:val, ":t")'), fnamemodify(a:file_name, ":t")) != -1
+			let project_dir = getbufvar(i, "atp_ProjectDir")
+			let bufname = bufname(i)
+			break
+		    endif
+		endif
+	    endfor
+	endif
+        let g:project_dir = project_dir
+	if project_dir != ""
+	    try
+		exe "lcd " . fnameescape(project_dir)
+		let file_path = fnamemodify(a:file_name, ":p")
+		exe "lcd " . fnameescape(cwd)
+	    catch /E344:/
+		" If project_dir points to non existing path
+		" this will show not the right place:
+		echohl ErrorMsg
+		echomsg "E344: in atplib#FullPath(): b:atp_ProjectDir=".project_dir." from buffer ".bufname." does not exist."
+		echohl Normal
+		let file_path = fnamemodify(a:file_name, ":p")
+	    endtry
+	else
+	    let file_path = fnamemodify(a:file_name, ":p")
+	endif
     endif
     return file_path
 endfunction

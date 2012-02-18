@@ -107,7 +107,6 @@ endfunction "}}}
 " compiler.
 function! atplib#callback#CallBack(bufnr,mode,...)
 
-    let g:bufnr = a:bufnr
     " If the compiler was called by autocommand.
     let AU 	= ( a:0 >= 1 ? a:1 : 'COM' )
     " Was compiler called to make bibtex
@@ -188,8 +187,10 @@ function! atplib#callback#CallBack(bufnr,mode,...)
 		let g:debugCB .= 7
 	    endif
 
-	    cclose
-	    call add(msg_list, ["[ATP:] no errors, closing quick fix window.", "Normal"])
+	    if a:mode =~ "auto" && t:atp_QuickFixOpen
+		cclose
+		call add(msg_list, ["[ATP:] no errors, closing quick fix window.", "Normal"])
+	    endif
 	endif
 
     elseif a:mode == "silent" && AU == "COM"
@@ -207,17 +208,16 @@ function! atplib#callback#CallBack(bufnr,mode,...)
 	endif
     endif
 
-    if a:mode ==? 'debug' && !error
+    if a:mode =~ 'auto' && !error
 
 	if g:atp_debugCallBack
 	    let g:debugCB 	.= 3
 	endif
 
-	cclose
 	call add(msg_list,["[ATP:] ".b:atp_TexCompiler." returned without errors [b:atp_ErrorFormat=".b:atp_ErrorFormat."]".(g:atp_DefaultDebugMode=='silent'&&atp_DebugMode!='silent'?"\ngoing out of debuging mode.": "."), "Normal", "after"]) 
 	let showed_message 	= 1
-	let t:atp_DebugMode 	= g:atp_DefaultDebugMode
-	if g:atp_DefaultDebugMode == "silent" && t:atp_QuickFixOpen
+	let t:atp_DebugMode = g:atp_DefaultDebugMode
+	if a:mode =~ "auto" && t:atp_QuickFixOpen
 	    cclose
 	endif
 	let &l:cmdheight 	= g:atp_cmdheight

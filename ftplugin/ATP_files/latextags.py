@@ -114,9 +114,14 @@ try:
     file_dict={}
 # { 'file_name' : list_of_lines }
     for file in file_list:
-        file_object=open(file, "r")
-        file_dict[file]=file_object.read().split("\n")
-        file_object.close()
+        try:
+            file_object=open(file, "r")
+            file_dict[file]=file_object.read().split("\n")
+            file_object.close()
+        except IOError:
+            vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] file "+file+" not found.\",'echomsg','WarningMsg')")
+            file_dict[file]=[]
+            pass
 
 # Read bib files:
     if len(bib_list) > 1:
@@ -239,6 +244,6 @@ except Exception:
     # Send errors to vim is options.servername is non empty.
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     if options.servername != "":
-        vim_remote_expr(options.servername, "atplib#callback#Echo(\"[ATP:] error in latex_tags.py, catched python exception:\n"+error_str+"\",'echo','ErrorMsg')")
+        vim_remote_expr(options.servername, "atplib#callback#Echo(\"[ATP:] error in latextags.py, catched python exception:\n"+error_str+"\",'echo','ErrorMsg')")
     else:
         print(error_str)

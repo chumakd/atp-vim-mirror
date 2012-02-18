@@ -459,7 +459,7 @@ command! -buffer -nargs=* SetUpdateTime				:call atplib#various#UpdateTime(<f-ar
 command! -buffer -nargs=* -complete=file Wdiff			:call atplib#various#Wdiff(<f-args>)
 command! -buffer -nargs=* -complete=custom,atplib#various#WrapSelection_compl -range Wrap			:call atplib#various#WrapSelection(<f-args>)
 command! -buffer -nargs=? -complete=customlist,atplib#various#EnvCompletion -range WrapEnvironment		:call atplib#various#WrapEnvironment(<f-args>)
-command! -buffer -nargs=? -range InteligentWrapSelection	:call atplib#various#InteligentWrapSelection(<args>)
+command! -buffer -nargs=? -range IWrap				:call atplib#various#InteligentWrapSelection(<args>)
 command! -buffer -bang	TexAlign				:call atplib#various#TexAlign(<q-bang>)
 command! -buffer 	ToggleStar   				:call atplib#various#ToggleStar()<CR>
 command! -buffer -nargs=? ToggleEnv	   			:call atplib#various#ToggleEnvironment(0, <f-args>)

@@ -15,7 +15,7 @@ let s:did_options 	= exists("s:did_options") ? 1 : 0
 " ToDo: we can set them with s: and call them using <SID> stack
 " (how to make the <SID> stack invisible to the user!
 
-    let t:atp_bufname	= bufname("")
+    let t:atp_bufname	= expand("%:p")
     let t:atp_bufnr	= bufnr("")
     let t:atp_winnr	= winnr()
 
@@ -26,7 +26,7 @@ let s:did_options 	= exists("s:did_options") ? 1 : 0
 if !s:did_options
     augroup ATP_TabLocalVariables
 	au!
-	au BufLeave *.tex 	let t:atp_bufname	= resolve(fnamemodify(bufname(""),":p"))
+	au BufLeave *.tex 	let t:atp_bufname	= expand("%:p")
 	au BufLeave *.tex 	let t:atp_bufnr		= bufnr("")
 	" t:atp_winnr the last window used by tex, ToC or Labels buffers:
 	au WinEnter *.tex 	let t:atp_winnr		= winnr("#")
@@ -280,7 +280,6 @@ function! <SID>TexCompiler()
     endif
     return (&filetype == "plaintex" ? "pdftex" : "pdflatex")
 endfunction
-let s:TexCompiler = <SID>TexCompiler()
     
 let s:optionsDict= { 	
 		\ "atp_TexOptions" 		: "-synctex=1", 
@@ -298,9 +297,9 @@ let s:optionsDict= {
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
 		\ "atp_LocalXpdfServer" 	: expand("%:t:r"), 
 		\ "atp_okularOptions"		: ["--unique"],
-		\ "atp_OutDir" 			: substitute(fnameescape(fnamemodify(resolve(expand("%:p")),":h")) . "/", '\\\s', ' ' , 'g'),
 		\ "atp_TempDir"			: substitute(b:atp_OutDir . "/.tmp", '\/\/', '\/', 'g'),
-		\ "atp_TexCompiler" 		: s:TexCompiler,
+		\ "atp_OutDir"			: ( exists("b:atp_ProjectScriptFile") ? fnamemodify(b:atp_ProjectScriptFile, ":h") : fnamemodify(resolve(expand("%:p")), ":h") ),
+		\ "atp_TexCompiler" 		: <SID>TexCompiler(),
 		\ "atp_BibCompiler"		: ( getline(atplib#search#SearchPackage('biblatex')) =~ '\<backend\s*=\s*biber\>' ? 'biber' : "bibtex" ),
 		\ "atp_auruns"			: "1",
 		\ "atp_TruncateStatusSection"	: "60", 
@@ -321,7 +320,7 @@ let s:optionsDict= {
 		\ "atp_MakeidxOutput"		: "",
 		\ "atp_DocumentClass"		: atplib#search#DocumentClass(b:atp_MainFile)}
 
-" the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
+" Note: the above atp_OutDir is not used! the function s:SetOutDir() is used, it is just to
 " remember what is the default used by s:SetOutDir().
 
 " This function sets options (values of buffer related variables) which were
@@ -382,6 +381,11 @@ lockvar b:atp_autex_wait
 " {{{ global variables 
 " if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
 "     let g:atp_ParseLog = has("python")
+" endif
+" if !exists("g:atp_autocclose")
+"     " This can be done by setting g:atp_DefautDebugMode = 'debug' (but it
+"     not documented and not tested)
+"     let g:atp_autocclose = 0
 " endif
 if !exists("g:atp_python_toc")
     let g:atp_python_toc = has("python")
@@ -739,6 +743,31 @@ if exists("g:atp_latexpackages")
     " Transition to nicer name:
     let g:atp_LatexPackages = g:atp_latexpackages
     unlet g:atp_latexpackages
+endif
+if !exists("g:texmf")
+    let g:texmf = substitute(system("kpsewhich -expand-var='$TEXMFHOME'"), '\n', '', 'g')
+endif
+if exists("g:atp_LatexPackages")
+    " Rescan the $TEXMFHOME directory for sty and tex files.
+    let time = reltime()
+    let sty_files = atplib#search#KpsewhichGlobPath('tex', g:texmf."/**", '*.\(sty\|tex\)', ':p')
+    for file in sty_files
+	if index(g:atp_LatexPackages, file) == -1
+	    call add(g:atp_LatexPackages, file)
+	endif
+    endfor
+    let g:time_UpdateStyFiles = reltimestr(reltime(time))
+endif
+if exists("g:atp_LatexClasses")
+    " Rescan the $TEXMFHOME directory for cls files.
+    let time = reltime()
+    let cls_files = atplib#search#KpsewhichGlobPath('tex', g:texmf."/**", '*.cls', ':p')
+    for file in cls_files
+	if index(g:atp_LatexClasses, file) == -1
+	    call add(g:atp_LatexClasses, file)
+	endif
+    endfor
+    let g:time_UpdateClsFiles = reltimestr(reltime(time))
 endif
 if exists("g:atp_latexclasses")
     " Transition to nicer name:
@@ -1144,9 +1173,6 @@ endif
 if !exists("g:matchpair")
     let g:matchpair="(:),[:],{:}"
 endif
-if !exists("g:texmf")
-    let g:texmf			= $HOME . "/texmf"
-endif
 if !exists("g:atp_compare_embedded_comments") || g:atp_compare_embedded_comments != 1
     let g:atp_compare_embedded_comments  = 0
 endif
@@ -1211,6 +1237,10 @@ if !exists("g:atp_callback")
     else
 	let g:atp_callback	= 0
     endif
+endif
+if !exists("g:atp_ProgressBarFile")
+    " Only needed if g:atp_callback == 0
+    let g:atp_ProgressBarFile = tempname()
 endif
 " }}}
 
@@ -1864,17 +1894,8 @@ endfunction
 " switches on/off the imaps g:atp_imap_math, g:atp_imap_math_misc and
 " g:atp_imap_diacritics
 function! ATP_ToggleIMaps(insert_enter, bang,...)
-"     let g:arg	= ( a:0 >=1 ? a:1 : 0 )
-"     let g:bang = a:bang
     let on	= ( a:0 >=1 ? ( a:1 == 'on'  ? 1 : 0 ) : g:atp_imap_define_math <= 0 || g:atp_imap_define_math_misc <= 0 )
-"     let g:debug=g:atp_imap_define_math." ".g:atp_imap_define_math_misc
-"     let g:on	= on
-"     echomsg "****"
-"     echomsg g:arg
-"     echomsg g:debug
-"     echomsg g:on
     if on == 0
-" 	echomsg "DELETE IMAPS"
 	let g:atp_imap_define_math = ( a:bang == "!" ? -1 : 0 ) 
 	call atplib#DelMaps(g:atp_imap_math)
 	let g:atp_imap_define_math_misc = ( a:bang == "!" ? -1 : 0 )
@@ -1883,7 +1904,6 @@ function! ATP_ToggleIMaps(insert_enter, bang,...)
 	call atplib#DelMaps(g:atp_imap_diacritics)
 	echo '[ATP:] imaps OFF '.(a:bang == "" ? '(insert)' : '')
     else
-" 	echomsg "MAKE IMAPS"
 	let g:atp_imap_define_math =1
 	let g:atp_imap_define_math_misc = 1
 	let g:atp_imap_define_diacritics = 1
@@ -2481,45 +2501,50 @@ if !s:did_options
     " to g:atp_DefaultErrorFormat (done with
     " atplib#compiler#SetErrorFormat()).
     "
+    " Todo: still :copen changes &efm to sth from tex.vim.
+    "
     " For sty and cls files, always pretend they belong to the same project.
     function! ATP_BufLeave()
-	let s:previous_file = ( &buftype != 'quickfix' ? expand("%:p") : &buftype )
 	let s:error_format = ( exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : 'no_error_format' )
-	let g:previous_file = s:previous_file
-	echomsg "PFILE ".s:previous_file." EFM ".s:error_format
+	let s:ef = &l:ef
+" 	echomsg "PFILE ".s:previous_file." EFM ".s:error_format
     endfunction
     function! <SID>BufEnter()
-	if exists("s:previous_file")
-	    if s:previous_file == 'quickfix' || &buftype == 'quickfix'
-		return
-	    endif
-	    let same_project=(index(map(b:ListOfFiles, 'atplib#FullPath(v:val)'),s:previous_file) != -1) ||
-			\ index(['sty', 'cls'], expand("%:e")) != -1
+	if !( &l:filetype == 'tex' || &l:ef == s:ef  )
+	    " buftype option is not yet set when this function is executed,
+	    " but errorfile option is already set.
+" 	    echomsg "FILETYPE RETURN"
+	    return
+	endif
+" 	if exists("s:previous_file")
+	if exists("s:ef")
+	    let same_project= ( &l:ef == s:ef )
+	    let g:same_project = same_project
 	    if !same_project
-		echomsg "OTHER PROJECT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
+" 		echomsg "OTHER PROJECT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
 		let errorflags = exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : g:atp_DefaultErrorFormat
 		call atplib#compiler#SetErrorFormat(1, errorflags)
 	    else
-		echomsg "SAME PROJECT ".s:error_format . " " . expand("%:p")
+" 		echomsg "SAME PROJECT ".s:error_format . " " . expand("%:p")
 		if s:error_format != 'no_error_format'
 		    call atplib#compiler#SetErrorFormat(0, s:error_format)
-" 		else
-" 		    call atplib#compiler#SetErrorFormat(0, g:atp_DefaultErrorFormat)
+		else
+		    call atplib#compiler#SetErrorFormat(0, g:atp_DefaultErrorFormat)
 		endif
 	    endif
-	    unlet s:previous_file
-	    unlet s:error_format
 	else
-	    echomsg "INIT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
+" 	    echomsg "INIT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
 	    call atplib#compiler#SetErrorFormat(1, g:atp_DefaultErrorFormat)
+	    let &efm=&l:efm
 	endif
     endfunction
 
-"     augroup ATP_ErrorFormat
-" 	au!
-" 	au BufLeave * :call ATP_BufLeave()
-" 	au BufEnter *.tex :call <SID>BufEnter()
-"     augroup END
+" This augroup sets the efm on startup:
+    augroup ATP_ErrorFormat
+	au!
+	au BufLeave * :call ATP_BufLeave()
+	au BufEnter * :call <SID>BufEnter()
+    augroup END
     "}}}
 
     augroup ATP_UpdateToCLine
@@ -2603,7 +2628,7 @@ endfunction
 	au!
 	au FileType qf command! -bang -buffer -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
 	au FileType qf let w:atp_qf_errorfile=&l:errorfile
-	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarningMsg#%{ErrorMsg('W')}\ %#ErrorMsg#%{ErrorMsg('E')}
+	au FileType qf setl statusline=%{w:atp_qf_errorfile}%=\ %#WarningMsg#%{ErrorMsg('W')}\ %{ErrorMsg('E')}
 	au FileType qf exe "resize ".min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])
     augroup END
 
@@ -2958,31 +2983,37 @@ function! CompilerComp(A,L,P)
 endfunction
 
 function! <SID>SetDebugMode(bang,...)
+    let g:efm_b = &efm
     if a:0 == 0
 	echo t:atp_DebugMode
 	return
     else
-	if a:1 =~# '^s\%[silent]'
-	    let t:atp_DebugMode= 'silent'
-	elseif a:1 =~# '^d\%[debug]'
-	    let t:atp_DebugMode= 'debug'
-	elseif a:1 =~# '^D\%[debug]'
-	    let t:atp_DebugMode= 'Debug'
-	elseif a:1 =~# '^v\%[erbose]'
-	    let t:atp_DebugMode= 'verbose'
+	let match = matchlist(a:1, '^\(auto\)\?\(.*$\)')
+	let auto = match[1]
+	let mode = match[2]
+	if mode =~# '^s\%[silent]'
+	    let t:atp_DebugMode= auto.'silent'
+	elseif mode =~# '^d\%[debug]'
+	    let t:atp_DebugMode= auto.'debug'
+	elseif mode =~# '^D\%[debug]'
+	    let t:atp_DebugMode= auto.'Debug'
+	elseif mode =~# '^v\%[erbose]'
+	    let t:atp_DebugMode= auto.'verbose'
 	else
-	    let t:atp_DebugMode= g:atp_DefaultDebugMode
+	    let t:atp_DebugMode= auto.g:atp_DefaultDebugMode
 	endif
     endif
 
-    if t:atp_DebugMode ==# 'Debug' && a:1 ==# 'debug' || t:atp_DebugMode ==# 'debug' && a:1 ==# 'Debug'
+    let g:efm_a = &efm
+
+    if t:atp_DebugMode =~# 'Debug$' && a:1 =~# 'debug$' || t:atp_DebugMode =~# 'debug$' && a:1 =~# 'Debug$'
 	let change_menu 	= 0
     else
 	let change_menu 	= 1
     endif
 
     "{{{ Change menu
-    if change_menu && t:atp_DebugMode !=? 'debug'
+    if change_menu && t:atp_DebugMode !~? 'debug$'
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
 	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [off]
 	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
@@ -3020,8 +3051,11 @@ function! <SID>SetDebugMode(bang,...)
 		    \ <Esc>:ToggleDebugMode<CR>a
     endif "}}}
 
-    if a:1 =~# 's\%[ilent]'
+    if a:1 =~# '\%(auto\)\?s\%[ilent]'
 	let winnr=winnr()
+" 	let quickfix_open = 0
+" 	windo let quickfix_open += ( &buftype == 'quickfix' ? 1 : 0 )
+" 	wincmd w
 	if t:atp_QuickFixOpen
 	    cclose
 	else
@@ -3038,22 +3072,25 @@ function! <SID>SetDebugMode(bang,...)
 		exe winnr . "wincmd w"
 	    endif
 	endif
-    elseif a:1 =~# 'd\%[ebug]'
+    elseif a:1 =~# '\%(auto\)\?d\%[ebug]'
 	let winnr=winnr()
+	let g:efm_0 = &efm
 	exe "copen " . (!exists("w:quickfix_title") 
 		    \ ? (max([1, min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])]))
 		    \ : "" )
+	let g:efm = &efm
 	exe winnr . "wincmd w"
+	let g:efm_1 = &efm
 	try
 	    cgetfile
-	    call atplib#compiler#FilterQuickFix()
+" 	    call atplib#compiler#FilterQuickFix()
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."
 	    echohl None
 	endtry
 	" DebugMode is not changing when log file is missing!
-    elseif a:1 =~# 'D\%[ebug]'
+    elseif a:1 =~# '\%(auto\)\?D\%[ebug]'
 	let winnr=winnr()
 	exe "copen " . (!exists("w:quickfix_title") 
 		    \ ? (max([1, min([atplib#qflength(), g:atp_DebugModeQuickFixHeight])]))
@@ -3061,7 +3098,7 @@ function! <SID>SetDebugMode(bang,...)
 	exe winnr . "wincmd w"
 	try
 	    cgetfile
-	    call atplib#compiler#FilterQuickFix()
+" 	    call atplib#compiler#FilterQuickFix()
 	catch /E40/
 	    echohl WarningMsg 
 	    echo "[ATP:] log file missing."
@@ -3076,7 +3113,7 @@ function! <SID>SetDebugMode(bang,...)
 endfunction
 command! -buffer -bang -nargs=? -complete=custom,DebugComp DebugMode	:call <SID>SetDebugMode(<q-bang>,<f-args>)
 function! DebugComp(A,L,P)
-    return "silent\ndebug\nDebug\nverbose"
+    return "silent\nautosilent\ndebug\nautodebug\nDebug\nautoDebug\nverbose"
 endfunction
 "}}}1
 

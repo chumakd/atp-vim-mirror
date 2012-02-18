@@ -65,8 +65,6 @@ endfunction
 " if a:0 >0 0 then b:atp_atp_OutDir is set iff it doesn't exsits.
 function! atplib#common#SetOutDir(arg, ...)
 
-    " THIS FUNCTION SHOULD BE REVIEWED !!!
-
     if exists("b:atp_OutDir") && a:0 >= 1
 	return "atp_OutDir EXISTS"
     endif
@@ -80,7 +78,7 @@ function! atplib#common#SetOutDir(arg, ...)
 		\ && g:askfortheoutdir != 1 
 		\ || b:atp_OutDir == "" && g:askfortheoutdir == 1 )
 		\ && !exists("$TEXMFOUTPUT")
-	 let b:atp_OutDir=substitute(fnamemodify(resolve(expand("%:p")),":h") . "/", '\\\s', ' ', 'g')
+	 let b:atp_OutDir=( exists("b:atp_ProjectScriptFile") ? fnamemodify(b:atp_ProjectScriptFile, ":h") : fnamemodify(resolve(expand("%:p")), ":h") )
 
     elseif exists("$TEXMFOUTPUT")
 	 let b:atp_OutDir=substitute($TEXMFOUTPUT, '\\\s', ' ', 'g') 
@@ -88,7 +86,6 @@ function! atplib#common#SetOutDir(arg, ...)
 
     " if arg != 0 then set errorfile option accordingly to b:atp_OutDir
     if bufname("") =~ ".tex$" && a:arg != 0
-" 			\ &&  ( !exists("t:atp_QuickFixOpen") || exists("t:atp_QuickFixOpen") && !t:atp_QuickFixOpen )
 	 call atplib#common#SetErrorFile()
     endif
 
@@ -119,14 +116,15 @@ function! atplib#common#SetErrorFile()
 	call atplib#common#SetProjectName()
     endif
 
-    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
+    let main_file	= atplib#FullPath(b:atp_MainFile)
+    let g:main_file 	= main_file
 
     " vim doesn't like escaped spaces in file names ( cg, filereadable(),
     " writefile(), readfile() - all acepts a non-escaped white spaces)
     if has("win16") || has("win32") || has("win64") || has("win95")
-	let errorfile	= substitute(atplib#append(b:atp_OutDir, '\') . fnamemodify(atp_MainFile,":t:r") . ".".(g:atp_ParseLog ? "_" : "")."log", '\\\s', ' ', 'g') 
+	let errorfile	= substitute(atplib#append(b:atp_OutDir, '\') . fnamemodify(main_file,":t:r") . ".".(g:atp_ParseLog ? "_" : "")."log", '\\\s', ' ', 'g') 
     else
-	let errorfile	= substitute(atplib#append(b:atp_OutDir, '/') . fnamemodify(atp_MainFile,":t:r") . ".".(g:atp_ParseLog ? "_" : "")."log", '\\\s', ' ', 'g') 
+	let errorfile	= substitute(atplib#append(b:atp_OutDir, '/') . fnamemodify(main_file,":t:r") . ".".(g:atp_ParseLog ? "_" : "")."log", '\\\s', ' ', 'g') 
     endif
     let &l:errorfile	= errorfile
     return &l:errorfile

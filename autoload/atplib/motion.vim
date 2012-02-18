@@ -5,7 +5,7 @@
 " Last Change:
 
 " All table  of contents stuff: variables, functions and commands. 
-" {{{1 Table Of Contents
+" {{{1 _Table_of_Contents_
 "--Make TOC -----------------------------
 " This makes sense only for latex documents.
 "
@@ -255,8 +255,9 @@ main_dir = os.path.dirname(file_name)
 if main_dir != '':
     os.chdir(main_dir)
 
-section_pattern = re.compile('^[^%]*\\\\(subsection|section|chapter|part)(\*)?\s*(\[[^\]]*\])?\s*({.*})')
-subfile_pattern = re.compile('^[^%]*\\\\(input|include|subfile)\s*{([^}]*)}')
+section_pattern         = re.compile('^[^%]*\\\\(subsection|section|chapter|part)(\*)?\s*(?:\[|{)')
+shorttitle_pattern      = re.compile('^[^%]*\\\\(subsection|section|chapter|part)(\*)?\s*\[')
+subfile_pattern         = re.compile('^[^%]*\\\\(input|include|subfile)\s*{([^}]*)}')
 
 # the toc list:
 toc = []
@@ -277,21 +278,21 @@ def map_none(val):
 def add_extension(fname):
 # add tex extension if the file has no extension,
 
-    if os.path.splitext(fname)[1] == '':
+    if os.path.splitext(fname)[1] != '.tex':
         return os.path.join(main_dir,fname+".tex")
     else:
         return os.path.join(main_dir,fname)
 
-def find_in_brackets( string ):
+def find_in_brackets( string, bra = '{', ket = '}' ):
 # find string in brackets {...},
 
-    if '{' in string:
-        match = string.split('{', 1)[1]
+    if bra in string:
+        match = string.split(bra, 1)[1]
         open = 1
-        for index in  xrange(len(match)):
-            if match[index] == '{':
+        for index in xrange(len(match)):
+            if match[index] == bra:
                 open += 1
-            elif match[index] == '}':
+            elif match[index] == ket:
                 open -= 1
             if not open:
                 return match[:index]
@@ -300,22 +301,39 @@ def find_in_brackets( string ):
 def scan_project(fname):
 # scan file for section units starting after line start_line,
 
-    file_o = open(add_extension(fname), 'r')
-    file = file_o.readlines()
-    lnr = 0
-    length = len(file)
-    for line in file:
-        lnr+=1
-        secu = re.search(section_pattern, line)
-        subf = re.search(subfile_pattern, line)
-        if secu:
-            # toc = [ [file_name, line_nr, section_unit, title, short_title, star, sec_nr ], ... ]
-            # sec_nr is added afterwards.
-            add = [ add_extension(fname), lnr, secu.group(1), find_in_brackets(secu.group(4)), secu.group(3), secu.group(2)]
-            toc.append(map(map_none,add))
-        if subf:
-            file_list.append(map(map_none,[add_extension(fname), subf.group(2), lnr]))
-            scan_project(subf.group(2))
+    try:
+        file_o = open(add_extension(fname), 'r')
+        file = file_o.readlines()
+        length = len(file)
+        for ind in xrange(length):
+            line = file[ind]
+            secu = re.search(section_pattern, line)
+            subf = re.search(subfile_pattern, line)
+            if secu:
+		# Join lines (find titles if they are spread in more than one line):
+                i = 1
+                while i+ind < length and i < 6:
+                    line += file[ind+i]
+                    i+=1
+                if re.search(shorttitle_pattern, line):
+                    short_title = find_in_brackets( line, '[', ']')
+                    short_title = re.sub('\s*\n\s*', ' ', short_title)
+                else:
+                    short_title = ''
+                title = find_in_brackets( line, '{', '}')
+                if title != None:
+                    title = re.sub('\s*\n\s*', ' ', title)
+                else:
+                    title = ''
+                # sec_nr is added afterwards.
+                add = [ add_extension(fname), ind+1, secu.group(1), title, short_title, secu.group(2)]
+                toc.append(map(map_none,add))
+            if subf:
+                file_list.append(map(map_none,[add_extension(fname), subf.group(2), ind+1]))
+                scan_project(subf.group(2))
+    except IOError:
+        print("[ATP]: can not open "+add_extension(fname)+" cwd="+os.getcwd())
+        pass
 
 
 scan_project(file_name)
@@ -398,9 +416,6 @@ END
 return { a:filename : s:py_toc }
 endfunction
 " {{{2 atplib#motion#buflist
-if !exists("t:atp_toc_buflist")
-    let t:atp_toc_buflist=[]
-endif
 function! atplib#motion#buflist()
     " this names are used in TOC and passed to atplib#motion#maketoc, which
     " makes a dictionary whose keys are the values of name defined
@@ -468,7 +483,7 @@ function! atplib#motion#showtoc(toc)
     let cline=line(".")
 "     " Open new window or jump to the existing one.
 "     " Remember the place from which we are coming:
-"     let t:atp_bufname=bufname("")
+    let t:atp_bufname=atplib#FullPath(expand("%:t"))
 "     let t:atp_winnr=winnr()	 these are already set by TOC()
     let bname="__ToC__"
     let tocwinnr=bufwinnr(bufnr("^".bname."$"))
@@ -663,11 +678,10 @@ function! atplib#motion#showtoc(toc)
     " set the cursor position on the correct line number.
     " first get the line number of the begging of the ToC of t:atp_bufname
     " (current buffer)
-" 	let t:numberdict=numberdict	"DEBUG
-" 	t:atp_bufname is the full path to the current buffer.
+    " 	let t:numberdict=numberdict	"DEBUG
+    " 	t:atp_bufname is the full path to the current buffer.
     let num = get(numberdict, t:atp_bufname, 'no_number')
     if num == 'no_number'
-" 	call atplib#motion#TOC("")
 	return
     endif
     let sorted		= sort(keys(a:toc[t:atp_bufname]), "atplib#CompareNumbers")
@@ -702,14 +716,14 @@ endfunction
 " {{{2 atplib#motion#show_pytoc
 function! atplib#motion#show_pytoc(toc)
 
+
     " this is a dictionary of line numbers where a new file begins.
     let cline=line(".")
 "     " Open new window or jump to the existing one.
 "     " Remember the place from which we are coming:
-"     let t:atp_bufname=bufname("")
-"     let t:atp_winnr=winnr()	 these are already set by TOC()
+    let t:atp_bufname=atplib#FullPath(expand("%:t"))
     let bname="__ToC__"
-    let tocwinnr=bufwinnr(bufnr("^".bname."$"))
+    let tocwinnr=bufwinnr("__ToC__")
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
@@ -799,26 +813,20 @@ function! atplib#motion#show_pytoc(toc)
 	return
     endif
     let sorted	= t:atp_pytoc[MainFile]
-    for line_l in sorted
+    let num_list=[0]
+    let f_test = ( t:atp_bufname == atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile")) )
+    for ind in range(0,len(sorted)-1)
+	let line_l = sorted[ind]
         if g:atp_python_toc
-            if !exists("f")
-                let f = (t:atp_bufname == line_l[0])
-                " f should reach value 2 when we go out of t:atp_bufname
-            else
-                if f
-                    let f+= (t:atp_bufname != line_l[0])
-                else
-                    let f+=  (t:atp_bufname == line_l[0])
-                endif
-            endif
-            let line = line_l[1]
-            if f == 0
-                let num+=1
-            elseif f == 1 && cline>=line
-                let num+=1
-            else
-                break
-            endif
+	    " t:atp_bufname buffer from which :TOC was invoked.
+	    let f_test_p = f_test
+	    let f_test   = ( !f_test && t:atp_bufname == line_l[0] ? 1 : f_test )
+	    if f_test && !f_test_p
+		call add(num_list, ind+1)
+	    endif
+	    if t:atp_bufname == line_l[0] && (str2nr(cline) >= str2nr(line_l[1]))
+		call add(num_list, ind+1)
+	    endif
         else
             let line = line_l
             if cline>=line
@@ -828,7 +836,14 @@ function! atplib#motion#show_pytoc(toc)
             endif
         endif
     endfor
-    keepjumps call setpos('.',[bufnr(""),num,1,0])
+    if g:atp_python_toc
+	let num = max(num_list)+1
+	keepjumps call setpos('.', [0,0,0,0])
+	keepjumps call search('^'.escape(fnamemodify(MainFile, ":t"), '.\/').'\s\+(.*)\s*$', 'cW')
+	exe "normal! ".(num-1)."j"
+    else
+	keepjumps call setpos('.',[bufnr(""),num,1,0])
+    endif
    
     " Help Lines:
     if search('<Enter> jump and close', 'nW') == 0
@@ -854,10 +869,15 @@ endfunction
 " {{{2 atplib#motion#ToCbufnr()
 " This function returns toc buffer number if toc window is not open returns -1.
 function! atplib#motion#ToCbufnr() 
-    return index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__')
+    if index(map(tabpagebuflist(), 'bufname(v:val)'), '__ToC__') != -1
+	return bufnr("__ToC__")
+    else
+	return -1
+    endif
 endfunction
 " atplib#motion#UpdateToCLine {{{2
 function! atplib#motion#UpdateToCLine(...)
+    let time = reltime()
     if !g:atp_UpdateToCLine
 	return
     endif
@@ -870,9 +890,9 @@ function! atplib#motion#UpdateToCLine(...)
     let cline  	= line(".")
     let cbufnr 	= bufnr("")
     let cwinnr	= bufwinnr("")
-    exe toc_bufnr."wincmd w"
+    exe bufwinnr(toc_bufnr)."wincmd w"
+    let MainFile    = atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile"))
     if g:atp_python_toc
-        let MainFile    = atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile"))
         let num 	= get(s:numberdict, MainFile, 'no_number')
     else
         let num 	= get(s:numberdict, t:atp_bufname, 'no_number')
@@ -883,32 +903,23 @@ function! atplib#motion#UpdateToCLine(...)
     endif
     if g:atp_python_toc
         let sorted	= t:atp_pytoc[MainFile]
-"         call filter(sorted, 'v:val[0] == t:atp_bufname')
     else
         let sorted	= sort(keys(t:atp_toc[t:atp_bufname]), "atplib#CompareNumbers")
     endif
-    for line_l in sorted
+    let num_list = [0]
+    let f_test = ( t:atp_bufname == atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile")) )
+    for ind in range(0,len(sorted)-1)
+	let line_l = sorted[ind]
         if g:atp_python_toc
-            if !exists("f")
-                let f = (t:atp_bufname == line_l[0])
-                " f should reach value 2 when we go out of t:atp_bufname
-            else
-                if f
-                    let f+= (t:atp_bufname != line_l[0])
-                else
-                    let f+=  (t:atp_bufname == line_l[0])
-                endif
-            endif
-"             echomsg "f="+f
-"             echomsg string(line_l)
-            let line = line_l[1]
-            if f == 0
-                let num+=1
-            elseif f == 1 && cline>=line
-                let num+=1
-            else
-                break
-            endif
+	    " t:atp_bufname buffer from which :TOC was invoked.
+	    let f_test_p = f_test
+	    let f_test   = ( !f_test && t:atp_bufname == line_l[0] ? 1 : f_test )
+	    if f_test && !f_test_p
+		call add(num_list, ind+1)
+	    endif
+	    if t:atp_bufname == line_l[0] && (str2nr(cline) >= str2nr(line_l[1]))
+		call add(num_list, ind+1)
+	    endif
         else
             let line = line_l
             if cline>=line
@@ -918,13 +929,22 @@ function! atplib#motion#UpdateToCLine(...)
             endif
         endif
     endfor
-    keepjumps call setpos('.',[bufnr(""),num,1,0])
+    if g:atp_python_toc
+	let num = max(num_list)+1
+	keepjumps call setpos('.', [0,0,0,0])
+	keepjumps call search('^'.escape(fnamemodify(MainFile, ":t"), '.\/').'\s\+(.*)\s*$', 'cW')
+	exe "normal! ".(num-1)."j"
+    else
+	keepjumps call setpos('.',[bufnr(""),num,1,0])
+    endif
+
     call atplib#tools#CursorLine()
 
     let eventignore=&eventignore
     set eventignore+=BufEnter
     exe cwinnr."wincmd w"
     let &eventignore=eventignore
+    let g:time_UpdateTocLine = reltimestr(reltime(time))
 endfunction
 " This is User Front End Function 
 " atplib#motion#TOC {{{2
@@ -944,8 +964,8 @@ function! atplib#motion#TOC(bang,...)
 	let t:atp_toc = {}
         let t:atp_pytoc = {}
 	for buffer in t:atp_toc_buflist 
-" 	    let b:atp_toc=atplib#motion#maketoc(buffer)
             if g:atp_python_toc
+		update
                 call extend(t:atp_pytoc, atplib#motion#maketoc_py(buffer,search_package))
             else
                 call extend(t:atp_toc, atplib#motion#maketoc(buffer,search_package))
@@ -1001,7 +1021,7 @@ function! atplib#motion#ctoc()
 	return []
     endif
     " resolve the full path:
-    let t:atp_bufname=resolve(fnamemodify(bufname("%"),":p"))
+    let t:atp_bufname = expand("%:p")
     
     " if t:atp_toc(t:atp_bufname) exists use it otherwise make it 
     if !exists("t:atp_toc") || !has_key(t:atp_toc, t:atp_bufname) 
@@ -1082,10 +1102,12 @@ function! atplib#motion#ctoc()
 endfunction
 " Labels Front End Finction. The search engine/show function are in autoload/atplib.vim script
 " library.
+" }}}1
+
 " {{{1 atplib#motion#Labels
 " a:bang = "!" do not regenerate labels if not necessary
 function! atplib#motion#Labels(bang)
-    let t:atp_bufname	= bufname("%")
+    let t:atp_bufname	= expand("%:p")
     let error		= ( exists("b:atp_TexReturnCode") ? b:atp_TexReturnCode : 0 )
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
 
@@ -1220,6 +1242,7 @@ function! atplib#motion#LatexTags(bang,...)
     let files=join(
 		\ map([b:atp_MainFile]+filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'input'"), 'atplib#FullPath(v:val)')
 		\ , ";")
+    let g:files = split(files, ";")
     
     if len(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'")) >= 1
 	let bibfiles=join(filter(copy(keys(b:TypeDict)), "b:TypeDict[v:val] == 'bib'"), ";")

@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 12 February 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 18 February 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.5)
 			by Marcin Szamotulski
@@ -174,7 +174,7 @@ NEWS							*atp-news*
  |atp-:ShowErrors| flag 'O' which shows 'overfull \hbox' messages. Also note
  that the flag 'w' (for warnings) excludes font warning messages.
  See also |atp-:Cgetfile| (This command will be removed in the future if my
- patch which introduces autocommands for |cgetfile| will become part of vim).
+ patch which introduces autocommands for |:cgetfile| will become part of vim).
 
  |atp-:ErrorFormat| accepts "+{+flag}-{-flag}" as an argument.
 
@@ -197,6 +197,14 @@ NEWS							*atp-news*
 
  |atp-:TOC| was rewritten in python so that it works well with project files.
  If your vim is compiled without python the old ToC will be used. 
+
+ See |atp-autosilent|, |atp-autodebug| and |atp-autoDebug| debug modes.
+ Previously, by default QuickFix window was closed when there was no error.
+ Now this behaviour is reserved only for |atp-autosilent|, |atp-autodebug|,
+ and |atp-autoDebug| modes.
+
+ omap \w to repeat last wrapping command (like \it, \sf, \em, ...)
+ (see |atp-omap-\w| and |atp-omap-WrapSelection|)
 
 >
  ======================
@@ -451,8 +459,8 @@ visible with :imap command.
   behaves like g:Align_xstrlen=2. (This needs Align plugin version higher than
   36, available at: http://drchip.0sites.net/astronaut/vim/#ALIGN .
 
-  :TOC and :Labels commands when open together will be in one column with
-  table of contents at the top.
+  |atp-:TOC| and |atp-:Labels| commands when open together will be in one
+  column with table of contents at the top.
 
   ]*, ]%, [*, [%  - skip comment maps, all works now in the same way. If 
   |g:atp_VimCompatible| is 1 they go to where comment starts/ends, if it is
@@ -740,16 +748,20 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	  see its value using |atp-:DebugMode| command (with completion for
 	  debug modes).
 							*t:atp_DebugMode*	
-							*atp-debug-mode-silent*
-							*atp-silent*
-	* if |t:atp_DebugMode| 	= 'silent'
+							*atp-debug-mode-silent* *atp-debug-mode-autosilent*
+							*atp-silent* *atp-autosilent*
+	* if |t:atp_DebugMode| 	= 'silent' or 'autosilent'
 	  :DebugMode silent
 	  nmap <LocalLeader><LocalLeader>s
 	       You will not get any message from compilation. 
 
-							*atp-debug-mode-debug*
-							*atp-debug*
-	* if |t:atp_DebugMode| 	= 'debug'
+	       In 'autosilent' mode the quick fix window will be automatically
+	       closed if there are no more errors (this depend on error
+	       format).
+
+							*atp-debug-mode-debug* *atp-debug-mode-autodebug'
+							*atp-debug* *atp-autodebug*
+	* if |t:atp_DebugMode| 	= 'debug' or 'autodebug'
 	  :DebugMode debug
 	  nmap <LocalLeader><LocalLeader>d
 	       After the end of compilation (invoked by the user or
@@ -768,13 +780,17 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 		    |g:atp_DefaultDebugMode| (by default it is the 'silent'
 		    mode).
 
-							*atp-debug-mode-Debug*
-							*atp-Debug*
-	* if |t:atp_DebugMode| 	= 'Debug'
+              The 'autodebug' works similar to 'autosilent' mode.
+
+							*atp-debug-mode-Debug* *atp-debug-mode-autoDebug*
+							*atp-Debug* *atp-autoDebug*
+	* if |t:atp_DebugMode| 	= 'Debug' or 'autoDebug'
 	  :DebugMode Debug
 	  nmap <LocalLeader><LocalLeader>D
 	       This mode is the same as 'debug' + after compilation ATP jumps
-	       to first error.	
+	       to first error.
+
+	       The 'autoDebug' works similar to 'autosilent' mode.
 
 							*atp-debug-mode-verbose*
 							*atp-verbose*
@@ -881,27 +897,26 @@ CALL BACK AND DEBUG MODE				*atp-callback*
 	be suppressed to 's', 'd', 'D' or 'v' (or "si"/"sil"/"sile"/... etc).
 	If no argument is given it shows the current debug mode.
 
-	:DebugMode[!] silent
-	(:DebugMode[!] s) 
+	:DebugMode[!] s[ilent]
 	nmap <LocalLeader><LocalLeader>s
+	:DebugMode[!] autos[ilent]
 		It will load error file (|cgetfile|) with bang "!" it will
 		open |quickfix| window if there are errors (|cwindow|). If
 		|quickfix| window was opened it will be closed.
-		Sets |t:atp_DebugMode|='silent'.
-	:DebugMode debug	
-	(:DebugMode[!] d) 
+		Sets |t:atp_DebugMode|='silent' ('autosilent').
+	:DebugMode d[ebug]
 	nmap <LocalLeader><LocalLeader>d
+	:DebugMode[!] autod[ebug]
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |:copen|.
-		Sets |t:atp_DebugMode|='debug'
-	:DebugMode Debug	
-	(:DebugMode[!] D) 
+		Sets |t:atp_DebugMode|='debug' ('autodebug')
+	:DebugMode D[ebug]
 	nmap <LocalLeader><LocalLeader>D
+	:DebugMode[!] autoD[ebug] 
 		It will load error file (|cgetfile|) and open |quickfix|
 		window with |:copen|.
-		Sets |t:atp_DebugMode|='Debug'
-	:DebugMode verbose	
-	(:DebugMode[!] v)
+		Sets |t:atp_DebugMode|='Debug' ('autoDebug')
+	:DebugMode v[erbose]
 		Sets |t:atp_DebugMode|='verbose'
 
 	The height of the |quickfix| window will be one more than the length
@@ -1563,8 +1578,8 @@ nmap <LocalLeader>u
 	brackets together with \left:\right, \bigl:\bigr, ... sizes. This
 	works for: (:), {:}, [:], \{:\}, \[:\] and \(:\).
 
-							*atp-:InteligentWrapSelection*
-:InteligentWrapSelection {mathWrapperPair}, {textWrapperPair}, [cursor_pos], [new_lines]
+							*atp-:IWrap*
+:IWrap {mathWrapperPair}, {textWrapperPair}, [cursor_pos], [new_lines]
 
 	Puts the selected text inside {mathWrapperPair} if the cursor stands
 	in mathematics otherwise inside {textWrapperPair}.  {mathWrapperPair}
@@ -1658,15 +1673,16 @@ nmap <LocalLeader>t
 
 	See |atp-toc-window| for commands and maps defined in the toc window.
 
-	TOC() supports many edited files. For example if you have in your
-	buffer list two files a.tex and b.tex this command will produce table
-	of contents of both of them. If you have just one opened window
-	(excluding the ToC window) then pressing <space>, <enter>, p and q
-	will take you to the right buffer (which will be read if is unloaded
-	or hidden). If you split a window then <space>, <enter>,
-	p, q will take you to the window from which you are coming. However,
-	if you have two windows with two different buffers loaded they will
-	act on the window with the matching buffer name.
+	|atp-:TOC| supports many edited files. The variable t:atp_toc_buflist
+	is a list of project names (|b:atp_MainFile|) which are shown in ToC. 
+	For example if you have in your buffer list two files a.tex and b.tex
+	this command will produce table of contents of both of them. If you
+	have just one opened window (excluding the ToC window) then pressing
+	<space>, <enter>, p and _ will take you to the right buffer (which
+	will be read if is unloaded or hidden). If you split a window then
+	<space>, <enter>, p, _ will take you to the window from which you are
+	coming. However, if you have two windows with two different buffers
+	loaded they will act on the window with the matching buffer name.
 
 	The variable t:toc_window_width sets the width of table of contents
 	window. By default t:toc_window_width=30. You can set a global
@@ -3531,9 +3547,11 @@ put them in your |atprc| it is enough to use the standard "let b:...=".
 	Set g:atp_autex_check_if_closed=0 in order to not make the checks.
 							*g:texmf*
 >
- let g:texmf	= $HOME/texmf				
-<	This variable configures where input files are placed. See
-	|atp-:Edit|.
+ let g:texmf	= substitute(system("kpsewhich -expand-var='$TEXMFHOME'"), '\n', '', 'g')
+<	This variable configures where local input files are placed. See
+	|atp-:Edit|. Note: if you set this variable in |vimrc| or |atprc| file
+	vim will startup a bit faster with tex files, since calling kpsewhich
+	is slow.
 							*g:askforoutdir*
 >
  let g:askforoutdir	= 0				
@@ -4604,27 +4622,27 @@ LOG FILE MAPS						*atp-maps-log*
 							*atp-vmap-WrapSelection*
 WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	These are the provided maps in visual mode: >
-	    vmap <buffer> \rm	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\mathrm{']<CR>
-	    vmap <buffer> \em	:<C-U>InteligentWrapSelection ['\\emph{'],	['\\mathit{']<CR>
-	    vmap <buffer> \it	:<C-U>InteligentWrapSelection ['\\textit{'],	['\\mathit{']<CR>
-	    vmap <buffer> \sf	:<C-U>InteligentWrapSelection ['\\textsf{'],	['\\mathsf{']<CR>
-	    vmap <buffer> \tt	:<C-U>InteligentWrapSelection ['\\texttt{'], 	['\\mathtt{']<CR>
-	    vmap <buffer> \bf	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbf{']<CR>
-	    vmap <buffer> \bb	:<C-U>InteligentWrapSelection ['\\textbf{'],	['\\mathbb{']<CR>
-	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection ['\\textrm{'],	['\\text{']<CR>
-	    vmap <buffer> \sl	:<C-U>WrapSelection \\textsl{<CR>
+	    vmap <buffer> \rm	:<C-U>IWrap ['\\textrm{'],	['\\mathrm{']<CR>
+	    vmap <buffer> \em	:<C-U>IWrap ['\\emph{'],	['\\mathit{']<CR>
+	    vmap <buffer> \it	:<C-U>IWrap ['\\textit{'],	['\\mathit{']<CR>
+	    vmap <buffer> \sf	:<C-U>IWrap ['\\textsf{'],	['\\mathsf{']<CR>
+	    vmap <buffer> \tt	:<C-U>IWrap ['\\texttt{'], 	['\\mathtt{']<CR>
+	    vmap <buffer> \bf	:<C-U>IWrap ['\\textbf{'],	['\\mathbf{']<CR>
+	    vmap <buffer> \bb	:<C-U>IWrap ['\\textbf{'],	['\\mathbb{']<CR>
+	    vmap <buffer> \tx	:<C-U>IWrap ['\\textrm{'],	['\\text{']<CR>
+	    vmap <buffer> \sl	:<C-U>IWrap \\textsl{<CR>
 	    vmap <buffer> \sc	:<C-U>WrapSelection \\textsc{<CR>
 	    vmap <buffer> \up	:<C-U>WrapSelection \\textup{<CR>
 	    vmap <buffer> \md	:<C-U>WrapSelection \\textmd{<CR>
 	    vmap <buffer> \u	:<C-U>WrapSelection \\underline{<CR>
 	    vmap <buffer> \o	:<C-U>WrapSelection \\overline{<CR>
-	    vmap <buffer> \n	:<C-U>InteligentWrapSelection ['\\textnormal{'],['\\mathnormal{']<CR>
-	    vmap <buffer> \cal	:<C-U>InteligentWrapSelection [''],['\\mathcal{']<CR>
+	    vmap <buffer> \n	:<C-U>IWrap ['\\textnormal{'],['\\mathnormal{']<CR>
+	    vmap <buffer> \cal	:<C-U>IWrap [''],['\\mathcal{']<CR>
 
 	    vmap <LocalLeader>mb :Wrap \\mbox{ } begin<CR>
 <   	Suggested maps: >
-	    vmap <buffer> \tx	:<C-U>InteligentWrapSelection [''],['\\text{']<CR>
-	    vmap <buffer> \in	:<C-U>InteligentWrapSelection [''],['\\intertext{']<CR>"
+	    vmap <buffer> \tx	:<C-U>IWrap [''],['\\text{']<CR>
+	    vmap <buffer> \in	:<C-U>IWrap [''],['\\intertext{']<CR>"
 <	The leader '\' in above commands is configurable: the value of
 	g:atp_vmap_text_font_leader is used (the default value is <LocalLeader>).
 
@@ -4633,6 +4651,21 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	The above maps are also valide in normal mode. They require a motion
 	afterwords, i.e. \rmw will wrap the following word inside \textrm{:}
 	or \mathrm{:}.
+
+							*atp-omap-WrapSelection*
+							*atp-omap-InteligentWrapSelection*
+
+	ATP defines also operator maps for wrapping, e.g. \sfiw in normal mode
+	will wrap "inner word" (|iw|) inside \textsf{} (or \mathsf{}). 
+	These omaps uses g:atp_vmap_text_font_leader as map leader (the
+	default value is <LocalLeader>)
+	There is also: 
+	    						*atp-omap-\w*
+>
+	    omap <buffer> \w :set opfunc=ATP_LastWrap<CR>g@
+< 	which repeats last wrappers used by |atp-:Wrap| or |atp-:IWrap|
+	command or any other wrapping map.
+
 
 	Another provided font wrapper: >
 	    vmap <LocalLeader>f	:exe ':Wrap {\usefont{'.g:atp_font_encoding.'}{}{}{}\selectfont\  }'.(len(g:atp_font_encoding)+11).'<CR>'
@@ -4679,18 +4712,18 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	Accent wrappers: are using the value of |g:atp_imap_over_leader| as
 	a map leader, by default it is '`':
 >
-	    vmap <silent><buffer> `'	:<C-U>IngeligentWrapSelection ["\\'{"],["\\acute{"]<CR>
-	    vmap <silent><buffer> `"	:<C-U>WrapSelection \"{ } end<CR>
-	    vmap <silent><buffer> `^	:<C-U>WrapSelection \^{ } end<CR>
-	    vmap <silent><buffer> `v	:<C-U>InteligentWrapSelection ["\\v{"],["\\check{"]<CR>
-	    vmap <silent><buffer> ``	:<C-U>InteligentWrapSelection ["\\`{], ["\\grave{"]<CR>
-	    vmap <silent><buffer> `b	:<C-U>WrapSelection \b{ } end<CR>
-	    vmap <silent><buffer> `d	:<C-U>WrapSelection \d{ } end<CR>
-	    vmap <silent><buffer> `H	:<C-U>WrapSelection \H{ } end<CR>
-	    vmap <silent><buffer> `~	:<C-U>WrapSelection \~{ } end<CR>
-	    vmap <silent><buffer> `.	:<C-U>InteligentWrapSelection ["\\.{], ["\\dot{"]<CR>
-	    vmap <silent><buffer> `c	:<C-U>WrapSelection \c{ } end<CR>
-	    vmap <silent><buffer> `t	:<C-U>WrapSelection \t{ } end<CR>
+	    vmap <silent><buffer> `'	:<C-U>IWrap ["\\'{"],["\\acute{"]<CR>
+	    vmap <silent><buffer> `"	:<C-U>Wrap \"{ } end<CR>
+	    vmap <silent><buffer> `^	:<C-U>Wrap \^{ } end<CR>
+	    vmap <silent><buffer> `v	:<C-U>IWrap ["\\v{"],["\\check{"]<CR>
+	    vmap <silent><buffer> ``	:<C-U>IWrap ["\\`{], ["\\grave{"]<CR>
+	    vmap <silent><buffer> `b	:<C-U>Wrap \b{ } end<CR>
+	    vmap <silent><buffer> `d	:<C-U>Wrap \d{ } end<CR>
+	    vmap <silent><buffer> `H	:<C-U>Wrap \H{ } end<CR>
+	    vmap <silent><buffer> `~	:<C-U>Wrap \~{ } end<CR>
+	    vmap <silent><buffer> `.	:<C-U>IWrap ["\\.{], ["\\dot{"]<CR>
+	    vmap <silent><buffer> `c	:<C-U>Wrap \c{ } end<CR>
+	    vmap <silent><buffer> `t	:<C-U>Wrap \t{ } end<CR>
 <	The leader <LocalLeader> can be changes using the variable *g:atp_vmap_environment_leader* 
 	(its default value is <LocalLeader>).
 	Note: that the arguments for this command must be put in ':' or ":".

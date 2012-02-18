@@ -45,6 +45,7 @@ parser.add_option("--reload-viewer",    dest="reload_viewer",   default=False,  
 parser.add_option("--reload-on-error",  dest="reload_on_error", default=False,          action="store_true")
 parser.add_option("--bibliographies",   dest="bibliographies",  default="",                             )
 parser.add_option("--verbose",          dest="verbose",         default="silent"                        )
+parser.add_option("--no-callback",      dest="callback",        default=True,           action="store_false")
 # This is not yet used:
 parser.add_option("--force",            dest="force",           default=False,          action="store_true")
 parser.add_option("--env",              dest="env",             default=""                              )
@@ -178,19 +179,21 @@ bound = 6
 # FUNCTIONS
 
 def vim_remote_expr(servername, expr):
-# Send <expr> to vim server,
+    # Send <expr> to vim server,
 
-# expr must be well quoted:
-#       vim_remote_expr('GVIM', "atplib#CatchStatus()")
-# (this is the only way it works)
-#     print("VIM_REMOTE_EXPR "+str(expr))
+    # expr must be well quoted:
+    #       vim_remote_expr('GVIM', "atplib#CatchStatus()")
+    # (this is the only way it works)
+    #     print("VIM_REMOTE_EXPR "+str(expr))
+    if not options.callback:
+        return
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
     devnull=open(os.devnull, "w+")
     subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT).wait()
     devnull.close()
 
 def latex_progress_bar(cmd):
-# Run latex and send data for progress bar,
+    # Run latex and send data for progress bar,
 
     debug_file.write("RUN "+str(run)+" CMD"+str(cmd)+"\n")
 
@@ -224,17 +227,17 @@ def latex_progress_bar(cmd):
     return child
 
 def xpdf_server_file_dict():
-# Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
+    # Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
 
-# to test if the server host file use:
-# basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
-# this dictionary always contains the full path (Linux).
-# TODO: this is not working as I want to:
-#    when the xpdf was opened first without a file it is not visible in the command line
-#    I can use 'xpdf -remote <server> -exec "run('echo %f')"'
-#    where get_filename is a simple program which returns the filename. 
-#    Then if the file matches I can just reload, if not I can use:
-#          xpdf -remote <server> -exec "openFile(file)"
+    # to test if the server host file use:
+    # basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
+    # this dictionary always contains the full path (Linux).
+    # TODO: this is not working as I want to:
+    #    when the xpdf was opened first without a file it is not visible in the command line
+    #    I can use 'xpdf -remote <server> -exec "run('echo %f')"'
+    #    where get_filename is a simple program which returns the filename. 
+    #    Then if the file matches I can just reload, if not I can use:
+    #          xpdf -remote <server> -exec "openFile(file)"
     ps_list=psutil.get_pid_list()
     server_file_dict={}
     for pr in ps_list:
@@ -255,7 +258,7 @@ def xpdf_server_file_dict():
     return server_file_dict
 
 def reload_xpdf():
-# Reload xpdf if asked,
+    # Reload xpdf if asked,
 
     if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_']
@@ -267,9 +270,9 @@ def reload_xpdf():
             devnull.close()
 
 def copy_back_output(tmpdir):
-# Copy pdf(dvi) and (aux) files back to working directory,
+    # Copy pdf(dvi) and (aux) files back to working directory,
 
-# aux file is copied also to _aux file used by ATP.
+    # aux file is copied also to _aux file used by ATP.
     os.chdir(tmpdir)
     if os.path.exists(file_cp) and os.path.exists(basename+output_ext):
         shutil.copy(basename+output_ext, texfile_dir)
@@ -297,10 +300,10 @@ try:
     cwd = getcwd()
     os.chdir(texfile_dir)
 
-# Note always run first time.
-# this ensures that the aux, ... files are uptodate.
+    # Note always run first time.
+    # this ensures that the aux, ... files are uptodate.
 
-# COPY FILES TO TEMP DIR
+    # COPY FILES TO TEMP DIR
     debug_file.write("TMPDIR="+tmpdir+"\n")
     tmplog  = os.path.join(tmpdir,basename+".log")
     debug_file.write("TMPLOG="+tmplog+"\n")
@@ -317,16 +320,16 @@ try:
         if os.path.exists(os.path.join(texfile_dir,os.path.basename(bib))):
             os.symlink(os.path.join(texfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
 
-# SET ENVIRONMENT
+    # SET ENVIRONMENT
     for var in env:
         os.putenv(var[0], var[1])
 
-# SOME VARIABLES
+    # SOME VARIABLES
     did_bibtex      = False
     did_makeidx     = False
 
-# WE RUN FOR THE FIRST TIME:
-# Set Environment:
+    # WE RUN FOR THE FIRST TIME:
+    # Set Environment:
     if len(env) > 0:
         for var in env:
             os.putenv(var[0], var[1])
@@ -342,7 +345,7 @@ try:
         copy_back_output(tmpdir)
         reload_xpdf()
 
-# AFTER FIRST TIME LOG FILE SHOULD EXISTS:
+    # AFTER FIRST TIME LOG FILE SHOULD EXISTS:
     if os.path.isfile(tmplog):
 
         need_runs = [0]
@@ -372,7 +375,7 @@ try:
         debug_file.write("labels="+str(labels)+"\n")
         debug_file.write("makeidx="+str(makeidx)+"\n")
 
-# Scan for openout files to know if we are makeing: toc, lot, lof, thm
+        # Scan for openout files to know if we are makeing: toc, lot, lof, thm
         openout_list=re.findall("\\\\openout\d+\s*=\s*`\"?([^'\"]*)\"?'",log)
         toc     =False
         lot     =False
@@ -399,8 +402,8 @@ try:
 
         debug_file.write("A0 need_runs="+str(need_runs)+"\n")
 
-# Aux file should be readable (we always run for the first time)
-#     auxfile_readable = os.path.isfile(auxfile)
+        # Aux file should be readable (we always run for the first time)
+        #     auxfile_readable = os.path.isfile(auxfile)
         idxfile_readable = os.path.isfile(idxfile)
         tocfile_readable = os.path.isfile(tocfile)
         loffile_readable = os.path.isfile(loffile)
@@ -411,11 +414,11 @@ try:
         aux=aux_file.read()
         aux_file.close()
         bibtex=re.search('\\\\bibdata\s*{', aux)
-# This can be used to make it faster and use the old bbl file.
-# For this I have add a switch (bang).
-#         bibtex=re.search('No file '+basename+'\.bbl\.', log)
+        # This can be used to make it faster and use the old bbl file.
+        # For this I have add a switch (bang).
+        #         bibtex=re.search('No file '+basename+'\.bbl\.', log)
         if not bibtex:
-# Then search for biblatex package. Alternatively, I can search for biblatex messages in log file.
+            # Then search for biblatex package. Alternatively, I can search for biblatex messages in log file.
             for line in open(texfile):
                 if re.match('[^%]*\\\\usepackage\s*(\[[^]]*\])?\s*{(\w\|,)*biblatex',line):
                     bibtex=True
@@ -424,16 +427,16 @@ try:
                     break
         debug_file.write("BIBTEX="+str(bibtex)+"\n")
 
-# I have to take the second condtion (this is the first one):
+        # I have to take the second condtion (this is the first one):
         condition = citations or labels or makeidx or run <= need_runs
         debug_file.write(str(run)+"condition="+str(condition)+"\n")
 
-# HERE IS THE MAIN LOOP:
-# I guess some of the code done above have to be put inside the loop.
-# Maybe it would be nice to make functions from some parts of the code.
+        # HERE IS THE MAIN LOOP:
+        # I guess some of the code done above have to be put inside the loop.
+        # Maybe it would be nice to make functions from some parts of the code.
         while condition:
             if run == 1:
-# BIBTEX
+                # BIBTEX
                 if bibtex:
                     bibtex      = False
                     did_bibtex  = True
@@ -450,7 +453,7 @@ try:
                     bibtex_returncode=bibtex.returncode
                     vim_remote_expr(servername, "atplib#callback#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
                     os.chdir(texfile_dir)
-# MAKEINDEX
+                # MAKEINDEX
                 if makeidx:
                     makeidx=False
                     did_makeidx=True
@@ -466,7 +469,7 @@ try:
                     vim_remote_expr(servername, "atplib#callback#MakeidxReturnCode('"+str(index_returncode)+"',\""+str(makeidx_output)+"\")")
                     os.chdir(texfile_dir)
 
-# LATEX
+            # LATEX
             os.chdir(texfile_dir)
             latex=latex_progress_bar([cmd, '-interaction=nonstopmode', '-output-directory='+tmpdir]+tex_options+[texfile])
             run  += 1
@@ -475,13 +478,12 @@ try:
             reload_xpdf()
             copy_back_output(tmpdir)
 
-#CONDITION
+            #CONDITION
             log_file=open(tmplog, "r")
             log=log_file.read()
             log_file.close()
 
-# Citations undefined|Label(s) may have changed
-#         log_list=re.findall('(C\n?i\n?t\n?a\n?t\n?i\n?o\n?n\n?s\s+u\n?n\n?d\n?e\n?f\n?i\n?n\n?e\n?d)|(L\n?a\n?b\n?e\n?l\(s\)\s+m\n?a\n?y\s+h\n?a\n?v\n?e\s+c\n?h\n?a\n?n\n?g\n?e\n?d)',log)
+            # Citations undefined|Label(s) may have changed
             log_list=re.findall('(undefined references)|(Citations undefined)|(Label\(s\) may have changed)',log)
             citations       =False
             labels          =False
@@ -523,8 +525,6 @@ try:
             debug_file.write("SyncTex with "+str(viewer))
             vim_remote_expr(servername, "atplib#SyncTex()")
     copy_back(tmpdir, latex.returncode)
-# else:
-# THERE IS NO LOG FILE AFTER FIRST TIME: exit with error.
 except Exception:
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     traceback.print_exc(None, debug_file)

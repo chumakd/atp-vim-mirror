@@ -99,6 +99,7 @@ function! ATPRunning() "{{{
 	return ""
     endif
 
+    if !exists("g:atp_DEV_no_check") || !g:atp_DEV_no_check
     if g:atp_Compiler =~ '\<python' 
         " For python compiler
         for var in [ "Latex", "Bibtex", "Python" ] 
@@ -134,19 +135,21 @@ function! ATPRunning() "{{{
 	    return ""
 	endif
     endif
+    endif
+
+    for cmd in keys(g:CompilerMsg_Dict) 
+	if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
+	    let Compiler = g:CompilerMsg_Dict[cmd]
+	    break
+	else
+	    let Compiler = b:atp_TexCompiler
+	endif
+    endfor
 
     " For g:atp_Compiler='python'
     if exists("g:atp_callback") && g:atp_callback
 	if exists("b:atp_LatexPIDs") && len(b:atp_LatexPIDs)>0  
 
-	    for cmd in keys(g:CompilerMsg_Dict) 
-		if b:atp_TexCompiler =~ '^\s*' . cmd . '\s*$'
-		    let Compiler = g:CompilerMsg_Dict[cmd]
-		    break
-		else
-		    let Compiler = b:atp_TexCompiler
-		endif
-	    endfor
 
 	    if exists("g:atp_ProgressBarValues") && type(g:atp_ProgressBarValues) == 4 && get(g:atp_ProgressBarValues,bufnr("%"), {}) != {}
 		let max = max(values(get(g:atp_ProgressBarValues, bufnr("%"))))
@@ -167,9 +170,31 @@ function! ATPRunning() "{{{
 	elseif exists("b:atp_MakeindexPIDs") && len(b:atp_MakeindexPIDs)>0
 	    return "makeindex"
 	endif
+    else
+	if g:atp_ProgressBar
+	    try
+		let pb_file = readfile(g:atp_ProgressBarFile)
+	    catch /.*:/
+		let pb_file = []
+	    endtry
+	    if len(pb_file)
+		let progressbar = Compiler." [".get(pb_file, 0, "")."]"
+" 		let progressbar = Compiler
+	    else
+		let progressbar = ""
+	    endif
+	else
+	    let progressbar = ""
+	endif
+	return progressbar
     endif
     return ""
 endfunction "}}}
+
+" augroup ATP_RedrawStatus
+"     au!
+"     au CursorHoldI,CursorHold *	:let &ro=&ro
+" augroup END
 
 " {{{ Syntax and Hilighting
 " ToDo:

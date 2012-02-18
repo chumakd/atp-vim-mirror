@@ -4,10 +4,33 @@
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
 
-try
-    compiler tex
-catch E666:
-endtry
+
+if !filereadable("makefile") && !filereadable("Makefile")
+    let s:makeprg=g:atp_Python." ".split(globpath(&rtp, "ftplugin/ATP_files/makelatex.py"), "\n")[0].
+		\ " --texfile ".shellescape(atplib#FullPath(b:atp_MainFile)).
+		\ " --bufnr ".bufnr("%").
+		\ " --start 0".
+		\ " --output-format ".substitute(get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf"), '\.', '', '').
+		\ " --verbose ".t:atp_DebugMode.
+		\ " --cmd ".b:atp_TexCompiler.
+		\ " --bibcmd ".b:atp_BibCompiler.
+		\ " --bibliographies ".shellescape(join(keys(filter(copy(b:TypeDict), "v:val == 'bib'")), ',')).
+		\ " --outdir ".shellescape(b:atp_OutDir).
+		\ " --keep ". shellescape(join(g:atp_keep, ',')).
+		\ " --tex-options ".shellescape(b:atp_TexOptions.',-interaction='.( t:atp_DebugMode=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )).
+		\ " --servername ".v:servername.
+		\ " --viewer ".shellescape(b:atp_Viewer).
+		\ " --xpdf-server ".shellescape(b:atp_XpdfServer).
+		\ " --viewer-options ".shellescape((join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";") != "" ? join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";").";".join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), ";") : join((exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), ";"))).
+		\ " --progname ".v:progname.
+		\ " --tempdir ".shellescape(g:atp_TempDir).
+		\ (g:atp_callback ? "" : " --no-callback ").
+		\ (t:atp_DebugMode=='verbose' ? ' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
+		\ ( index(g:atp_ReloadViewers, b:atp_Viewer)+1  ? ' --reload-viewer ' : '' ) . ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' ).
+		\ " &"
+
+    let &l:makeprg = s:makeprg
+endif
 " Maps:
 "{{{
 noremap <silent> <Plug>ATP_ViewOutput_sync		:call atplib#compiler#ViewOutput("!", b:atp_MainFile, b:atp_XpdfServer)<CR>
@@ -55,7 +78,7 @@ command! -buffer -bang -nargs=? -complete=custom,atplib#compiler#BibtexComp Bibt
 " command! -buffer MakeidxOutput 	:echo b:atp_MakeidxOutput
 command! -buffer -nargs=? -complete=custom,atplib#compiler#ListErrorsFlags_A SetErrorFormat 	:call atplib#compiler#SetErrorFormat(1,<f-args>)
 
-augroup ATP_QuickFix_1
+augroup ATP_QuickFix_Commands
     au!
     au FileType qf command! -buffer -nargs=? -complete=custom,atplib#compiler#ListErrorsFlags_A SetErrorFormat :call atplib#compiler#SetErrorFormat(1,<q-args>)
     au FileType qf command! -buffer -nargs=? -complete=custom,atplib#compiler#ListErrorsFlags_A ErrorFormat :call atplib#compiler#SetErrorFormat(1,<q-args>)

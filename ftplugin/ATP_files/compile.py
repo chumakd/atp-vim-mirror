@@ -38,6 +38,8 @@ parser.add_option("--file",             dest="mainfile",                        
 parser.add_option("--bufnr",            dest="bufnr",                                                   )
 parser.add_option("--output-format",    dest="output_format",   default="pdf"                           )
 parser.add_option("--runs",             dest="runs",            default=1,             type="int"       )
+parser.add_option("--no-callback",      dest="callback",        default=True,           action="store_false")
+parser.add_option("--progressbar_file", dest="pb_fname",        default="",                             )
 parser.add_option("--servername",       dest="servername",                                              )
 parser.add_option("--start",            dest="start",           default=0,             type="int"       )
 parser.add_option("--viewer",           dest="viewer",          default="xpdf"                          )
@@ -95,6 +97,7 @@ else:
     extension = ".dvi"
 runs            = options.runs
 servername      = options.servername
+pb_fname        = options.pb_fname
 start           = options.start
 viewer          = options.viewer
 autex_wait      = options.autex_wait
@@ -173,8 +176,42 @@ debug_file.write("*PROGRESS_BAR "+str(progress_bar)+"\n")
 def decode_list(byte):
     return byte.decode()
 
+def write_pbf(string):
+    # Open pb_fname and write nr to it 
+    # only if int(string) is greater than what is in this file 
+
+    cond = False
+    try:
+        pb_fobject  = open(pb_fname, 'r')
+    except IOError:
+        cond = True
+        pass
+    if not cond:
+        pb_file     = pb_fobject.read()
+        pb          = re.match('(\d*)', pb_file)
+        pb_fobject.close()
+        if pb:
+            try:
+                nr = int(pb.group(1))
+            except ValueError:
+                nr = -1
+        else:
+            nr = 0
+        try:
+            if nr >= 0:
+                cond = int(string) > nr
+            else:
+                cond = True
+        except ValueError:
+            cond = False
+            pass
+    if cond:
+        pb_fobject=open(pb_fname, 'w')
+        pb_fobject.write(string+"\n")
+        pb_fobject.close()
+
 def latex_progress_bar(cmd):
-# Run latex and send data for progress bar,
+    # Run latex and send data for progress bar,
 
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     pid   = child.pid
@@ -194,29 +231,38 @@ def latex_progress_bar(cmd):
             break
         if out != '':
             stack.append(out)
-
             if len(stack)>10:
                 stack.popleft()
             match = re.match('\[(\n?\d(\n|\d)*)({|\])',str(''.join(stack)))
             if match:
-                vim_remote_expr(servername, "atplib#callback#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+","+str(bufnr)+")")
+                if options.callback:
+                    vim_remote_expr(servername, "atplib#callback#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+","+str(bufnr)+")")
+                else:
+                    write_pbf(match.group(1)[match.start():match.end()])
     child.wait()
     vim_remote_expr(servername, "atplib#callback#ProgressBar('end',"+str(pid)+","+str(bufnr)+")")
     vim_remote_expr(servername, "atplib#callback#PIDsRunning(\"b:atp_LatexPIDs\")")
+    if not options.callback:
+        try:
+            pb_fobject = open(pb_fname, 'w')
+            pb_fobject.write('')
+            pb_fobject.close()
+        except IOError:
+            pass
     return child
 
 def xpdf_server_file_dict():
-# Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
+    # Make dictionary of the type { xpdf_servername : [ file, xpdf_pid ] },
 
-# to test if the server host file use:
-# basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
-# this dictionary always contains the full path (Linux).
-# TODO: this is not working as I want to:
-#    when the xpdf was opened first without a file it is not visible in the command line
-#    I can use 'xpdf -remote <server> -exec "run('echo %f')"'
-#    where get_filename is a simple program which returns the filename. 
-#    Then if the file matches I can just reload, if not I can use:
-#          xpdf -remote <server> -exec "openFile(file)"
+    # to test if the server host file use:
+    # basename(xpdf_server_file_dict().get(server, ['_no_file_'])[0]) == basename(file)
+    # this dictionary always contains the full path (Linux).
+    # TODO: this is not working as I want to:
+    #    when the xpdf was opened first without a file it is not visible in the command line
+    #    I can use 'xpdf -remote <server> -exec "run('echo %f')"'
+    #    where get_filename is a simple program which returns the filename. 
+    #    Then if the file matches I can just reload, if not I can use:
+    #          xpdf -remote <server> -exec "openFile(file)"
     ps_list=psutil.get_pid_list()
     server_file_dict={}
     for pr in ps_list:
@@ -236,12 +282,13 @@ def xpdf_server_file_dict():
             pass
     return server_file_dict
 
-
 def vim_remote_expr(servername, expr):
-# Send <expr> to vim server,
+    # Send <expr> to vim server,
 
-# expr must be well quoted:
-#       vim_remote_expr('GVIM', "atplib#callback#TexReturnCode()")
+    # expr must be well quoted:
+    #       vim_remote_expr('GVIM', "atplib#callback#TexReturnCode()")
+    if not options.callback:
+        return
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).wait()
 
@@ -277,18 +324,18 @@ try:
     # Send pid to ATP:
     if verbose != "verbose":
         vim_remote_expr(servername, "atplib#callback#PythonPID("+str(os.getpid())+")")
-####################################
-#
-#       Make temporary directory,
-#       Copy files and Set Environment:
-#
-####################################
+    ####################################
+    #
+    #       Make temporary directory,
+    #       Copy files and Set Environment:
+    #
+    ####################################
     cwd     = os.getcwd()
     if not os.path.exists(os.path.join(mainfile_dir,".tmp")):
-            # This is the main tmp dir (./.tmp) 
-            # it will not be deleted by this script
-            # as another instance might be using it.
-            # it is removed by Vim on exit.
+        # This is the main tmp dir (./.tmp) 
+        # it will not be deleted by this script
+        # as another instance might be using it.
+        # it is removed by Vim on exit.
         os.mkdir(os.path.join(mainfile_dir,".tmp"))
     tmpdir  = tempfile.mkdtemp(dir=os.path.join(mainfile_dir,".tmp"),prefix="")
     debug_file.write("TMPDIR: "+tmpdir+"\n")
@@ -299,8 +346,8 @@ try:
     debug_file.write("COMMAND "+str(latex_cmd)+"\n")
     debug_file.write("COMMAND "+" ".join(latex_cmd)+"\n")
 
-# Copy important files to output directory:
-# /except the log file/
+    # Copy important files to output directory:
+    # /except the log file/
     os.chdir(mainfile_dir)
     for ext in filter(keep_filter_log,keep):
         file_cp=basename+"."+ext
@@ -310,29 +357,29 @@ try:
     tempdir_list = os.listdir(tmpdir)
     debug_file.write("\nls tmpdir "+str(tempdir_list)+"\n")
 
-# Set environment
+    # Set environment
     for var in env:
         debug_file.write("ENV "+var[0]+"="+var[1]+"\n")
         os.putenv(var[0], var[1])
 
-# Link local bibliographies:
+    # Link local bibliographies:
     for bib in bibliographies:
         if os.path.exists(os.path.join(mainfile_dir,os.path.basename(bib))):
             os.symlink(os.path.join(mainfile_dir,os.path.basename(bib)),os.path.join(tmpdir,os.path.basename(bib)))
 
-####################################
-#
-#       Compile:   
-#
-####################################
-# Start Xpdf (this can be done before compelation, because we can load file
-# into afterwards) in this way Xpdf starts faster (it is already running when
-# file compiles). 
-# TODO: this might cause problems when the tex file is very simple and short.
-# Can we test if xpdf started properly?  okular doesn't behave nicely even with
-# --unique switch.
+    ####################################
+    #
+    #       Compile:   
+    #
+    ####################################
+    # Start Xpdf (this can be done before compelation, because we can load file
+    # into afterwards) in this way Xpdf starts faster (it is already running when
+    # file compiles). 
+    # TODO: this might cause problems when the tex file is very simple and short.
+    # Can we test if xpdf started properly?  okular doesn't behave nicely even with
+    # --unique switch.
 
-# Latex might not run this might happen with bibtex (?)
+    # Latex might not run this might happen with bibtex (?)
     latex_returncode=0
     if bibtex and os.path.exists(tmpaux):
         if bibcommand == 'biber':
@@ -357,11 +404,6 @@ try:
         # We need run latex at least 2 times
         bibtex=False
         runs=max([runs, 2])
-# If bibtex contained errros we stop:
-#     if not bibtex_returncode:
-#         runs=max([runs, 2])
-#     else:
-#         runs=1
     elif bibtex:
         # we need run latex at least 3 times
         runs=max([runs, 3])
@@ -376,7 +418,6 @@ try:
         debug_file.write("BIBTEX="+str(bibtex)+"\n")
 
         if verbose == 'verbose' and i == runs:
-#       <SIS>compiler() contains here ( and not bibtex )
             debug_file.write("VERBOSE"+"\n")
             latex=subprocess.Popen(latex_cmd)
             pid=latex.pid
@@ -424,19 +465,14 @@ try:
                 vim_remote_expr(servername, "atplib#callback#BibtexReturnCode('"+str(bibtex_returncode)+"',\""+str(bibtex_output)+"\")")
             else:
                 print(bibtex_output)
-# If bibtex had errors we stop, 
-# at this point tex file was compiled at least once.
-#         if bibtex_returncode:
-#             debug_file.write("BIBTEX BREAKE "+str(bibtex_returncode)+"\n")
-#             break
 
-####################################
-#
-#       Copy Files:
-#
-####################################
+    ####################################
+    #
+    #       Copy Files:
+    #
+    ####################################
 
-# Copy files:
+    # Copy files:
     os.chdir(tmpdir)
     for ext in list(filter(keep_filter_aux,keep))+[output_format]:
         file_cp=basename+"."+ext
@@ -444,8 +480,8 @@ try:
             debug_file.write(file_cp+' \n')
             shutil.copy(file_cp, mainfile_dir)
 
-# Copy aux file if there were no compilation errors or if it doesn't exists in mainfile_dir.
-# copy aux file to _aux file (for atplib#tools#GrepAuxFile)
+    # Copy aux file if there were no compilation errors or if it doesn't exists in mainfile_dir.
+    # copy aux file to _aux file (for atplib#tools#GrepAuxFile)
     if latex_returncode == 0 or not os.path.exists(os.path.join(mainfile_dir, basename+".aux")):
         file_cp=basename+".aux"
         if os.path.exists(file_cp):
@@ -455,22 +491,22 @@ try:
         shutil.copy(file_cp, os.path.join(mainfile_dir, basename+"._aux"))
     os.chdir(cwd)
 
-####################################
-#
-#       Call Back Communication:   
-#
-####################################
+    ####################################
+    #
+    #       Call Back Communication:   
+    #
+    ####################################
     if verbose != "verbose":
         debug_file.write("CALL BACK "+"atplib#callback#CallBack('"+str(bufnr)+"','"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')"+"\n")
         vim_remote_expr(servername, "atplib#callback#CallBack('"+str(bufnr)+"','"+str(verbose)+"','"+aucommand+"','"+str(options.bibtex)+"')")
         # return code of compelation is returned before (after each compilation).
 
 
-####################################
-#
-#       Reload/Start Viewer:   
-#
-####################################
+    ####################################
+    #
+    #       Reload/Start Viewer:   
+    #
+    ####################################
     if re.search(viewer, '^\s*xpdf\e') and reload_viewer:
         # The condition tests if the server XpdfServer is running
         xpdf_server_dict=xpdf_server_file_dict()
@@ -513,6 +549,9 @@ except Exception:
     latex_returncode = 0
     error_str=re.sub("'", "''",re.sub('"', '\\"', traceback.format_exc()))
     traceback.print_exc(None, debug_file)
-    vim_remote_expr(servername, "atplib#callback#Echo(\"[ATP:] error in compile.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in compile.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
+    if options.callback:
+        vim_remote_expr(servername, "atplib#callback#Echo(\"[ATP:] error in compile.py, catched python exception:\n"+error_str+"[ATP info:] this error message is recorded in compile.py.log under g:atp_TempDir\",'echo','ErrorMsg')")
+    else:
+        print(error_str)
 
 sys.exit(latex_returncode)

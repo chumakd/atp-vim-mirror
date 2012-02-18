@@ -1154,7 +1154,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	    if g:ATP_branch == "nobranch"
 		echohl ErrorMsg
-		echomsg "[ATP:] this probably happend while searching for \\input, it is not yet supported, if not it is a bug"
+		echomsg "[ATP:] Error. Try to run :S! or :InputFiles command."
 		echohl None
 
 		silent! echomsg "Tree=" . string(l:tree)
@@ -1502,7 +1502,7 @@ endfunction
 "
 " atplib#search#KpsewhichGlobPath({format}, {path}, {expr=name}, [ {mods}, {pattern_1}, {pattern_2}]) 
 function! atplib#search#KpsewhichGlobPath(format, path, name, ...)
-"     let time	= reltime()
+    let time	= reltime()
     let modifiers = a:0 == 0 ? ":t:r" : a:1
     if a:path == ""
 	let path	= substitute(substitute(system("kpsewhich -show-path ".a:format ),'!!','','g'),'\/\/\+','\/','g')
@@ -1516,25 +1516,33 @@ function! atplib#search#KpsewhichGlobPath(format, path, name, ...)
 	endif
 	call map(path_list, 'v:val . "**"')
 
-	let path	= dot . join(path_list, ',')
+	let path_list	= ['.']+path_list
+	let path	= join(path_list, ',')
     else
 	let path = a:path
     endif
     " If a:2 is non zero (if not given it is assumed to be 0 for compatibility
     " reasons)
     if get(a:000, 1, 0) != "0"
-	let path_list	= split(path, ',')
+	if !exists("path_list")
+	    let path_list	= split(path, ',')
+	endif
 	call filter(path_list, 'v:val =~ a:2')
 	let path	= join(path_list, ',')
     endif
     if get(a:000, 2, 0) != "0"
-	let path_list	= split(path, ',')
+	if !exists("path_list")
+	    let path_list	= split(path, ',')
+	endif
 	call filter(path_list, 'v:val !~ a:3')
 	let path	= join(path_list, ',')
     endif
 
     let list	= split(globpath(path, a:name),"\n") 
-    call map(list, 'fnamemodify(v:val, modifiers)')
+    if modifiers != ":p"
+        call map(list, 'fnamemodify(v:val, modifiers)')
+    endif
+    let g:time_KpsewhichGlobPath=reltimestr(reltime(time))
     return list
 endfunction
 " }}}1
