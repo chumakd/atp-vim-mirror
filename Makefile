@@ -5,7 +5,7 @@
 # make 		-- generate vbm as well as tar.gz file,
 # 		   it will also update time stamps in various places.
 # make test	-- list files in *.tar.gz bundle
-# make install	-- install it under ${INSTALL_DIR}
+# make install	-- install it under ${DESTDIR}
 # make upload	-- upload new snaphot to SourceForge
 # make release	-- upload new snaphot and new release to SourceForge
 # make clean	-- delete *.tar.gz, *.vmb and msg file (which I use with 'svn -F msg')
@@ -14,7 +14,7 @@ VERSION = 10.6.5
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${DESTDIR} variable should point to one of your vim 'runtimepath'
 # entries. I use VAM plugin, so this setting is more complicated:
-# DESTDIR = ${HOME}/.vim/vam-addons/AutomaticLaTexPlugin
+DESTDIR = ${HOME}/.vim/vam-addons/AutomaticLaTexPlugin
 
 SOURCE =  autoload/atplib.vim
 SOURCE += autoload/atplib/bibsearch.vim
@@ -109,6 +109,8 @@ ${Plugin}_${VERSION}.vmb: ${SOURCE}
 	/usr/bin/vim -nX --cmd 'let g:plugin_name = "${PLUGIN}_${VERSION}"' -S build.vim -cq!
 
 install:
+	mkdir -p ${DESTDIR}/autoload/atplib
+	mkdir -p ${DESTDIR}/ftplugin/ATP_files
 	rsync -Rv ${SOURCE} ${DESTDIR}
 	/usr/bin/vim --cmd :helptags\ ${DESTDIR}/doc --cmd q!
 
