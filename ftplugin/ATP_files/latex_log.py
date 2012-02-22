@@ -374,7 +374,10 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     info = " |"+info
                 verbose_msg = ""
                 for j in range(1,i):
-                    verbose_msg+=re.sub("^\s*", " ", log_lines[line_nr-1+j])
+                    if not re.match("See\s+the\s+\w+\s+manual\s+or\s+\w+\s+Companion\s+for\s+explanation\.|Type\s+[HI]", log_lines[line_nr-1+j]):
+                        verbose_msg+=re.sub("^\s*", " ", log_lines[line_nr-1+j])
+                    else:
+                        break
                 if re.match('\s*<(?:inserted text|to be read again|recently read)>', verbose_msg) or \
                         re.match('\s*See the LaTeX manual', verbose_msg):
                     verbose_msg = ""
