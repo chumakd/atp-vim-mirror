@@ -118,16 +118,12 @@ endfunction "}}}1
 function! atplib#TempDir() "{{{1
     " Return temporary directory, unique for each user.
 if has("python")
-    function! ATP_SetTempDir(tmp)
-	let g:atp_TempDir=a:tmp
-    endfunction
 python << END
 import vim, tempfile, os
 USER=os.getenv("USER")
 tmp=tempfile.mkdtemp(suffix="", prefix="atp_")
-vim.eval("ATP_SetTempDir('"+tmp+"')")
+vim.command("let g:atp_TempDir='"+tmp+"'")
 END
-delfunction ATP_SetTempDir
 else
     let g:atp_TempDir=substitute(tempname(), '\d\+$', "atp_debug", '')
     call mkdir(g:atp_TempDir, "p", 0700)
@@ -390,14 +386,15 @@ function! atplib#ServerListOfFiles()
 	    unlet main_file
 	endif
 	let main_file 	= getbufvar(nr, "atp_MainFile")
+	let log_file	= ( expand("%:e") =~# '^_\?log$' )
 	if exists("files")
 	    unlet files
 	endif
 	let files 	= getbufvar(nr, "ListOfFiles")
-	if string(main_file) != "" 
+	if string(main_file) != "" && !log_file
 	    call add(file_list, main_file)
 	endif
-	if type(files) == 3
+	if type(files) == 3 && !log_file
 	    call extend(file_list, files)
 	endif
     endfor

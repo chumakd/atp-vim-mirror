@@ -1994,11 +1994,11 @@ function! atplib#compiler#auTeX(...)
 " 	if atplib#compiler#NewCompare()
 	    if g:atp_Compiler == 'python'
 		if b:atp_autex == 1
-		    if g:atp_devversion == 0
+" 		    if g:atp_devversion == 0
 			call atplib#compiler#PythonCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
-		    else
-			call atplib#compiler#ThreadedCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
-		    endif
+" 		    else
+" 			call atplib#compiler#ThreadedCompiler(0, 0, b:atp_auruns, mode, "AU", atp_MainFile, "")
+" 		    endif
 		else
 		    call atplib#compiler#LocalCompiler("n")
 		endif
@@ -2121,13 +2121,13 @@ function! atplib#compiler#TeX(runs, bang, ...)
 	endif
     endif
     if g:atp_Compiler == 'python'
-        if g:atp_devversion == 0
+"         if g:atp_devversion == 0
 "             call atplib#compiler#PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, "")
             call atplib#compiler#PythonCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
-        else
+"         else
 "             call atplib#compiler#ThreadedCompiler(0,0, a:runs, mode, "COM", atp_MainFile, "")
-            call atplib#compiler#ThreadedCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
-        endif
+"             call atplib#compiler#ThreadedCompiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
+"         endif
     else
 	call atplib#compiler#Compiler(0,0, a:runs, mode, "COM", atp_MainFile, a:bang)
     endif
@@ -2205,11 +2205,11 @@ function! atplib#compiler#Bibtex(bang, ...)
     endif
 
     if g:atp_Compiler == 'python'
-        if g:atp_devversion == 0
+"         if g:atp_devversion == 0
             call atplib#compiler#PythonCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
-        else
-            call atplib#compiler#ThreadedCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
-        endif
+"         else
+"             call atplib#compiler#ThreadedCompiler(1, 0, 0, mode, "COM", atp_MainFile, "")
+"         endif
     else
 	call atplib#compiler#Compiler(1, 0, 0, mode, "COM", atp_MainFile, "")
     endif
