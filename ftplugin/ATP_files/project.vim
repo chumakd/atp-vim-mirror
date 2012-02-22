@@ -7,7 +7,7 @@
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
-" Variables:
+" VARIABLES:
 " Variables {{{
 
 " If the user set g:atp_RelativePath
@@ -32,6 +32,9 @@ if !exists("g:atp_RelativePath")
 endif
 " Also can be set in vimrc file or atprc file! (tested)
 " The default value (0) is set in options.vim
+if !exists("g:atp_TempDir")
+    call atplib#TempDir()
+endif
 
 " Windows version:
 let s:windows	= has("win16") || has("win32") || has("win64") || has("win95")
@@ -74,15 +77,15 @@ let s:common_project_script	= s:windows ? g:atp_CommonScriptDirectory  . '\commo
 let g:atp_ProjectGlobalVariables = [ 'g:atp_LatexPackages', 'g:atp_LatexClasses', 'g:atp_Library' ]
 " }}}
 
-" Autocommands:
+" AUTOCOMMANDS:
 augroup ATP_ProjectFile
     au!
     au BufEnter *.tex.project.vim if has("persistent_undo") | setlocal noundofile | endif
 augroup END
 
-" Functions: (soure once)
+" FUNCTIONS: (soure once)
 if !s:sourced || g:atp_reload_functions "{{{
-" Load Script:
+" LOAD PROJECT SCRIPT:
 "{{{ s:LoadScript(), FindProjectScripts(), GetProjectScript(), s:LoadProjectScript()
 " s:LoadScript({bang}, {project_script}, {type}, {load_variables}, [silent], [ch_load])
 "
@@ -266,7 +269,6 @@ function! GetProjectScript(project_files)
 		let project_script 	= fnamemodify(bufname(bufnr), ":p")
 	    endif
 	    return project_script
-" 		break
 	endif
     endfor
     return "no project script found"
@@ -279,7 +281,7 @@ function! <SID>LoadProjectScript(bang,...)
 
     if ( exists("g:atp_ProjectScript") && !g:atp_ProjectScript || exists("b:atp_ProjectScript") && ( !b:atp_ProjectScript && (!exists("g:atp_ProjectScript") || exists("g:atp_ProjectScript") && !g:atp_ProjectScript )) )
 	exe "redir! > ".g:atp_TempDir."/LoadProjectScript.log"
-	silent echo "+++ SCIPING : LOAD PROJECT SCRIPT +++"
+	silent echo "+++ SKIPPING : LOAD PROJECT SCRIPT +++"
 	redir END
 	return
     endif
@@ -360,7 +362,7 @@ function! s:LocalCommonComp(ArgLead, CmdLine, CursorPos)
 endfunction
 " }}}
 "}}}
-" Write Project Script:
+" WRITE PROJECT SCRIPT:
 "{{{ s:WriteProjectScript(), :WriteProjectScript, autocommands
 " This function writes the project file but only if there there are changes.
 " This is so, because writing very long lines is much slower than reading (it
@@ -374,10 +376,6 @@ function! <SID>WriteProjectScript(bang, project_script, cached_variables, type, 
     if g:atp_debugProject
 	let g:project_script = a:project_script
 	let g:type = a:type
-    endif
-
-    if g:atp_debugProject >= 2
-	let time = reltime()
     endif
 
     if !exists("b:ListOfFiles")
@@ -671,14 +669,16 @@ endfunction
 function! s:WPSI_comp(ArgLead, CmdLine, CursorPos)
     return filter(['local', 'global'], 'v:val =~ a:ArgLead')
 endfunction 
-"{{{ WriteProjectScript autocommands
+"{{{ WriteProjectScript AUTOCOMMANDS:
 function! <SID>AU_WriteLocalProjectScript()
-    if &filetype =~ 'tex'
+    if &filetype =~ 'tex' &&
+	    \ !( exists("g:atp_ProjectScript") && !g:atp_ProjectScript || exists("b:atp_ProjectScript") && ( !b:atp_ProjectScript && (!exists("g:atp_ProjectScript") || exists("g:atp_ProjectScript") && !g:atp_ProjectScript )) )
 	call s:WriteProjectScript("", b:atp_ProjectScriptFile, g:atp_ProjectLocalVariables, 'local', 1)
     endif
 endfunction
 function! <SID>AU_WriteGlobalProjectScript()
-    if &filetype =~ 'tex'
+    if &filetype =~ 'tex' &&
+	    \ !( exists("g:atp_ProjectScript") && !g:atp_ProjectScript || exists("b:atp_ProjectScript") && ( !b:atp_ProjectScript && (!exists("g:atp_ProjectScript") || exists("g:atp_ProjectScript") && !g:atp_ProjectScript )) )
 	call s:WriteProjectScript("", s:common_project_script, g:atp_ProjectGlobalVariables, 'global', 1)
     endif
 endfunction
@@ -690,7 +690,7 @@ augroup ATP_WriteProjectScript
 augroup END 
 "}}}
 "}}}
-" Set Project Script: on/off
+" SET PROJECT SCRIPT: on/off
 " {{{ s:ProjectScript
 function! <SID>ProjectScript(...)
     let arg = ( a:0 >=1 ? a:1 : "" )
@@ -714,7 +714,7 @@ function! HistComp(ArgLead, CmdLine, CursorPos)
     return filter(['on', 'off'], 'v:val =~ a:ArgLead')
 endfunction "}}}
 
-" Delete Project Script:
+" DELETE PROJECT SCRIPT:
 " s:DeleteProjectScript {{{
 " 	It has one argument a:1 == "local" or " a:0 == 0 " delete the		 
 " 	b:atp_ProjectScriptFile.
@@ -781,7 +781,7 @@ function! RestoreProjectVariables(variables_Dict) "{{{
 endfunction "}}}
 endif "}}}
 
-" The Script:
+" SCRIPT:
 " (includes commands, and maps - all the things 
 " 		that must be sources for each file)
 " {{{

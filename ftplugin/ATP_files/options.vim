@@ -259,7 +259,7 @@ endif
     endif
 " }}}
 
-" Buffer Local Variables:
+" BUFFER LOCAL VARIABLES:
 " {{{ buffer variables
 let b:atp_running	= 0
 
@@ -373,11 +373,10 @@ function! s:SetOptions()
 endfunction
 "}}}
 call s:SetOptions()
-lockvar b:atp_autex_wait
 
 "}}}
 
-" Global Variables: (almost all)
+" GLOBAL VARIABLES: (almost all)
 " {{{ global variables 
 " if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
 "     let g:atp_ParseLog = has("python")
@@ -404,9 +403,10 @@ endif
 if get(g:atp_ProgressBarValues,bufnr("%"),{}) == {}
     call extend(g:atp_ProgressBarValues, { bufnr("%") : {} })
 endif
-if !exists("g:atp_TempDir")
-    call atplib#TempDir()
-endif
+" if !exists("g:atp_TempDir")
+"     " Is set in project.vim script.
+"     call atplib#TempDir()
+" endif
 if !exists("g:atp_LogStatusLine")
     let g:atp_LogStatusLine = 0
 endif
@@ -1244,7 +1244,7 @@ if !exists("g:atp_ProgressBarFile")
 endif
 " }}}
 
-" Project Settings:
+" PROJECT SETTINGS:
 " {{{1
 if !exists("g:atp_ProjectLocalVariables")
     " This is a list of variable names which will be preserved in project files
@@ -1346,7 +1346,7 @@ function! s:ShowOptions(bang,...)
 endfunction
 command! -buffer -bang -nargs=* ShowOptions		:call <SID>ShowOptions(<q-bang>, <q-args>)
 "}}}
-" Debug Mode Variables:
+" DEBUG MODE VARIABLES:
 " {{{ Debug Mode
 let t:atp_DebugMode	= g:atp_DefaultDebugMode 
 " there are three possible values of t:atp_DebugMode
@@ -1369,7 +1369,7 @@ if !s:did_options
 endif
 "}}}
 
-" Babel
+" BABEL:
 " {{{1 variables
 if !exists("g:atp_keymaps")
 let g:atp_keymaps = { 
@@ -1962,7 +1962,7 @@ nnoremap <silent> <buffer> 	<Plug>ToggleTab		:call ATP_ToggleTab()<CR>
 inoremap <silent> <buffer> 	<Plug>ToggleTab		<C-O>:call ATP_ToggleTab()<CR>
 "}}}
 
-" TabCompletion Variables:
+" TABCOMPLETION VARIABLES:
 " {{{ TAB COMPLETION variables
 " ( functions are in autoload/atplib.vim )
 "
@@ -2484,6 +2484,21 @@ endfunction
 
 if !s:did_options
     
+
+    let g:atp_DoSwapExists = 0
+    fun! <SID>SwapExists(swapfile)
+	if g:atp_DoSwapExists
+	    let v:swapchoice = 'a'
+	    echoerr "[ATP:] swap exist for file ".a:swapfile
+	else
+	    let v:swapchoice = ''
+	endif
+    endfun
+
+"     augroup ATP_SwapExists
+" 	au!
+" 	au SwapExists	:call <SID>SwapExists(v:swapname)
+"     augroup END
     augroup ATP_changedtick
 	au!
 	au BufEnter,BufWritePost 	*.tex 	:let b:atp_changedtick = b:changedtick
@@ -2855,7 +2870,7 @@ if !s:did_options
 endif
 "}}}
 
-" Add extra syntax groups
+" SYNTAX GROUPS:
 " {{{1 ATP_SyntaxGroups
 function! <SID>ATP_SyntaxGroups()
     if &filetype == ""
@@ -3184,7 +3199,7 @@ if isdirectory(g:atp_TempDir)
 endif
 endfunction "}}}
 
-" Set vim path option: 
+" VIM PATH OPTION: 
 exe "setlocal path+=".substitute(g:texmf."/tex,".join(filter(split(globpath(b:atp_ProjectDir, '**'), "\n"), "isdirectory(expand(v:val))"), ","), ' ', '\\\\\\\ ', 'g')
 
 " Some Commands:
