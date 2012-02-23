@@ -70,12 +70,21 @@ function! LatexBox_Latexmk(force)
 	let vimsetpid = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
 				\ shellescape(callsetpid) . '\(\"' . fnameescape(basename) . '\",$$\)'
 
-	" latexmk command
 	" wrap width in log file
 	let max_print_line = 2000
+
+	" set environment
+	if match(&shell, '/tcsh$') >= 0
+		let l:env = 'setenv max_print_line ' . max_print_line . '; '
+	else
+		let l:env = 'max_print_line=' . max_print_line
+	endif
+
 	let pwd = getcwd()
 	exe "lcd ". fnameescape(b:atp_ProjectDir)
-	let cmd =  'max_print_line=' . max_print_line .
+
+	" latexmk command
+	let cmd =  l:env .
 				\ ' latexmk ' . l:options	. ' ' . shellescape(b:atp_MainFile)
 
 	" callback after latexmk is finished
@@ -83,6 +92,7 @@ function! LatexBox_Latexmk(force)
 				\ shellescape(callback) . '\(\"' . fnameescape(basename) . '\",$?\)'
 
 	silent execute '! ( ' . vimsetpid . ' ; ( ' . cmd . ' ) ; ' . vimcmd . ' ) >&/dev/null &'
+	exe "lcd ".fnameescape(pwd)
 	if !has("gui_running")
 		redraw!
 	endif
@@ -210,10 +220,10 @@ endfunction
 endif
 
 " Commands {{{
-command! -buffer -bang Latexmk			call LatexBox_Latexmk((<q-bang> == "!" ? 1 : 0))
-command! -buffer -bang LatexmkClean		call LatexBox_LatexmkClean((<q-bang> == "!" ? 1 : 0))
-command! -buffer -bang LatexmkStatus		call LatexBox_LatexmkStatus((<q-bang> == "!" ? 1 : 0))
-command! -buffer LatexmkStop			call LatexBox_LatexmkStop()
+command! -buffer -bang Latexmk				call LatexBox_Latexmk(<q-bang> == "!")
+command! -buffer -bang LatexmkClean			call LatexBox_LatexmkClean(<q-bang> == "!")
+command! -buffer -bang LatexmkStatus		call LatexBox_LatexmkStatus(<q-bang> == "!")
+command! -buffer LatexmkStop				call LatexBox_LatexmkStop()
 " }}}
 
 autocmd VimLeavePre * call <SID>kill_all_latexmk()
