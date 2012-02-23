@@ -517,6 +517,9 @@ endif
 if !hasmapto(":<C-U>IWrap [''],['".s:backslash."mathcal{']<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."cal	:<C-U>IWrap [''],['".s:backslash."mathcal{']<CR>"
 endif
+if !hasmapto("atplib#various#RedoLastWrapSelection", 'v')
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."w	<Esc>:<C-U>:call atplib#various#RedoLastWrapSelection([\"'<\", \"'>\"])<CR>"
+endif
 
 " Environments:
 if !hasmapto(":Wrap ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>", 'v')

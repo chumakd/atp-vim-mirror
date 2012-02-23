@@ -181,7 +181,8 @@ NEWS							*atp-news*
  |g:atp_Signs|=0 by default.
 
  TOC and Labels windows are clicable: acts like <space> = go to section and
- leave TOC/Labels window open.
+ leave TOC/Labels window open. 
+ See also |atp-:RemoveFromToC| command.
 
  |atp-gf| works well with \bibliography{} command.
 
@@ -203,7 +204,7 @@ NEWS							*atp-news*
  Now this behaviour is reserved only for |atp-autosilent|, |atp-autodebug|,
  and |atp-autoDebug| modes.
 
- omap \w to repeat last wrapping command (like \it, \sf, \em, ...)
+ omap \w and vmap \w to repeat last wrapping command (like \it, \sf, \em, ...)
  (see |atp-omap-\w| and |atp-omap-WrapSelection|)
 
 >
@@ -1675,18 +1676,25 @@ nmap <LocalLeader>t
 
 	|atp-:TOC| supports many edited files. The variable t:atp_toc_buflist
 	is a list of project names (|b:atp_MainFile|) which are shown in ToC. 
-	For example if you have in your buffer list two files a.tex and b.tex
-	this command will produce table of contents of both of them. If you
-	have just one opened window (excluding the ToC window) then pressing
-	<space>, <enter>, p and _ will take you to the right buffer (which
-	will be read if is unloaded or hidden). If you split a window then
-	<space>, <enter>, p, _ will take you to the window from which you are
-	coming. However, if you have two windows with two different buffers
-	loaded they will act on the window with the matching buffer name.
+	Use |atp-:RemoveFromToC| to remove a project from ToC. 
+
+	If you have in your buffer list two files a.tex and b.tex this command
+	will produce table of contents of both of them. If you have just one
+	opened window (excluding the ToC window) then pressing <space>,
+	<enter>, p and _ will take you to the right buffer (which will be read
+	if is unloaded or hidden). If you split a window then <space>,
+	<enter>, p, _ will take you to the window from which you are coming.
+	However, if you have two windows with two different buffers loaded
+	they will act on the window with the matching buffer name.
 
 	The variable t:toc_window_width sets the width of table of contents
 	window. By default t:toc_window_width=30. You can set a global
 	variable g:toc_window_width to override the default value.
+
+							*atp-:RemoveFromToC*
+:RemoveFromToC {name}
+	Remove the project with main file {name} from ToC. There is
+	a completion for {name}s.
 
 							*atp-:CTOC*
 :CTOC	
@@ -2818,7 +2826,6 @@ will regenerate them when necessary.
 nmap, imap `<Tab> 
     It is a command to toggle the tab map off/on: :ToggleTab, it is also mapped
     to `<Tab>. 
-
     Note: see |atp-Tab-note|.
 
 DICTIONARIES ~
@@ -3889,8 +3896,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	|g:atp_ProjectGlobalVariables| is a list of variables stored in the
 	global project file.
 
-	The |atprc| file is executed after the local and global project
-	scripts.
+	The |atprc| file (and tex.vim file in after/ftplugin/ directory) is
+	executed after the local and global project scripts.
 
 	If you want to have two main files (for example a copy of a project
 	in another directory below the project main directory), i.e.
@@ -3898,7 +3905,7 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	    tmp/main.tex
 	Then the easiest way is to open tmp/main.tex and adjust the variables:
 	|b:atp_ProjectScriptFile| to point to tmp/main.tex.project.vim and
-	|b:atp_MainFile| (this is only necessary if |g:atp_RelativePath|=0)
+	|b:atp_MainFile| (this is necessary only if |g:atp_RelativePath|=0)
 	and run |atp-:InputFiles|, then use |atp-:WriteProjectScript|.
 
 
@@ -4235,7 +4242,7 @@ nmap <LocalLeader>u, vmap <LocalLeader>u   -- uncomment
 cmap <buffer> <C-Space> 	\_s\+
 cmap <buffer> <C-_> 		\_s\+
     The <C-Space> map doesn't work in Vim, instead <C-@> is used which works
-    as <C-Space>. In Vim, and gVim as well.
+    as <C-Space>. In Vim, and gVim as well. See |atp-:ToggleSpace|.
 
 
 IMAPS 							*atp-imaps*
@@ -4607,6 +4614,9 @@ nmap, imap '<Tab>
     g:atp_imap_math, g:atp_imap_math_misc and g:atp_imap_diacritics plus imaps
     to _{} and ^{}.
 
+:ToggleSpace						*atp-:ToggleSpace*
+	Turn on/off the cmap <Space> \_s\+.
+
 LOG FILE MAPS						*atp-maps-log*
     This are available maps in the log file, when it was opened with
     |atp-:OpenLog| command >
@@ -4663,9 +4673,11 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	These omaps uses g:atp_vmap_text_font_leader as map leader (the
 	default value is <LocalLeader>)
 	There is also: 
+							*atp-vmap-\w*
 	    						*atp-omap-\w*
 >
 	    omap <buffer> \w :set opfunc=ATP_LastWrap<CR>g@
+	    vmap <buffer> \w :call atplib#various#RedoLastWrapSelection(["'<", "'>"])<CR>
 < 	which repeats last wrappers used by |atp-:Wrap| or |atp-:IWrap|
 	command or any other wrapping map.
 
