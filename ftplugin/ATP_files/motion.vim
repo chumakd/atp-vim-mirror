@@ -120,7 +120,10 @@ function! <SID>toc_onwrite()
 	" check if there is a __ToC__ window:
 	if index(map(tabpagebuflist(), 'bufname(v:val)'), "__ToC__") != -1
 	    TOC!
+	    let ei=&ei
+	    set ei=all
 	    wincmd w
+	    let &ei=ei
 	endif
     endif
 endfunction

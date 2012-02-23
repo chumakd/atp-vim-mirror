@@ -5,7 +5,7 @@
 " Last Change:
 
 " All table  of contents stuff: variables, functions and commands. 
-" {{{1 _Table_of_Contents_
+" {{{1 __Table_of_Contents__
 "--Make TOC -----------------------------
 " This makes sense only for latex documents.
 "
@@ -499,7 +499,7 @@ function! atplib#motion#showtoc(toc)
 	endif
 	let toc_winnr=bufwinnr(bufnr("__Labels__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
 	else
 	    exe toc_winnr."wincmd w"
 	    let l:openbuffer= "keepalt above split +setl\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
@@ -725,7 +725,9 @@ function! atplib#motion#show_pytoc(toc)
     let bname="__ToC__"
     let tabpagebufdict = {}
     for bufnr in tabpagebuflist()
-	let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+	if fnamemodify(bufname(bufnr), ":t") != ""
+	    let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+	endif
     endfor
     if index(keys(tabpagebufdict), "__ToC__") != -1
 	let tocwinnr = bufwinnr(tabpagebufdict["__ToC__"])
@@ -745,7 +747,7 @@ function! atplib#motion#show_pytoc(toc)
 	endif
 	let toc_winnr=bufwinnr(bufnr("__Labels__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
 	else
 	    exe toc_winnr."wincmd w"
 	    let l:openbuffer= "keepalt above split +setl\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
@@ -864,14 +866,13 @@ function! atplib#motion#show_pytoc(toc)
 		\ 'y or c  yank label', 	
 		\ 'p       paste label', 
 		\ 'q       close', 		
-		\ ])
+		\ ':YankSection', 
+		\ ':DeleteSection', 
+		\ ':PasteSection[!]', 		
+		\ ':SectionStack', 
+		\ ':Undo' ])
 " 		\ 'zc	     fold section[s]',
 " 		\ ":'<,'>Fold",
-" 		\ ':YankSection', 
-" 		\ ':DeleteSection', 
-" 		\ ':PasteSection[!]', 		
-" 		\ ':SectionStack', 
-" 		\ ':Undo' ])
     endif
     lockvar 3 b:atp_Toc
 endfunction
@@ -880,7 +881,10 @@ endfunction
 function! atplib#motion#ToCbufnr() 
     let tabpagebufdict = {}
     for bufnr in tabpagebuflist()
-	let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+	if fnamemodify(bufname(bufnr), ":t") != ""
+	    " For QuickFix bufname is an empty string:
+	    let tabpagebufdict[fnamemodify(bufname(bufnr), ":t")]=bufnr
+	endif
     endfor
     if index(keys(tabpagebufdict), "__ToC__") != -1
 	let tocbufnr = tabpagebufdict["__ToC__"]

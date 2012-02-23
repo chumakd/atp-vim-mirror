@@ -3,7 +3,7 @@
 " Web Page:		http://atp-vim.sourceforge.net
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 " Do NOT DELETE the line just below, it is used by :UpdateATP (':help atp-:UpdateATP')
-" Time Stamp: 18-02-12_10-53
+" Time Stamp: 23-02-12_15-47
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
 " Last Change: Sat Oct 15, 2011 at 15:36:11  +0100
@@ -101,6 +101,11 @@ endif
 
 	" The menu.
 	runtime ftplugin/ATP_files/menu.vim
+
+	" The folding
+	if g:atp_devversion
+	    runtime ftplugin/ATP_files/folding.vim
+	endif
 
 	" Read ATPRC once again (to set mapps).
 	call atplib#ReadATPRC()

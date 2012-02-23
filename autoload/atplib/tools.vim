@@ -512,11 +512,7 @@ function! atplib#tools#getlinenr(...) "{{{
     if labels == 0
 	let bnr = bufnr("__ToC__")
 	if len(getbufvar(bnr, "atp_Toc"))
-            if g:atp_python_toc
-                return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[0:1]
-            else
-                return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[1]
-            endif
+	    return get(getbufvar(bnr, "atp_Toc"), line, ["", ""])[0:1]
 	endif
     else
 	let bnr = bufnr("__Labels__")
@@ -533,15 +529,13 @@ function! atplib#tools#CursorLine() "{{{
 	catch /E803:/
 	endtry
     endif
-    if g:atp_python_toc && expand("%:t") == "__ToC__"
-        if atplib#tools#getlinenr(line(".")) != ['', '']
+    if expand("%:t") == "__ToC__" && atplib#tools#getlinenr(line(".")) != ['', '']
             let t:cursorline_idmatch =  matchadd('CursorLine', '^\%'.line(".").'l.*$')
         endif
 	return
-    elseif ( index(["__ToC__", "__Labels"], expand("%:t")) != -1 ) && atplib#tools#getlinenr(line("."))
+    elseif expand("%:t")) = '__Labels__' && atplib#tools#getlinenr(line(".")) != ['', '']
 	let t:cursorline_idmatch =  matchadd('CursorLine', '^\%'.line(".").'l.*$')
 	return
     endif
-    echoerr "[ATP:] Error in CursorLine in file: ".expand("%:p")
 endfunction "}}}
 " vim:fdm=marker:ff=unix:noet:ts=8:sw=4:fdc=1

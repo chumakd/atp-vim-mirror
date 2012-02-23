@@ -608,7 +608,7 @@ endfunction
 " }}}
 
 " Search in all input files recursively.
-" {{{ Recursive Search
+" {{{ __Recursive_Search__
 "
 " Variables are used to pass them to next runs (this function calls it self) 
 " a:main_file	= b:atp_MainFile
@@ -1075,7 +1075,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		silent echo "Alternate (before open) " . bufname("#")
 		silent echo " XXXXXXXX file=".file
 		endif
-		silent! execute open . fnameescape(file)
+		" silent should not have bang, which prevents E325 to be shown.
+		silent execute open . fnameescape(file)
 		if g:atp_mapNn
 		    call atplib#search#ATP_ToggleNn(1,"on")
 		else
@@ -1194,7 +1195,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		if g:atp_debugRS >= 2
 		silent echo "Alternate (before open) " . bufname("#")
 		endif
-		silent! execute open
+		" silent should not have bang, which prevents E325 to be shown.
+		silent execute open
 		if g:atp_mapNn
 		    call atplib#search#ATP_ToggleNn(1,"on")
 		else
@@ -1783,8 +1785,11 @@ endfunction
 function! atplib#search#DocumentClass(file)
 
     let saved_loclist	= getloclist(0)
+    " Note: lvimgrep command loads the buffer (as unlisted one),
+    " but doesn't warn if there is a swap file (this is not the only place where
+    " files are loaded on startup).
     try
-	silent execute 'lvimgrep /\\documentclass/j ' . fnameescape(a:file)
+	silent execute '1lvimgrep /^[^%]*\\documentclass/j ' . fnameescape(a:file)
     catch /E480:/
 	return 0
     catch /E680:/

@@ -14,20 +14,20 @@ endfunction
 setlocal statusline=%{ATP_TOC_StatusLine()}
 " }}}
 
-" {{{ Getlinenr(...)
+" {{{ <SID>GetLineNr(...)
 " a:1 	line number to get, if not given the current line
 " a:2	0/1 	0 (default) return linenr as for toc/labels
-function! Getlinenr(...)
+function! <SID>GetLineNr(...)
     let line 	=  a:0 >= 1 ? a:1 : line('.')
     let labels 	=  a:0 >= 2 ? a:2 : expand("%") == "__Labels__" ? 1 : 0
 
     if labels == 0
-	return get(b:atp_Toc, line, ["", ""])[1]
+	return get(b:atp_Toc, line, ["", ""])[0:1]
     else
-	return get(b:atp_Labels, line, ["", ""])[1]
+	return get(b:atp_Labels, line, ["", ""])[0:1]
     endif
 endfunction
-command! -buffer GetLine :echo <SID>getlinenr(line("."))
+" command! -buffer GetLine :echo <SID>GetLineNr(line("."))
 "}}}
 
 function! s:getsectionnr(...) "{{{
@@ -36,23 +36,6 @@ function! s:getsectionnr(...) "{{{
 endfunction
 "}}}
 
-" Get the file name and its path from the LABELS/ToC list.
-function! s:file(...) "{{{
-    let labels	= ( expand("%") == "__Labels__" ? 1 : 0 )
-
-    if labels == 0
-        if a:0 >= 1 && a:1 == 'main_file'
-            return get(b:atp_Toc, line("."), ["", "", ""])[2]
-        else
-            return get(b:atp_Toc, line("."), ["", ""])[0]
-        endif
-    else
-	return get(b:atp_Labels, line("."), ["", ""])[0]
-    endif
-endfunction
-command! -buffer File	:echo s:file()
-"}}}
- 
 " {{{1 s:gotowinnr
 "---------------------------------------------------------------------
 " Notes:
@@ -75,12 +58,7 @@ function! s:gotowinnr()
     let labels_window	= ( expand("%") == "__Labels__" ? 1 : 0 )
 
     " This is the line number to which we will go.
-    if !labels_window && !g:atp_python_toc
-	let l:nr = atplib#tools#getlinenr(line("."), labels_window)
-	let l:bufname=s:file()
-    else
-	let [ l:bufname, l:nr ] =atplib#tools#getlinenr(line("."), labels_window)
-    endif
+    let [ l:bufname, l:nr ] =atplib#tools#getlinenr(line("."), labels_window)
 
     if labels_window
 	" Find labels window to go in Labels window
@@ -122,12 +100,7 @@ function! GotoLine(closebuffer) "{{{
     let tocbufnr= bufnr("")
 
     " line to go to
-    if g:atp_python_toc
-	let [file,nr] = atplib#tools#getlinenr(line("."), labels_window)
-    else
-	let file = s:file()
-	let nr = atplib#tools#getlinenr(line("."), labels_window)
-    endif
+    let [file,nr] = atplib#tools#getlinenr(line("."), labels_window)
 
     " window to go to
     let gotowinnr= s:gotowinnr()
@@ -169,25 +142,18 @@ function! <SID>yank(arg, ...) " {{{
     endif
 
     let l:cbufnr=bufnr("")
-    if g:atp_python_toc || labels_window
-	let [ file_name, line_nr ] = atplib#tools#getlinenr(line("."), labels_window)
-    else
-	let file_name=s:file()
-    endif
+    let [ file_name, line_nr ] = atplib#tools#getlinenr(line("."), labels_window)
 
     if !labels_window
 	if !exists("t:atp_labels") || index(keys(t:atp_labels), file_name) == -1
 	    " set t:atp_labels variable
             if g:atp_python_toc
-                call atplib#tools#generatelabels(s:file('main_file'), 0)
+                call atplib#tools#generatelabels(get(b:atp_Toc, line("."), ["", "", ""])[2], 0)
             else
                 call atplib#tools#generatelabels(getbufvar(file_name, 'atp_MainFile'), 0)
             endif
 	endif
 
-	if !g:atp_python_toc
-	    let line_nr	= atplib#tools#getlinenr(line("."), labels_window)
-	endif
 	let choice	= get(get(filter(get(deepcopy(t:atp_labels), file_name, []), 'v:val[0] ==  line_nr'), 0, []), 1 , 'nokey')
     else
         if exists("t:atp_labels")
@@ -321,12 +287,7 @@ function! ShowLabelContext(height)
     endif
 
     let cbuf_name	= bufname('%')
-    if g:atp_python_toc || labels_window
-	let [ buf_name, line ]		= atplib#tools#getlinenr(line("."), labels_window)
-    else
-	let buf_name			= s:file()
-	let line 			= atplib#tools#getlinenr(line("."), 0)
-    endif
+    let [buf_name, line] = atplib#tools#getlinenr(line("."), labels_window)
     wincmd w
     let buf_nr		= bufnr("^" . buf_name . "$")
     let height		= ( !a:height ? "" : a:height )
@@ -356,8 +317,7 @@ function! EchoLine()
 
     " If we are not on a toc/label line 
     " return
-    if g:atp_python_toc && atplib#tools#getlinenr(line(".")) == ['', ''] ||
-		\ !g:atp_python_toc && atplib#tools#getlinenr(line(".")) == ''
+    if atplib#tools#getlinenr(line(".")) == ['', '']
 	return 0
     endif
 
@@ -369,15 +329,7 @@ function! EchoLine()
 " 	return 0
 "     endif
 
-    if labels_window
-        let line     = atplib#tools#getlinenr(line("."), labels_window)
-        let buf_name     = s:file()
-    elseif g:atp_python_toc
-        let [buf_name,line]     = atplib#tools#getlinenr(line("."), labels_window)
-    else
-        let line     = atplib#tools#getlinenr(line("."), labels_window)
-        let buf_name     = s:file()
-    endif
+    let [buf_name,line] = atplib#tools#getlinenr(line("."), labels_window)
     let buf_nr		= bufnr("^" . buf_name . "$")
     if labels_window && !exists("t:atp_labels")
 	let t:atp_labels[buf_name]	= UpdateLabels(buf_name)[buf_name]
@@ -466,38 +418,41 @@ endfunction "}}}1
 " section_nr is the section number before deletion
 " the recent positions are put in the front of the list
 if expand("%") == "__ToC__" &&
-	    \ ( !g:atp_python_toc || g:atp_developer )
+	    \ ( !g:atp_python_toc || g:atp_devversion )
     if !exists("t:atp_SectionStack")
 	let t:atp_SectionStack 	= []
     endif
 
-    function! <SID>YankSection(...)
-
-	let register = ( a:0 >= 1 ? '"'.a:1 : '' ) 
-
-	" if under help lines do nothing:
-	let toc_line	= getbufline("%",1,"$")
-	let h_line	= index(reverse(copy(toc_line)),'')+1
-	if line(".") > len(toc_line)-h_line
-	    return ''
-	endif
-
-	let s:deleted_section = toc_line
+    function! <SID>SectionScope()
+	" Return [ file, begin_line, end_line, title, type, section_nr, bibliography ] or ['', '', '', '', '', '', '']  if error.
 
 	" Get the name and path of the file
 	" to operato on
-	let file_name	= s:file()
-
-	let begin_line	= atplib#tools#getlinenr()
-	let section_nr	= s:getsectionnr()
-	let toc		= deepcopy(t:atp_toc[file_name]) 
-	let type	= toc[begin_line][0]
+	let [file_name,begin_line]	= atplib#tools#getlinenr()
+	let section_nr			= s:getsectionnr()
+	if g:atp_python_toc
+	    let main_file	= get(b:atp_Toc, line("."), ["", "", ""])[2]
+	    let toc		= deepcopy(t:atp_pytoc[main_file]) 
+	    let type		= ""
+	    let toc_entry	= ['', '', '', '', '', '', ''] 
+	    let ind		= 0
+	    for toc_entry in toc
+		if toc_entry[0:1] == [file_name, begin_line]
+		    let type	= toc_entry[2]
+		    break
+		endif
+		let ind+=1
+	    endfor
+	else
+	    let toc		= deepcopy(t:atp_toc[file_name]) 
+	    let type		= toc[begin_line][0]
+	endif
 
 	" Only some types are supported:
-	if count(['bibliography', 'subsubsection', 'subsection', 'section', 'chapter', 'part'], type) == 0
-	    echo type . " is not supported"
+	if index(['bibliography', 'subsubsection', 'subsection', 'section', 'chapter', 'part'], type) == -1
+	    echo "Section type: " . type . " is not supported"
 	    sleep 750m
-	    return
+	    return ['', '', '', '', '', '', '']
 	endif
 
 	" Find the end of the section:
@@ -517,25 +472,64 @@ if expand("%") == "__ToC__" &&
 	elseif type == 'subsubsection' || type == 'bibliography'
 	    let type_pattern = '\%(sub\)*section\|chapter\|part\|bibliography'
 	endif
-	let title		= toc[begin_line][2]
-	call filter(toc, 'str2nr(v:key) > str2nr(begin_line)')
-	let end_line 	= -1
+	if g:atp_python_toc
+	    let title	= toc_entry[3]
+	    let toc	= toc[ind+1:]
+	    " We will search for end line only in the same file:
+	    call filter(toc, "v:val[0] == file_name")
+	else
+	    let title		= toc[begin_line][2]
+	    call filter(toc, 'str2nr(v:key) > str2nr(begin_line)')
+	endif
+	let end_line 		= -1
 	let bibliography	=  0
 
-	for line in sort(keys(toc), "s:CompareNumbers")
-	    if toc[line][0] =~ type_pattern
-		let end_line = line-1
-		if toc[line][0] =~ 'bibliography'
-		    let bibliography = 1
+	if g:atp_python_toc
+	    for toc_e in toc
+		if toc_e[2] =~ type_pattern
+		    let end_line = toc_e[1]-1
+		    if toc_e[2] =~ 'bibliography'
+			let bibliography = 1
+		    endif
+		    break
 		endif
-		break
-	    endif
-	endfor
+	    endfor
+	else
+	    for line in sort(keys(toc), "s:CompareNumbers")
+		if toc[line][0] =~ type_pattern
+		    let end_line = line-1
+		    if toc[line][0] =~ 'bibliography'
+			let bibliography = 1
+		    endif
+		    break
+		endif
+	    endfor
+	endif
 
 	if end_line == -1 && &l:filetype == "plaintex"
 	    " TODO:
 	    echomsg "[ATP:] can not yank last section in plain tex files :/"
 	    sleep 750m
+	    return ['', '', '', '', '', '', '']
+	endif
+	return [ file_name, begin_line, end_line, title, type, section_nr, bibliography]
+    endfunction
+
+    function! <SID>YankSection(...)
+
+	let register = ( a:0 >= 1 ? '"'.a:1 : '' ) 
+
+	" if under help lines do nothing:
+	let toc_line	= getbufline("%",1,"$")
+	let h_line	= index(reverse(copy(toc_line)),'')+1
+	if line(".") > len(toc_line)-h_line
+	    return ''
+	endif
+
+	let s:deleted_section = toc_line
+
+	let [file_name, begin_line, end_line, title, type, section_nr, bibliography] = <SID>SectionScope()
+	if [file_name, begin_line, end_line, title, type, section_nr, bibliography] == ['', '', '', '', '', '']
 	    return
 	endif
 
@@ -548,14 +542,14 @@ if expand("%") == "__ToC__" &&
 	    let winview	= winsaveview()
 	    let bufnr = bufnr("%")
 	else
-	    exe gotowinnr . " wincmd w"
+" 	    exe gotowinnr . " wincmd w"
+	    exe "wincmd w"
 	    let bufnr = bufnr("%")
 	    let winview	= winsaveview()
 	    exe "e " . fnameescape(file_name)
 	endif
-	let g:bufnr = bufnr
 	    
-	"finally, set the position
+	"Finally, set the position:
 	keepjumps call setpos('.',[0,begin_line,1,0])
 	normal! V
 	if end_line != -1 && !bibliography
@@ -577,9 +571,9 @@ if expand("%") == "__ToC__" &&
 	execute "let yanked_section=@".register
 	let yanked_section_list= split(yanked_section, '\n')
 	if yanked_section_list[0] !~ '^\s*$' 
-	    call extend(yanked_section_list, [' '], 0)  
+	    call extend(yanked_section_list, [''], 0)  
 	endif
-	call extend(t:atp_SectionStack, [[title, type, yanked_section_list, section_nr]],0)
+	call extend(t:atp_SectionStack, [[title, type, yanked_section_list, section_nr, file_name]],0)
     endfunction
     command! -buffer -nargs=? YankSection	:call <SID>YankSection(<f-args>)
 
@@ -594,57 +588,8 @@ if expand("%") == "__ToC__" &&
 
 	let s:deleted_section = toc_line
 
-	" Get the name and path of the file
-	" to operato on
-	let file_name	= s:file()
-
-	let begin_line	= atplib#tools#getlinenr()
-	let section_nr	= s:getsectionnr()
-	let toc		= deepcopy(t:atp_toc[file_name]) 
-	let type	= toc[begin_line][0]
-
-	" Only some types are supported:
-	if count(['bibliography', 'subsubsection', 'subsection', 'section', 'chapter', 'part'], type) == 0
-	    echo type . " is not supported"
-	    sleep 750m
-	    return
-	endif
-
-	" Find the end of the section:
-	" part 		is ended by part
-	" chapter		is ended by part or chapter
-	" section		is ended by part or chapter or section
-	" and so on,
-	" bibliography 	is ended by like subsubsection.
-	if type == 'part'
-	    let type_pattern = 'part\|bibliography'
-	elseif type == 'chapter'
-	    let type_pattern = 'chapter\|part\|bibliography'
-	elseif type == 'section'
-	    let type_pattern = '\%(sub\)\@<!section\|chapter\|part\|bibliography'
-	elseif type == 'subsection'
-	    let type_pattern = '\%(sub\)\@<!\%(sub\)\=section\|chapter\|part\|bibliography'
-	elseif type == 'subsubsection' || type == 'bibliography'
-	    let type_pattern = '\%(sub\)*section\|chapter\|part\|bibliography'
-	endif
-	let title		= toc[begin_line][2]
-	call filter(toc, 'str2nr(v:key) > str2nr(begin_line)')
-	let end_line 	= -1
-	let bibliography	=  0
-
-	for line in sort(keys(toc), "s:CompareNumbers")
-	    if toc[line][0] =~ type_pattern
-		let end_line = line-1
-		if toc[line][0] =~ 'bibliography'
-		    let bibliography = 1
-		endif
-		break
-	    endif
-	endfor
-
-	if end_line == -1 && &l:filetype == "plaintex"
-	    echomsg "[ATP:] can not delete last section in plain tex files :/"
-	    sleep 750m
+	let [file_name, begin_line, end_line, title, type, section_nr, bibliography] = <SID>SectionScope()
+	if [file_name, begin_line, end_line, title, type, section_nr, bibliography] == ['', '', '', '', '', '']
 	    return
 	endif
 
@@ -654,7 +599,8 @@ if expand("%") == "__ToC__" &&
 	if gotowinnr != -1
 	    exe gotowinnr . " wincmd w"
 	else
-	    exe gotowinnr . " wincmd w"
+" 	    exe gotowinnr . " wincmd w"
+	    exe "wincmd w"
 	    exe "e " . fnameescape(file_name)
 	endif
 	    
@@ -674,20 +620,22 @@ if expand("%") == "__ToC__" &&
 	normal d
 	let deleted_section	= split(@*, '\n')
 	if deleted_section[0] !~ '^\s*$' 
-	    call extend(deleted_section, [' '], 0)  
+	    call extend(deleted_section, [''], 0)  
 	endif
 
 	" Update the Table of Contents
-	call remove(t:atp_toc[file_name], begin_line)
-	let new_toc={}
-	for line in keys(t:atp_toc[file_name])
-	    if str2nr(line) < str2nr(begin_line)
-		call extend(new_toc, { line : t:atp_toc[file_name][line] })
-	    else
-		call extend(new_toc, { line-len(deleted_section) : t:atp_toc[file_name][line] })
-	    endif
-	endfor
-	let t:atp_toc[file_name]	= new_toc
+	if !g:atp_python_toc
+	    call remove(t:atp_toc[file_name], begin_line)
+	    let new_toc={}
+	    for line in keys(t:atp_toc[file_name])
+		if str2nr(line) < str2nr(begin_line)
+		    call extend(new_toc, { line : t:atp_toc[file_name][line] })
+		else
+		    call extend(new_toc, { line-len(deleted_section) : t:atp_toc[file_name][line] })
+		endif
+	    endfor
+	    let t:atp_toc[file_name]	= new_toc
+	endif
 	" Being still in the tex file make backup:
 	if exists("g:atp_SectionBackup")
 	    call extend(g:atp_SectionBackup, [[title, type, deleted_section, section_nr, expand("%:p")]], 0)
@@ -698,7 +646,7 @@ if expand("%") == "__ToC__" &&
 	TOC! 0
 
 	" Update the stack of deleted sections
-	call extend(t:atp_SectionStack, [[title, type, deleted_section, section_nr]],0)
+	call extend(t:atp_SectionStack, [[title, type, deleted_section, section_nr, file_name]],0)
     endfunction
     command! -buffer DeleteSection	:call <SID>DeleteSection()
     " nnoremap dd			:call <SID>DeleteSection()<CR>
@@ -718,13 +666,10 @@ if expand("%") == "__ToC__" &&
 	    return
 	endif
 
-	let buffer		= s:file()
-
-    "     if a:after 
 	if a:type ==# "P" || line(".") == 1
-	    let begin_line	= atplib#tools#getlinenr((line(".")))
+	    let [buffer, begin_line]	= atplib#tools#getlinenr((line(".")))
 	else
-	    let begin_line	= atplib#tools#getlinenr((line(".")+1))
+	    let [buffer, begin_line]	= atplib#tools#getlinenr((line(".")+1))
 	    if begin_line	== ""
 		let begin_line	= "last_line"
 	    endif
@@ -736,7 +681,7 @@ if expand("%") == "__ToC__" &&
 	if gotowinnr != -1
 	    exe gotowinnr . " wincmd w"
 	else
-	    exe gotowinnr . " wincmd w"
+	    exe "wincmd w"
 	    exe "e " . fnameescape(buffer)
 	endif
 
@@ -778,12 +723,16 @@ if expand("%") == "__ToC__" &&
 	    return
 	endif
 	let i	= 1
-	echo "Stack Number/Type/Title"
+	echohl WarningMsg
+	echo "Number\tType\t\t\tTitle\t\t\t\t\tFile"
+	echohl Normal
 	let msg = []
 	for section in t:atp_SectionStack
-	    call add(msg, i . "/" .  section[1] . " " . section[3] . "/" . section[0])
+	    call add(msg, i . "\t" .  section[1] . " " . section[3] . "\t\t" . section[0]."\t\t".fnamemodify(section[4], ':.'))
 	    let i+=1
 	endfor
+	" There is CursorHold event in toc list which showes the line,
+	" using input() the message will not disapear imediately.
 	call input(join(msg + [ "Press <Enter>" ] , "\n"))
     endfunction
     command! -buffer SectionStack	:call <SID>SectionStack()
@@ -834,10 +783,10 @@ augroup END
 
 " Fold section
 " {{{1
-func! <SID>CompareNumbers(i1, i2)
+func! CompareNumbers(i1, i2)
     return str2nr(a:i1) == str2nr(a:i2) ? 0 : str2nr(a:i1) > str2nr(a:i2) ? 1 : -1
 endfunc
-function! <SID>Section2Nr(section)
+function! Section2Nr(section)
     if a:section == 'part'
 	return 1
     elseif a:section == 'chapter'
@@ -862,15 +811,12 @@ function! FoldClose(...) " {{{1
     " This function is not working well with sections put into chapters. Then
     " chapters are not folded with greater fold level.
     for line in range(f_line, l_line)
-	let beg_line = Getlinenr(line)
-	if !beg_line
-	    return
-	endif
-	let type = <SID>Section2Nr(get(get(deepcopy(atp_toc), s:file(), {}), beg_line, [''])[0])
-	let type_dict = get(deepcopy(atp_toc), s:file(), {})
+	let [beg_file,beg_line] = <sid>GetLineNr(line)
+	let type = <SID>Section2Nr(get(get(deepcopy(atp_toc), file, {}), beg_line, [''])[0])
+	let type_dict = get(deepcopy(atp_toc), beg_file, {})
 	call filter(map(type_dict, "<SID>Section2Nr(v:val[0])"), "str2nr(v:val) <= str2nr(type)")
 	let line_list = sort(filter(keys(type_dict), "str2nr(v:val) >= str2nr(beg_line)"), "<SID>CompareNumbers")
-	let end_line = Getlinenr(line(".")+1)
+	let [end_file,end_line] = <SID>GetLineNr(line(".")+1)
 	" Goto file
 	let winnr = s:gotowinnr()
 	let toc_winnr = winnr()

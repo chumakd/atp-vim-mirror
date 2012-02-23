@@ -410,9 +410,13 @@ try:
         lotfile_readable = os.path.isfile(lotfile)
         thmfile_readable = os.path.isfile(thmfile)
 
-        aux_file=open(tmpaux, "r")
-        aux=aux_file.read()
-        aux_file.close()
+        try:
+            aux_file=open(tmpaux, "r")
+            aux=aux_file.read()
+            aux_file.close()
+        except IOError:
+            aux=""
+            pass
         bibtex=re.search('\\\\bibdata\s*{', aux)
         # This can be used to make it faster and use the old bbl file.
         # For this I have add a switch (bang).
@@ -479,9 +483,13 @@ try:
             copy_back_output(tmpdir)
 
             #CONDITION
-            log_file=open(tmplog, "r")
-            log=log_file.read()
-            log_file.close()
+            try:
+                log_file=open(tmplog, "r")
+                log=log_file.read()
+                log_file.close()
+            except IOError:
+                log=""
+                pass
 
             # Citations undefined|Label(s) may have changed
             log_list=re.findall('(undefined references)|(Citations undefined)|(Label\(s\) may have changed)',log)

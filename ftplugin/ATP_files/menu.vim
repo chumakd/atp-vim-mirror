@@ -22,7 +22,7 @@ function! <SID>TEXL_menuentry()
     if expand("%:p") != atplib#FullPath(b:atp_MainFile)
 	execute "menu 550.6 Latex.".Compiler."\\ (subfile)<Tab>:TEXL			:<C-U>TEXL<CR>"
     else
-	execute "silent! unmenu Latex.".Compiler."\\ (subfile)"
+	silent! execute "silent! unmenu Latex.".Compiler."\\ (subfile)"
     endif
 endfunction
 au BufEnter,BufWinEnter *.tex :call <SID>TEXL_menuentry()
@@ -35,9 +35,12 @@ execute "imenu 550.8 &Latex.".Compiler."\\ &twice<Tab>:2TEX			<Esc>:2TEX<CR>a"
 nmenu 550.9 &Latex.&MakeLatex<Tab>:MakeLatex					:<C-U>MakeLatex<CR>
 cmenu 550.9 &Latex.&MakeLatex<Tab>:MakeLatex					<C-U>MakeLatex<CR>
 imenu 550.9 &Latex.&MakeLatex<Tab>:MakeLatex					<Esc>:MakeLatex<CR>a
-menu 550.10 &Latex.&Bibtex<Tab>:Bibtex						:<C-U>Bibtex<CR>
-cmenu 550.10 &Latex.&Bibtex<Tab>:Bibtex						<C-U>Bibtex<CR>
-imenu 550.10 &Latex.&Bibtex<Tab>:Bibtex						<Esc>:Bibtex<CR>a
+nmenu 550.10 &Latex.&Kill<Tab>:Kill						:<C-U>Kill<CR>
+cmenu 550.10 &Latex.&Kill<Tab>:Kill						<C-U>Kill<CR>
+imenu 550.10 &Latex.&Kill<Tab>:Kill						<Esc>:Kill<CR>a
+menu 550.11 &Latex.&Bibtex<Tab>:Bibtex						:<C-U>Bibtex<CR>
+cmenu 550.11 &Latex.&Bibtex<Tab>:Bibtex						<C-U>Bibtex<CR>
+imenu 550.11 &Latex.&Bibtex<Tab>:Bibtex						<Esc>:Bibtex<CR>a
 if Viewer != ""
     execute "menu 550.11 &Latex.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 	:<C-U>ViewOutput<CR>"
     execute "cmenu 550.11 &Latex.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 	<C-U>ViewOutput<CR>"
@@ -129,18 +132,18 @@ cmenu 550.40 &Latex.&Go\ to.&GotoNamedDest<Tab>(Xpdf\ only)			GotoNamedDest
 imenu 550.40 &Latex.&Go\ to.&GotoNamedDest<Tab>(Xpdf\ only)			<Esc>:GotoNamedDest 
 "
 menu 550.40 &Latex.&Go\ to.-Environment- 					:
-menu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:NEnv\ definition		:<C-U>NEnv definition<CR>
-cmenu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:NEnv\ definition		<C-U>NEnv definition<CR>
-imenu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:NEnv\ definition		<Esc>:NEnv definition<CR>
-menu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:PEnv\ definition		:<C-U>PEnv definition<CR>
-cmenu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:PEnv\ definition		<C-U>PEnv definition<CR>
-imenu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:PEnv\ definition		<Esc>:PEnv definition<CR>
-menu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:NEnv\ [pattern]		:<C-U>NEnv 
-cmenu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:NEnv\ [pattern]		<C-U>NEnv 
-imenu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:NEnv\ [pattern]		<Esc>:NEnv 
-menu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:PEnv\ [pattern]		:<C-U>PEnv 
-cmenu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:PEnv\ [pattern]		<C-U>PEnv 
-imenu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:PEnv\ [pattern]		<Esc>:PEnv 
+menu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:F\ definition			:<C-U>F definition<CR>
+cmenu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:F\ definition			<C-U>F definition<CR>
+imenu 550.40 &Latex.&Go\ to.Next\ Definition<Tab>:F\ definition			<Esc>:F definition<CR>
+menu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:B\ definition		:<C-U>B definition<CR>
+cmenu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:B\ definition		<C-U>B definition<CR>
+imenu 550.40 &Latex.&Go\ to.Previuos\ Definition<Tab>:B\ definition		<Esc>:B definition<CR>
+menu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:F\ [pattern]			:<C-U>B
+cmenu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:F\ [pattern]			<C-U>B
+imenu 550.40 &Latex.&Go\ to.Next\ Environment<Tab>:F\ [pattern]			<Esc>:B
+menu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:B\ [pattern]		:<C-U>B
+cmenu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:B\ [pattern]		<C-U>B
+imenu 550.40 &Latex.&Go\ to.Previuos\ Environment<Tab>:B\ [pattern]		<Esc>:B
 "
 menu 550.40 &Latex.&Go\ to.-Section- 						:
 menu 550.40 &Latex.&Go\ to.&Next\ Section<Tab>:NSec				:NSec<CR>

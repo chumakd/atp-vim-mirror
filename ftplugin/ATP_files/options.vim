@@ -1522,10 +1522,10 @@ function! <SID>SetXdvi()
     " Put new menu entries:
     let Compiler	= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\zs\S*'), 'Compile')
     let Viewer		= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\zs\S*'), "View\\ Output")
-    execute "nmenu 550.5 &LaTeX.&".Compiler."<Tab>:TEX			:TEX<CR>"
-    execute "nmenu 550.6 &LaTeX.".Compiler."\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
-    execute "nmenu 550.7 &LaTeX.".Compiler."\\ &twice<Tab>:2TEX		:2TEX<CR>"
-    execute "nmenu 550.10 LaTeX.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 		:ViewOutput<CR>"
+    execute "nmenu 550.5 &Latex.&".Compiler."<Tab>:TEX			:TEX<CR>"
+    execute "nmenu 550.6 &Latex.".Compiler."\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
+    execute "nmenu 550.7 &Latex.".Compiler."\\ &twice<Tab>:2TEX		:2TEX<CR>"
+    execute "nmenu 550.10 Latex.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 		:ViewOutput<CR>"
 endfunction
 command! -buffer SetXdvi			:call <SID>SetXdvi()
 nnoremap <silent> <buffer> <Plug>SetXdvi	:call <SID>SetXdvi()<CR>
@@ -1541,10 +1541,10 @@ function! <SID>SetPdf(viewer)
     let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\S*'), 'Compiler')
     let Viewer			= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\S*'), 'View\ Output')
     try 
-	execute "aunmenu LaTeX.".Compiler
-	execute "aunmenu LaTeX.".Compiler."\\ debug"
-	execute "aunmenu LaTeX.".Compiler."\\ twice"
-	execute "aunmenu LaTeX.View\\ with\\ ".Viewer
+	execute "aunmenu Latex.".Compiler
+	execute "aunmenu Latex.".Compiler."\\ debug"
+	execute "aunmenu Latex.".Compiler."\\ twice"
+	execute "aunmenu Latex.View\\ with\\ ".Viewer
     catch /E329:/
     endtry
 
@@ -1576,17 +1576,17 @@ function! <SID>SetPdf(viewer)
 
     " Delete menu entry.
     try
-	silent aunmenu LaTeX.Reverse\ Search
+	silent aunmenu Latex.Reverse\ Search
     catch /E329:/
     endtry
 
     " Put new menu entries:
     let Compiler	= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\zs\S*'), 'Compile')
     let Viewer		= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\zs\S*'), 'View\ Output')
-    execute "nmenu 550.5 &LaTeX.&".Compiler.	"<Tab>:TEX			:TEX<CR>"
-    execute "nmenu 550.6 &LaTeX." .Compiler.	"\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
-    execute "nmenu 550.7 &LaTeX." .Compiler.	"\\ &twice<Tab>:2TEX		:2TEX<CR>"
-    execute "nmenu 550.10 LaTeX.&View\\ with\\ ".Viewer.	"<Tab>:ViewOutput 		:ViewOutput<CR>"
+    execute "nmenu 550.5 &Latex.&".Compiler.	"<Tab>:TEX			:TEX<CR>"
+    execute "nmenu 550.6 &Latex." .Compiler.	"\\ debug<Tab>:TEX\\ debug 	:DTEX<CR>"
+    execute "nmenu 550.7 &Latex." .Compiler.	"\\ &twice<Tab>:2TEX		:2TEX<CR>"
+    execute "nmenu 550.10 Latex.&View\\ with\\ ".Viewer.	"<Tab>:ViewOutput 		:ViewOutput<CR>"
 endfunction
 command! -buffer SetXpdf			:call <SID>SetPdf('xpdf')
 command! -buffer SetOkular			:call <SID>SetPdf('okular')
@@ -1605,32 +1605,32 @@ function! ATP_ToggleAuTeX(...)
     if a:0 && ( a:1 == 2 || a:1 == "local" )
 	let b:atp_autex=2
 	echo "[ATP:] LOCAL"
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
-	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
-	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
-	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
+	silent! aunmenu Latex.Toggle\ AuTeX\ [off]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [on]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [local]
+	menu 550.75 &Latex.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
+	cmenu 550.75 &Latex.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
+	imenu 550.75 &Latex.&Toggle\ AuTeX\ [local]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
 	return
     endif
     let on = ( a:0 ? ( a:1 == 'on' ? 1 : 0 ) : !b:atp_autex )
     if on
 	let b:atp_autex=1	
 	echo "[ATP:] ON"
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
-	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex		:<C-U>ToggleAuTeX<CR>
-	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
-	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
+	silent! aunmenu Latex.Toggle\ AuTeX\ [off]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [on]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [local]
+	menu 550.75 &Latex.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex		:<C-U>ToggleAuTeX<CR>
+	cmenu 550.75 &Latex.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
+	imenu 550.75 &Latex.&Toggle\ AuTeX\ [on]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
     else
 	let b:atp_autex=0
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [off]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [on]
-	silent! aunmenu LaTeX.Toggle\ AuTeX\ [local]
-	menu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
-	cmenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
-	imenu 550.75 &LaTeX.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
+	silent! aunmenu Latex.Toggle\ AuTeX\ [off]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [on]
+	silent! aunmenu Latex.Toggle\ AuTeX\ [local]
+	menu 550.75 &Latex.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	:<C-U>ToggleAuTeX<CR>
+	cmenu 550.75 &Latex.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<C-U>ToggleAuTeX<CR>
+	imenu 550.75 &Latex.&Toggle\ AuTeX\ [off]<Tab>b:atp_autex	<ESC>:ToggleAuTeX<CR>a
 	echo "[ATP:] OFF"
     endif
 endfunction
@@ -1650,23 +1650,23 @@ function! ATP_ToggleSpace(...)
 	endif
 	let g:atp_cmap_space=1
 	let s:special_space="[on]"
-	silent! aunmenu LaTeX.Toggle\ Space\ [off]
-	silent! aunmenu LaTeX.Toggle\ Space\ [on]
-	menu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	:<C-U>ToggleSpace<CR>
-	cmenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
-	imenu 550.78 &LaTeX.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
-	tmenu &LaTeX.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
+	silent! aunmenu Latex.Toggle\ Space\ [off]
+	silent! aunmenu Latex.Toggle\ Space\ [on]
+	menu 550.78 &Latex.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	:<C-U>ToggleSpace<CR>
+	cmenu 550.78 &Latex.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
+	imenu 550.78 &Latex.&Toggle\ Space\ [on]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
+	tmenu &Latex.&Toggle\ Space\ [on] cmap <space> \_s\+ is curently on
 	redraw
 	let msg = "[ATP:] special space is on"
     else
 	let g:atp_cmap_space=0
 	let s:special_space="[off]"
-	silent! aunmenu LaTeX.Toggle\ Space\ [on]
-	silent! aunmenu LaTeX.Toggle\ Space\ [off]
-	menu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	:<C-U>ToggleSpace<CR>
-	cmenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
-	imenu 550.78 &LaTeX.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
-	tmenu &LaTeX.&Toggle\ Space\ [off] cmap <space> \_s\+ is curently off
+	silent! aunmenu Latex.Toggle\ Space\ [on]
+	silent! aunmenu Latex.Toggle\ Space\ [off]
+	menu 550.78 &Latex.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	:<C-U>ToggleSpace<CR>
+	cmenu 550.78 &Latex.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<C-U>ToggleSpace<CR>
+	imenu 550.78 &Latex.&Toggle\ Space\ [off]<Tab>cmap\ <space>\ \\_s\\+	<Esc>:ToggleSpace<CR>a
+	tmenu &Latex.&Toggle\ Space\ [off] cmap <space> \_s\+ is curently off
 	redraw
 	let msg = "[ATP:] special space is off"
     endif
@@ -1696,24 +1696,24 @@ function! ATP_ToggleCheckMathOpened(...)
     if !on
 	let g:atp_MathOpened = 0
 	echomsg "[ATP:] check if in math environment is off"
-	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [on]
-	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
-	menu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
+	silent! aunmenu Latex.Toggle\ Check\ if\ in\ Math\ [on]
+	silent! aunmenu Latex.Toggle\ Check\ if\ in\ Math\ [off]
+	menu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
 		    \ :<C-U>ToggleCheckMathOpened<CR>
-	cmenu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
+	cmenu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
 		    \ <C-U>ToggleCheckMathOpened<CR>
-	imenu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
+	imenu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [off]<Tab>g:atp_MathOpened			
 		    \ <Esc>:ToggleCheckMathOpened<CR>a
     else
 	let g:atp_MathOpened = 1
 	echomsg "[ATP:] check if in math environment is on"
-	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
-	silent! aunmenu LaTeX.Toggle\ Check\ if\ in\ Math\ [off]
-	menu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
+	silent! aunmenu Latex.Toggle\ Check\ if\ in\ Math\ [off]
+	silent! aunmenu Latex.Toggle\ Check\ if\ in\ Math\ [off]
+	menu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
 		    \ :<C-U>ToggleCheckMathOpened<CR>
-	cmenu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
+	cmenu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
 		    \ <C-U>ToggleCheckMathOpened<CR>
-	imenu 550.79 &LaTeX.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
+	imenu 550.79 &Latex.Toggle\ &Check\ if\ in\ Math\ [on]<Tab>g:atp_MathOpened
 		    \ <Esc>:ToggleCheckMathOpened<CR>a
     endif
 endfunction
@@ -1724,24 +1724,24 @@ function! ATP_ToggleCallBack(...)
     if !on
 	let g:atp_callback	= 0
 	echomsg "[ATP:] call back is off"
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	menu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ :<C-U>call ToggleCallBack()<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ <C-U>call ToggleCallBack()<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	imenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ <Esc>:call ToggleCallBack()<CR>a
     else
 	let g:atp_callback	= 1
 	echomsg "[ATP:] call back is on"
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	menu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
 		    \ :call ToggleCallBack()<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
+	cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
 		    \ <C-U>call ToggleCallBack()<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
+	imenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback
 		    \ <Esc>:call ToggleCallBack()<CR>a
     endif
 endfunction
@@ -1802,22 +1802,22 @@ function! ATP_ToggleDebugMode(mode,...)
 	echomsg "[ATP debug mode:] ".new_debugmode
 
 	if change_menu
-	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
-	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [off]
-	    menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	    silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [on]
+	    silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [off]
+	    menu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 			\ :<C-U>ToggleDebugMode<CR>
-	    cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	    cmenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 			\ <C-U>ToggleDebugMode<CR>
-	    imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	    imenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 			\ <Esc>:ToggleDebugMode<CR>a
 
-	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	    menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	    silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	    silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	    menu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 			\ :<C-U>ToggleDebugMode<CR>
-	    cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	    cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 			\ <C-U>ToggleDebugMode<CR>
-	    imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	    imenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 			\ <Esc>:ToggleDebugMode<CR>a
 	endif
 
@@ -1829,22 +1829,22 @@ function! ATP_ToggleDebugMode(mode,...)
 	echomsg "[ATP debug mode:] ".new_debugmode
 
 	if change_menu
-	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
-	    silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
-	    menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	    silent! aunmenu 550.20.5 Latex.Log.Toggle\ Debug\ Mode\ [off]
+	    silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [on]
+	    menu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 			\ :<C-U>ToggleDebugMode<CR>
-	    cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	    cmenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 			\ <C-U>ToggleDebugMode<CR>
-	    imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	    imenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 			\ <Esc>:ToggleDebugMode<CR>a
 
-	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	    silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	    menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	    silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	    silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	    menu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 			\ :<C-U>ToggleDebugMode<CR>
-	    cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	    cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 			\ <C-U>ToggleDebugMode<CR>
-	    imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	    imenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 			\ <Esc>:ToggleDebugMode<CR>a
 	endif
 
@@ -2942,8 +2942,8 @@ function! <SID>Viewer(...)
     let oldViewer	= get(g:ViewerMsg_Dict, matchstr(old_viewer, '^\s*\zs\S*'), "")
     let b:atp_Viewer	= new_viewer
     let Viewer		= get(g:ViewerMsg_Dict, matchstr(b:atp_Viewer, '^\s*\zs\S*'), "")
-    silent! execute "aunmenu LaTeX.View\\ with\\ ".oldViewer
-    silent! execute "aunmenu LaTeX.View\\ Output"
+    silent! execute "aunmenu Latex.View\\ with\\ ".oldViewer
+    silent! execute "aunmenu Latex.View\\ Output"
     if Viewer != ""
 	execute "menu 550.10 LaTe&X.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 		:<C-U>ViewOutput<CR>"
 	execute "cmenu 550.10 LaTe&X.&View\\ with\\ ".Viewer."<Tab>:ViewOutput 		<C-U>ViewOutput<CR>"
@@ -2974,9 +2974,9 @@ function! <SID>Compiler(...)
 	let oldCompiler	= get(g:CompilerMsg_Dict, matchstr(old_compiler, '^\s*\zs\S*'), "")
 	let b:atp_TexCompiler	= compiler
 	let Compiler		= get(g:CompilerMsg_Dict, matchstr(b:atp_TexCompiler, '^\s*\zs\S*'), "")
-	silent! execute "aunmenu LaTeX.".oldCompiler
-	silent! execute "aunmenu LaTeX.".oldCompiler."\\ debug"
-	silent! execute "aunmenu LaTeX.".oldCompiler."\\ twice"
+	silent! execute "aunmenu Latex.".oldCompiler
+	silent! execute "aunmenu Latex.".oldCompiler."\\ debug"
+	silent! execute "aunmenu Latex.".oldCompiler."\\ twice"
 	execute "menu 550.5 LaTe&X.&".Compiler."<Tab>:TEX				:<C-U>TEX<CR>"
 	execute "cmenu 550.5 LaTe&X.&".Compiler."<Tab>:TEX				<C-U>TEX<CR>"
 	execute "imenu 550.5 LaTe&X.&".Compiler."<Tab>:TEX				<Esc>:TEX<CR>a"
@@ -3029,40 +3029,40 @@ function! <SID>SetDebugMode(bang,...)
 
     "{{{ Change menu
     if change_menu && t:atp_DebugMode !~? 'debug$'
-	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
-	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [off]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [on]
+	silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [off]
+	menu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	cmenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
+	imenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [off]<Tab>ToggleDebugMode
 		    \ <Esc>:ToggleDebugMode<CR>a
 
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	menu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
+	imenu 550.80 &Latex.Toggle\ &Call\ Back\ [off]<Tab>g:atp_callback	
 		    \ <Esc>:ToggleDebugMode<CR>a
     elseif change_menu
-	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ Debug\ Mode\ [off]
-	silent! aunmenu 550.20.5 LaTeX.Log.Toggle\ &Debug\ Mode\ [on]
-	menu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	silent! aunmenu 550.20.5 Latex.Log.Toggle\ Debug\ Mode\ [off]
+	silent! aunmenu 550.20.5 Latex.Log.Toggle\ &Debug\ Mode\ [on]
+	menu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	cmenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.20.5 &LaTeX.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
+	imenu 550.20.5 &Latex.&Log.Toggle\ &Debug\ Mode\ [on]<Tab>ToggleDebugMode
 		    \ <Esc>:ToggleDebugMode<CR>a
 
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [on]
-	silent! aunmenu LaTeX.Toggle\ Call\ Back\ [off]
-	menu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [on]
+	silent! aunmenu Latex.Toggle\ Call\ Back\ [off]
+	menu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 		    \ :<C-U>ToggleDebugMode<CR>
-	cmenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	cmenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 		    \ <C-U>ToggleDebugMode<CR>
-	imenu 550.80 &LaTeX.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
+	imenu 550.80 &Latex.Toggle\ &Call\ Back\ [on]<Tab>g:atp_callback	
 		    \ <Esc>:ToggleDebugMode<CR>a
     endif "}}}
 
