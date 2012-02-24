@@ -490,6 +490,7 @@ function! atplib#motion#showtoc(toc)
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
+	    setl modifiable
 	    silent exe "%delete _"
     else
 	" Open new window if its width is defined (if it is not the code below
@@ -499,14 +500,11 @@ function! atplib#motion#showtoc(toc)
 	endif
 	let toc_winnr=bufwinnr(bufnr("__Labels__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ readonly\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
 	else
 	    exe toc_winnr."wincmd w"
-	    let l:openbuffer= "keepalt above split +setl\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
 	endif
 	keepalt silent exe  openbuffer
-	" We are setting the address from which we have come.
-	silent call atplib#setwindow()
     endif
     let number=1
     " this is the line number in ToC.
@@ -711,6 +709,7 @@ function! atplib#motion#showtoc(toc)
 		\ ':SectionStack', 
 		\ ':Undo' ])
     endif
+    setl nomodifiable
     lockvar 3 b:atp_Toc
 endfunction
 " {{{2 atplib#motion#show_pytoc
@@ -738,6 +737,7 @@ function! atplib#motion#show_pytoc(toc)
     if tocwinnr != -1
 	" Jump to the existing window.
 	    exe tocwinnr . " wincmd w"
+	    setl modifiable
 	    silent exe "%delete _"
     else
 	" Open new window if its width is defined (if it is not the code below
@@ -747,14 +747,11 @@ function! atplib#motion#show_pytoc(toc)
 	endif
 	let toc_winnr=bufwinnr(bufnr("__Labels__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
+	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ readonly\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
 	else
 	    exe toc_winnr."wincmd w"
-	    let l:openbuffer= "keepalt above split +setl\\ buftype=nowrite\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap __ToC__"
 	endif
 	keepalt silent exe  openbuffer
-	" We are setting the address from which we have come.
-	silent call atplib#setwindow()
     endif
     let number=1
     " this is the line number in ToC.
@@ -874,6 +871,7 @@ function! atplib#motion#show_pytoc(toc)
 " 		\ 'zc	     fold section[s]',
 " 		\ ":'<,'>Fold",
     endif
+    setl nomodifiable
     lockvar 3 b:atp_Toc
 endfunction
 " {{{2 atplib#motion#ToCbufnr()

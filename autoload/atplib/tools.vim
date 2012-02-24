@@ -424,10 +424,11 @@ function! atplib#tools#showlabels(labels)
 	redraw
 	exe l:labelswinnr . " wincmd w"
 	if l:labelswinnr != t:atp_labelswinnr
+	    setl modifiable
 	    silent exe "%delete"
 	else
-	    echoerr "ATP error in function s:showtoc, TOC/LABEL buffer 
-		    \ and the tex file buffer agree."
+	    echoerr "ATP error in function s:showtoc, TOC/LABEL "
+			\. "buffer and the tex file buffer agree."
 	    return
 	endif
     else
@@ -443,13 +444,11 @@ function! atplib#tools#showlabels(labels)
 	redraw
 	let toc_winnr=bufwinnr(bufnr("__ToC__"))
 	if toc_winnr == -1
-	    let l:openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
+	    let openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ buftype=nofile\\ modifiable\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ filetype=toc_atp\\ syntax=labels_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nospell __Labels__"
 	else
 	    exe toc_winnr."wincmd w"
-	    let l:openbuffer= "keepalt below split +setl\\ tabstop=".tabstop."\\ nowrap\\ buftype=nofile\\ filetype=toc_atp\\ syntax=labels_atp __Labels__"
 	endif
-	silent exe l:openbuffer
-	silent call atplib#setwindow()
+	silent exe openbuffer
 	let t:atp_labelsbufnr=bufnr("")
     endif
     unlockvar b:atp_Labels
@@ -500,6 +499,7 @@ function! atplib#tools#showlabels(labels)
 	endif
 	let l:number+=1
     endfor
+    setlocal nomodifiable
 endfunction
 " }}}2
 " }}}1

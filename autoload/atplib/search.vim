@@ -101,9 +101,7 @@ function! atplib#search#make_defi_dict_py(bang,...)
     let pattern	= a:0 >= 2 ? a:2 : '\\def\|\\newcommand'
     " Not implemeted
     let preambule_only= a:bang == "!" ? 0 : 1
-    let g:preambule_only=preambule_only
     let only_begining	= a:0 >= 3 ? a:3 : 0
-    let g:only_begining=only_begining
 
     if a:bang == "!" || !exists("b:TreeOfFiles")
 	 " Update the cached values:
@@ -425,7 +423,7 @@ function! atplib#search#Dsearch(bang,...)
     if len(defi_dict) > 0
 	" wipe out the old buffer and open new one instead
 	if bufloaded("DefiSearch")
-	    exe "silent bd! " . bufnr("DefiSearch") 
+	    exe "silent bw! " . bufnr("DefiSearch") 
 	endif
 	if !exists("b:atp_MainFile") || !exists("b:atp_ProjectDir")
 	    " Note: I should write a function to read just one variable from
@@ -456,7 +454,8 @@ function! atplib#search#Dsearch(bang,...)
 			let line=l:range[0]+c
 			call add(defi_list, ifile[line-1])
 			if c == 0 
-			    cal add(signs, len(defi_list))
+			    let cmd = matchstr(ifile[line-1], '\\\%(def\|\%(re\)\?newcommand\s*{\|providecommand\s*{\|\%(re\)\?newenvironment\s*{\|\%(re\)\?newtheorem\s*{\|definecolor\s*{\)\zs[^ {}#]*\ze')
+			    call add(signs, [len(defi_list), cmd])
 			endif
 			let i+=1
 			let c+=1
@@ -464,6 +463,7 @@ function! atplib#search#Dsearch(bang,...)
 		endif
 	    endfor
 	endfor
+	let g:defi_list = deepcopy(defi_list)
 
 	if len(defi_list) == 0
 	    redraw
@@ -479,18 +479,19 @@ function! atplib#search#Dsearch(bang,...)
 
 	" open new buffer
 	let window_height= min([g:atp_DsearchMaxWindowHeight, len(defi_list)])
-	let openbuffer=" +setl\\ buftype=nofile\\ nospell\\ nornu\\ nonu " . fnameescape("DefiSearch")
+	let openbuffer=" +setl\\ buftype=nofile\\ nospell\\ nornu\\ nonu\\ mod\\ noswf\\ nobl\\ bh=wipe " . fnameescape("DefiSearch")
 	if g:vertical == 1
 	    let openbuffer="keepalt vsplit " . openbuffer 
 	else
 	    let openbuffer="keepalt rightbelow ".window_height."split " . openbuffer 
 	endif
-
 	silent exe openbuffer
+	let &l:statusline="Dsearch: ".o_pattern
+
 	call setline(1, defi_list)
 	if getline(line(".")) =~ '^\s*$'
 	    normal! dd
-	    call map(signs, 'v:val-1')
+	    call map(signs, '[v:val[0]-1,v:val[1]]')
 	endif
 	if o_pattern != ""
 	    call matchadd('Search', ( &l:ignorecase ? '\c' : '\C' ) .o_pattern)
@@ -502,9 +503,15 @@ function! atplib#search#Dsearch(bang,...)
 	" Place signs:
 	if has("signs")
 	    sign unplace *
-	    for i in signs
-		exe 'sign define '.i.' text=>>'
-		exe 'sign place '.i.' line='.i.' name='.i.' file='.expand('%:p')
+	    for i in range(0,len(signs)-1)
+		try
+		    exe 'sign define '.signs[i][1].' text=>>'
+		    exe 'sign place '.(i+1).' line='.signs[i][0].' name='.signs[i][1].' file='.expand('%:p')
+		catch /E474/
+		    if g:atp_devversion
+			echoerr "[signs:] ".'sign place '.(i+1).' line='.signs[i][0].' name='.signs[i][1].' file='.expand('%:p')
+		    endif
+		endtry
 	    endfor
 	endif
     else
@@ -517,6 +524,8 @@ function! atplib#search#Dsearch(bang,...)
 	endif
 	echohl None
     endif
+    setl nomodifiable
+
     let g:source_time_DSEARCH=reltimestr(reltime(time))
 endfunction
 function! atplib#search#DsearchComp(ArgLead, CmdLine, CursorPos)

@@ -612,10 +612,6 @@ function! atplib#setwindow()
 	if &filetype == "bibsearch_atp"
 " 	    setlocal winwidth=30
 	    setlocal nospell
-	elseif &filetype == "toc_atp"
-" 	    setlocal winwidth=20
-	    setlocal nospell
-	    setlocal cursorline 
 	endif
 " 	nnoremap <expr> <buffer> <C-W>l	"keepalt normal l"
 " 	nnoremap <buffer> <C-W>h	"keepalt normal h"
