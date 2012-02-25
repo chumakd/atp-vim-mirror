@@ -59,11 +59,11 @@ def shift_dict( dictionary, nr ):
     return dictionary
 
 def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir="", project_tmpdir=""):
-# this function rewrites LaTeX log file (input_fname) to output_fname,
-# changeing its format to something readable by Vim.
-# check_path -- ATP process files in tmp directories, with this option the
-# files under project_tmpdir will be written using project_dir
-# (this is for the aux file)
+    # this function rewrites LaTeX log file (input_fname) to output_fname,
+    # changeing its format to something readable by Vim.
+    # check_path -- ATP process files in a temporary directory, with this
+    # option the files under project_tmpdir will be written using project_dir
+    # (this is for the aux file).
 
     if output_fname == None:
         output_fname = os.path.splitext(input_fname)[0]+"._log"
@@ -372,6 +372,10 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     info = ""
                 if info != "":
                     info = " |"+info
+                if re.match('!\s+A <box> was supposed to be here\.', line) or \
+                        re.match('!\s+Infinite glue shrinkage found in a paragraph', line) or \
+                        re.match('!\s+Missing \$ inserted\.', line):
+                    info = ""
                 verbose_msg = ""
                 for j in range(1,i):
                     if not re.match("See\s+the\s+\w+\s+manual\s+or\s+\w+\s+Companion\s+for\s+explanation\.|Type\s+[HI]", log_lines[line_nr-1+j]):
@@ -379,7 +383,8 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     else:
                         break
                 if re.match('\s*<(?:inserted text|to be read again|recently read)>', verbose_msg) or \
-                        re.match('\s*See the LaTeX manual', verbose_msg):
+                        re.match('\s*See the LaTeX manual', verbose_msg) or \
+                        re.match('!\s+Infinite glue shrinkage found in a paragraph', line):
                     verbose_msg = ""
                 if not re.match('\s*$',verbose_msg):
                     verbose_msg = " |"+verbose_msg

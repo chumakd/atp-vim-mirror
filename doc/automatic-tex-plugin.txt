@@ -207,6 +207,8 @@ NEWS							*atp-news*
  omap \w and vmap \w to repeat last wrapping command (like \it, \sf, \em, ...)
  (see |atp-omap-\w| and |atp-omap-WrapSelection|)
 
+ See |g:atp_imap_diacritics_inteligent|.
+
 >
  ======================
  Changes in version 10.6.4
@@ -4435,7 +4437,7 @@ imap ]i   ]I		\item					*atp-item*
 imap ]a   ]ali 		\begin{align}<Cr>\end{align}<Esc>O
 imap ]q   ]equ 		\begin{equation}<Cr>\end{equation}<Esc>O
 
-imap ]l   ]lem 		\begin{flushleft}<Cr>\end{flushleft}<Esc>O
+imap ]L   ]lef 		\begin{flushleft}<Cr>\end{flushleft}<Esc>O
 imap ]R   ]rig 		\begin{flushright}<Cr>\end{flushright}<Esc>O
 
 imap ]T   ]tik 		\begin{center}<CR>\begin{tikzpicture}<CR><CR>\end{tikzpicture}<CR>\end{center}<Up><Up>
@@ -4480,7 +4482,7 @@ imap ^^		^{}<Left>
     maps will not be fired if you type \_ or \^ (which means literal _ or ^ in
     LaTeX). 
 
-imap ]m 	\[\]<Left><Left>
+imap ]m 	\(\)<Left><Left>
 imap ]M 	\[\]<Left><Left>
 
 imap #\		\setminus
@@ -4495,14 +4497,12 @@ imap `D 	<Esc>vxi\frac{\partial}{\partial "}
 				[ let me explain the above map: you type x`D
 				and you get \frac{\partial}{\partial x} ]
 imap #@		\circ
-imap #=		\equiv
 imap #*		\bigcap
 imap #+		\bigcup
 imap #\		\backslash
 imap #>		\geq
 imap #<		\leq
 imap #.		\dot		[#.s will put \dots]
-imap 
 
 MATH ACCENTS AND DECORATIONS ~
 
@@ -4590,7 +4590,26 @@ you have to type a`', i.e. the map acts on the character just before the
 cursor. Otherwise, if |g:atp_imap_diacritics_inteligent|=0 they act as normal
 imaps, i.e. typing `' resolves to \'{} with cursor placed between the
 brackets. Here is a list of all provided imaps to diacritics:
-
+							*g:atp_diacritics_letters*
+Inteligent diacritics works only after certain letters defined in the
+dictionary |g:atp_diacritics_letters|, for example \'{} will work only after
+one of the  letters in |g:atp_diacritics_letters|["'"]. The default value is:
+>
+    g:atp_diacritics_letters = {
+	    \ "'"  : "aceginorsuyz",
+	    \ "\"" : "aeiouy",
+	    \ "`"  : "aeiouy",
+	    \ "^"  : "aceghilosuwy",
+	    \ "v"  : "acdehlnrstuz",
+	    \ "b"  : "",
+	    \ "d"  : "",
+	    \ "H"  : "ou",
+	    \ "~"  : "aeinouy",
+	    \ "."  : "acegioz",
+	    \ "c"  : "cegklnrst",
+	    \ "t"  : "",
+	    \ "2"  : "" }
+<
     imap `'	\'{}
     imap `"	\"{}
     imap `^	\^{}

@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Dec 27, 2011 at 10:06:34  +0000
+" Last Change: Sat Feb 25, 2012 at 01:38:16  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -386,6 +386,28 @@ call s:SetOptions()
 "     not documented and not tested)
 "     let g:atp_autocclose = 0
 " endif
+if !exists("g:atp_diacritics_letters")
+    let g:atp_diacritics_letters={}
+endif
+let s:diacritics_letters = {
+	    \ "'"  : 'aceginorsuyz',
+	    \ "\"" : 'aeiouy',
+	    \ "`"  : 'aeiouy',
+	    \ "^"  : 'aceghilosuwy',
+	    \ "v"  : 'acdehlnrstuz',
+	    \ "b"  : '',
+	    \ "d"  : '',
+	    \ "H"  : 'ou',
+	    \ "~"  : 'aeinouy',
+	    \ "."  : 'acegioz',
+	    \ "c"  : 'cegklnrst',
+	    \ "t"  : '',
+	    \ "2"  : '' }
+for key in keys(s:diacritics_letters)
+    if !has_key(g:atp_diacritics_letters, key)
+	let g:atp_diacritics_letters[key] = s:diacritics_letters[key]
+    endif
+endfor
 if !exists("g:atp_python_toc")
     let g:atp_python_toc = has("python")
 endif
@@ -2141,7 +2163,7 @@ endif
 	\ "\\exhyphenpenalty", "\\frontmatter", "\\mainmatter", "\\backmatter",
 	\ "\\topmargin", "\\oddsidemargin", "\\evensidemargin", "\\headheight", "\\headsep", 
 	\ "\\textwidth", "\\textheight", "\\marginparwidth", "\\marginparsep", "\\marginparpush", "\\footskip", "\\hoffset",
-	\ "\\voffset", "\\paperwidth", "\\paperheight", "\\columnsep", "\\columnseprule", 
+	\ "\\voffset", "\\parindent", "\\paperwidth", "\\paperheight", "\\columnsep", "\\columnseprule", 
 	\ "\\theequation", "\\thepage", "\\usetikzlibrary{",
 	\ "\\tableofcontents", "\\newfont{", "\\phantom{", "\\DeclareMathOperator",
 	\ "\\DeclareRobustCommand", "\\DeclareFixedFont", "\\DeclareMathSymbol", 
@@ -2524,6 +2546,8 @@ if !s:did_options
 	let s:ef = &l:ef
 " 	echomsg "PFILE ".s:previous_file." EFM ".s:error_format
     endfunction
+    let s:error_format = ( exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : 'no_error_format' )
+    let s:ef = &l:ef
     function! <SID>BufEnter()
 	if !( &l:filetype == 'tex' || &l:ef == s:ef  )
 	    " buftype option is not yet set when this function is executed,
@@ -2534,7 +2558,6 @@ if !s:did_options
 " 	if exists("s:previous_file")
 	if exists("s:ef")
 	    let same_project= ( &l:ef == s:ef )
-	    let g:same_project = same_project
 	    if !same_project
 " 		echomsg "OTHER PROJECT ".g:atp_DefaultErrorFormat . " " . expand("%:p")
 		let errorflags = exists("b:atp_ErrorFormat") ? b:atp_ErrorFormat : g:atp_DefaultErrorFormat

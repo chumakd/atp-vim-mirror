@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Dec 18, 2011 at 17:17:50  +0000
+" Last Change: Sat Feb 25, 2012 at 01:27:06  +0000
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -10,7 +10,7 @@ if exists("g:no_plugin_maps") && g:no_plugin_maps ||
 	    \ exists("g:no_".&l:filetype."_maps") && g:no_{&l:filetype}_maps
     finish
 endif
-
+" SOME VARIABLES: {{{1
 " Try to be cpoptions compatible:
 if &l:cpoptions =~# "B"
     let s:backslash="\\"
@@ -24,18 +24,19 @@ if g:atp_mapNn
     call atplib#search#ATP_ToggleNn(1,"on")
 endif
 
-" Dicronary map
+" DICTIONARY MAP: {{{1
 if !hasmapto("<Plug>Dictionray")
     nmap <buffer> <silent> =d <Plug>Dictionary
 endif
 
+" REPLACE: {{{1 
 " Replace map (is not working -> use :Repace command)
 " if !g:atp_VimCompatible && !hasmapto("<Plug>Replace")
 "     nnoremap <buffer> <silent> r <Plug>Replace
 " endif
 nn <buffer> <silent> r :<C-U>call <SID>Replace("<SID>")<CR>
 nn <buffer> <silent> <SID>InputRestore  :call inputrestore()<CR>
-function! <SID>Replace(sid,...) "{{{
+function! <SID>Replace(sid,...) "{{{2
     " It will not work with <:> since with the default settings "normal %" is not
     " working with <:>, possibly because g:atp_bracket_dict doesn't contain this
     " pair.
@@ -88,29 +89,23 @@ function! <SID>Replace(sid,...) "{{{
 	call feedkeys(sid."ReplaceCmd". sid."InputRestore")
 	call cursor(line("."), col("."))
     endif
-endfunction "}}}
-"     fun! Dot()
-" 	nunmap <buffer> r
-" 	normal! .
-" 	nmap <buffer> <silent> r <Plug>Replace
-"     endfun
-"     nmap <buffer> <silent> . call Dot()<CR>
+endfunction "}}}2
 
-" Unwrap map
+" UNWRAP MAP: {{{1
 if !hasmapto("<Plug>Unwrap")
     nmap <buffer> <silent> <LocalLeader>u <Plug>Unwrap
 endif
 
-" Commands to library functions (autoload/atplib.vim)
-
+" CC IMAP: {{{1
 " <c-c> in insert mode doesn't trigger InsertLeave autocommands
 " this fixes this.
 if g:atp_IMapCC
     imap <silent> <buffer> <C-c> <C-[>
 endif
 
+" NOT A COMMENT PATTERN CMAP: {{{1
 exe "cmap <buffer> <expr> <M-c> '^'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'([^'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%]'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'\\|".s:bbackslash."'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').')*".s:backslash."zs'"
-
+" SPECIAL SPACE CMAP: {{{1
 if has("gui")
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
@@ -145,13 +140,14 @@ if maparg("<F2>", "n") == ""
     nmap <buffer> <F2>	:echo ATP_ToggleSpace()<CR>
 endif
 
+" COMMANDS: font preview, open fd file, close last: environment, bracket {{{1
 command! -buffer -bang -nargs=* FontSearch	:call atplib#fontpreview#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#fontpreview#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#tools#OpenFdFile(<f-args>) 
 command! -buffer -nargs=* CloseLastEnvironment	:call atplib#complete#CloseLastEnvironment(<f-args>)
 command! -buffer 	  CloseLastBracket	:call atplib#complete#CloseLastBracket()
 
-" MAPS:
+" SECTION MOTION MAPS: {{{1
 if !hasmapto("\"SSec") && !hasmapto("'SSec")
     exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."S		:<C-U>keepjumps exe v:count1.\"SSec\"<CR>"
 endif
@@ -165,6 +161,18 @@ if !hasmapto("\"Part") && !hasmapto("'Part")
     exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."p		:<C-U>keepjumps exe v:count1.\"Part\"<CR>"
 endif
 
+" SYNCTEX MAPS: {{{1
+if !hasmapto("<Plug>SyncTexKeyStroke", "n")
+    nmap <buffer> <silent> <LocalLeader>f	<Plug>SyncTexKeyStroke
+endif
+if !hasmapto("<Plug>SyncTexLKeyStroke", "n")
+    nmap <buffer> <silent> <LocalLeader>F	<Plug>SyncTexLKeyStroke
+endif
+if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
+    nmap <buffer> <S-LeftMouse> 		<LeftMouse><Plug>SyncTexMouse
+endif
+
+" COMMENT LINES: {{{1
 if g:atp_MapCommentLines    
     if !hasmapto("<Plug>CommentLines", "n")
 	exe "nmap <buffer> <silent> ".g:atp_map_Comment."	<Plug>CommentLines"
@@ -180,17 +188,7 @@ if g:atp_MapCommentLines
 "     endif
 endif
 
-if !hasmapto("<Plug>SyncTexKeyStroke", "n")
-    nmap <buffer> <silent> <LocalLeader>f	<Plug>SyncTexKeyStroke
-endif
-if !hasmapto("<Plug>SyncTexLKeyStroke", "n")
-    nmap <buffer> <silent> <LocalLeader>F	<Plug>SyncTexLKeyStroke
-endif
-if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
-    nmap <buffer> <S-LeftMouse> 		<LeftMouse><Plug>SyncTexMouse
-endif
-
-" Move Around Comments:
+" MOVE AROUND COMMENTS: {{{1
 if !hasmapto("<Plug>ParagraphNormalMotion")
     nmap <buffer> <silent> }	<Plug>ParagraphNormalMotionForward
     nmap <buffer> <silent> {	<Plug>ParagraphNormalMotionBackward
@@ -247,7 +245,7 @@ if !hasmapto(":PInput<CR>")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf	:PInput<CR>"
 endif
 
-" Motions:
+" MOTIONS: {{{1
 " imap <buffer> <C-j> <Plug>TexSyntaxMotionForward
 " imap <buffer> <C-k> <Plug>TexSyntaxMotionBackward
 " nmap <buffer> <C-j> <Plug>TexSyntaxMotionForward
@@ -361,7 +359,7 @@ if !hasmapto("<Plug>GotoPreviousDisplayedMath", "n")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."M	<Plug>GotoPreviousDisplayedMath"
 endif
 
-" Goto File Map:
+" GOTO FILE MAP: {{{1
 if has("path_extra") && !hasmapto(" GotoFile(", 'n')
 	nnoremap <buffer> <silent> gf		:call atplib#motion#GotoFile("", "")<CR>
 endif
@@ -383,7 +381,8 @@ if !hasmapto(":Wrap { } begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 endif
 
-" Operator Font Maps:
+" WRAPERS: {{{1
+" OPERATOR FONT MAPS: {{{2
 function! ATP_LastWrap(type)
     if a:type == "block" | return | endif
     let marks = ["'[", "']"]
@@ -458,7 +457,7 @@ function! ATP_WrapCal(type)
 endfunction
 exe "nmap <buffer> ".g:atp_vmap_text_font_leader."cal :set opfunc=ATP_WrapCal<CR>g@"
 
-" Fonts:
+" FONTS: {{{2
 if !hasmapto(":Wrap {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."f	:Wrap {".s:backslash."usefont{".g:atp_font_encoding."}{}{}{}\\selectfont\\  } ".(len(g:atp_font_encoding)+11)."<CR>"
 endif
@@ -521,7 +520,7 @@ if !hasmapto("atplib#various#RedoLastWrapSelection", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."w	<Esc>:<C-U>:call atplib#various#RedoLastWrapSelection([\"'<\", \"'>\"])<CR>"
 endif
 
-" Environments:
+" ENVIRONMENTS: {{{2
 if !hasmapto(":Wrap ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."C   :Wrap ".s:backslash."begin{center} ".s:backslash."end{center} 0 1<CR>"
 endif
@@ -538,7 +537,7 @@ if !hasmapto(":Wrap ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_environment_leader."A   :Wrap ".s:backslash."begin{align=b:atp_StarMathEnvDefault<CR>} ".s:backslash."end{align=b:atp_StarMathEnvDefault<CR>} 0 1<CR>"
 endif
 
-" Math Modes:
+" MATH MODES: {{{2
 if !hasmapto(':<C-U>Wrap '.s:backslash.'( '.s:backslash.')<CR>', 'v')
     exe "vmap <silent> <buffer> m				:<C-U>Wrap ".s:backslash."( ".s:backslash.")<CR>"
 endif
@@ -556,7 +555,7 @@ function! ATP_WrapWMath(type)
 endfunction
 exe "nmap <buffer> ".g:atp_vmap_bracket_leader."M :set opfunc=ATP_WrapWMath<CR>g@"
 
-" Brackets:
+" BRACKETS: {{{2
 if !hasmapto(":Wrap ( ) begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."( 	:Wrap ( ) begin<CR>"
 endif
@@ -691,7 +690,7 @@ if !hasmapto(":Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_big_bracket_leader."}	:Wrap ".s:backslash."left".s:backslash."{ ".s:backslash."right".s:backslash."} end<CR>"
 endif
 
-" Accents:
+" ACCENTS: {{{2
 if !hasmapto(":<C-U>IWrap ['".s:backslash."''{'],['".s:backslash."acute{']<CR>", "v")
     execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."' 		:<C-U>IWrap ['".s:backslash."''{'],['".s:backslash."acute{']<CR>"
 endif
@@ -730,12 +729,12 @@ if !hasmapto(":<C-U>Wrap ".s:backslash."t{ } end<CR>", "v")
 endif
 execute "vnoremap <silent> <buffer> <expr>".g:atp_imap_over_leader."~		':<C-U>Wrap ".s:backslash."'.(g:atp_imap_wide ? \"wide\" : \"\").'tilde{ } end<CR>'"
 
-" Tex Align:
+" TEX ALIGN: {{{1
 if !hasmapto(":TexAlign<CR>", 'n')
     nmap <silent> <buffer> <Localleader>a	<Plug>TexAlign
 endif
 
-" Paragraph Selection:
+" PARAGRAPH SELECTION: {{{1
 if !hasmapto("<Plug>ATP_SelectCurrentParagraphInner", 'v')
     vmap <silent> <buffer> ip 	<Plug>ATP_SelectCurrentParagraphInner
 endif
@@ -749,16 +748,16 @@ if !hasmapto(" vap<CR>", "o")
     omap <silent> <buffer>  ap	:normal vap<CR>
 endif
 
-" Formating:
+" FORMATING: {{{1
 if !hasmapto("m`vipgq``", "n")
     nmap <silent> <buffer> gw		m`vipgq``
 endif
 
-" Indent Block:
+" INDENT BLOCK: {{{1
 nnoremap <buffer> g>	:<C-U>call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1).">``", 't')<CR>
 nnoremap <buffer> g<	:<C-U>call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1)."<``", 't')<CR>
 
-" Select Syntax:
+" SELECT SYNTAX: {{{1
 if !hasmapto("<Plug>SelectOuterSyntax", "v")
     vmap <buffer> <silent> aS		<Plug>SelectOuterSyntax
 endif
@@ -766,7 +765,7 @@ if !hasmapto("<Plug>SelectInnerSyntax", "v")
     vmap <buffer> <silent> iS		<Plug>SelectInnerSyntax
 endif
 
-" Environment Moves:
+" ENVIRONMENT MOVES: {{{1
 " From vim.vim plugin (by Bram Mooleaner)
 " Move around functions.
 exe "nnoremap <silent> <buffer> <Plug>BegPrevEnvironment m':call search('".s:bbackslash."begin".s:backslash."s*{".s:bbackslash."|".s:backslash.s:bbackslash."@<!".s:backslash.s:bbackslash."[".s:bbackslash."|".s:backslash.s:bbackslash."@<!".s:backslash."$".s:backslash."$', 'bW')<CR>"
@@ -802,14 +801,14 @@ if !hasmapto("<Plug>vEndNextEnvironment", "v")
     vmap <silent> <buffer> ][ <Plug>vEndNextEnvironment
 endif
 
-" Select Comment:
+" SELECT COMMENT: {{{1
 if !hasmapto("v<Plug>vSelectComment", "n")
     exe "nmap <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
 endif
 if !hasmapto(g:atp_MapSelectComment, "o")
     exe "omap <silent> <buffer>".g:atp_MapSelectComment." :normal ".g:atp_MapSelectComment."<CR>"
 endif
-" Select Frame: (beamer)
+" SELECT FRAME: (beamer) {{{1
 " This is done by a function, because it has to be run through an autocommand
 " otherwise atplib#search#DocumentClass is not working.
 function! <SID>BeamerOptions()
@@ -835,7 +834,7 @@ function! <SID>BeamerOptions()
 endfunction
 au BufEnter *.tex 	call <SID>BeamerOptions()
 
-" Normal Mode Maps: (most of them)
+" NORMAL MODE MAPS: (most of them) {{{1
 
 " Enabling this requires uncommenting augroup ATP_Cmdwin in options.vim
 " exe "nnoremap  <silent> <buffer> <Plug>QForwardSearch 	q".s:backslash.":call ATP_CmdwinToggleSpace(1)<CR>i"
@@ -995,7 +994,7 @@ if !hasmapto("<Plug>PdfFonts", "n")
     nnoremap  <silent> <buffer> <F6>g 			<Plug>PdfFonts
 endif
 
-" TeXdoc:
+" TEXDOC: {{{2
 " Note :TexDoc map cannot be <silent>
 nnoremap           <buffer> <Plug>TexDoc		:TexDoc<space>
 if !hasmapto("<Plug>TexDoc", "n")
@@ -1006,7 +1005,7 @@ if !hasmapto("<Plug>iTexDoc", "i")
     imap           <buffer> <F1> 			<Plug>iTexDoc
 endif
 
-" Font Maps:
+" FONT IMAPS: {{{1
 if g:atp_imap_leader_1 == "]" || g:atp_imap_leader_2 == "]" || g:atp_imap_leader_3 == "]" || g:atp_imap_leader_4 == "]" 
     inoremap <silent> <buffer> ]] ]
 endif
@@ -1056,7 +1055,7 @@ endif
     " Make Font Maps:
     call atplib#MakeMaps(g:atp_imap_fonts)
 	    
-" Greek Letters:
+" GREEK LETTERS: {{{1
 if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
     let g:atp_imap_greek_letters= [
 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_1, 'a', '(!atplib#IsLeft("\\")&& atplib#IsInMath() ? "'.s:bbackslash.'alpha" : g:atp_imap_leader_1."a" )' ,	 
@@ -1151,7 +1150,7 @@ endif
 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'BufEnter')
     augroup END
 
-" Miscellaneous Mathematical Maps:
+" MISCELLANEOUS MATHEMATICAL MAPS: {{{1
 if !exists("g:atp_imap_math_misc") || g:atp_reload_variables
 let g:atp_imap_math_misc = [
 \ [ 'inoremap', '<silent> <buffer> <expr>', '+',	      '+', 
@@ -1221,17 +1220,14 @@ endif
     " Make Miscellaneous Mathematical Maps:
     augroup ATP_MathIMaps_misc
 	au!
-" 	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorMovedI', g:atp_imap_diacritics, 1)
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorHoldI', g:atp_imap_diacritics) 
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'InsertEnter', g:atp_imap_diacritics) 
-	" Make imaps visible with :imap /this will not work with i_CTRL-C/
-" 	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_math_misc, 'InsertLeave')
-" 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_math_misc, 'BufEnter')
     augroup END
 
+" DIACRITICSC IMAPS: {{{1
     if g:atp_imap_diacritics_inteligent == 0
 	let g:atp_imap_diacritics = [
-	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '''', s:backslash.'''{}<Left>', 	
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '''', s:backslash.'''{}<Left>',
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '"', s:backslash.'"{}<Left>',
 		    \ "g:atp_imap_define_diacritics", '\"{}' ],
@@ -1261,37 +1257,36 @@ endif
 
     else
 	let g:atp_imap_diacritics = [
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '''', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."'.s:bbackslash.'''{\"}" : "''''")', 
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '''', '(index(split(g:atp_diacritics_letters["''"], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1  ? "<ESC>vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."'.s:bbackslash.'''{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'''")', 
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '"', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'\"{\"}" : "''\"")',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '"', '(index(split(g:atp_diacritics_letters[''"''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1  ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'\"{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'\"")',
 		    \ "g:atp_imap_define_diacritics", '\"{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '2', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'2{\"}"',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '2', '(index(split(g:atp_diacritics_letters[''2''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'2{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'2")',
 		    \ "g:atp_imap_define_diacritics", '\2{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '^', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'^{\"}" : "''^")',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '^', '(index(split(g:atp_diacritics_letters[''^''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'^{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'^")',
 		    \ "g:atp_imap_define_diacritics", '\^{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'v', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''v")[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'v{\"}" : "''v" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'v', '(index(split(g:atp_diacritics_letters[''v''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'v{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'v" )',
 		    \ "g:atp_imap_define_diacritics", '\v{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'b', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''b")[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'b{\"}" : "''b" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'b', '(index(split(g:atp_diacritics_letters[''b''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'b{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'b" )',
 		    \ "g:atp_imap_define_diacritics", '\b{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'd', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''d")[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'d{\"}" : "''d" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'd', '(index(split(g:atp_diacritics_letters[''d''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'d{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'d" )',
 		    \ "g:atp_imap_define_diacritics", '\d{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'`{\"}" : "''`" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', '(index(split(g:atp_diacritics_letters[''`''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'`{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'`" )',
 		    \ "g:atp_imap_define_diacritics", '\`{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'H', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'H{\"}" : "''H" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'H', '(index(split(g:atp_diacritics_letters[''H''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'H{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'H" )',
 		    \ "g:atp_imap_define_diacritics", '\H{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '~', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'~{\"}" : "''~" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '~', '(index(split(g:atp_diacritics_letters[''~''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'~{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'~" )',
 		    \ "g:atp_imap_define_diacritics", '\~{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '.', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'.{\"}" : "''." )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '.', '(index(split(g:atp_diacritics_letters[''.''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'.{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'." )',
 		    \ "g:atp_imap_define_diacritics", '\.{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'c', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''c")[1] == "bad" ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'c{\"}" : "''c" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  'c', '(index(split(g:atp_diacritics_letters[''c''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ?"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'c{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'c" )',
 		    \ "g:atp_imap_define_diacritics", '\c{}' ],
-	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  't', '(getline(line("."))[col(".")-2] =~? ''[a-z]'' && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' ))[1] == "bad" && spellbadword(matchstr(strpart(getline(line(".")), 0, col(".")-1), ''\S*$'' )."''t")[1] == "bad" ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'t{\"}" : "''t" )',
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  't', '(index(split(g:atp_diacritics_letters[''t''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'t{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'t" )',
 		    \ "g:atp_imap_define_diacritics", '\t{}' ]
 	    \ ]
-" 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '`', "(atplib#IsInMath() ? '' : '<ESC>vxa".s:backslash."`{\"}')", 	
     endif
 
-" Environment Maps:
+" ENVIRONMENT MAPS: {{{1
 if g:atp_no_env_maps != 1
     if !exists("g:atp_imap_environments") || g:atp_reload_variables
     let g:atp_imap_environments = [
@@ -1331,7 +1326,7 @@ if g:atp_no_env_maps != 1
 endif
 
 
-" Mathematical Maps:
+" MATHEMATICAL MAPS: {{{1
 if !exists("g:atp_imap_math") || g:atp_reload_variables
     let g:atp_imap_math	= [ 
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", g:atp_imap_subscript, "( g:atp_imap_subscript == '_' && !atplib#IsLeft('\\', 1) && atplib#IsLeft('_') <bar><bar> g:atp_imap_subscript != '_' ) && atplib#IsInMath() ? (g:atp_imap_subscript == '_' ? '<BS>' : '' ).'_{}<Left>' : '_'", "g:atp_imap_define_math", 	'_{}'], 
@@ -1385,5 +1380,5 @@ endif
 	au CursorMovedI *.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters+g:atp_imap_math_misc
 		    \ +g:atp_imap_math, 'CursorMovedI', g:atp_imap_diacritics, 1)
     augroup END
-
+" }}}1
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1:nowrap
