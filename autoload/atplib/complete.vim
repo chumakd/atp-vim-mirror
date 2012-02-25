@@ -1631,6 +1631,42 @@ catch /E127:/
 endtry
 "}}}1
 
+" Scan packge file:
+function! atplib#complete#ScanPackage(package_name) " {{{
+if !has("python")
+    return {'options' : []}
+endif
+python << EOF
+import vim, re, subprocess
+package = vim.eval("a:package_name")
+kpsewhich = subprocess.Popen(['kpsewhich', package], stdout=subprocess.PIPE)
+kpsewhich.wait()
+
+option_pat = re.compile('\\\\(?:KOMA@|X)?Declare(?:Void|Local|(?:Bi)?Bool(?:ean)?|String|Standard|Switch|Type|Unicode|Entry|Bibliography|Caption|Complementary|Quote)?Option(?:Beamer)?X?\*?(?:<\w+>)?\s*(?:%\s*\n\s)?{((?:\w|\d|-|_|\*)+)}|\\\\Declare(?:Exclusive|Local|Void)?Options\*?\s*{((?:\n|[^}])+)}')
+# This pattern is not working with:
+# \KOMA@DeclareStandardOption%
+#   {oneside}{twoside=false}
+# /usr/local/texlive/2011/texmf-dist/tex/latex/koma-script/scrbook.cls
+
+options = []
+if kpsewhich.returncode == 0:
+    package_file = re.match('(.*)\n', kpsewhich.stdout.read()).group(1)
+    print(package_file)
+    package_fo = open(package_file, 'r')
+    package_f  = package_fo.read()
+    package_fo.close()
+    matches = re.findall(option_pat, package_f)
+    for match in matches:
+        option_list = re.sub('\n|\s|%', '', ",".join(match)).split(",")
+        option_list = [item for item in option_list if re.match('(?:\w|\d|-|_|\*)+$',item)]
+        options+=option_list
+vim.command("let options = "+str(options))
+EOF
+let data = {}
+let data['options'] = options 
+return data
+endfunction "}}}
+
 " Completions:
 " atplib#complete#TabCompletion {{{1
 " This is the main TAB COMPLITION function.
@@ -2235,12 +2271,23 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     "{{{3 ------------ PACKAGE OPTIONS
     elseif completion_method == 'package options'
 	let package = matchstr(line, '\\usepackage.*{\zs[^}]*\ze}')
-	let g:package = package
-	if exists("g:atp_".package."_options") && atplib#search#SearchPackage(package)
-	    let completion_list=copy({"g:atp_".package."_options"})
+	if atplib#search#SearchPackage(package)
+	    if has("python")
+		let completion_list = atplib#complete#ScanPackage(package.'.sty')['options']
+		if exists("g:atp_".package."_options")
+		    for o in {"g:atp_".package."_options"}
+			if index(completion_list, o) == -1
+			    call add(completion_list, o)
+			endif
+		    endfor
+		endif
+	    elseif exists("g:atp_".package."_options")
+		let completion_list=copy({"g:atp_".package."_options"})
+	    else
+		return
+	    endif
 	else
-	    let g:time_TabCompletion=reltimestr(reltime(time))
-	    return ""
+            return
 	endif
     "{{{3 ------------ PACKAGES
     elseif completion_method == 'package'
@@ -2593,11 +2640,19 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     "{{{3 ------------ DOCUMENTCLASS OPTIONS
     elseif completion_method == 'documentclass options'
 	let documentclass = matchstr(line, '\\documentclass\[[^{]*{\zs[^}]*\ze}')
-	if exists("g:atp_".documentclass."_options")
-	    let completion_list={"g:atp_".documentclass."_options"}
+	if has("python")
+	    let completion_list = atplib#complete#ScanPackage(documentclass.'.cls')['options']
+	    if exists("g:atp_".documentclass."_options")
+		for o in {"g:atp_".documentclass."_options"}
+		    if index(completion_list, o) == -1
+			call add(completion_list, o)
+		    endif
+		endfor
+	    endif
+	elseif exists("g:atp_".documentclass."_options")
+	    let completion_list=copy({"g:atp_".documentclass."_options"})
 	else
-	    let g:time_TabCompletion=reltimestr(reltime(time))
-	    return ''
+	    return
 	endif
     "{{{3 ------------ DOCUMENTCLASS
     elseif completion_method == 'documentclass'

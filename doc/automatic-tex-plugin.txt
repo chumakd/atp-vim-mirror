@@ -209,6 +209,10 @@ NEWS							*atp-news*
 
  See |g:atp_imap_diacritics_inteligent|.
 
+ Local project script (.project.vim file) may contain |:set|/|:setl|
+ statements which will be executed after |vimrc| and |atprc| files.
+ These statements are executed only once (per project file).
+
 >
  ======================
  Changes in version 10.6.4
@@ -226,6 +230,9 @@ NEWS							*atp-news*
  Count added to |atp-]%| and |atp-[%|.
 
  |atp-:TexAlign| works with smallmatrix environment.
+
+ Completion scans package and documentclass files for options (if vim is
+ compiled with |+python|).
 >
  ======================
  Changes in version 10.6.3
@@ -3200,6 +3207,11 @@ COMPLETION MODES		                       	*atp-completion-modes*
 >
 	    g:atp_{dc_name}_options
 	    g:atp_{p_name}_options
+<		Note: ATP (if |+python|) scans package and documentclass files
+		for options, so in general this variables are not needed. The
+		values in this variables will be added to completion. They
+		might be used if there are options which atp cannot find.
+>
 	    g:atp_{p_name}_commands
 	    g:atp_{p_name}_math_commands
 <		These are just list of options/commands. math_commands will be
@@ -3899,7 +3911,11 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	global project file.
 
 	The |atprc| file (and tex.vim file in after/ftplugin/ directory) is
-	executed after the local and global project scripts.
+	executed after the global project script and before the local one.
+	(Precisely all the |:let| statements are executed before |atprc| file
+	but all the |:set| and |:setl| statements are executed afterwards).
+	The |:set| and |:setl| statements are executed only once (per project
+	file).
 
 	If you want to have two main files (for example a copy of a project
 	in another directory below the project main directory), i.e.
@@ -4663,11 +4679,11 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 	    vmap <buffer> \bb	:<C-U>IWrap ['\\textbf{'],	['\\mathbb{']<CR>
 	    vmap <buffer> \tx	:<C-U>IWrap ['\\textrm{'],	['\\text{']<CR>
 	    vmap <buffer> \sl	:<C-U>IWrap \\textsl{<CR>
-	    vmap <buffer> \sc	:<C-U>WrapSelection \\textsc{<CR>
-	    vmap <buffer> \up	:<C-U>WrapSelection \\textup{<CR>
-	    vmap <buffer> \md	:<C-U>WrapSelection \\textmd{<CR>
-	    vmap <buffer> \u	:<C-U>WrapSelection \\underline{<CR>
-	    vmap <buffer> \o	:<C-U>WrapSelection \\overline{<CR>
+	    vmap <buffer> \sc	:<C-U>Wrap \\textsc{<CR>
+	    vmap <buffer> \up	:<C-U>Wrap \\textup{<CR>
+	    vmap <buffer> \md	:<C-U>Wrap \\textmd{<CR>
+	    vmap <buffer> \u	:<C-U>Wrap \\underline{<CR>
+	    vmap <buffer> \o	:<C-U>Wrap \\overline{<CR>
 	    vmap <buffer> \n	:<C-U>IWrap ['\\textnormal{'],['\\mathnormal{']<CR>
 	    vmap <buffer> \cal	:<C-U>IWrap [''],['\\mathcal{']<CR>
 
@@ -4680,17 +4696,12 @@ WRAP SELECTION VMAPS					*atp-vmap-InteligentWrapSelection*
 
 							*atp-nmap-WrapSelection*
 							*atp-nmap-InteligentWrapSelection*
-	The above maps are also valide in normal mode. They require a motion
+							*atp-omap-WrapSelection*
+							*atp-omap-InteligentWrapSelection*
+	The above maps are also valide in normal mode (operator mode). They require a motion
 	afterwords, i.e. \rmw will wrap the following word inside \textrm{:}
 	or \mathrm{:}.
 
-							*atp-omap-WrapSelection*
-							*atp-omap-InteligentWrapSelection*
-
-	ATP defines also operator maps for wrapping, e.g. \sfiw in normal mode
-	will wrap "inner word" (|iw|) inside \textsf{} (or \mathsf{}). 
-	These omaps uses g:atp_vmap_text_font_leader as map leader (the
-	default value is <LocalLeader>)
 	There is also: 
 							*atp-vmap-\w*
 	    						*atp-omap-\w*

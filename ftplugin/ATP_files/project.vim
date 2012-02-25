@@ -172,11 +172,10 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
     if a:type == "local"
 	let save_loclist = getloclist(0)
 	try
-	    silent exe 'lvimgrep /\Clet\s\+b:atp_ProjectScript\>\s*=/j ' . fnameescape(a:project_script)
+	    silent exe 'lvimgrep /^[^"]*\Clet\s\+b:atp_ProjectScript\>\s*=/j ' . fnameescape(a:project_script)
 	catch /E480:/
 	endtry
 	let loclist = getloclist(0)
-	call setloclist(0, save_loclist)
 	execute get(get(loclist, 0, {}), 'text', "")
 	if exists("b:atp_ProjectScript") && !b:atp_ProjectScript
 	    if g:atp_debugProject
@@ -185,6 +184,17 @@ function! <SID>LoadScript(bang, project_script, type, load_variables, ...) "{{{
 	    endif
 	    return
 	endif
+	call setloclist(0,[])
+	try 
+	    silent exe 'lvimgrep /^\s*\(set\?\|setl\%[ocal]\)\s/j ' . fnameescape(a:project_script)
+	catch /E480:/
+	endtry
+
+	" Find all the vim options:
+	let b:atp_vim_settings = map(getloclist(0), "v:val['text']")
+	" This variable is used by ATP_LoadVimSettings() (augroup
+	" ATP_LoadVimSettings) where it is deleted.
+	call setloclist(0, save_loclist)
     endif
 
     " Load first b:atp_ProjectScript variable
@@ -361,6 +371,19 @@ function! s:LocalCommonComp(ArgLead, CmdLine, CursorPos)
     return filter([ 'local', 'common'], 'v:val =~ "^" . a:ArgLead')
 endfunction
 " }}}
+" LoadVimSettings "{{{
+function! ATP_LoadVimSettings()
+    " Load Vim settings stored in project script file (.tex.project.vim)
+    if !exists("b:atp_vim_settings")
+	return
+    endif
+    echomsg "Loading Vim Options for Project Scipt: ".expand("%:p")
+    for line in b:atp_vim_settings
+	exe line
+    endfor
+    " In this way options are loaded only once:
+    unlet b:atp_vim_settings
+endfunction "}}}
 "}}}
 " WRITE PROJECT SCRIPT:
 "{{{ s:WriteProjectScript(), :WriteProjectScript, autocommands

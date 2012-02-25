@@ -1,7 +1,6 @@
 " This file is a part of ATP.
 " Written by Marcin Szamotulski <atp-list@lists.sourceforge.net>
-"
-" Note: I only scanned first two chapters of memman.pdf file.
+
 let g:atp_memoir_options = [
 	    \ '9pt', '10pt', '11pt', '12pt', '14pt', '17pt', '20pt', '25pt',
 	    \ '30pt', '36pt', '48pt', '60pt', 'extrafontsizes',

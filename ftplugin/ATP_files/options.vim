@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Feb 25, 2012 at 01:38:16  +0000
+" Last Change: Sat Feb 25, 2012 at 14:26:28  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -939,7 +939,7 @@ if !exists("g:atpbib_wget")
     let g:atpbib_wget="wget"
 endif
 if !exists("g:atp_vmap_text_font_leader")
-    let g:atp_vmap_text_font_leader="<LocalLeader>"
+    let g:atp_vmap_text_font_leader="_"
 endif
 if !exists("g:atp_vmap_environment_leader")
     let g:atp_vmap_environment_leader="<LocalLeader>"

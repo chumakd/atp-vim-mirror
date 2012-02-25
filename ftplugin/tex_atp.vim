@@ -6,7 +6,7 @@
 " Time Stamp: 23-02-12_15-47
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Sat Oct 15, 2011 at 15:36:11  +0100
+" Last Change: Sat Feb 25, 2012 at 14:07:11  +0000
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -109,6 +109,9 @@ endif
 
 	" Read ATPRC once again (to set mapps).
 	call atplib#ReadATPRC()
+	" Load Vim Settings from .tex.project file.
+
+" 	set rnu
 
 let &cpo=saved_cpo
 

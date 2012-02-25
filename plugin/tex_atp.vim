@@ -3,8 +3,19 @@
 " Web Page:		http://atp-vim.sourceforge.net
 " Mailing List: 	atp-vim-list [AT] lists.sourceforge.net
 
+" Note: autocommand events BufRead, BufAdd are not executed from ftplugin
+" directory, they should all should be here. Loading once on startup when
+" filetype is set, may be achived using:
+"    au BufRead *.tex au! BufEnter *.tex :call Function()
+
+augroup ATP_LoadVimSettings "{{{1
+    " In this way settings from project.vim script will overwrite vimrc file.
+    au!
+    au! BufRead *.tex :au BufEnter *.tex :call ATP_LoadVimSettings()
+augroup END
+
 " Set options and maps for tex log file.
-function! TexLogCurrentFile()
+function! TexLogCurrentFile() " {{{1
     let saved_pos = getpos(".")
     let savedview = winsaveview()
     call searchpair('(', '', ')', 'cbW')
@@ -27,7 +38,7 @@ function! TexLogCurrentFile()
 	endif
     endif
 endfunction
-function! <SID>TexLogSettings(fname)
+function! <SID>TexLogSettings(fname) "{{{1
     " This function should also have the SyncTex section of
     " atplib#various#OpenLog, but since it requires b:atp_ProjectDir and
     " possibly b:atp_MainFile variables, it is not yet done.
@@ -111,7 +122,7 @@ function! <SID>TexLogSettings(fname)
 	augroup END
     endif
 endfunction
-augroup ATP_texlog
+augroup ATP_texlog "{{{1
     au!
     au BufEnter *.log call <SID>TexLogSettings(expand("<afile>:p"))
 augroup END
