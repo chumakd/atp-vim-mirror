@@ -99,6 +99,7 @@ SOURCE += ftplugin/fd_atp.vim
 SOURCE += ftplugin/plaintex_atp.vim
 SOURCE += ftplugin/tex_atp.vim
 SOURCE += ftplugin/toc_atp.vim
+SOURCE += plugin/tex_atp.vim
 SOURCE += syntax/bibsearch_atp.vim
 SOURCE += syntax/labels_atp.vim
 SOURCE += syntax/log_atp.vim

@@ -139,3 +139,7 @@ augroup ATP_texlog "{{{1
     au!
     au BufEnter *.log call <SID>TexLogSettings(expand("<afile>:p"))
 augroup END
+" Commands: "{{{1
+command! -bang	UpdateATP				:call atplib#various#UpdateATP(<q-bang>)
+command! 	ATPversion				:echo atplib#various#ATPversion()
+

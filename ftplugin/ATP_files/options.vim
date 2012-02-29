@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Feb 28, 2012 at 08:41:56  +0000
+" Last Change: Wed Feb 29, 2012 at 14:53:27  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -797,6 +797,7 @@ if exists("g:atp_latexclasses")
     unlet g:atp_latexclasses
 endif
 if !exists("g:atp_Python")
+    " Also set in atplib#various#GetLatestSnapshot() and atplib#various#UpdateATP()
     " This might be a name of python executable or full path to it (if it is not in
     " the $PATH) 
     if has("win32") || has("win64")

@@ -11,3 +11,26 @@ let g:atp_biblatex_options=[
     \ 'skiplos=', 'skiplab=', 'dataonly=', 'pagetracker=', 'citetracker=', 'ibidtracker=',
     \ 'idemtracker=', 'opcittracker=', 'loccittracker=', 'firstinits=', 'terseinits=', 'labelalpha=',
     \ 'labelnumber=', 'labelyear=', 'singletitle=', 'uniquename=', 'openbib' ] 
+
+" This is get using g:atp_package_dict.ScanPackage
+let options = ['debug', 'backend', 'loadfiles', 'mincrossrefs', 'texencoding',
+	    \ 'bibencoding', 'safeinputenc', 'sorting', 'sortcase', 'sortupper',
+	    \ 'sortlocale', 'sortlos', 'maxnames', 'minnames', 'maxnames', 'minnames',
+	    \ 'maxnames', 'minnames', 'maxbibnames', 'minbibnames', 'maxbibnames',
+	    \ 'minbibnames', 'maxbibnames', 'minbibnames', 'maxcitenames', 'mincitenames',
+	    \ 'maxcitenames', 'mincitenames', 'maxcitenames', 'mincitenames', 'maxitems',
+	    \ 'minitems', 'maxitems', 'minitems', 'maxitems', 'minitems', 'maxalphanames',
+	    \ 'minalphanames', 'maxalphanames', 'minalphanames', 'maxline', 'terseinits',
+	    \ 'firstinits', 'abbreviate', 'dateabbrev', 'language', 'clearlang', 'babel',
+	    \ 'indexing', 'indexing', 'indexing', 'sortcites', 'hyperref', 'backref',
+	    \ 'backrefsetstyle', 'block', 'pagetracker', 'citecounter', 'citetracker',
+	    \ 'ibidtracker', 'idemtracker', 'opcittracker', 'loccittracker', 'parentracker',
+	    \ 'maxparens', 'date', 'urldate', 'eventdate', 'origdate', 'alldates',
+	    \ 'datezeros', 'autocite', 'notetype', 'autopunct', 'punctfont', 'labelnumber',
+	    \ 'labelnumber', 'labelalpha', 'labelalpha', 'labelyear', 'labelyear',
+	    \ 'uniquelist', 'uniquelist', 'uniquename', 'uniquename', 'singletitle',
+	    \ 'singletitle', 'defernumbers', 'refsection', 'refsegment', 'citereset',
+	    \ 'bibwarn', 'useprefix', 'useprefix', 'useprefix', 'useauthor', 'useauthor',
+	    \ 'useauthor', 'useeditor', 'useeditor', 'useeditor', 'usetranslator',
+	    \ 'usetranslator', 'usetranslator', 'skipbib', 'skipbib', 'skiplos', 'skiplos',
+	    \ 'skiplab', 'skiplab', 'dataonly', 'dataonly']

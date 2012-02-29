@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Feb 28, 2012 at 09:12:53  +0000
+" Last Change: Wed Feb 29, 2012 at 14:54:54  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2213,7 +2213,7 @@ endfunction "}}}
 try 
 function! atplib#various#UpdateATP(bang)
 
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    exe "redir! > ".g:atp_TempDir."/UpdateATP.log"
 	endif
 	let s:ext = "tar.gz"
@@ -2230,8 +2230,15 @@ function! atplib#various#UpdateATP(bang)
 	    let url = "http://sourceforge.net/projects/atp-vim/files/releases/"
 	endif
 	let url_tempname=tempname()."_ATP.html"
+	if !exists("g:atp_Python")
+	    if has("win32") || has("win64")
+		let g:atp_Python = "pythonw.exe"
+	    else
+		let g:atp_Python = "python"
+	    endif
+	endif
 	let cmd=g:atp_Python." ".s:URLquery_path." ".shellescape(url)." ".shellescape(url_tempname)
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    let g:cmd=cmd
 	    silent echo "url_tempname=".url_tempname
 	    silent echo "cmd=".cmd
@@ -2242,7 +2249,7 @@ function! atplib#various#UpdateATP(bang)
 	exe 'lvimgrep /\C<a\s\+href=".*AutomaticTexPlugin_\d\+\%(\.\d\+\)*\.'.escape(s:ext, '.').'/jg '.url_tempname
 	call delete(url_tempname)
 	let list = map(getloclist(0), 'v:val["text"]')
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    silent echo "list=".string(list)
 	endif
 	if a:bang == "!"
@@ -2251,7 +2258,7 @@ function! atplib#various#UpdateATP(bang)
 	call map(list, 'matchstr(v:val, ''<a\s\+href="\zshttp[^"]*download\ze"'')')
 	call setloclist(0,saved_loclist)
 	call filter(list, "v:val != ''")
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    silent echo "atp_versionlist=".string(list)
 	endif
 
@@ -2279,7 +2286,7 @@ function! atplib#various#UpdateATP(bang)
 	else
 	    let sorted_list = sort(keys(dict), "atplib#various#CompareVersions")
 	endif
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    let g:sorted_list 	= sorted_list
 	    let g:dict		= dict
 	    silent echo "dict=".string(dict)
@@ -2291,7 +2298,7 @@ function! atplib#various#UpdateATP(bang)
 	let dir = fnamemodify(split(globpath(&rtp, "ftplugin/tex_atp.vim"), "\n")[0], ":h:h")
 	if dir == ""
 	    echoerr "[ATP:] Cannot find local ATP directory."
-	    if g:atp_debugUpdateATP
+	    if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 		redir END
 	    endif
 	    return
@@ -2318,14 +2325,14 @@ function! atplib#various#UpdateATP(bang)
 		let old_stamp="0.0"
 	    endtry
 	endif
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    let g:old_stamp	= old_stamp
 	    silent echo "old_stamp=".old_stamp
 	endif
 
 
 	let new_stamp = sorted_list[0]
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    let g:new_stamp	= new_stamp
 	    silent echo "new_stamp=".new_stamp
 	endif
@@ -2339,14 +2346,14 @@ function! atplib#various#UpdateATP(bang)
 	else
 	    let compare = atplib#various#CompareVersions(new_stamp, old_stamp) 
 	endif
-	if g:atp_debugUpdateATP
+	if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	    let g:compare	= compare
 	endif
 	if a:bang == "!"
 	    if  compare == 1 || compare == 0
 		redraw
 		echomsg "You have the latest UNSTABLE version of ATP."
-		if g:atp_debugUpdateATP
+		if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 		    redir END
 		endif
 		return
@@ -2359,7 +2366,7 @@ function! atplib#various#UpdateATP(bang)
 		if l:return
 		    call delete(s:atp_tempname)
 		    redraw
-		    if g:atp_debugUpdateATP
+		    if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 			redir END
 		    endif
 		    return
@@ -2367,7 +2374,7 @@ function! atplib#various#UpdateATP(bang)
 	    elseif compare == 0
 		redraw
 		echomsg "You have the latest STABLE version of ATP."
-		if g:atp_debugUpdateATP
+		if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 		    redir END
 		endif
 		return
@@ -2407,17 +2414,25 @@ function! atplib#various#GetLatestSnapshot(bang,url)
 	let ATPdate = ""
     endif
     let s:atp_tempname = tempname()."_ATP.tar.gz"
-    if g:atp_debugUpdateATP
+    if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	silent echo "tempname=".s:atp_tempname
     endif
+    if !exists("g:atp_Python")
+	if has("win32") || has("win64")
+	    let g:atp_Python = "pythonw.exe"
+	else
+	    let g:atp_Python = "python"
+	endif
+    endif
+    if !exists("g:atp_Python")
+	let 
     let cmd=g:atp_Python." ".shellescape(s:URLquery_path)." ".shellescape(url)." ".shellescape(s:atp_tempname)
-    let g:get_cmd=cmd
     if a:bang == "!"
 	echo "[ATP:] getting latest snapshot (unstable version) ..."
     else
 	echo "[ATP:] getting latest stable version ..."
     endif
-    if g:atp_debugUpdateATP
+    if exists("g:atp_debugUpdateATP") && g:atp_debugUpdateATP
 	silent echo "cmd=".cmd
     endif
     call system(cmd)
