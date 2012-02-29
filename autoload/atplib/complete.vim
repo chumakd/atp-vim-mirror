@@ -1631,41 +1631,6 @@ catch /E127:/
 endtry
 "}}}1
 
-" Scan packge file:
-function! atplib#complete#ScanPackage(package_name) " {{{
-if !has("python")
-    return {'options' : []}
-endif
-python << EOF
-import vim, re, subprocess
-package = vim.eval("a:package_name")
-kpsewhich = subprocess.Popen(['kpsewhich', package], stdout=subprocess.PIPE)
-kpsewhich.wait()
-
-option_pat = re.compile('\\\\(?:KOMA@|X)?Declare(?:Void|Local|(?:Bi)?Bool(?:ean)?|String|Standard|Switch|Type|Unicode|Entry|Bibliography|Caption|Complementary|Quote)?Option(?:Beamer)?X?\*?(?:<\w+>)?\s*(?:%\s*\n\s)?{((?:\w|\d|-|_|\*)+)}|\\\\Declare(?:Exclusive|Local|Void)?Options\*?\s*{((?:\n|[^}])+)}')
-# This pattern is not working with:
-# \KOMA@DeclareStandardOption%
-#   {oneside}{twoside=false}
-# /usr/local/texlive/2011/texmf-dist/tex/latex/koma-script/scrbook.cls
-
-options = []
-if kpsewhich.returncode == 0:
-    package_file = re.match('(.*)\n', kpsewhich.stdout.read()).group(1)
-    print(package_file)
-    package_fo = open(package_file, 'r')
-    package_f  = package_fo.read()
-    package_fo.close()
-    matches = re.findall(option_pat, package_f)
-    for match in matches:
-        option_list = re.sub('\n|\s|%', '', ",".join(match)).split(",")
-        option_list = [item for item in option_list if re.match('(?:\w|\d|-|_|\*)+$',item)]
-        options+=option_list
-vim.command("let options = "+str(options))
-EOF
-let data = {}
-let data['options'] = options 
-return data
-endfunction "}}}
 
 " Completions:
 " atplib#complete#TabCompletion {{{1
@@ -2271,24 +2236,21 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     "{{{3 ------------ PACKAGE OPTIONS
     elseif completion_method == 'package options'
 	let package = matchstr(line, '\\usepackage.*{\zs[^}]*\ze}')
-	if atplib#search#SearchPackage(package)
-	    if has("python")
-		let completion_list = atplib#complete#ScanPackage(package.'.sty')['options']
-		if exists("g:atp_".package."_options")
-		    for o in {"g:atp_".package."_options"}
-			if index(completion_list, o) == -1
-			    call add(completion_list, o)
-			endif
-		    endfor
-		endif
-	    elseif exists("g:atp_".package."_options")
-		let completion_list=copy({"g:atp_".package."_options"})
-	    else
-		return
-	    endif
+	let options = split(matchstr(line, '\\usepackage\[\s*\zs[^\]{]*\ze\s*[\]{]'), '\s*,\s*')
+	if has("python")
+	    let completion_list = get( get( g:atp_package_dict.ScanPackage(package.'.sty', ['options!']) ,package.'.sty',{}) , 'options', [])
 	else
-            return
+	    let completion_list = []
 	endif
+	if exists("g:atp_".package."_options")
+	    " Add options which are not already present:
+	    call extend(completion_list, filter(copy({"g:atp_".package."_options"}), 'index(completion_list, v:val) == -1'))
+	endif
+	" Note: if the completed phrase is in completion pool then we don't
+	" want to remove it:
+	let phrase = matchstr(l, '\\usepackage\[\(.*,\)\?\zs.*')
+	let g:phrase = phrase
+	call filter(completion_list, 'index(options, v:val) == -1')
     "{{{3 ------------ PACKAGES
     elseif completion_method == 'package'
 	if exists("g:atp_LatexPackages")
@@ -2478,11 +2440,48 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    call extend(completion_list, g:atp_picture_commands)
 	endif 
    	"{{{4 -------------------- PACKAGES
+	let time = reltime()
 	for package in g:atp_packages
-	    if atplib#search#SearchPackage(package) && exists("g:atp_".package."_commands")
-		call extend(completion_list, {"g:atp_".package."_commands"})
+	    if atplib#search#SearchPackage(package)
+		if exists("g:atp_".package."_commands")
+		    " Add commands whcih are not already present:
+		    let add_completion_list = {"g:atp_".package."_commands"}
+		elseif has("python")
+		    let add_completion_list = get(get(g:atp_package_dict.ScanPackage(package.'.sty', ['commands']) ,package.'.sty',{}) , 'options', [])
+		else
+		    let add_completion_list = []
+		endif
+		call extend(completion_list, filter(add_completion_list, 'index(completion_list, v:val) == -1'))
 	    endif
 	endfor
+	let g:time_PackagesCommands=reltimestr(reltime(time))
+   	"{{{4 -------------------- DOCUMENT CLASS
+	" Todo: get document class from the main file and add
+	" g:atp_package_dir.ScanPackage(documentclass.".cls", ['commands'])
+	if &filetype == "tex"
+	    let loclist = getloclist(0)
+	    try
+		exe '1lvimgrep /^\s*\\documentclass/j '.fnameescape(b:atp_MainFile)
+
+		let documentclass = matchstr(get(getloclist(0), 0, {'text': ''})['text'], '\\documentclass\s*\[[^\]]*\]\s*{\s*\zs[^}]*\ze\s*}')
+	    catch /E480/
+		let documentclass = ""
+	    endtry
+	    call setloclist(0, loclist)
+	    if !empty(documentclass)
+		if has("python")
+		    let add_completion_list = get( get( g:atp_package_dict.ScanPackage(documentclass.'.cls', ['commands']) ,package.'.sty',{}) , 'options', [])
+		else
+		    let add_completion_list = []
+		endif
+		call filter(add_completion_list, 'index(completion_list, v:val) == -1')
+		call extend(completion_list, add_completion_list)
+		if exists("g:atp_".documentclass."_commands")
+		    " Add commands whcih are not already present:
+		    call extend(completion_list, filter(copy({"g:atp_".documentclass."_commands"}), 'index(completion_list, v:val) == -1'))
+		endif
+	    endif
+	endif
    	"{{{4 -------------------- CLASS
 	let documentclass=atplib#search#DocumentClass(b:atp_MainFile)
 	if exists("g:atp_".documentclass."_commands")
@@ -2640,19 +2639,15 @@ function! atplib#complete#TabCompletion(expert_mode,...)
     "{{{3 ------------ DOCUMENTCLASS OPTIONS
     elseif completion_method == 'documentclass options'
 	let documentclass = matchstr(line, '\\documentclass\[[^{]*{\zs[^}]*\ze}')
+	let g:documentclass = documentclass
 	if has("python")
-	    let completion_list = atplib#complete#ScanPackage(documentclass.'.cls')['options']
-	    if exists("g:atp_".documentclass."_options")
-		for o in {"g:atp_".documentclass."_options"}
-		    if index(completion_list, o) == -1
-			call add(completion_list, o)
-		    endif
-		endfor
-	    endif
-	elseif exists("g:atp_".documentclass."_options")
-	    let completion_list=copy({"g:atp_".documentclass."_options"})
+	    let completion_list = get( get( g:atp_package_dict.ScanPackage(documentclass.'.cls', ['options!']) ,documentclass.'.cls',{}) , 'options', [])
 	else
-	    return
+	    let completion_list = []
+	endif
+	if exists("g:atp_".documentclass."_options")
+	    " Add options whcih are not already present:
+	    call extend(completion_list, filter(copy({"g:atp_".documentclass."_options"}), 'index(completion_list, v:val) == -1'))
 	endif
     "{{{3 ------------ DOCUMENTCLASS
     elseif completion_method == 'documentclass'

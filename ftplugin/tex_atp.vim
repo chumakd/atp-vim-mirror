@@ -6,7 +6,7 @@
 " Time Stamp: 23-02-12_15-47
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Sat Feb 25, 2012 at 14:07:11  +0000
+" Last Change: Sun Feb 26, 2012 at 08:31:09  +0000
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -60,6 +60,9 @@ endif
 	" Functions needed before setting options.
 	runtime ftplugin/ATP_files/common.vim
 
+	" Completion.
+	runtime ftplugin/ATP_files/complete.vim
+
 	" Options, global and local variables, autocommands.
 	runtime ftplugin/ATP_files/options.vim
 
@@ -102,16 +105,9 @@ endif
 	" The menu.
 	runtime ftplugin/ATP_files/menu.vim
 
-	" The folding
-	if g:atp_devversion
-	    runtime ftplugin/ATP_files/folding.vim
-	endif
-
 	" Read ATPRC once again (to set mapps).
 	call atplib#ReadATPRC()
 	" Load Vim Settings from .tex.project file.
-
-" 	set rnu
 
 let &cpo=saved_cpo
 

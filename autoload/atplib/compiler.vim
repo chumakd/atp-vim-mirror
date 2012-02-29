@@ -869,7 +869,10 @@ if os.path.exists(basename+".aux"):
 extensions = vim.eval("extensions")
 for ext in extensions:
     if os.path.exists(mainfile_base+"."+ext):
-        shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
+        try:
+            shutil.copy(mainfile_base+"."+ext, basename+"."+ext)
+        except shutil.Error:
+            pass
 ENDPYTHON
 	if g:atp_Compiler == 'python'
 	    call  atplib#compiler#PythonCompiler(0,0,1,debug_mode,'COM',expand("%:p"),"",b:atp_LocalXpdfServer)

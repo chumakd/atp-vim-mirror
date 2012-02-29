@@ -7,7 +7,20 @@
 " directory, they should all should be here. Loading once on startup when
 " filetype is set, may be achived using:
 "    au BufRead *.tex au! BufEnter *.tex :call Function()
+"    \
 
+" KpsewhichEdit command: {{{1
+function! <SID>KpsewhichEdit(args)
+    let [ string, edit_args, file]  = matchlist(a:args, '\(.\{-}\)\s*\(\f\+\)$')[0:2]
+    let file_path = matchstr(system("kpsewhich '".file."'"),'^.*\ze\n')
+    if empty(file_path)
+	echohl WarningMsg | echo "Kpsewhich cannot find the file: ".file | echohl Normal
+    else
+	exe "edit ".escape(edit_args, '\ ')." ".fnameescape(file_path)
+    endif
+    " Setting filetype=plaintex leads to errors.
+endfunction
+command! -nargs=1 KpsewhichEdit :call <SID>KpsewhichEdit('<args>')
 augroup ATP_LoadVimSettings "{{{1
     " In this way settings from project.vim script will overwrite vimrc file.
     au!

@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Dec 26, 2011 at 12:01:47  +0000
+" Last Change: Tue Feb 28, 2012 at 09:12:53  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -1204,13 +1204,8 @@ function! atplib#various#TexLog(options)
 endfunction
 
 function! atplib#various#PdfFonts()
-    if b:atp_OutDir !~ "\/$"
-	b:atp_OutDir=b:atp_OutDir . "/"
-    endif
-    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     if executable("pdffonts")
-	let s:command="pdffonts " . fnameescape(fnamemodify(atp_MainFile,":r")) . ".pdf"
-	echo system(s:command)
+	echo system("pdffonts " . fnameescape(fnamemodify(atplib#FullPath(b:atp_MainFile),":r")) . ".pdf")
     else
 	echo "Please install 'pdffonts' to have this functionality. In 'gentoo' it is in the package 'app-text/poppler-utils'."  
     endif

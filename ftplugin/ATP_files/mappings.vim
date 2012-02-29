@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Feb 25, 2012 at 01:27:06  +0000
+" Last Change: Tue Feb 28, 2012 at 09:06:45  +0000
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -438,11 +438,15 @@ function! ATP_WrapMD(type)
     if a:type == "block" | return | endif
     call atplib#various#WrapSelection('\textmd{', '}', 'end', 0, ["'[", "']"])
 endfunction
+" g:atp_vmap_text_font_leader is used instead of g:atp_imap_over_leader = "`"
+" which interferes with marks.
 exe "nmap <buffer> ".g:atp_vmap_text_font_leader."md :set opfunc=ATP_WrapMD<CR>g@"
 function! ATP_WrapUnderline(type)
     if a:type == "block" | return | endif
     call atplib#various#WrapSelection('\underline{', '}', 'end', 0, ["'[", "']"])
 endfunction
+" g:atp_vmap_text_font_leader is used instead of g:atp_imap_over_leader = "`"
+" which interferes with marks.
 exe "nmap <buffer> ".g:atp_vmap_text_font_leader."un :set opfunc=ATP_WrapUnderline<CR>g@"
 function! ATP_WrapOverline(type)
     if a:type == "block" | return | endif
@@ -505,10 +509,10 @@ if !hasmapto(":<C-U>Wrap ".s:backslash."textmd{<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."md	:<C-U>Wrap ".s:backslash."textmd{<CR>"
 endif
 if !hasmapto(":<C-U>Wrap ".s:backslash."underline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."u	:<C-U>Wrap ".s:backslash."underline{<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."un	:<C-U>Wrap ".s:backslash."underline{<CR>"
 endif
 if !hasmapto(":<C-U>Wrap ".s:backslash."overline{<CR>", 'v')
-    execute "vnoremap <silent> <buffer> ".g:atp_imap_over_leader."o	:<C-U>Wrap ".s:backslash."overline{<CR>"
+    execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."ov	:<C-U>Wrap ".s:backslash."overline{<CR>"
 endif
 if !hasmapto(":<C-U>IWrap ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_text_font_leader."no	:<C-U>IWrap ['".s:backslash."textnormal{'],['".s:backslash."mathnormal{']<CR>"
@@ -877,10 +881,6 @@ endif
 if !hasmapto("<Plug>ToggleEnvForward", "n")
     nmap  <silent> <buffer> <S-F4>			<Plug>ToggleEnvForward
 endif
-"     nmap  <silent> <buffer> <S-F4>			<Plug>ToggleEnvBackward
-if !hasmapto("<Plug>LatexEnvPrompt", "n")
-    nmap  <silent> <buffer> <C-S-F4>			<Plug>LatexEnvPrompt
-endif
 "     ToDo:
 "     if g:atp_LatexBox
 " 	nmap <silent> <buffer> <F3>			:call <Sid>ChangeEnv()<CR>
@@ -928,7 +928,7 @@ if !hasmapto("<Plug>ATP_TeXVerbose", "n")
     nmap  <silent> <buffer> <F5> 			<Plug>ATP_TeXVerbose
 endif
 if !hasmapto("<Plug>ToggleAuTeX", "n")
-    nmap  <silent> <buffer> <s-F5> 			<Plug>ToggleAuTeX
+    nmap  <silent> <buffer> <s-F5> 				<Plug>ToggleAuTeX
 endif
 if !hasmapto("<Plug>ToggleAuTeXa", "i")
     imap  <silent> <buffer> <s-F5> 			<C-O><Plug>ToggleAuTeX
@@ -964,34 +964,34 @@ if !hasmapto("<Plug>OpenLog", "i")
     imap  <silent> <buffer> <F6>l 			<C-O><Plug>OpenLog
 endif
 if !hasmapto(":ShowErrors e<CR>", "n")
-    nnoremap  <silent> <buffer> <F6> 			:ShowErrors e<CR>
+    nmap  <silent> <buffer> <F6> 			:ShowErrors e<CR>
 endif
 if !hasmapto(":ShowErrors e<CR>", "i")
-    inoremap  <silent> <buffer> <F6> 			:ShowErrors e<CR>
+    imap  <silent> <buffer> <F6> 			:ShowErrors e<CR>
 endif
 if !hasmapto(":ShowErrors<CR>", "n")
-    noremap   <silent> <buffer> <LocalLeader>e		:ShowErrors<CR>
+    nmap   <silent> <buffer> <LocalLeader>e		:ShowErrors<CR>
 endif
 if !hasmapto(":ShowErrors w<CR>", "n")
-    nnoremap  <silent> <buffer> <F6>w 			:ShowErrors w<CR>
+    nmap  <silent> <buffer> <F6>w 			:ShowErrors w<CR>
 endif
 if !hasmapto(":ShowErrors w<CR>", "i")
-    inoremap  <silent> <buffer> <F6>w 			:ShowErrors w<CR>
+    imap  <silent> <buffer> <F6>w 			:ShowErrors w<CR>
 endif
 if !hasmapto(":ShowErrors rc<CR>", "n")
-    nnoremap  <silent> <buffer> <F6>r 			:ShowErrors rc<CR>
+    nmap  <silent> <buffer> <F6>r 			:ShowErrors rc<CR>
 endif
 if !hasmapto(":ShowErrors rc<CR>", "i")
-    inoremap  <silent> <buffer> <F6>r 			:ShowErrors rc<CR>
+    imap  <silent> <buffer> <F6>r 			:ShowErrors rc<CR>
 endif
 if !hasmapto(":ShowErrors f<CR>", "n")
-    nnoremap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
+    nmap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
 endif
 if !hasmapto(":ShowErrors f<CR>", "i")
-    inoremap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
+    imap  <silent> <buffer> <F6>f 			:ShowErrors f<CR>
 endif
 if !hasmapto("<Plug>PdfFonts", "n")
-    nnoremap  <silent> <buffer> <F6>g 			<Plug>PdfFonts
+    nmap  <silent> <buffer> <F6>g 			<Plug>PdfFonts
 endif
 
 " TEXDOC: {{{2
@@ -1200,9 +1200,9 @@ let g:atp_imap_math_misc = [
 	\ "g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."tilde"' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '^', s:backslash.'=(g:atp_imap_wide ? "wide" : "" )<CR>hat{}<Left>',
 	\ "g:atp_imap_define_math_misc", '''\''.(g:atp_imap_wide ? "wide" : "")."hat"' ], 
-\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'o', s:backslash.'overline{}<Left>',
+\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2,  'ov', s:backslash.'overline{}<Left>',
 	\ "g:atp_imap_define_math_misc", '\overline{}' ],
-\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  'u', s:backslash.'underline{}<Left>',
+\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2,  'un', s:backslash.'underline{}<Left>',
 	\ "g:atp_imap_define_math_misc", '\underline{}' ],
 \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  	      'D', '"<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'frac{'.s:bbackslash.'partial}{'.s:bbackslash.'partial \"}".(g:atp_imap_diffop_move ? "<C-o>F}<space>" : "")', 
 	\ "g:atp_imap_define_math_misc", '\frac{\partial}{\partial x} - x comes from the letter wrote just before' ]

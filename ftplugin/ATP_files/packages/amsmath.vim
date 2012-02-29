@@ -10,4 +10,5 @@ let g:atp_amsmath_options= [
 	    \ 'nonamelimits',
 	    \ 'leqno',
 	    \ 'reqno',
-	    \ 'fleqno' ]
+	    \ 'fleqno',
+	    \ 'cmex10' ]

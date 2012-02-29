@@ -2,6 +2,8 @@
 " Author: Marcin Szamotulski
 " Based On: enumitem v2.2
 
+let g:atp_enumitem_options = ['ignoredisplayed', 'loadonly', 'shortlabels', 'inline']
+
 let g:atp_enumitem_commands=[
 	    \ '\setlist{', '\setenumerate{', '\setdescription{',
 	    \ '\setitemize{', '\SetEnumerateShortLabel{', '\newlist{', 
