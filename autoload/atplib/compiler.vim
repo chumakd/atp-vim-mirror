@@ -268,9 +268,9 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, xpdf_server, ...)
 	    call system(sync_cmd)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)
 	endif
-    elseif b:atp_Viewer == "skim"
+    elseif b:atp_Viewer =~ '^\s*open'
 	let [ page_nr, y_coord, x_coord ] = atplib#compiler#GetSyncData(line, col, a:main_file)
-	let sync_cmd = "displayline ".line." ".shellescape(expand("%:p:r")).".pdf ".shellescape(expand("%:p"))." &"
+	let sync_cmd = g:atp_DisplaylinePath." ".line." ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".pdf")." ".shellescape(expand("%:p"))." &"
 	if !dryrun
 	    call system(sync_cmd)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)

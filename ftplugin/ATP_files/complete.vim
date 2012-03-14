@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options and functions for completion.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Feb 28, 2012 at 11:29:28  +0000
+" Last Change: Sat Mar 03, 2012 at 15:58:17  +0000
 
 " Todo: biblatex.sty (recursive search for commands contains strange command \i}.
 
@@ -537,7 +537,7 @@ package = vim.eval("a:package_name")
 
 # Pattern to find declared options:
 option_pat = re.compile('\\\\(?:KOMA@|X)?Declare(?:Void|Local|(?:Bi)?Bool(?:ean)?|String|Standard|Switch|Type|Unicode|Entry|Bibliography|Caption|Complementary|Quote)?Option(?:Beamer)?X?\*?(?:<\w+>)?\s*(?:%\s*\n\s)?{((?:\w|\d|-|_|\*)+)}|\\\\Declare(?:Exclusive|Local|Void)?Options\*?\s*{((?:\n|[^}])+)}')
-# This adds \defin@key{}{}[]{} command (keyval) but this might be used not only for package options:
+# This adds \define@key{}{}[]{} command (keyval) but this might be used not only for package options:
 # option_pat = re.compile('\\\\(?:KOMA@|X)?Declare(?:Void|Local|(?:Bi)?Bool(?:ean)?|String|Standard|Switch|Type|Unicode|Entry|Bibliography|Caption|Complementary|Quote)?Option(?:Beamer)?X?\*?(?:<\w+>)?\s*(?:%\s*\n\s)?{((?:\w|\d|-|_|\*)+)}|\\\\Declare(?:Exclusive|Local|Void)?Options\*?\s*{((?:\n|[^}])+)}|\\\\define@key\s*{[^}]*}\s*{\s*([^}]*)\s*}')
 
 # for example geometry.sty uses the followin commands to set options:
@@ -720,4 +720,3 @@ endif
 return self
 endfunction "}}}1
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1
-

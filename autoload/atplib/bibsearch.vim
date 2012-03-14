@@ -400,7 +400,7 @@ def parse_bibentry(bib_entry):
                 v_break=False
                 for e_type in types:
                     if re.match('\s*'+e_type+'\s*=', line, re.I):
-                        # this is not working when title is two lines!
+                        # TODO: this is not working when title is two lines!
                         line=re.sub('%.*', '', line)
                         bib[e_type]=remove_quotes(re.sub('\\r$', '', re.sub('\t', ' ', line)))
                         p_e_type=e_type
@@ -409,9 +409,6 @@ def parse_bibentry(bib_entry):
                         break
                 if not v_break:
                     nr+=1
-#    for key in bib.keys():
-#        print(key+"="+bib[key])
-#    print("\n")
     return bib
 
 pattern=vim.eval("a:pattern")
@@ -431,7 +428,6 @@ for file in files:
     file_len=len(file_l)
     lnr=0
     bibresults[file]={}
-#     if pattern != ""
     while lnr < file_len:
         lnr+=1
         line=file_l[lnr-1]
@@ -441,13 +437,11 @@ for file in files:
         if re.search(pattern, line_without_ligatures):
             """find first line"""
             b_lnr=lnr
-#             print("lnr="+str(lnr))
             b_line=line
             while not re.match(pattern_b, b_line) and b_lnr >= 1:
                 b_lnr-=1
                 b_line=file_l[b_lnr-1]
             """find last line"""
-#             print("b_lnr="+str(b_lnr))
             e_lnr=lnr
             e_line=line
             if re.match(pattern_b, e_line):
@@ -455,7 +449,6 @@ for file in files:
                 e_lnr=lnr
                 line=file_l[lnr-1]
                 e_line=file_l[lnr-1]
-#                 print("X "+line)
             while not re.match(pattern_b, e_line) and e_lnr <= file_len:
                 e_lnr+=1
                 e_line=file_l[min(e_lnr-1, file_len-1)]
@@ -464,30 +457,14 @@ for file in files:
             while re.match('\s*$', e_line):
                 e_lnr-=1
                 e_line=file_l[e_lnr-1]
-#             e_lnr=min(e_lnr, file_len-1)
             bib_entry=file_l[b_lnr-1:e_lnr]
-#             print("lnr="+str(lnr))
-#             print("b_lnr="+str(b_lnr))
-#             print("e_lnr="+str(e_lnr))
             if bib_entry != [] and not re.search('@string', bib_entry[0]):
                 entry_dict=parse_bibentry(bib_entry)
                 bibresults[file][b_lnr]=entry_dict
-#             else:
-#                 print("lnr="+str(lnr))
-#                 print("b_lnr="+str(b_lnr))
-#                 print("e_lnr="+str(e_lnr))
-#             print(entry_dict)
-#             print("\n".join(bib_entry))
             if lnr < e_lnr:
                 lnr=e_lnr
             else:
                 lnr+=1
-#print(bibresults)
-# for key in bibresults.keys():
-#     for line in bibresults[key].keys():
-#         for bib in bibresults[key][line].keys():
-#                 print(bib+"="+bibresults[key][line][bib])
-#         print("\n")
 vim.command("let bibresults="+str(bibresults))
 END
 let g:bibresults=bibresults

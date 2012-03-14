@@ -489,22 +489,30 @@ function! atplib#motion#showtoc(toc)
     let tocwinnr=bufwinnr(bufnr("^".bname."$"))
     if tocwinnr != -1
 	" Jump to the existing window.
-	    exe tocwinnr . " wincmd w"
-	    setl modifiable
-	    silent exe "%delete _"
+	exe tocwinnr . " wincmd w"
+	setl modifiable
+	silent exe "%delete _"
     else
 	" Open new window if its width is defined (if it is not the code below
 	" will put toc in the current buffer so it is better to return.
 	if !exists("t:toc_window_width")
 	    let t:toc_window_width = g:atp_toc_window_width
 	endif
-	let toc_winnr=bufwinnr(bufnr("__Labels__"))
+	let labels_winnr=bufwinnr(bufnr("__Labels__"))
+	if labels_winnr != -1
+	    exe labels_winnr."wincmd w"
+	    let split_cmd = "above split"
+	else
+	    let split_cmd = "vsplit"
+	endif
+	let toc_winnr=bufwinnr(bufnr("__ToC__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ readonly\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
+	    let openbuffer="keepalt " . (labels_winnr == -1 ? t:toc_window_width : ''). split_cmd." +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
+	    keepalt silent exe openbuffer
 	else
 	    exe toc_winnr."wincmd w"
+	    setl modifiable
 	endif
-	keepalt silent exe  openbuffer
     endif
     let number=1
     " this is the line number in ToC.
@@ -680,6 +688,7 @@ function! atplib#motion#showtoc(toc)
     " 	t:atp_bufname is the full path to the current buffer.
     let num = get(numberdict, t:atp_bufname, 'no_number')
     if num == 'no_number'
+	setl nomodifiable
 	return
     endif
     let sorted		= sort(keys(a:toc[t:atp_bufname]), "atplib#CompareNumbers")
@@ -745,13 +754,21 @@ function! atplib#motion#show_pytoc(toc)
 	if !exists("t:toc_window_width")
 	    let t:toc_window_width = g:atp_toc_window_width
 	endif
-	let toc_winnr=bufwinnr(bufnr("__Labels__"))
+	let labels_winnr=bufwinnr(bufnr("__Labels__"))
+	if labels_winnr != -1
+	    exe labels_winnr."wincmd w"
+	    let split_cmd = "above split"
+	else
+	    let split_cmd = "vsplit"
+	endif
+	let toc_winnr=bufwinnr(bufnr("__ToC__"))
 	if toc_winnr == -1
-	    let openbuffer="keepalt " . t:toc_window_width . "vsplit +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ readonly\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
+	    let openbuffer="keepalt " . (labels_winnr == -1 ? t:toc_window_width : ''). split_cmd." +setl\\ wiw=15\\ buftype=nofile\\ modifiable\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ tabstop=1\\ filetype=toc_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nobuflisted\\ nospell\\ cursorline __ToC__"
+	    keepalt silent exe openbuffer
 	else
 	    exe toc_winnr."wincmd w"
+	    setl modifiable
 	endif
-	keepalt silent exe  openbuffer
     endif
     let number=1
     " this is the line number in ToC.
@@ -977,8 +994,11 @@ function! atplib#motion#TOC(bang,...)
     let search_package = ( a:0 >= 2 ? a:2 : 1 ) " avoid using atplib#search#SearchPackage() in atplib#motion#maketoc()
     " for each buffer in t:atp_toc_buflist (set by atplib#motion#buflist)
     if ( a:bang == "!" || !exists("t:atp_toc") || g:atp_python_toc )
-	let t:atp_toc = {}
-        let t:atp_pytoc = {}
+	if !g:atp_python_toc
+	    let t:atp_toc = {}
+	else
+	    let t:atp_pytoc = {}
+	endif
 	for buffer in t:atp_toc_buflist 
             if g:atp_python_toc
 		update

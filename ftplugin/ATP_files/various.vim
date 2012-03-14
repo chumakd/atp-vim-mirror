@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Feb 29, 2012 at 14:11:00  +0000
+" Last Change: Mon Mar 12, 2012 at 03:29:58  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen()
@@ -159,7 +159,6 @@ endfunction
 function! InsertItem()
     let begin_line	= searchpair( '\\begin\s*{\s*\%(enumerate\|itemize\|thebibliography\)\s*}', '', '\\end\s*{\s*\%(enumerate\|itemize\|thebibliography\)\s*}', 'bnW')
     let saved_pos	= getpos(".")
-    let g:saved_pos	= copy(saved_pos)
     call cursor(line("."), 1)
 
     if g:atp_debugInsertItem
@@ -189,7 +188,7 @@ function! InsertItem()
 	endif
 	let indent_old = len(matchstr(getline("."), '^\s*'))
 	call setline(line("."), ind . substitute(getline("."), '^\s*', '', ''))
-	let a= (saved_pos[2]==1 ? -1 : 0 )
+	let a=(saved_pos[2]==1 ? -1 : 0 )
 	let saved_pos[2]	+= len('\bibitem') + indent - indent_old + a
 	call cursor(saved_pos[1], saved_pos[2])
 
@@ -203,7 +202,6 @@ function! InsertItem()
 
     " This will work with \item [[1]], but not with \item [1]]
     let [ bline, bcol]	= searchpos('\\item\s*\zs\[', 'b', begin_line) 
-    let g:bline = bline
     if bline == 0
 	call cursor(saved_pos[1], saved_pos[2])
 	let col= (col(".") == 1 ? 0 : col("."))
@@ -219,23 +217,18 @@ function! InsertItem()
 	    let v:lnum=saved_pos[1]
 	    execute "let indent = " . &l:indentexpr
 	    let i 	= 1
-	    let ind 	= ""
-	    while i <= indent
-		let ind	.= " "
-		let i	+= 1
-	    endwhile
+	    let ind 	= repeat(" ", indent)
 	else
-	    indent	= -1
-	    ind 	=  matchstr(getline("."), '^\s*')
+	    let indent	= -1
+	    let ind 	=  matchstr(getline("."), '^\s*')
 	endif
 	if g:atp_debugInsertItem
 	    silent echo "1] indent=".len(ind)
 	endif
-	let indent_old = len(matchstr(getline("."), '^\s*'))
 	call setline(line("."), ind . substitute(getline("."), '^\s*', '', ''))
 
 	" Set the cursor position
-	let saved_pos[2]	+= len('\item') + indent - indent_old
+	let saved_pos[2]	+= len('\item') + indent
 	keepjumps call setpos(".", saved_pos)
 
 	if g:atp_debugInsertItem
@@ -301,7 +294,6 @@ function! InsertItem()
 
     let col = (col(".")==1 ? 0 : col("."))
     let new_line	= strpart(getline("."), 0, col) . '\item' . space . '[' . new_item . '] ' . strpart(getline("."), col)
-    let g:new_line = new_line
     if g:atp_debugInsertItem
 	silent echo "new_line=".new_line
     endif

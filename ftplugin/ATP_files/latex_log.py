@@ -159,6 +159,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             fname_re = re.match('([^\(\)]*\.(?:tex|sty|cls|cfg|def|aux|fd|out|bbl|blg|bcf|lof|toc|lot|ind|idx|thm|synctex\.gz|pdfsync|clo|lbx|mkii|run\.xml|spl|snm|nav|brf|mpx|ilg|maf|glo|mtc[0-9]+))', line)
             if fname_re:
                 fname = os.path.abspath(fname_re.group(1))
+                if check_path and fnmatch.fnmatch(fname, project_tmpdir+"*"):
+                    # ATP specific path rewritting:
+                    fname = os.path.normpath(os.path.join(project_dir, os.path.relpath(fname, project_tmpdir)))
                 output_lines.append("Input File::"+fname+"::0::0::Input File")
                 file_stack.append(fname)
                 open_dict[fname]=0
@@ -181,6 +184,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             except IndexError:
                 last_file = "0"
             if check_path and fnmatch.fnmatch(last_file, project_tmpdir+"*"):
+                # ATP specific path rewritting:
                 last_file = os.path.normpath(os.path.join(project_dir, os.path.relpath(last_file, project_tmpdir)))
             if re.match(latex_warning_pat, line):
                 # Log Message: 'LaTeX Warning: '

@@ -2792,9 +2792,14 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    else
 		let bibdict={}
 		for f in b:ListOfFiles
-		    if b:TypeDict[f] == 'bib'
-			let bibdict[f]=readfile(f)
-		    endif
+		    try
+			if b:TypeDict[f] == 'bib'
+			    let bibdict[f]=readfile(f)
+			endif
+		    catch /E716:/
+			echoerr "[ATP]: key ".f." not present in dictionary b:TypeDict. Try to run :InputFiles."
+			return ''
+		    endtry
 		endfor
 		let bibitems_list=values(atplib#bibsearch#searchbib(pat, bibdict))
 	    endif

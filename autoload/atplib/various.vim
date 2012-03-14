@@ -2,12 +2,9 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Feb 29, 2012 at 14:54:54  +0000
+" Last Change: Wed Mar 14, 2012 at 18:21:54  +0000
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
-
-" Replace function (like :normal! r)
-"}}}
 
 " This is the wrap selection function.
 " {{{ WrapSelection
@@ -1194,10 +1191,10 @@ if &buftype == 'quickfix'
 	setlocal modifiable
 	setlocal autoread
 endif	
-function! atplib#various#TexLog(options)
+function! atplib#various#TexLog(...)
     if executable("texloganalyser")
-       let s:command="texloganalyser " . a:options . " " . &l:errorfile
-       echo system(s:command)
+       let cmd="texloganalyser ".( a:0 ? a:1 : "")." ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile),":r").".log")
+       echo system(cmd)
     else	
        echo "Please install 'texloganalyser' to have this functionality. The perl program written by Thomas van Oudenhove."  
     endif

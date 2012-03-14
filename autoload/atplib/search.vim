@@ -1492,7 +1492,7 @@ endfunction
 " Other Searching Tools: 
 " {{{1 atplib#search#KpsewhichGlobPath 
 " 	a:format	is the format as reported by kpsewhich --help
-" 	a:path		path if set to "", then kpse which will find the path.
+" 	a:path		path if set to "", then kpsewhich will find the path.
 " 			The default is what 'kpsewhich -show-path tex' returns
 " 			with "**" appended. 
 " 	a:name 		can be "*" then finds all files with the given extension

@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Feb 29, 2012 at 14:53:27  +0000
+" Last Change: Fri Mar 09, 2012 at 06:54:12  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -263,6 +263,10 @@ endif
 " {{{ buffer variables
 let b:atp_running	= 0
 
+if has("mac") || has("macunix")
+    let b:atp_openOptions = " -a Skim "
+endif
+
 " these are all buffer related variables:
 function! <SID>TexCompiler()
     if exists("b:atp_TexCompiler")
@@ -292,7 +296,7 @@ let s:optionsDict= {
 		\ "atp_MaxProcesses"		: 3,
 		\ "atp_KillYoungest"		: 0,
 		\ "atp_ProjectScript"		: ( fnamemodify(b:atp_MainFile, ":e") != "tex" ? "0" : "1" ),
-		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : "okular" , 
+		\ "atp_Viewer" 			: has("win26") || has("win32") || has("win64") || has("win95") || has("win32unix") ? "AcroRd32.exe" : ( has("mac") || has("macunix") ? "open" : "okular" ), 
 		\ "atp_TexFlavor" 		: &l:filetype, 
 		\ "atp_XpdfServer" 		: fnamemodify(b:atp_MainFile,":t:r"), 
 		\ "atp_LocalXpdfServer" 	: expand("%:t:r"), 
@@ -378,6 +382,9 @@ call s:SetOptions()
 
 " GLOBAL VARIABLES: (almost all)
 " {{{ global variables 
+if !exists("g:atp_DisplaylinePath")
+    let g:atp_DisplaylinePath = "/Applications/Skim.app/Contents/SharedSupport/displayline"
+endif
 " if !exists("g:atp_ParseLog") " is set in ftplugin/ATP_files/common.vim script.
 "     let g:atp_ParseLog = has("python")
 " endif
@@ -460,8 +467,8 @@ endif
 if !exists("g:atp_imap_tilde_braces")
     let g:atp_imap_tilde_braces = 0
 endif
-if !exists("g:atp_imap_diacritics_inteligent")
-    let g:atp_imap_diacritics_inteligent = 1
+if !exists("g:atp_diacritics")
+    let g:atp_diacritics = 2
 endif
 if !exists("g:atp_imap_diffop_move")
     let g:atp_imap_diffop_move 	= 0
@@ -1062,6 +1069,7 @@ if !exists("g:ViewerMsg_Dict")
 		\ 'xdvi'		: 'Xdvi',
 		\ 'kpdf'		: 'Kpdf',
 		\ 'okular'		: 'Okular', 
+		\ 'open'		: 'open',
 		\ 'skim'		: 'Skim', 
 		\ 'evince'		: 'Evince',
 		\ 'acroread'		: 'AcroRead',
@@ -2204,13 +2212,13 @@ endfunction
 	    let s:leaving_buffer=expand("%:p")
 	endif
     endfunction
-if !exists("g:patched_vim") || g:patched_vim == 0
+if (v:version < 703 || v:version == 703 && !has("patch648")) && (!exists("g:patched_vim") || exists("g:patched_vim") && !g:patched_vim)
     augroup ATP_QuickFix_cgetfile
 "     When using cgetfile the position in quickfix-window is lost, which is
 "     annoying when changing windows. 
 	au!
-	au BufLeave *	:call <SID>BufLeave()
-	au BufEnter *.tex :call <SID>BufEnterCgetfile()
+	au BufLeave *		:call <SID>BufLeave()
+	au BufEnter *.tex 	:call <SID>BufEnterCgetfile()
     augroup END
 else
     function! <SID>Latex_Log() 
@@ -2219,8 +2227,8 @@ else
 	endif
     endfunction
     augroup ATP_QuickFix_cgetfile
-	au QuickFixCmdPre cgetfile,cfile,cfileadd :call <SID>Latex_Log()
-	au QuickFixCmdPost cgetfile,cfile,cfileadd :call atplib#compiler#FilterQuickFix()
+	au QuickFixCmdPre cgetfile,cfile,cfileadd 	:call <SID>Latex_Log()
+	au QuickFixCmdPost cgetfile,cfile,cfileadd 	:call atplib#compiler#FilterQuickFix()
     augroup END
 endif
 
@@ -2483,7 +2491,7 @@ function! <SID>Viewer(...)
 endfunction
 command! -buffer -nargs=? -complete=customlist,ViewerComp Viewer	:call <SID>Viewer(<q-args>)
 function! ViewerComp(A,L,P)
-    let view = [ 'skim', 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
+    let view = [ 'open', 'okular', 'xpdf', 'xdvi', 'evince', 'epdfview', 'kpdf', 'acroread', 'zathura', 'gv',
 		\  'AcroRd32.exe', 'sumatrapdf.exe' ]
     " The names of Windows programs (second line) might be not right [sumatrapdf.exe (?)].
     call filter(view, "v:val =~ '^' . a:A")

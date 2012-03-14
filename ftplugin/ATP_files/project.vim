@@ -377,7 +377,7 @@ function! ATP_LoadVimSettings()
     if !exists("b:atp_vim_settings")
 	return
     endif
-    echomsg "Loading Vim Options for Project Scipt: ".expand("%:p")
+    echomsg "[ATP:] Loading Vim Options using: ".b:atp_ProjectScriptFile
     for line in b:atp_vim_settings
 	exe line
     endfor

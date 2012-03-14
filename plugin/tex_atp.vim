@@ -20,7 +20,19 @@ function! <SID>KpsewhichEdit(args)
     endif
     " Setting filetype=plaintex leads to errors.
 endfunction
-command! -nargs=1 KpsewhichEdit :call <SID>KpsewhichEdit('<args>')
+function! <SID>KpsewhichEditComp(ArgLead, CmdLine, CursorPos)
+    let completion_list = []
+    if exists("g:atp_LatexPackages")
+" 	let g:atp_LatexPackages	= atplib#search#KpsewhichGlobPath("tex", "", "*.sty")
+	call extend(completion_list, map(deepcopy(g:atp_LatexPackages), 'v:val.".sty"'))
+    endif
+    if exists("g:atp_LatexClasses")
+" 	let g:atp_LatexClasses	= atplib#search#KpsewhichGlobPath("tex", "", "*.cls")
+	call extend(completion_list, map(deepcopy(g:atp_LatexClasses), 'v:val.".cls"'))
+    endif
+    return join(completion_list, "\n")
+endfunction
+command! -nargs=1 -complete=custom,<SID>KpsewhichEditComp KpsewhichEdit :call <SID>KpsewhichEdit('<args>')
 augroup ATP_LoadVimSettings "{{{1
     " In this way settings from project.vim script will overwrite vimrc file.
     au!
@@ -143,3 +155,8 @@ augroup END
 command! -bang	UpdateATP				:call atplib#various#UpdateATP(<q-bang>)
 command! 	ATPversion				:echo atplib#various#ATPversion()
 
+" With bang: add most of the packages loaded in the current preambule. Also
+" sets --tex (-t) and --class (-c) texdef option. Without bang only the --tex
+" (-t) option is set ('tex', 'latex', 'contex', 'xelatex', 'lualatex', ...) 
+" NOTE: only the first three are supported.
+command! -bang -nargs=* TexDef :call atplib#tools#TexDef(<q-bang>,<q-args>)

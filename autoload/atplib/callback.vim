@@ -187,25 +187,25 @@ function! atplib#callback#CallBack(bufnr,mode,...)
 		let g:debugCB .= 7
 	    endif
 
-	    if a:mode =~ "auto" && t:atp_QuickFixOpen
+	    if a:mode =~ "^auto" && t:atp_QuickFixOpen
 		cclose
 		call add(msg_list, ["[ATP:] no errors, closing quick fix window.", "Normal"])
 	    endif
 	endif
 
-    elseif a:mode == "silent" && AU == "COM"
-	if b:atp_TexReturnCode
-	    let showed_message		= 1
-	    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code ".b:atp_TexReturnCode.".", 'ErrorMsg', 'after'])
-	endif
-	if BIBTEX && b:atp_BibtexReturnCode
-	    let showed_message		= 1
-	    call add(msg_list, ["[ATP:] ".b:atp_BibCompiler." returned with exit code ".b:atp_BibtexReturnCode.".", 'ErrorMsg', 'after'])
-	endif
-	if MAKEIDX && b:atp_Makeindex
-	    let showed_message		= 1
-	    call add(msg_list, ["[ATP:] makeidx returned with exit code ".b:atp_MakeidxReturnCode.".", 'ErrorMsg', 'after'])
-	endif
+"     elseif a:mode == "silent" && AU == "COM"
+" 	if b:atp_TexReturnCode
+" 	    let showed_message		= 1
+" 	    call add(msg_list, ["[ATP:] ".Compiler." returned with exit code ".b:atp_TexReturnCode.".", 'ErrorMsg', 'after'])
+" 	endif
+" 	if BIBTEX && b:atp_BibtexReturnCode
+" 	    let showed_message		= 1
+" 	    call add(msg_list, ["[ATP:] ".b:atp_BibCompiler." returned with exit code ".b:atp_BibtexReturnCode.".", 'ErrorMsg', 'after'])
+" 	endif
+" 	if MAKEIDX && b:atp_Makeindex
+" 	    let showed_message		= 1
+" 	    call add(msg_list, ["[ATP:] makeidx returned with exit code ".b:atp_MakeidxReturnCode.".", 'ErrorMsg', 'after'])
+" 	endif
     endif
 
     if a:mode =~ 'auto' && !error

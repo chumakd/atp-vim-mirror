@@ -59,7 +59,9 @@ nnoremap <silent> <Plug>BibtexVerbose	:call atplib#compiler#Bibtex("!", "verbose
 "}}}
 " Commands And Autocommands: 
 " {{{
-command! 	 		Cgetfile		:cgetfile<bar>call atplib#compiler#FilterQuickFix()
+if !has("patch468")
+    command! 	 		Cgetfile		:cgetfile<bar>call atplib#compiler#FilterQuickFix()
+endif
 command! -buffer		HighlightErrors		:call atplib#callback#HighlightErrors()
 command! -buffer		ClearHighlightErrors	:call atplib#callback#ClearHighlightErrors()
 command! -buffer -bang 		Kill			:call atplib#compiler#Kill(<q-bang>)

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Feb 28, 2012 at 09:06:45  +0000
+" Last Change: Fri Mar 02, 2012 at 08:32:09  +0000
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1225,7 +1225,7 @@ endif
     augroup END
 
 " DIACRITICSC IMAPS: {{{1
-    if g:atp_imap_diacritics_inteligent == 0
+    if g:atp_diacritics == 2
 	let g:atp_imap_diacritics = [
 	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_over_leader,  '''', s:backslash.'''{}<Left>',
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
@@ -1255,7 +1255,7 @@ endif
 		    \ "g:atp_imap_define_diacritics", '\t{}' ]
 	    \ ]
 
-    else
+    elseif g:atp_diacritics
 	let g:atp_imap_diacritics = [
 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  '''', '(index(split(g:atp_diacritics_letters["''"], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1  ? "<ESC>vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."'.s:bbackslash.'''{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'''")', 
 		    \ "g:atp_imap_define_diacritics", '\''{}' ],
@@ -1284,6 +1284,8 @@ endif
 	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_over_leader,  't', '(index(split(g:atp_diacritics_letters[''t''], ''\zs''), tolower(getline(line("."))[col(".")-2])) != -1 ? "<ESC>vx".(col(".")<=len(getline("."))? "i" : "a" )."'.s:bbackslash.'t{\"}" : "'.escape(g:atp_imap_over_leader, '\"').'t" )',
 		    \ "g:atp_imap_define_diacritics", '\t{}' ]
 	    \ ]
+    else
+	let g:atp_imap_diacritics=[]
     endif
 
 " ENVIRONMENT MAPS: {{{1

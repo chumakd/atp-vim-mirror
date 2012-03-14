@@ -167,14 +167,21 @@ NEWS							*atp-news*
  ======================
  Changes in version 10.6.5
 <
+ NOTE: It was found that 'relativenumber' option slows down vim when edditing
+ tex files.
+
+ NOTE: You should remove the file:
+ ~/.vim/ftplugin/ATP_files/packages/amsmath.vim
+
  If you set |g:atp_ParseLog| and |g:atp_Compiler|="python", then ATP will
  rewrite the log file so that the output is readable for vim |quickfix| using
  |errorformat|. The advantage is for project files, where it is important to
  correctly read the file position of the error. In addition there is one more
  |atp-:ShowErrors| flag 'O' which shows 'overfull \hbox' messages. Also note
- that the flag 'w' (for warnings) excludes font warning messages.
- See also |atp-:Cgetfile| (This command will be removed in the future if my
- patch which introduces autocommands for |:cgetfile| will become part of vim).
+ that the flag 'w' (for warnings) excludes font warning messages.  
+ NOTE: See also |atp-:Cgetfile| (!!! This command is only defined for vim version
+ < 7.3.468, my patch 468 introduces a new autocommand which is used to rewrite
+ the log file, so check out the latest vim version !!!).
 
  |atp-:ErrorFormat| accepts "+{+flag}-{-flag}" as an argument.
 
@@ -207,12 +214,13 @@ NEWS							*atp-news*
  omap \w and vmap \w to repeat last wrapping command (like \it, \sf, \em, ...)
  (see |atp-omap-\w| and |atp-omap-WrapSelection|)
 
- See |g:atp_imap_diacritics_inteligent|.
+ See |g:atp_diacritics| (used instead of g:atp_imap_diacritics_inteligent).
 
  Local project script (.project.vim file) may contain |:set|/|:setl|
  statements which will be executed after |vimrc| and |atprc| files.
  These statements are executed only once (per project file).
 
+ New command |atp-:TexDef|.
 >
  ======================
  Changes in version 10.6.4
@@ -1443,7 +1451,7 @@ nmap gf
 	The current file is now shown with highlight group: |hl-WarningMsg|. 
 
 							*atp-:TexDoc*
-TexDoc:
+:TexDoc
 map <F1>, imap <F1>
 	Then you have to type what you are looking for and press enter. The
 	option 'keywordprg' is set to 'texdoc -m', i.e when your cursor is
@@ -1455,6 +1463,15 @@ map <F1>, imap <F1>
 	2e" by Tobias Oetiker. You can change the default for something that
 	you use more often, for example you can set it to "-a faq", i.e. 'The
 	UK TeX FAQ' (or even to "-a lshort faq" if you want them both :). 
+
+							*atp-:TexDef*
+:TexDef[!] {args}
+	This command is an interface to the texdef program. Use ':TexDef --help'
+	to see the help message. |atp-:TexDef| command automatically sets the
+	--tex switch (using |filetype|). If run with bang [!] a comma
+	separeted list of packages of the current tex file will be appended to
+	the texdef command (using --package switch).
+	
 
 							*atp-:InputFiles*
 :InputFiles				
@@ -1731,6 +1748,9 @@ map <LocalLeader>L
 	Without bang "!" the labels data base will not be generated.
 	Difference of \t and \L  is that \L regenerates the database (which is
 	quite fast).
+
+	Note: in memoir class you will not see labels type (in square
+	brackets).
 
   							*atp-:GotoLabel*
 :GotoLabel[!] {pattern} 
@@ -4600,12 +4620,13 @@ These imaps are defined in g:atp_imap_math variable.  They might be turned off
 using |atp-:ToggleIMaps| commands or |g:atp_imap_define_diacritics| variable
 (be setting it to 0, works on the fly).
 
-							*g:atp_imap_diacritics_inteligent*
-if |g:atp_imap_diacritics_inteligent| is set to 1 (the default) to get \'{a}
-you have to type a`', i.e. the map acts on the character just before the
-cursor. Otherwise, if |g:atp_imap_diacritics_inteligent|=0 they act as normal
-imaps, i.e. typing `' resolves to \'{} with cursor placed between the
-brackets. Here is a list of all provided imaps to diacritics:
+							*g:atp_diacritics*
+if |g:atp_diacritics| is set to 2 (the default) to get \'{a} you have to type
+a`', i.e. the map acts on the character just before the cursor. See below
+|g:atp_diacritics_letters|. Otherwise, if |g:atp_diacritics|=1 they act as
+normal imaps, i.e. typing `' resolves to \'{} with cursor placed between the
+brackets. If you set |g:atp_diacritics|=0 no diacritics imaps will be set.
+Here is a list of all provided imaps to diacritics:
 							*g:atp_diacritics_letters*
 Inteligent diacritics works only after certain letters defined in the
 dictionary |g:atp_diacritics_letters|, for example \'{} will work only after
@@ -4626,6 +4647,8 @@ one of the  letters in |g:atp_diacritics_letters|["'"]. The default value is:
 	    \ "t"  : "",
 	    \ "2"  : "" }
 <
+Diacritics imaps: ~
+>
     imap `'	\'{}
     imap `"	\"{}
     imap `^	\^{}
@@ -4638,8 +4661,8 @@ one of the  letters in |g:atp_diacritics_letters|["'"]. The default value is:
     imap `.	\.{}
     imap `c	\c{}
     imap `t	\t{}
-
-You can turn off diacritics imaps by setting |g:atp_imap_diacritics|=[] in
+<
+You can also turn off diacritics imaps by setting |g:atp_imap_diacritics|=[] in
 your |vimrc| or |atprc| file.
 
 							*atp-:ToggleIMaps*
@@ -5075,14 +5098,22 @@ Okular: inverse search ~
 	(gVim) with pdf. 
 
 							*atp-Viewers-Skim*
+							*atp-Viewers-Open*
 Skim ~
-	Forward searching (vim -> Skim): ~
+Open ~
+	Forward searching (vim -> open): ~
         To enable forward searching you need to:
-        (1) download the script: http://links.tedpavlic.com/shell_scripts/skim
-            put it somewhere in your $PATH and make executable.
-        (2) make a symbolic link of:
+							*g:atp_DisplaylinePath*
+	ATP is using the following path to displayline:
             /Applications/Skim.app/Contents/SharedSupport/displayline
-            (or wherever Skim is installed) somewhere in the $PATH.
+	it is defined in the variable |g:atp_DisplaylinePath|.
+
+	To set reverse searching for Skim (Skim -> Vim):
+	   Enable Preferences > Sync > Check for file changes
+	   Preset   = Custom
+	   Command  = /usr/local/bin/mvim
+	   Argument = --remote-silent +":%line" "%file"
+	    	    
 
 Kpdf ~
 	Works fine (moves page a little bit when updates a file).

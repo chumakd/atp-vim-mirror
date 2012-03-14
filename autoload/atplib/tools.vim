@@ -101,7 +101,7 @@ endfunction
 " {{{2 --------------- atplib#tools#GrepAuxFile
 " This function searches in aux file (actually it tries first ._aux file,
 " made by compile.py - this is because compile.py is copying aux file only if
-" there are no errors (for to not affect :Labels command)
+" there are no errors (to not affect :Labels command)
 function! atplib#tools#GrepAuxFile(...)
     " Aux file to read:
 
@@ -443,12 +443,20 @@ function! atplib#tools#showlabels(labels)
 	" tabstop option is set to be the longest counter number + 1
 	redraw
 	let toc_winnr=bufwinnr(bufnr("__ToC__"))
-	if toc_winnr == -1
-	    let openbuffer= "keepalt " . t:atp_labels_window_width . "vsplit +setl\\ tabstop=" . tabstop . "\\ buftype=nofile\\ modifiable\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ filetype=toc_atp\\ syntax=labels_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nospell __Labels__"
-	else
+	if toc_winnr != -1
 	    exe toc_winnr."wincmd w"
+	    let split_cmd = "below split"
+	else
+	    let split_cmd = "vsplit"
 	endif
-	silent exe openbuffer
+	let labels_winnr=bufwinnr(bufnr("__Labels__"))
+	if labels_winnr == -1
+	    let openbuffer= "keepalt " . (toc_winnr == -1 ? t:atp_labels_window_width : ''). split_cmd." +setl\\ tabstop=" . tabstop . "\\ buftype=nofile\\ modifiable\\ noswapfile\\ bufhidden=delete\\ nobuflisted\\ filetype=toc_atp\\ syntax=labels_atp\\ nowrap\\ nonumber\\ norelativenumber\\ winfixwidth\\ nospell __Labels__"
+	    silent exe openbuffer
+	else
+	    exe labels_winnr."wincmd w"
+	    setl modifiable
+	endif
 	let t:atp_labelsbufnr=bufnr("")
     endif
     unlockvar b:atp_Labels
@@ -538,4 +546,34 @@ function! atplib#tools#CursorLine() "{{{
 	return
     endif
 endfunction "}}}
+
+function! atplib#tools#TexDef(bang,args) "{{{1
+    let flavor = ( &l:ft == 'plaintex' ? 'tex' : ( &l:ft == 'contex' ? 'contex' : ( &l:ft == 'tex' ? 'latex' : '' ) ) )
+    if flavor != ''
+	let flavor_op = '--tex '.flavor
+    else
+	let flavor_op = ''
+    endif
+    if a:bang == "!"
+	if &l:ft == 'tex'
+	    let class  = matchstr(get(filter(readfile(atplib#FullPath(b:atp_MainFile))[0:9], 'v:val =~ ''^[^%]*\\documentclass'''), 0, '\documentclass{NOLTXCLASS}'), '\\documentclass\s*\(\[[^\]]*\]\)\?\s*{\s*\zs[^}]*\ze\s*}')
+	endif
+	let class_op = ( &l:ft == 'tex' && class != 'NOLTXCLASS' ? ' --class '.class : '' )
+	if &ft == 'tex' 
+	    let load_packages = ''
+	    for p in filter(copy(g:atp_packages), 'v:val !~ ''babel\|beamer\|standard_classes\|common\|bibunits\|bibref\|memoir\|a\?article\|a\?book\|biblatex''')
+		let load_packages .= ( load_packages == '' ? p : ','.p )
+	    endfor
+	    let packages = matchstr(a:args, '\s\+-p\s\+\zs\S*\ze')
+	    let load_packages.= ( len(packages) ? ','.packages : '' )
+	    let args = substitute(a:args, '\s-p\s\+\S*', ' ', 'g')
+	    let texdef = 'texdef '.flavor_op.class_op.( len(load_packages) ? ' --package '.load_packages : '').' '.args.''
+	else
+	    let texdef = 'texdef '.flavor_op.class_op.a:args.''
+	endif
+    else
+	let texdef = 'texdef '.flavor_op.' '.a:args
+    endif
+    echo texdef."\n".system(texdef)
+endfunction "}}}1
 " vim:fdm=marker:ff=unix:noet:ts=8:sw=4:fdc=1
