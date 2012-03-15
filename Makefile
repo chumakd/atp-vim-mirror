@@ -56,7 +56,6 @@ SOURCE += ftplugin/ATP_files/mappings.vim
 SOURCE += ftplugin/ATP_files/menu.vim
 SOURCE += ftplugin/ATP_files/motion.vim
 SOURCE += ftplugin/ATP_files/options.vim
-SOURCE += ftplugin/ATP_files/packages/amsmath.vim
 SOURCE += ftplugin/ATP_files/packages/babel.vim
 SOURCE += ftplugin/ATP_files/packages/beamer.vim
 SOURCE += ftplugin/ATP_files/packages/biblatex.vim
