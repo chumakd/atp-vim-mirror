@@ -462,8 +462,6 @@ function! atplib#tools#showlabels(labels)
     unlockvar b:atp_Labels
     let b:atp_Labels	= {}
 
-"     let g:labels=copy(a:labels)
-
     let line_nr	= 2
     for file in a:labels[1]
 	if !(len(get(a:labels[0], file, []))>0)

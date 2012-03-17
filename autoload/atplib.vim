@@ -436,6 +436,8 @@ function! atplib#FindAndOpen(file, output_file, line, ...)
     endif
     if use_server != ""
 	if !remote_expr(use_server, 'bufloaded("'.file.'")')
+	    " Change the jump list by setting the ' mark:
+	    call remote_send(user_server, "<Esc>:mark `<CR>")
 	    call system(v:progname." --servername ".use_server." --remote-wait +".a:line." ".fnameescape(file) . " &")
 	else
 	    " Test this for file names with spaces
@@ -474,8 +476,10 @@ function! atplib#FindAndOpen(file, output_file, line, ...)
 		    call remote_send(use_server, "<Esc>:buffer ".bufnr."<CR>")
 		endif
 	    endif
-	    " Set the ' mark, cursor position and redraw:
-	    call remote_send(use_server, "<Esc>:normal! 'm `'<CR>:call cursor(".a:line.",".col.")<CR>:redraw<CR>")
+	    " Change the jump list by setting the ' mark:
+	    call remote_send(use_server, "<Esc>:mark `<CR>")
+	    " Set the ' mark (jump list), cursor position and redraw:
+	    call remote_send(use_server, "<Esc>:call cursor(".a:line.",".col.")<CR>:redraw<CR>")
 	endif
     endif
     return use_server
