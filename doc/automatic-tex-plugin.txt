@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 14 March 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 March 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.5)
 			by Marcin Szamotulski
@@ -172,6 +172,9 @@ NEWS							*atp-news*
 
  NOTE: It was found that 'relativenumber' option slows down vim when edditing
  tex files.
+
+ You can download a quick reference guide for ATP from:
+     http://atp-vim.sourceforge.net/atp_quickref.pdf
 
  If you set |g:atp_ParseLog| and |g:atp_Compiler|="python", then ATP will
  rewrite the log file so that the output is readable for vim |quickfix| using
