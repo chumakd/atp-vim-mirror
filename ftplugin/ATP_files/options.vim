@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Mar 09, 2012 at 06:54:12  +0000
+" Last Change: Fri Mar 23, 2012 at 10:44:15  +0000
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -368,7 +368,7 @@ function! s:SetOptions()
     if !exists("b:TreeOfFiles") || !exists("b:ListOfFiles") || !exists("b:TypeDict") || !exists("b:LevelDict")
 	if exists("b:atp_MainFile") 
 	    let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
-	    call TreeOfFiles(atp_MainFile)
+	    call TreeOfFiles(atp_MainFile, g:atp_inputfile_pattern, (&filetype == 'plaintex' ? 1 : 0))
 	else
 	    echomsg "[ATP:] b:atp_MainFile: ".b:atp_MainFile." doesn't exists."
 	endif
