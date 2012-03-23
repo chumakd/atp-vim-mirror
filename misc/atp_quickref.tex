@@ -4,6 +4,7 @@
 % Author:   Marcin Szamotulski
 % Licence:  Creative Commons Attribution--ShareAlike 3.0 Unported Licence
 %           CC BY-SA http://creativecommons.org/licenses/by-sa/3.0/
+\def\version{1.1}
 % Format:   plain TeX
 % =============================================================
 % Instructions: use
@@ -145,6 +146,7 @@ user{/Subtype/Link/A<</Type/Action/S/URI/URI(#1)>>}%
 % Macros: sections, slash and (framed) commands [[[3
 \def\\{\hfil\break}
 \def\title#1{\hfil{\titlebf #1}\hfil\par}
+\def\ver{\hfill {\smallrm ver. \version}\par}
 \def\sect#1{\vskip 0.5cm {\secbf#1}\hfill\par\smallskip} %\sect{title}
 \def\ttt#1 {{\tinytt #1}, }   % for long lists of options, each followed by a space
 % Spaced slashes used for alternatives
@@ -192,6 +194,7 @@ user{/Subtype/Link/A<</Type/Action/S/URI/URI(#1)>>}%
 % Document start ======================================[[[1
 \tenrm
 \title{Automatic {\LaTeX} Plugin for Vim}
+\ver
 %--------------------------------------
 
 \sect{Compile} %[[[2
@@ -394,8 +397,6 @@ Long maps are defined if {\tenit g:atp\_imap\_ShortEnvIMaps}$=0$.\par
 \split{\fm{}{\#*}{i}{$\bigcap$ \bs bigcap}}{\fm{}{o*}{i}{$\otimes$ \bs otimes}}\par
 \split{\fm{}{\#+}{i}{$\bigcup$ \bs bigcup}}{\fm{}{O*}{i}{$\bigotimes$ \bs bigotimes}}\par
 \split{\fm{}{\#\bs}{i}{$\backslash$ \bs backslash}}{\fm{}{t*}{i}{$\times$ \bs times}}\par
-\split{\fm{}{\#<}{i}{$\geq$ \bs geq}}{\fm{}{s+}{i}{$\cup$ \bs cup}}\par
-\split{\fm{}{\#>}{i}{$\leq$ \bs leq}}{\fm{}{s-}{i}{$\setminus$ \bs setminus}}\par
 \split{\fm{}{\#.}{i}{\bs dot}}{\fm{}{S+}{i}{$\bigcup$ \bs bigcup}}\par
 \split{\fm{}{\#.s}{i}{$\dots$ \bs dots}}{\fm{}{S*}{i}{$\bigcap$ \bs bigcap}}\par
 \split{\fm{}{{\tt``}}{iv}{$\grave{x}$ \bs grave$\{\}$}}{\fm{}{c*}{i}{$\prod$ \bs prod}}\par
@@ -415,7 +416,8 @@ Long maps are defined if {\tenit g:atp\_imap\_ShortEnvIMaps}$=0$.\par
 \split{\fm{}{o+}{i}{$\oplus$ \bs oplus}}{\fm{}{t>}{i}{$\triangleleft$ \bs triangleleft}}\par
 \split{\fm{}{O+}{i}{$\bigoplus$ \bs bigoplus}}{\fm{}{<t}{i}{$\triangleright$ \bs triangleright}}\par
 \split{\fm{}{o-}{i}{$\ominus$ \bs ominus}}{\fm{}{s<}{i}{$\subseteq$ \bs subseteq}}\par
-\split{}{\fm{}{s>}{i}{$\supseteq$ \bs supseteq}}\par
+\split{\fm{}{\#<}{i}{$\langle$ \bs langle}}{\fm{}{s>}{i}{$\supseteq$ \bs supseteq}}\par
+\split{\fm{}{\#>}{i}{$\rangle$ \bs rangle}}{}\par
 
 \vfill\eject
 \sect{Diacritics} % [[[2
@@ -428,7 +430,7 @@ If {\tenit g:atp\_imap\_diacritics\_inteligent}$=1$ then type {$\tt a$''} to get
 \split{\fm{}{{\tt`}d}{iv}{\bs d$\{\}$}}{\fm{}{{\tt`}t}{iv}{\bs t$\{\}$}}\par
 \split{\fm{}{{\tt`}2}{iv}{{\bs}2$\{\}$}}{}\par
 
-\sect{Log file normal maps} % [[[2
+% \sect{Log file normal maps} % [[[2
 
 \sect{Help and information} %[[[2
 \cm{}{help atp}{ATP help}\par
