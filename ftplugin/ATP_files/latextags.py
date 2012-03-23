@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import re, optparse, subprocess, os, traceback
+import re, optparse, subprocess, os, traceback, sys
 from optparse import OptionParser
 from time import strftime, localtime
 import locale
@@ -115,7 +115,10 @@ try:
 # { 'file_name' : list_of_lines }
     for file in file_list:
         try:
-            file_object=open(file, "r")
+            if sys.version_info < (3, 0):
+                file_object=open(file, "r")
+            else:
+                file_object=open(file, "r", errors="replace")
             file_dict[file]=file_object.read().split("\n")
             file_object.close()
         except IOError:
@@ -128,7 +131,10 @@ try:
         bib_dict={}
         # { 'bib_name' : list_of_lines } 
         for bibfile in bib_list:
-            bibobject=open(bibfile, "r")
+            if sys.version_info < (3, 0):
+                bibobject=open(bibfile, "r")
+            else:
+                bibobject=open(bibfile, "r", errors="replace")
             bib_dict[bibfile]=bibobject.read().split("\n")
             bibobject.close()
 
@@ -160,7 +166,7 @@ try:
                 matches=re.findall('^(?:[^%]|\\\\%)*\\\\hypertarget{([^}]*)}', line)
                 for match in matches:
                     # Add only if not yet present in tag list:
-                    if not tag_dict.has_key(str(match)):
+                    if not str(match) in tag_dict:
                         tag_dict[str(match)]=[str(linenr), file_name, tag_type, 'hyper']
                         tag_type=get_tag_type(line, match, 'hypertarget')
                         if tag_type == "":
@@ -173,7 +179,7 @@ try:
                 matches=re.findall(cite_pattern, line)
                 matches=comma_split(matches)
                 for match in matches:
-                    if not tag_dict.has_key(str(match)):
+                    if not str(match) in tag_dict:
                         if len(bib_list) == 1:
                             tag=str(match)+"\t"+bib_list[0]+"\t/"+match+"/;\"\tkind:cite"
                             tag_dict[str(match)]=['', bib_list[0], '', 'cite']
@@ -190,7 +196,7 @@ try:
                 matches=re.findall(cite_pattern, line)
                 matches=comma_split(matches)
                 for match in matches:
-                    if not tag_dict.has_key(str(match)):
+                    if not str(match) in tag_dict:
                         [ r_file, r_linenr ] = find_in_filelist(re.compile("\\\\bibitem(?:\s*\[.*\])?\s*{"+str(match)+"}"), file_dict)
                         tag=str(match)+"\t"+r_file+"\t"+str(r_linenr)+";\"\tkind:cite"
                         tag_dict[str(match)]=[str(r_linenr), r_file, '', 'cite']
@@ -200,8 +206,11 @@ try:
 # From aux file:
     ioerror=False
     try:
-        auxfile_list=open(options.auxfile, "r").read().split("\n")
-        for line in auxfile_list:
+        if sys.version_info < (3, 0):
+            auxfile=open(options.auxfile, "r")
+        else:
+            auxfile=open(options.auxfile, "r", errors="replace")
+        for line in auxfile:
             if re.match('\\\\newlabel{[^}]*}{{[^}]*}', line):
                 [label, counter]=re.match('\\\\newlabel{([^}]*)}{{([^}]*)}', line).group(1,2)
                 counter=re.sub('{', '', counter)
@@ -221,6 +230,7 @@ try:
                     [linenr, file, tag_type, kind]=["no_label", "no_label", "", ""]
                 if linenr != "no_label" and counter != "":
                     tags.extend([str(counter)+"\t"+file+"\t"+linenr+";\"\tinfo:"+tag_type+"\tkind:"+kind])
+        auxfile.close()
     except IOError:
         ioerror=True
         pass

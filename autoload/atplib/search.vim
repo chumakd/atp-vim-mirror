@@ -283,7 +283,7 @@ function! atplib#search#LocalCommands_py(write, ...)
     let atp_MainFile	= atplib#FullPath(b:atp_MainFile)
     let pwd		= getcwd()
     try
-	exe "cd ".fnameescape(b:atp_ProjectDir)
+	exe "lcd ".fnameescape(b:atp_ProjectDir)
     catch /E344:/
 	return
     endtry
@@ -371,7 +371,7 @@ else
     let b:atp_LocalEnvironments=[]
 endif
 let g:time_LocalCommands_py=reltimestr(reltime(time))
-exe "cd ".fnameescape(pwd)
+exe "lcd ".fnameescape(pwd)
 return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
@@ -463,7 +463,6 @@ function! atplib#search#Dsearch(bang,...)
 		endif
 	    endfor
 	endfor
-	let g:defi_list = deepcopy(defi_list)
 
 	if len(defi_list) == 0
 	    redraw

@@ -6,7 +6,7 @@
 " Time Stamp: 17-03-12_13-21
 " (but you can edit, if there is a reason for doing this. The format is dd-mm-yy_HH-MM)
 " Language:	    tex
-" Last Change: Sun Feb 26, 2012 at 08:31:09  +0000
+" Last Change: Tue Mar 20, 2012 at 15:55:38  +0000
 " GetLatestVimScripts: 2945 62 :AutoInstall: tex_atp.vim
 " GetLatestVimScripts: 884 1 :AutoInstall: AutoAlign.vim
 " Copyright Statement: 
@@ -28,7 +28,7 @@
 "     This licence applies to all files shipped with Automatic Tex Plugin.
 
 " Do not source ATP if g:no_atp is set
-if exists("g:no_atp") && g:no_atp == 1
+if exists("g:no_atp") && g:no_atp == 1 || exists("b:did_ftplugin")
     finish
 endif
 

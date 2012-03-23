@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Mar 02, 2012 at 08:32:09  +0000
+" Last Change: Fri Mar 23, 2012 at 06:33:26  +0000
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1146,7 +1146,7 @@ endif
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'CursorHoldI')
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters, 'InsertEnter') 
 	" Make imaps visible with :imap /this will not work with i_CTRL-C/
-	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'InsertLeave')
+" 	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'InsertLeave')
 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'BufEnter')
     augroup END
 
@@ -1176,10 +1176,6 @@ let g:atp_imap_math_misc = [
 	\ "g:atp_imap_define_math_misc", '\circ' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, '=', s:backslash.'equiv', 	
 	\ "g:atp_imap_define_math_misc", '\equiv' ],
-\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, '>', s:backslash.'geq', 	
-	\ "g:atp_imap_define_math_misc", '\geq' ],
-\ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, '<', s:backslash.'leq',
-	\ "g:atp_imap_define_math_misc", '\leq' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, '.', s:backslash.'dot', 
 	\ "g:atp_imap_define_math_misc", '\dot' ],
 \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_1, '/', s:backslash.'frac{}{}<Esc>F}i',
@@ -1360,6 +1356,8 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "s>", "atplib#IsInMath() ? '".s:backslash."supseteq' 	: 's>'", "g:atp_imap_define_math",		'\\supseteq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<=", "atplib#IsInMath() ? '".s:backslash."leq' 	: '<='", "g:atp_imap_define_math",		'\\leq'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", ">=", "atplib#IsInMath() ? '".s:backslash."geq' 	: '>='", "g:atp_imap_define_math",		'\\geq'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "#<", "atplib#IsInMath() ? '".s:backslash."langle' 	: '#<'", "g:atp_imap_define_math",		'\\langle'],
+	\ [ "inoremap", "<buffer> <silent> <expr>", "", "#>", "atplib#IsInMath() ? '".s:backslash."rangle' 	: '#>'", "g:atp_imap_define_math",		'\\rangle'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "->", "atplib#IsInMath('!') ? '".s:backslash."rightarrow' 	: ( atplib#complete#CheckSyntaxGroups(['texMathZoneT']) && getline('.')[1:col('.')] !~ '\\[[^\\]]*$' ? '\\draw[->]' : '->' )", "g:atp_imap_define_math",		'\\rightarrow'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<-", "atplib#IsInMath('!') ? '".s:backslash."leftarrow' 	: ( atplib#complete#CheckSyntaxGroups(['texMathZoneT']) && getline('.')[1:col('.')] !~ '\\[[^\\]]*$' ? '\\draw[<-]' : '<-' )", "g:atp_imap_define_math",		'\\leftarrow'],
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "<_", "atplib#IsInMath('!') ? '".s:backslash."Leftarrow' 	: '<-'", "g:atp_imap_define_math",		'\\Leftarrow'],
@@ -1367,20 +1365,19 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ ]
 endif
 
-    " Make Mathematical Maps:
-    augroup ATP_MathIMaps
-	au!
-" 	au CursorMovedI	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorMovedI', [], 1)
-	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorHoldI')
-	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'InsertEnter')
-	" Make imaps visible with :imap  /this will not work with i_CTRL-C/
-	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'InsertLeave')
-	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'BufEnter')
-    augroup END
+" MAKE MATHEMATICAL MAPS: (autocommands) "{{{1
+augroup ATP_MathIMaps
+    au!
+    au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'CursorHoldI')
+    au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math, 'InsertEnter')
+    " Make imaps visible with :imap  /this will not work with i_CTRL-C/
+"     au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'InsertLeave')
+    au BufEnter		*.tex 	:call atplib#MakeMaps(g:atp_imap_math, 'BufEnter')
+augroup END
 
-    augroup ATP_IMaps_CursorMovedI
-	au CursorMovedI *.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters+g:atp_imap_math_misc
-		    \ +g:atp_imap_math, 'CursorMovedI', g:atp_imap_diacritics, 1)
-    augroup END
+augroup ATP_IMaps_CursorMovedI
+    au CursorMovedI *.tex 	:call atplib#ToggleIMaps(g:atp_imap_greek_letters+g:atp_imap_math_misc
+		\ +g:atp_imap_math, 'CursorMovedI', g:atp_imap_diacritics, 1)
+augroup END
 " }}}1
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1:nowrap

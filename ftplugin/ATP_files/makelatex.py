@@ -205,10 +205,10 @@ def latex_progress_bar(cmd):
     stack = deque([])
     while True:
         try:
-            out = child.stdout.read(1).decode()
+            out = child.stdout.read(1).decode(errors="replace")
         except UnicodeDecodeError:
             debug_file.write("UNICODE DECODE ERROR:\n")
-            debug_file.write(child.stdout.read(1))
+            debug_file.write(child.stdout.read(1).encode(errors="ignore"))
             debug_file.write("\n")
             out = ""
         if out == '' and child.poll() != None:
@@ -264,9 +264,9 @@ def reload_xpdf():
         cond=xpdf_server_file_dict().get(XpdfServer, ['_no_file_']) != ['_no_file_']
         if cond and ( reload_on_error or latex.returncode == 0 or bang ):
             debug_file.write("reloading Xpdf\n")
-            run=['xpdf', '-remote', XpdfServer, '-reload']
+            cmd=['xpdf', '-remote', XpdfServer, '-reload']
             devnull=open(os.devnull, "w+")
-            subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
+            subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT)
             devnull.close()
 
 def copy_back_output(tmpdir):
@@ -350,7 +350,10 @@ try:
 
         need_runs = [0]
 
-        log_file  = open(tmplog, "r")
+        if sys.version_info < (3, 0):
+            log_file  = open(tmplog, "r")
+        else:
+            log_file  = open(tmplog, "r", errors="replace")
         log       = log_file.read()
         log_file.close()
         log_list=re.findall('(undefined references)|(Citations undefined)|(There were undefined citations)|(Label\(s\) may have changed)|(Writing index file)|(run Biber on the file)',log)
@@ -411,7 +414,10 @@ try:
         thmfile_readable = os.path.isfile(thmfile)
 
         try:
-            aux_file=open(tmpaux, "r")
+            if sys.version_info < (3, 0):
+                aux_file=open(tmpaux, "r")
+            else:
+                aux_file=open(tmpaux, "r", errors="replace")
             aux=aux_file.read()
             aux_file.close()
         except IOError:
@@ -423,16 +429,21 @@ try:
         #         bibtex=re.search('No file '+basename+'\.bbl\.', log)
         if not bibtex:
             # Then search for biblatex package. Alternatively, I can search for biblatex messages in log file.
-            for line in open(texfile):
+            if sys.version_info < (3, 0):
+                texfile_ob = open(texfile, 'r')
+            else:
+                texfile_ob = open(texfile, 'r', errors='replace')
+            for line in texfile_ob:
                 if re.match('[^%]*\\\\usepackage\s*(\[[^]]*\])?\s*{(\w\|,)*biblatex',line):
                     bibtex=True
                     break
                 elif re.search('\\\\begin\s*{\s*document\s*}',line):
                     break
+            texfile_ob.close()
         debug_file.write("BIBTEX="+str(bibtex)+"\n")
 
         # I have to take the second condtion (this is the first one):
-        condition = citations or labels or makeidx or run <= need_runs
+        condition = citations or labels or makeidx or run <= max(need_runs)
         debug_file.write(str(run)+"condition="+str(condition)+"\n")
 
         # HERE IS THE MAIN LOOP:
@@ -484,7 +495,10 @@ try:
 
             #CONDITION
             try:
-                log_file=open(tmplog, "r")
+                if sys.version_info < (3, 0):
+                    log_file=open(tmplog, "r")
+                else:
+                    log_file=open(tmplog, "r", errors="replace")
                 log=log_file.read()
                 log_file.close()
             except IOError:

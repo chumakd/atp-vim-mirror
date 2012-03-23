@@ -2338,9 +2338,11 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	if g:atp_local_completion
 	    " make a list of local envs and commands:
 	    if !exists("b:atp_LocalCommands") 
-		LocalCommands
+		" This saves the file.
+		call LocalCommands(1, "", "")
 	    elseif has("python")
-		LocalCommands
+		" This will not save the file.
+		call LocalCommands(0, "", "")
 	    endif
 	    call extend(completion_list, b:atp_LocalCommands)
 	endif

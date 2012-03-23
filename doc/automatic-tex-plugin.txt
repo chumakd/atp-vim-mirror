@@ -223,6 +223,8 @@ NEWS							*atp-news*
  statements which will be executed after |vimrc| and |atprc| files.
  These statements are executed only once (per project file).
 
+ As suggested by F.Heiderich: #< and #> are now maps for \langle and \rangle.
+
  New command |atp-:TexDef|.
 >
  ======================
@@ -4539,8 +4541,6 @@ imap #@		\circ
 imap #*		\bigcap
 imap #+		\bigcup
 imap #\		\backslash
-imap #>		\geq
-imap #<		\leq
 imap #.		\dot		[#.s will put \dots]
 
 MATH ACCENTS AND DECORATIONS ~
@@ -4603,6 +4603,8 @@ imap <=		\leq
 imap >=		\geq
 imap ->		\rightarrow	or \draw[->] [inside tikzpicture environment]
 imap <-		\leftarrow	or \draw[<-] [inside tikzpicture environment]
+imap #>		\rangle
+imap #<		\langle
 imap _>		\Rightarrow
 imap <_		\Leftarrow
 imap |-		\vdash

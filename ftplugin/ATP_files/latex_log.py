@@ -49,6 +49,10 @@
 # max_print_line (for example with `max_print_line=2000 latex file.tex')
 # so that latex messages are not broken into lines.
 
+# The scripts assumes the default encoding to be utf-8. Though you will not see
+# errors since decode(errors='replace') is used, that is bytes not recognized
+# will be substituted with '?'.
+
 import sys, re, os, os.path, fnmatch
 
 def shift_dict( dictionary, nr ):
@@ -69,10 +73,16 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
         output_fname = os.path.splitext(input_fname)[0]+"._log"
 
     try:
-        log_file = open(input_fname, 'r')
+        if sys.version_info < (3, 0):
+            log_file = open(input_fname, 'r')
+        else:
+            # We are assuming the default encoding (utf-8)
+            log_file = open(input_fname, 'r', errors='replace')
     except IOError:
         sys.exit(1)
     log_stream = log_file.read()
+    # Todo: In python3 there is UnicodeDecodeError. I should remove all the
+    # bytes where python cannot decode the character.
     log_file.close()
 
     dir = os.path.dirname(os.path.abspath(input_fname))

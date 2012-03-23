@@ -182,7 +182,10 @@ def write_pbf(string):
 
     cond = False
     try:
-        pb_fobject  = open(pb_fname, 'r')
+        if sys.version_info < (3, 0):
+            pb_fobject  = open(pb_fname, 'r')
+        else:
+            pb_fobject  = open(pb_fname, 'r', errors='replace')
     except IOError:
         cond = True
         pass
@@ -220,10 +223,10 @@ def latex_progress_bar(cmd):
     stack = deque([])
     while True:
         try:
-            out = child.stdout.read(1).decode()
+            out = child.stdout.read(1).decode(errors="replace")
         except UnicodeDecodeError:
             debug_file.write("UNICODE DECODE ERROR:\n")
-            debug_file.write(child.stdout.read(1))
+            debug_file.write(child.stdout.read(1).encode(errors="ignore"))
             debug_file.write("\n")
             debug_file.write("stack="+''.join(stack)+"\n")
             out = ""
@@ -233,7 +236,7 @@ def latex_progress_bar(cmd):
             stack.append(out)
             if len(stack)>10:
                 stack.popleft()
-            match = re.match('\[(\n?\d(\n|\d)*)({|\])',str(''.join(stack)))
+            match = re.match('\[(\n?\d(\n|\d)*)({|\])',''.join(stack))
             if match:
                 if options.callback:
                     vim_remote_expr(servername, "atplib#callback#ProgressBar("+match.group(1)[match.start():match.end()]+","+str(pid)+","+str(bufnr)+")")
