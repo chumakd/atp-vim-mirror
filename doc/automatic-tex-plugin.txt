@@ -169,12 +169,16 @@ NEWS							*atp-news*
 <
  NOTE: You should remove the file:
      ~/.vim/ftplugin/ATP_files/packages/amsmath.vim
+ Then ATP completion will work better, since ATP can now scan package and
+ documentclass files (.sty, .cls) for commands and options.
 
  NOTE: It was found that 'relativenumber' option slows down vim when edditing
- tex files.
+ tex files (at least for some users).
 
+ QUICK REFERENCE GUIDE:~
  You can download a quick reference guide for ATP from:
      http://atp-vim.sourceforge.net/atp_quickref.pdf
+ It should be easier now to go through ATP features.
 
  If you set |g:atp_ParseLog| and |g:atp_Compiler|="python", then ATP will
  rewrite the log file so that the output is readable for vim |quickfix| using
@@ -190,15 +194,12 @@ NEWS							*atp-news*
 
  |g:atp_Signs|=0 by default.
 
- TOC and Labels windows are clicable: acts like <space> = go to section and
- leave TOC/Labels window open. 
- See also |atp-:RemoveFromToC| command.
-
  |atp-gf| works well with \bibliography{} command.
 
  See ':help atp-omap-<C-d>' for the defined operator maps. 
  |atp-vi(|, ... , |atp-va}| maps.
 
+ Support for subfiles.sty package:~
  Compilation of parts of a project (using subfiles package).
  |atp-:TEXL|, |atp-:ViewL|, |atp-:SyncTexL|, see also |b:atp_autex| (when set
  to 2 automatic compilations of subfiles is turned on).
@@ -206,9 +207,15 @@ NEWS							*atp-news*
  |atp-:S| command has additional flag 'x', when used the
  |v:searchforward| value will not be changed.
 
+ TABLE OF CONTENTS:~
  |atp-:TOC| was rewritten in python so that it works well with project files.
  If your vim is compiled without python the old ToC will be used. 
 
+ TOC and Labels windows are clicable: acts like <space> = go to section and
+ leave TOC/Labels window open. 
+ See also |atp-:RemoveFromToC| command.
+
+ NEW DEBUG MODES:~
  See |atp-autosilent|, |atp-autodebug| and |atp-autoDebug| debug modes.
  Previously, by default QuickFix window was closed when there was no error.
  Now this behaviour is reserved only for |atp-autosilent|, |atp-autodebug|,
@@ -223,6 +230,7 @@ NEWS							*atp-news*
  statements which will be executed after |vimrc| and |atprc| files.
  These statements are executed only once (per project file).
 
+ CHANGE IN MAPS: ~
  As suggested by F.Heiderich: #< and #> are now maps for \langle and \rangle.
 
  New command |atp-:TexDef|.
