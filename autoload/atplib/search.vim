@@ -681,6 +681,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 	" things. It is possible to make it work I think, but this might not
 	" be needed (speed seems to be fine).
 " 	syntax off
+	set eventignore+=Syntax
 " 	filetype off 
 	" there are many errors in /tmp/ATP_rs_debug file due to this which are not
 	" important.
@@ -1033,7 +1034,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		    endfor
 		endif
 		exe "lcd " . fnameescape(cwd)
-" 		syntax enable
+		set eventignore-=Syntax
+		syntax enable
 " 		filetype on
 " 		filetype detect
 
@@ -1095,6 +1097,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 		endif
 	    else
 		echoerr "Recursive Search: swap file: " . swapfile . " exists. Aborting." 
+		set eventignore-=Syntax
+		syntax enable
 		return
 	    endif
 	    if g:atp_debugRS >= 2
@@ -1183,6 +1187,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		    redir END
 		endif
 
+		set eventignore-=Syntax
+		syntax enable
 		return
 	    endif
 
@@ -1215,6 +1221,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 " 		endif
 	    else
 		echoerr "Recursive Search: swap file: " . swapfile . " exists. Aborting." 
+		set eventignore-=Syntax
+		syntax enable
 		return
 	    endif
 	    if g:atp_debugRS >= 2
@@ -1293,7 +1301,8 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		endfor
 	    endif
 	    exe "lcd " . fnameescape(cwd)
-" 	    syntax enable
+	    set eventignore-=Syntax
+	    syntax enable
 " 	    filetype on
 " 	    filetype detect
 
@@ -1312,7 +1321,7 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		endfor
 	    endif
 	    exe "lcd " . fnameescape(cwd)
-" 	    syntax enable
+	    set eventignore-=Syntax
 " 	    filetype on
 " 	    filetype detect
 

@@ -626,7 +626,7 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
 		\ " --xpdf-server ".shellescape(b:atp_XpdfServer).
 		\ " --viewer-options ".shellescape(viewer_options).
 		\ " --progname ".v:progname.
-		\ " --tempdir ".shellescape(g:atp_TempDir).
+		\ " --logdir ".shellescape(g:atp_TempDir).
 		\ (g:atp_callback ? "" : " --no-callback ").
 		\ (t:atp_DebugMode=='verbose'||mode=='verbose'?' --env ""': " --env ".shellescape(b:atp_TexCompilerVariable)).
 		\ reload_viewer . reload_on_error
@@ -761,6 +761,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     " Set the command
     let cmd=g:atp_Python." ".g:atp_PythonCompilerPath." --command ".b:atp_TexCompiler
 		\ ." --tex-options ".shellescape(tex_options)
+		\ ." --tempdir ".shellescape(b:atp_TempDir)
 		\ ." --verbose ".a:verbose
 		\ ." --file ".shellescape(atplib#FullPath(a:filename))
 		\ ." --bufnr ".bufnr("%")

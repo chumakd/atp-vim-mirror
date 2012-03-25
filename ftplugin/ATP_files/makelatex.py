@@ -33,7 +33,8 @@ parser.add_option("--output-format",    dest="output_format",   default="pdf"   
 parser.add_option("--bibcmd",           dest="bibcmd",          default="bibtex"                        )
 parser.add_option("--tex-options",      dest="tex_options",     default=""                              )
 parser.add_option("--outdir",           dest="outdir"                                                   )
-parser.add_option("--tempdir",          dest="tempdir"                                                  )
+parser.add_option("--logdir",           dest="logdir"                                                   )
+parser.add_option("--tempdir",          dest="tempdir",         default=""                              )
 parser.add_option("--progname",         dest="progname",        default="gvim"                          )
 parser.add_option("--servername",       dest="servername"                                               )
 parser.add_option("--viewer",           dest="viewer",          default="xpdf"                          )
@@ -53,13 +54,15 @@ parser.add_option("--env",              dest="env",             default=""      
 
 (options, args) = parser.parse_args()
 
-debugfile=os.path.join(options.tempdir, "makelatex.log")
+debugfile=os.path.join(options.logdir, "makelatex.log")
 debug_file=open(debugfile, "w")
 
 texfile = options.texfile
 bufnr   = options.bufnr
 basename = os.path.splitext(os.path.basename(texfile))[0]
 texfile_dir = os.path.dirname(texfile)
+if options.tempdir == "":
+    options.tempdir = os.path.join(texfile_dir,".tmp")
 logfile = basename+".log"
 debug_file.write("logfile="+logfile+"\n")
 auxfile = basename+".aux"
@@ -71,13 +74,13 @@ loffile = basename+".lof"
 lotfile = basename+".lot"
 thmfile = basename+".thm"
 
-if not os.path.exists(os.path.join(texfile_dir, ".tmp")):
+if not os.path.exists(options.tempdir):
         # This is the main tmp dir (./.tmp) 
         # it will not be deleted by this script
         # as another instance might be using it.
         # it is removed by Vim on exit.
-    os.mkdir(os.path.join(texfile_dir,".tmp"))
-tmpdir  = tempfile.mkdtemp(dir=os.path.join(texfile_dir,".tmp"),prefix="")
+    os.mkdir(options.tempdir)
+tmpdir  = tempfile.mkdtemp(dir=options.tempdir,prefix="")
 
 # List of pids runing.
 pids    = []
@@ -266,7 +269,7 @@ def reload_xpdf():
             debug_file.write("reloading Xpdf\n")
             cmd=['xpdf', '-remote', XpdfServer, '-reload']
             devnull=open(os.devnull, "w+")
-            subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT)
+            subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
             devnull.close()
 
 def copy_back_output(tmpdir):

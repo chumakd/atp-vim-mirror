@@ -57,6 +57,7 @@ parser.add_option("--gui-running",      action="store_true",    default=False,  
 parser.add_option("--autex_wait",       action="store_true",    default=False,  dest="autex_wait"       )
 parser.add_option("--no-progress-bar",  action="store_false",   default=True,   dest="progress_bar"     )
 parser.add_option("--bibliographies",                           default="",     dest="bibliographies"   )
+parser.add_option("--tempdir",                                  default="",     dest="tempdir"        )
 
 (options, args) = parser.parse_args()
 
@@ -312,6 +313,8 @@ if mainfile_dir == "":
     mainfile_fp = os.path.join(os.getcwd(), mainfile)
     mainfile    = os.path.basename(mainfile_fp)
     mainfile_dir= os.path.dirname(mainfile_fp)
+if options.tempdir == "":
+    options.tempdir = os.path.join(mainfile_dir,".tmp")
 if os.path.islink(mainfile_fp):
     if readlink:
         mainfile_fp = os.readlink(mainfile_fp)
@@ -334,13 +337,13 @@ try:
     #
     ####################################
     cwd     = os.getcwd()
-    if not os.path.exists(os.path.join(mainfile_dir,".tmp")):
+    if not os.path.exists(options.tempdir):
         # This is the main tmp dir (./.tmp) 
         # it will not be deleted by this script
         # as another instance might be using it.
         # it is removed by Vim on exit.
-        os.mkdir(os.path.join(mainfile_dir,".tmp"))
-    tmpdir  = tempfile.mkdtemp(dir=os.path.join(mainfile_dir,".tmp"),prefix="")
+        os.mkdir(options.tempdir)
+    tmpdir  = tempfile.mkdtemp(dir=options.tempdir,prefix="")
     debug_file.write("TMPDIR: "+tmpdir+"\n")
     tmpaux  = os.path.join(tmpdir,basename+".aux")
 

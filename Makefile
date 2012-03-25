@@ -16,7 +16,7 @@ DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # entries. I use VAM plugin, so this setting is more complicated:
 DESTDIR = ${HOME}/.vim/vam-addons/AutomaticLaTexPlugin
 
-SOURCE =  autoload/atplib.vim
+SOURCE = autoload/atplib.vim
 SOURCE += autoload/atplib/bibsearch.vim
 SOURCE += autoload/atplib/callback.vim
 SOURCE += autoload/atplib/common.vim
@@ -49,9 +49,9 @@ SOURCE += ftplugin/ATP_files/dictionaries/ams_dictionary
 SOURCE += ftplugin/ATP_files/dictionaries/dictionary
 SOURCE += ftplugin/ATP_files/dictionaries/greek
 SOURCE += ftplugin/ATP_files/dictionaries/tikz
+SOURCE += ftplugin/ATP_files/latex_log.py
 SOURCE += ftplugin/ATP_files/latextags.py
 SOURCE += ftplugin/ATP_files/makelatex.py
-SOURCE += ftplugin/ATP_files/latex_log.py
 SOURCE += ftplugin/ATP_files/mappings.vim
 SOURCE += ftplugin/ATP_files/menu.vim
 SOURCE += ftplugin/ATP_files/motion.vim
