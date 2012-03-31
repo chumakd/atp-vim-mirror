@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Sun Jan 01, 2012 at 22:39:38  +0000
+" Last Change: Tue Mar 27, 2012 at 13:34:17  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -133,7 +133,7 @@ endfunction
 function! <SID>yank(arg, ...) " {{{
     let time = reltime()
     let labels_window	= expand("%") == "__Labels__" ? 1 : 0
-    let register	= ( a:0 >= 1 ? a:1 : '"' )
+    let register	= ( a:0 >= 1 ? a:1 : v:register )
 
     let l:toc=getbufline("%",1,"$")
     let l:h_line=index(reverse(copy(l:toc)),'')+1
@@ -272,7 +272,6 @@ function! Paste()
     call <SID>yank("p")
 endfunction
 endif
-command! -buffer -nargs=1 Y :call YankToReg(<f-arg>)
 
 " Show Label Context 
 " {{{1 ShowLabelContext

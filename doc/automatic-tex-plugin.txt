@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 17 March 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 31 March 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.5)
 			by Marcin Szamotulski
@@ -233,7 +233,7 @@ NEWS							*atp-news*
  CHANGE IN MAPS: ~
  As suggested by F.Heiderich: #< and #> are now maps for \langle and \rangle.
 
- New command |atp-:TexDef|.
+ New commands: |atp-:TexDef|, |atp-:KpsewhichEdit|.
 >
  ======================
  Changes in version 10.6.4
@@ -1463,6 +1463,10 @@ nmap gf
 
 	The current file is now shown with highlight group: |hl-WarningMsg|. 
 
+:KpsewhichEdit {file}					*atp-:KpsewhichEdit*
+	Find {file} using kpsewhich and edit it. For example >
+	    :KpsewhichEdit amsmath.sty
+<
 							*atp-:TexDoc*
 :TexDoc
 map <F1>, imap <F1>

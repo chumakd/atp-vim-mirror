@@ -125,7 +125,8 @@ tmp=tempfile.mkdtemp(suffix="", prefix="atp_")
 vim.command("let g:atp_TempDir='"+tmp+"'")
 END
 else
-    let g:atp_TempDir=substitute(tempname(), '\d\+$', "atp_debug", '')
+    let td = tempname()
+    let g:atp_TempDir=substitute(td, '\d\+$', "atp_debug", '')
     call mkdir(g:atp_TempDir, "p", 0700)
 endif
 endfunction

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Todo: shoul be '\hbox ... too wide.' (add '\hbox to the message).
+# Todo: should be '\hbox ... too wide.' (add '\hbox to the message).
 
 
 # Author: Marcin Szamotulski
@@ -88,23 +88,36 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     dir = os.path.dirname(os.path.abspath(input_fname))
     os.chdir(dir)
 
-    # Filter the log_stream: remoove all unbalanced brackets (:)
+    # Filter the log_stream: remove all unbalanced brackets (:)
     # some times the log file contains unbalanced brackets!
     # This removes all the lines after 'Overfull \hbox' message until first non
-    # empty line.
+    # empty line and all lines just after 'Runaway argument?'.
     log_lines = log_stream.split("\n")
     output_lines = []
     idx = 0
     remove = False
+    prev_line = ""
+    overfull = False
+    runawayarg = False
     for line in log_lines:
         idx+=1
-        match = re.match('^Overfull \\\\hbox ',line)
-        if match:
+        match_overfull   = re.match('Overfull \\\\hbox ',line)
+        match_runawayarg = re.match('Runaway argument\?',prev_line)
+        if match_overfull or match_runawayarg:
+            if match_overfull:
+                overfull = True
+            if match_runawayarg:
+                runawayarg = True
             remove = True
-        elif re.match('^\s*$', line):
+        elif re.match('^\s*$', line) and overfull:
             remove = False
-        if not remove or match:
+            overfull = False
+        elif runawayarg:
+            remove = False
+            runawayarg = False
+        if not remove or match_overfull:
             output_lines.append(line)
+        prev_line = line
     log_stream='\n'.join(output_lines)
     output_lines = []
     log_lines = log_stream.split("\n")
@@ -156,14 +169,18 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     # { file_name : number_of_brackets_opened_after_the_file_name_was_found ... }
 
     idx=-1
+    line_up_to_col = ""
+    # This variable stores the current line up to the current column.
     for char in log_stream:
         idx+=1
         if char == "\n":
             line_nr+=1
             col_nr=0
+            line_up_to_col = ""
         else:
             col_nr+=1
-        if char == "(":
+            line_up_to_col += char
+        if char == "(" and not re.match('l\.\d+', line_up_to_col):
             # If we are at the '(' bracket, check for the file name just after it.
             line = log_lines[line_nr-1][col_nr:]
             fname_re = re.match('([^\(\)]*\.(?:tex|sty|cls|cfg|def|aux|fd|out|bbl|blg|bcf|lof|toc|lot|ind|idx|thm|synctex\.gz|pdfsync|clo|lbx|mkii|run\.xml|spl|snm|nav|brf|mpx|ilg|maf|glo|mtc[0-9]+))', line)
@@ -176,7 +193,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 file_stack.append(fname)
                 open_dict[fname]=0
             open_dict = shift_dict(open_dict, 1)
-        elif char == ")":
+        elif char == ")" and not re.match('l\.\d+', line_up_to_col):
             if len(file_stack) and not( re.match('\!', log_lines[line_nr-1]) or re.match('\s{5,}',log_lines[line_nr-1]) or re.match('l\.\d+', log_lines[line_nr-1])):
             # If the ')' is in line that we check, then substrackt 1 from values of
             # open_dict and pop both the open_dict and the file_stack. 
@@ -427,7 +444,6 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     output=open(output_fname, 'w')
     output.write('\n'.join(output_lines)+'\n')
     output.close()
-
 
 # Main call
 if __name__ == '__main__':
