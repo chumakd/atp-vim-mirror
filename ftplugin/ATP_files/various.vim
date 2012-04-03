@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Apr 03, 2012 at 09:53:27  +0100
+" Last Change: Tue Apr 03, 2012 at 14:04:31  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen()
@@ -334,11 +334,11 @@ endfunction
 " InsertEnvironment() {{{ 
 function! <SID>InsertEnvironment(bang,env_name)
     if a:bang == ""
-	if getline(".") =~ '^\s*'
+	if getline(".") =~ '^\s*$'
 	    delete _
 	endif
-	call append(line(".")-1, ['\begin{'.a:env_name.'}', '\end{'.a:env_name.'}']) 
-	normal! 2k$
+	call append(line("."), ['\begin{'.a:env_name.'}', '\end{'.a:env_name.'}']) 
+	normal! j$
     else
 	let line=getline(".")[:col(".")-1]."\\begin{".a:env_name."}\\end{".a:env_name."}".getline(".")[col("."):]
 	call setline(line("."), line)
