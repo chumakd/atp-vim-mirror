@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 31 March 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 03 April 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.5)
 			by Marcin Szamotulski
@@ -225,6 +225,9 @@ NEWS							*atp-news*
  (see |atp-omap-\w| and |atp-omap-WrapSelection|)
 
  See |g:atp_diacritics| (used instead of g:atp_imap_diacritics_inteligent).
+
+ |atp-:ErrorFormat| and |atp-:ShowErrors| have a flag 'h' instead of 'O' which
+ shows both 'Underfull \hbox' and 'Overfull \hbox' messages'.
 
  Local project script (.project.vim file) may contain |:set|/|:setl|
  statements which will be executed after |vimrc| and |atprc| files.
@@ -1160,7 +1163,7 @@ nmap <LocalLeader>e					/for other maps see |atp-:ShowErrors-maps|/
 		p		- show package info messages (g:atp_ParseLog only)
 		P		- show packages loaded by tex 
 				    (messages which start with 'Package: ')
-		O		- show 'overfull \hbox' messages (g:atp_ParseLog only)
+		h		- show 'Overfull \hbox' and 'Underfull \hbox' messages (g:atp_ParseLog only)
 		o		- open the log file in a new buffer (split).
 		all		- all excluding f,fi,F,p,P
 		All		- with g:atp_ParseLog:  show all the above,
@@ -2030,6 +2033,12 @@ map |<LocalLeader>|s
 	belonging to the list: >
 		    g:atp_no_star_environments
 <	See |b:atp_StarEnvDefault| and |b:atp_StarMathEnvDefault|.
+
+							*atp-:InsertEnv*
+:InsertEnv[!] {envname}
+	This command inserts environment {envname} and puts the cursor at the
+	end of \begin{{envname}} statement. To open new line below use |o|.
+	If used with bang the environment is inserted in line.
 
 							*atp-:ToggleEnv*
 :ToggleEnv	 	
@@ -4439,13 +4448,14 @@ Note: This can be effectively set only in |atprc| or |vimrc| files.
 
     These maps are fully customizable: both sides: the lhs and rhs side ! Here
     is how you can set the rhs:
-							*g:atp_EnvNameTheorem*
-							*g:atp_EnvNameProposition*
-							*g:atp_EnvNameLemma*
 							*g:atp_EnvNameCorollary*
-							*g:atp_EnvNameRemark*
-							*g:atp_EnvNameNote*
 							*g:atp_EnvNameDefinition*
+							*g:atp_EnvNameExample*
+							*g:atp_EnvNameLemma*
+							*g:atp_EnvNameNote*
+							*g:atp_EnvNameProposition*
+							*g:atp_EnvNameRemark*
+							*g:atp_EnvNameTheorem*
     This variables defines environment names put it the following environment imaps.
 
 							*b:atp_StarEnvDefault*

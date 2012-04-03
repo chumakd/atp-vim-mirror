@@ -43,14 +43,16 @@ augroup END
 function! TexLogCurrentFile() " {{{1
     let saved_pos = getpos(".")
     let savedview = winsaveview()
-    call searchpair('(', '', ')', 'cbW')
+    let skip = 'getline(".") =~ ''^l\.\d\+.*'' || getline(line(".")-1) =~ ''^l\.\d\+.*'' && getline(".") =~ ''^\s\+'' || getline(line(".")-1) =~ ''^Runaway argument?'' || getline(line(".")-1) =~ ''^\(Over\|Under\)full\>'''
+    let skip=""
+    call searchpair('(', '', ')', 'cbW', skip)
     let file = matchstr(getline(".")[col("."):], '^\f*')
     if filereadable(file)
 	call setpos(".", saved_pos)
 	call winrestview(savedview) 
 	return file
     else
-	call searchpair('(', '', ')', 'bW')
+	call searchpair('(', '', ')', 'bW', skip)
 	let file = matchstr(getline(".")[col("."):], '^\f*')
 	call setpos(".", saved_pos)
 	call winrestview(savedview) 
@@ -99,7 +101,7 @@ function! <SID>TexLogSettings(fname) "{{{1
 	    let g:atp_LogStatusLine = 1
 	endif
 	if g:atp_LogStatusLine
-	    let atplog_StatusLine = '%<%f %(%h%m%r%) %#User6#%{TexLogCurrentFile()}%*%=  %-14.16(%l,%c%V%)%P'
+	    let atplog_StatusLine = '%<%f %(%h%m%r%) %*%=  %-14.16(%l,%c%V%)%P'
 	    let &statusline=atplog_StatusLine
 	endif
 	let b:atp_ProjectDir = expand("%:p:h")

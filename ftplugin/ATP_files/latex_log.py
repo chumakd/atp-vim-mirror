@@ -27,13 +27,13 @@
 # following format:
 # WARNING_TYPE::FILE::INPUT_LINE::INPUT_COL::MESSAGE (ADDITIONAL_INFO)
 # this was intendent to be used for vim quick fix:
-# set errorformat=LaTeX\ %tarning::%f::%l::%c::%m,Citation\ %tarning::%f::%l::%c::%m,Reference\ %tarning::%f::%l::%c::%m,Package\ %tarning::%f::%l::%c::%m,Overfull\ %tarning::%f::%l::%c::%m,LaTeX\ %tnfo::%f::%l::%c::%m,LaTeX\ %trror::%f::%l::%c::%m
+# set errorformat=LaTeX\ %tarning::%f::%l::%c::%m,Citation\ %tarning::%f::%l::%c::%m,Reference\ %tarning::%f::%l::%c::%m,Package\ %tarning::%f::%l::%c::%m,hbox\ %tarning::%f::%l::%c::%m,LaTeX\ %tnfo::%f::%l::%c::%m,LaTeX\ %trror::%f::%l::%c::%m
 # The fowllowing WARNING_TYPEs are available:
 # LaTeX Warning
 # Citation Warning
 # Reference Warning
 # Package Warning
-# Overfull Warning
+# hbox Warning                  : Overfull and Underfull hbox warnings
 # LaTeX Font Warning
 # LaTeX Font Info
 # LaTeX Info
@@ -101,7 +101,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     runawayarg = False
     for line in log_lines:
         idx+=1
-        match_overfull   = re.match('Overfull \\\\hbox ',line)
+        match_overfull   = re.match('(Over|Under)full \\\\hbox ',line)
         match_runawayarg = re.match('Runaway argument\?',prev_line)
         if match_overfull or match_runawayarg:
             if match_overfull:
@@ -149,8 +149,8 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     package_info_pat = re.compile('Package (\w+) Info: ')
     package_info = "Package Info"
 
-    hbox_info_pat = re.compile('Overfull \\\\hbox')
-    hbox_info = "Overfull Warning"
+    hbox_info_pat = re.compile('(Over|Under)full \\\\hbox')
+    hbox_info = "hbox Warning"
 
     latex_info_pat = re.compile('LaTeX Info: ')
     latex_info = "LaTeX Info"
@@ -317,9 +317,13 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 else:
                     output_lines.append(package_info+"::"+last_file+"::0::0::"+msg+" ("+package+")")
             elif re.match(hbox_info_pat, line):
-                # Log Message: 'Overfull \\\\hbox'
+                # Log Message: '(Over|Under)full \\\\hbox'
                 input_line = re.search('at lines (\d+)--(\d+)', line)
-                msg = '\\hbox '+re.search('\((.*)\)', str(re.sub(hbox_info_pat,'', line))).group(1)
+                if re.match('Underfull', line):
+                    h_type = 'Underfull '
+                else:
+                    h_type = 'Overfull '
+                msg = h_type+'\\hbox '+re.search('\((.*)\)', str(re.sub(hbox_info_pat,'', line))).group(1)
                 if msg == "":
                     msg = " "
                 if input_line:

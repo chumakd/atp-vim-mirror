@@ -2237,7 +2237,7 @@ endfunction
 " fi	- font warning and info messages
 " F	- files
 " o	- open log file
-" O	- overfull \hbox /g:atp_ParseLog only/
+" h	- overfull and underfull \hbox /g:atp_ParseLog only/
 " p	- package info messages ('Package \w\+ Info: ') /g:atp_ParseLog only/
 " P	- packages (lines which start with 'Package: ')
 
@@ -2336,8 +2336,8 @@ function! atplib#compiler#SetErrorFormat(cgetfile,...)
 " 			\%+W%.%#\ at\ lines\ %l--%*\\d'
 	endif
     endif
-    if g:atp_ParseLog && ( carg =~# 'O' || carg =~? 'all' )
-	let efm = "Overfull %tarning::%f::%l::0::%m"
+    if g:atp_ParseLog && ( carg =~# 'h' || carg =~? 'all' )
+	let efm = "hbox %tarning::%f::%l::0::%m"
 	if &l:errorformat == ""
 	    let &l:errorformat=efm
 	else
@@ -2599,7 +2599,7 @@ endfunction
 if !exists("*ListErrorsFlags")
 function! atplib#compiler#ListErrorsFlags(A,L,P)
     if g:atp_ParseLog
-	let flags = "e\nw\nr\nc\nf\nfi\nF\nO\np\nP\no\nall\nAll"
+	let flags = "e\nw\nr\nc\nf\nfi\nF\nh\np\nP\no\nall\nAll"
 	return flags
     else
 	let flags = "e\nw\nr\nc\nf\nfi\nF\no\nP\nall\nAll"
@@ -2610,7 +2610,7 @@ if !exists("*ListErrorsFlags_A")
 function! atplib#compiler#ListErrorsFlags_A(A,L,P)
     " This has no o flag.
     if g:atp_ParseLog
-	return "e\nw\nr\nc\nf\nfi\nF\nO\np\nP\nall\nAll"
+	return "e\nw\nr\nc\nf\nfi\nF\nh\np\nP\nall\nAll"
     else
 	return "e\nw\nr\nc\nf\nfi\nF\nP\nall\nAll"
     endif

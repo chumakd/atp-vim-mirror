@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Mon Mar 12, 2012 at 03:29:58  +0000
+" Last Change: Tue Apr 03, 2012 at 09:53:27  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen()
@@ -331,6 +331,20 @@ function! InsertItem()
     return ""
 endfunction
 " }}}
+" InsertEnvironment() {{{ 
+function! <SID>InsertEnvironment(bang,env_name)
+    if a:bang == ""
+	if getline(".") =~ '^\s*'
+	    delete _
+	endif
+	call append(line(".")-1, ['\begin{'.a:env_name.'}', '\end{'.a:env_name.'}']) 
+	normal! 2k$
+    else
+	let line=getline(".")[:col(".")-1]."\\begin{".a:env_name."}\\end{".a:env_name."}".getline(".")[col("."):]
+	call setline(line("."), line)
+	call search('\\end', '', line("."))
+    endif
+endfunction "}}}
 "{{{ Variables
 if !exists("g:atp_no_toggle_environments")
     let g:atp_no_toggle_environments=[ 'document', 'tikzpicture', 'picture']
@@ -443,8 +457,8 @@ nnoremap <silent> <buffer> 	<Plug>ToggleEnvBackward	:call atplib#various#ToggleE
 nnoremap <silent> <buffer> 	<Plug>ChangeEnv		:call atplib#various#ToggleEnvironment(1)<CR>
 nnoremap <silent> <buffer> 	<Plug>TexDoc		:TexDoc 
 " Commands: "{{{1
+command! -nargs=1 -bang -complete=customlist,atplib#various#EnvCompletion InsertEnv :call <SID>InsertEnvironment(<q-bang>,<q-args>)
 command! -nargs=? -bang -complete=file  Open call atplib#tools#Open(<q-bang>, g:atp_LibraryPath, g:atp_OpenTypeDict, <q-args>)
-let g:atp_open_completion = []
 command! -buffer Unwrap	:call atplib#various#Unwrap()
 command! -buffer -nargs=1 -complete=custom,atplib#various#Complete_Dictionary Dictionary :call atplib#various#Dictionary(<f-args>)
 command! -buffer -nargs=* SetUpdateTime				:call atplib#various#UpdateTime(<f-args>)

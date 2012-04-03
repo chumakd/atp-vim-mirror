@@ -84,12 +84,6 @@ function! atplib#tools#Open(bang, dir, TypeDict, ...)
 	echohl None
 	echo system(viewer . " '" . file . "' &")  
     endif
-"     if fnamemodify(file, ":t") != "" && count(g:atp_open_completion, fnamemodify(file, ":t")) == 0
-" 	call extend(g:atp_open_completion, [fnamemodify(file, ":t")], 0)
-"     endif
-    " This removes the hit Enter vim prompt. 
-    call feedkeys("<CR>")
-    return
 endfunction
 "}}}1
 

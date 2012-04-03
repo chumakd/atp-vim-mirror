@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Mar 23, 2012 at 10:44:15  +0000
+" Last Change: Mon Apr 02, 2012 at 09:01:31  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -896,6 +896,9 @@ if !exists("g:atp_EnvNameCorollary")
 endif
 if !exists("g:atp_EnvNameRemark")
     let g:atp_EnvNameRemark="remark"
+endif
+if !exists("g:atp_EnvNameExample")
+    let g:atp_EnvNameExample="example"
 endif
 if !exists("g:atp_EnvOptions_enumerate")
     " add options to \begin{enumerate} for example [topsep=0pt,noitemsep] Then the
