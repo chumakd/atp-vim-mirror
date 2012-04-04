@@ -740,8 +740,9 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
 
-    let global_options 		= join((exists("g:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? g:atp_{matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')}Options : []), ";") 
-    let local_options 		= join(( exists("b:atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") ? getbufvar(bufnr("%"), "atp_".matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')."Options") : []), ";")
+    let viewer			= matchstr(b:atp_Viewer, '^\s*\zs\S\+\ze')
+    let global_options 		= join((exists("g:atp_".viewer."Options") ? {"g:atp_".viewer."Options"} : []), ";") 
+    let local_options 		= join((exists("b:atp_".viewer."Options") ? {"b:atp_".viewer."Options"} : []), ";")
     if global_options !=  "" 
 	let viewer_options  	= global_options.";".local_options
     else
