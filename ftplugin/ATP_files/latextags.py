@@ -5,6 +5,19 @@ from optparse import OptionParser
 from time import strftime, localtime
 import locale
 
+# Usage:
+# latextags.py --files main_file.tex;input_file1.tex;input_file2.tex --auxfile main_file.aux --bibfiles bibfile.bib --dir ./
+# --files       : specifies all the tex files in a ";"-separated list to parse (all input files) [this option is necessary]
+# --auxfile     : the aux file [this option is necessary]
+# --bibfiles    : specifies bibfiles
+# --hyperref    : if added \hypertarget{}{} commands are scanned too.
+# --cite        : has values: "natbib"/"biblatex"/"" (or not given). It sets apropriate pattern to find all \cite commands.
+# --dir         : directory where to put the tag file
+# --silent      : be silent
+# --servername  : specifies the server name of vim, if given error messages are send to (g)vim
+# --progname    : aparentely only two values are supported: "vim"/"gvim".
+
+
 # ToDoList:
 # (1) Use synstack function remotely to get tag_type.
 # (2) Scan bib files to get bibkeys (but this might be slow)!
@@ -122,7 +135,8 @@ try:
             file_dict[file]=file_object.read().split("\n")
             file_object.close()
         except IOError:
-            vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] file "+file+" not found.\",'echomsg','WarningMsg')")
+            if options.servername != "":
+                vim_remote_expr(options.servername, "atplib#callback#Echo(\"[LatexTags:] file "+file+" not found.\",'echomsg','WarningMsg')")
             file_dict[file]=[]
             pass
 
