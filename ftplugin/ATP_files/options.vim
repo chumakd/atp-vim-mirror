@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Mon Apr 02, 2012 at 09:01:31  +0100
+" Last Change: Thu Apr 05, 2012 at 23:32:14  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -2226,7 +2226,17 @@ if (v:version < 703 || v:version == 703 && !has("patch648")) && (!exists("g:patc
 else
     function! <SID>Latex_Log() 
 	if exists("b:atp_MainFile")
-	    call system("python ".shellescape(split(globpath(&rtp, "ftplugin/ATP_files/latex_log.py"), "\n")[0])." ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".log"))
+	    let log_file  = fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".log"
+	    let _log_file = fnamemodify(atplib#FullPath(b:atp_MainFile), ":r")."._log"
+	    if !filereadable(log_file)
+		return
+	    endif
+	    " Run latex_log.py only if log_file is newer than _log_file. 
+	    " This is only if the user run latex manualy, since ATP calles
+	    " latex_log.py after compilation.
+	    if !filereadable(_log_file) || !exists("*getftime") || getftime(log_file) > getftime(_log_file)
+		call system("python ".shellescape(split(globpath(&rtp, "ftplugin/ATP_files/latex_log.py"), "\n")[0])." ".shellescape(fnamemodify(atplib#FullPath(b:atp_MainFile), ":r").".log"))
+	    endif
 	endif
     endfunction
     augroup ATP_QuickFix_cgetfile

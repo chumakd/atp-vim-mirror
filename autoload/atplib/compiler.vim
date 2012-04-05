@@ -736,7 +736,6 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     " Set options for compile.py
     let interaction 		= ( a:verbose=="verbose" ? b:atp_VerboseLatexInteractionMode : 'nonstopmode' )
     let tex_options		= b:atp_TexOptions.',-interaction='.interaction
-"     let g:tex_options=tex_options
     let ext			= get(g:atp_CompilersDict, matchstr(b:atp_TexCompiler, '^\s*\zs\S\+\ze'), ".pdf") 
     let ext			= substitute(ext, '\.', '', '')
 

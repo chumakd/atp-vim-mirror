@@ -288,9 +288,9 @@ function! atplib#search#LocalCommands_py(write, ...)
 	return
     endtry
 
-    if a:write
-	call atplib#write("nobackup")
-    endif
+"     if a:write
+" 	call atplib#write("nobackup")
+"     endif
 
 
     " Makeing lists of commands and environments found in input files
@@ -306,7 +306,7 @@ function! atplib#search#LocalCommands_py(write, ...)
      for file in b:ListOfFiles
 	 if get(b:TypeDict, file, "") == "input" || get(b:TypeDict, file, "") == "preambule" 
 	     if filereadable(file)
-		 call add(files, file)
+		 call add(files, atplib#FullPath(file))
 	     else
                  " This makes it really slow when the files are missing.
 		 let file=atplib#search#KpsewhichFindFile("tex", file)
@@ -319,6 +319,17 @@ function! atplib#search#LocalCommands_py(write, ...)
 python << END
 import re, vim, os.path
 
+def bufnumber(file):
+    for buffer in vim.buffers:
+        # This requires that we are in the directory of the main tex file,
+        # and the directory is changed in the vim script above.
+        if buffer.name == os.path.abspath(file):
+            return buffer.number
+    for buffer in vim.buffers:
+        if os.path.basename(buffer.name) == file:
+            return buffer.number
+    return 0
+
 pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>newcommand)|\\\\(?P<env>newenvironment)|\\\\(?P<nt>newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
 
 files=[vim.eval("atp_MainFile")]+vim.eval("files")
@@ -327,11 +338,15 @@ localcolors     =[]
 localenvs       =[]
 for file in files:
     lnr=1
-    if os.path.exists(file):
+    bufnr = bufnumber(file)
+    if os.path.exists(file) or bufnr in vim.buffers:
         try:
-            file_ob=open(file, 'r')
-            file_l=file_ob.read().split("\n")
-            file_ob.close()
+            if bufnr in vim.buffers:
+                file_l = vim.buffers[bufnr]
+            else:
+                file_ob=open(file, 'r')
+                file_l=file_ob.read().split("\n")
+                file_ob.close()
             for line in file_l:
                 m=re.match(pattern, line)
                 if m:
@@ -370,8 +385,8 @@ if exists("atp_LocalEnvironments")
 else
     let b:atp_LocalEnvironments=[]
 endif
-let g:time_LocalCommands_py=reltimestr(reltime(time))
 exe "lcd ".fnameescape(pwd)
+let g:time_LocalCommands_py=reltimestr(reltime(time))
 return [ b:atp_LocalEnvironments, b:atp_LocalCommands, b:atp_LocalColors ]
 endfunction
 "}}}
@@ -2088,14 +2103,12 @@ endfunction "}}}
 " atplib#search#TreeOfFiles_py "{{{
 function! atplib#search#TreeOfFiles_py(main_file)
 let time=reltime()
-let project_dir = getbufvar(a:main_file, 'atp_ProjectDir')
 python << END_PYTHON
-
 import vim, re, subprocess, os, glob
 
 filename=vim.eval('a:main_file')
 relative_path=vim.eval('g:atp_RelativePath')
-project_dir=vim.eval('project_dir')
+project_dir=vim.eval('b:atp_ProjectDir')
 
 def vim_remote_expr(servername, expr):
 # Send <expr> to vim server,
@@ -2162,6 +2175,20 @@ def kpsewhich_find(file, path_list):
         results.extend(found)
     return results
 
+def bufnumber(file):
+    cdir = os.path.abspath(os.curdir)
+    os.chdir(project_dir)
+    for buffer in vim.buffers:
+        # This requires that we are in the directory of the main tex file:
+        if buffer.name == os.path.abspath(file):
+            os.chdir(cdir)
+            return buffer.number
+    for buffer in vim.buffers:
+        if os.path.basename(buffer.name) == file:
+            os.chdir(cdir)
+            return buffer.number
+    os.chdir(cdir)
+    return 0
 
 def scan_file(file, fname, pattern, bibpattern):
 # scan file for a pattern, return all groups,
@@ -2206,23 +2233,27 @@ def scan_file(file, fname, pattern, bibpattern):
 def tree(file, level, pattern, bibpattern):
 # files - list of file names to scan, 
 
-    try:
-        file_ob = open(file, 'r')
-    except IOError:
-        if re.search('\.bib$', file):
-            path=bib_path
-        else:
-            path=tex_path
-        try:
-            file=kpsewhich_find(file, path)[0]
-        except IndexError:
-            pass
+    bufnr = bufnumber(file)
+    if bufnr in vim.buffers:
+        file_l = vim.buffers[bufnr]
+    else:
         try:
             file_ob = open(file, 'r')
         except IOError:
-            return [ {}, [], {}, {} ]
-    file_l  = file_ob.read().split("\n")
-    file_ob.close()
+            if re.search('\.bib$', file):
+                path=bib_path
+            else:
+                path=tex_path
+            try:
+                file=kpsewhich_find(file, path)[0]
+            except IndexError:
+                pass
+            try:
+                file_ob = open(file, 'r')
+            except IOError:
+                return [ {}, [], {}, {} ]
+        file_l  = file_ob.read().split("\n")
+        file_ob.close()
     [found, found_l] =scan_file(file_l, file, pattern, bibpattern)
     t_list=[]
     t_level={}
