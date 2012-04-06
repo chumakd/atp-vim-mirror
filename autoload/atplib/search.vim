@@ -670,7 +670,9 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
     if a:call_nr == 1 && a:wrap_nr == 1
 
 	" Erease message 'search hit TOP, continuing at BOTTOM':
-	echo ""
+	if &shortmess =~# 's'
+	    echo ""
+	endif
 
 	if a:vim_options	== { 'no_options' : 'no_options' }
 	    let vim_options 	=  { 'hidden'	: &l:hidden, 
@@ -710,7 +712,6 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 
 	    " Redirect debuggin messages:
 	    if g:atp_debugRS
-" 		echomsg g:atp_TempDir
 		if a:wrap_nr == 1 && a:call_nr == 1
 		    exe "redir! > ".g:atp_TempDir."/RecursiveSearch.log"
 		else
@@ -1024,16 +1025,18 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		
 	    let time	= matchstr(reltimestr(reltime(a:strftime)), '\d\+\.\d\d\d') . "sec."
 
-	    if a:wrap_nr == 2 && flags_supplied =~# 'b'
-		redraw
-		echohl WarningMsg
-		echo "search hit TOP, continuing at BOTTOM "
-		echohl None
-	    elseif a:wrap_nr == 2
-		redraw
-		echohl WarningMsg
-		echo "search hit BOTTOM, continuing at TOP "
-		echohl None
+	    if &shortmess =~# 's'
+		if a:wrap_nr == 2 && flags_supplied =~# 'b'
+		    redraw
+		    echohl WarningMsg
+		    echo "search hit TOP, continuing at BOTTOM "
+		    echohl None
+		elseif a:wrap_nr == 2
+		    redraw
+		    echohl WarningMsg
+		    echo "search hit BOTTOM, continuing at TOP "
+		    echohl None
+		endif
 	    endif
 
 		if g:atp_debugRS
@@ -1117,7 +1120,6 @@ function! atplib#search#RecursiveSearch(main_file, start_file, maketree, tree, c
 		return
 	    endif
 	    if g:atp_debugRS >= 2
-" 		echomsg g:atp_TempDir
 		exe "redir! >> ".g:atp_TempDir."/RecursiveSearch.log"
 		silent echo "TIME ***goto UP after open*** " . reltimestr(reltime(time0))
 	    endif

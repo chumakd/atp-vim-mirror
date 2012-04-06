@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 05 April 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 06 April 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 10.6.5)
 			by Marcin Szamotulski
@@ -4115,6 +4115,9 @@ PROJECT SCRIPT						*atp-ProjectScript*
 	Note that this means that if nothing was found the alternate file
 	before search will be lost.
 
+	Note: if 'shortmess' option contains 's' flag then 'Search hit BOTTOM
+	...' and 'Search hit TOP ...' messages are not shown.
+
 	The {pattern} is any Vim pattern as described in |pattern| (it was only
 	tested with 'magic' set on).
 			
@@ -4159,12 +4162,8 @@ PROJECT SCRIPT						*atp-ProjectScript*
 					      -------
 	                ----X	 			      
 <	':S /\\input/ b' in the X position fill find \input{file.1.1} assuming 
-	file.1.1.tex doesn't includes any other file. 
+	file.1.1.tex does not include any other files. 
 
-
-	The pattern can be '\\input'. Then it goes recursively to the first
-	input line. 
-	
 							*atp-:NInput* 	*atp->i*   *atp->gf*
 							*atp-:PInput* 	*atp-<i*   *atp-<gf*
 	Now it also doesn't search inside commented input files. There two

@@ -93,26 +93,28 @@ function! s:JumpToMatch(mode, ...)
 	let zoney=s:HasSyntax('texMathZoneY', line("."), col("."))  
 
 	let stopline = ( g:atp_VimCompatible || g:atp_VimCompatible =~? '\<yes\>' ? line('.') : 0 )
-	" go to next opening/closing pattern on same line
-	if !s:HasSyntax('texSectionModifier', line('.'), col('.'))
-	    let pos = !s:SearchAndSkipComments(
-				    \	'\m\C\%(' . join(open_pats + close_pats + [dollar_pat], '\|') . '\)',
-				    \	sflags, stopline)
-	else
-	    let pos = !s:SearchAndSkipComments(
-				    \	'\m\C\%(' . join(open_pats + close_pats, '\|') . '\)',
-				    \	sflags, stopline)
-	endif
-	" THE line('.') above blocks it from workin not just in one line
-	" (especially with \begin:\end which might be in different lines).
-	if pos
-		" abort if no match or if match is inside a comment
-		call setpos('.', saved_pos)
-		return
+	" go to next opening/closing pattern on same line (depends on
+	" g:atp_VimCompatible)
+	if expand("<cWORD>") !~? '\\item'
+	    if !s:HasSyntax('texSectionModifier', line('.'), col('.'))
+		let pos = !s:SearchAndSkipComments(
+					\	'\m\C\%(' . join(open_pats + close_pats + [dollar_pat], '\|') . '\)',
+					\	sflags, stopline)
+	    else
+		let pos = !s:SearchAndSkipComments(
+					\	'\m\C\%(' . join(open_pats + close_pats, '\|') . '\)',
+					\	sflags, stopline)
+	    endif
+	    " THE line('.') above blocks it from working not just in one line
+	    " (especially with \begin:\end which might be in different lines).
+	    if pos
+		    " abort if no match or if match is inside a comment
+		    call setpos('.', saved_pos)
+		    return
+	    endif
 	endif
 
 	let rest_of_line = strpart(getline('.'), col('.') - 1)
-" 	    let g:rest_of_line = rest_of_line
 
 	" match for '$' pairs
 	if rest_of_line =~ '^\$' && beg_of_line !~ '\C\\item$' && !s:HasSyntax('texSectionModifier', line('.'), col('.'))
