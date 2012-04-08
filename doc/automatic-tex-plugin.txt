@@ -559,22 +559,23 @@ To get updates it is enough to use this command:
 
 --------------------------------------------------------------------------------
 ATP AND OTHER PLUGINS					*atp-and-other-plugins*
+							*atp-EasyMotion*
 EasyMotion and ATP ~
     If you want to use EasyMotion vim plugin (which is quite handy):
 	http://www.vim.org/scripts/script.php?script_id=3526
     You can set |g:atp_Compare|="". Alternatively, if you want to use the
     fastest comparing method of ATP, you can add to last line of
-    s:EasyMotion() function in plugin/EasyMotion.vim add >
+    s:EasyMotion() function (i.e. just above the |:endfunction| vimL keyword) in
+    autoload/EasyMotion.vim: 
+>
 	    let b:atp_changedtick = b:changedtick
-<   You might want to change g:EasyMotion_leader_key (see |easymotion-leader-key|
-    if you have EasyMotion), because some maps of ATP are interfering with
-    EasyMotion. For example "-" might be a good choice.  You can also try to
-    change |maplocalleader| which is heavily used by ATP.
+<   In older version of EasyMotion this function used to be inside
+    plugin/EasyMotion.vim file.
 
-    Select Comments nmap and vmap is now |=c| (previously \sc was
-    interfering with an ATP font map).
-
-    (Almost all) maps became |:map-silent|.   
+    You might want to change g:EasyMotion_leader_key (see |easymotion-leader-key|), 
+    because some maps of ATP are interfering with EasyMotion. For example "-"
+    might be a good choice.  You can also try to change |maplocalleader| which
+    is heavily used by ATP.
 
 ================================================================================
 COMMANDS	                               		*atp-commands* *atp-:*

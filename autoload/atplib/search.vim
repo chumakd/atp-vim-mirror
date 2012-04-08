@@ -326,8 +326,11 @@ def bufnumber(file):
         if buffer.name == os.path.abspath(file):
             return buffer.number
     for buffer in vim.buffers:
-        if os.path.basename(buffer.name) == file:
-            return buffer.number
+	try:
+            if os.path.basename(buffer.name) == file:
+                return buffer.number
+        except:
+            pass
     return 0
 
 pattern=re.compile('\s*(?:\\\\(?P<def>def)(?P<def_c>\\\\[^#{]*)|(?:\\\\(?P<nc>newcommand)|\\\\(?P<env>newenvironment)|\\\\(?P<nt>newtheorem\*?)|\\\\(?P<col>definecolor)|\\\\(?P<dec>Declare)(?:RobustCommand|FixedFont|TextFontCommand|MathVersion|SymbolFontAlphabet|MathSymbol|MathDelimiter|MathAccent|MathRadical|MathOperator)\s*{|\\\\(?P<sma>SetMathAlphabet))\s*{(?P<arg>[^}]*)})')
@@ -2182,13 +2185,19 @@ def bufnumber(file):
     os.chdir(project_dir)
     for buffer in vim.buffers:
         # This requires that we are in the directory of the main tex file:
-        if buffer.name == os.path.abspath(file):
-            os.chdir(cdir)
-            return buffer.number
+        try:
+            if buffer.name == os.path.abspath(file):
+                os.chdir(cdir)
+                return buffer.number
+        except:
+            pass
     for buffer in vim.buffers:
+        try:
         if os.path.basename(buffer.name) == file:
             os.chdir(cdir)
             return buffer.number
+        except:
+            pass
     os.chdir(cdir)
     return 0
 
