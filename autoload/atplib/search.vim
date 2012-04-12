@@ -2193,9 +2193,9 @@ def bufnumber(file):
             pass
     for buffer in vim.buffers:
         try:
-        if os.path.basename(buffer.name) == file:
-            os.chdir(cdir)
-            return buffer.number
+            if os.path.basename(buffer.name) == file:
+                os.chdir(cdir)
+                return buffer.number
         except:
             pass
     os.chdir(cdir)
