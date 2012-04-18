@@ -269,7 +269,7 @@ def reload_xpdf():
             debug_file.write("reloading Xpdf\n")
             cmd=['xpdf', '-remote', XpdfServer, '-reload']
             devnull=open(os.devnull, "w+")
-            subprocess.Popen(run, stdout=devnull, stderr=subprocess.STDOUT)
+            subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT)
             devnull.close()
 
 def copy_back_output(tmpdir):
@@ -277,7 +277,7 @@ def copy_back_output(tmpdir):
 
     # aux file is copied also to _aux file used by ATP.
     os.chdir(tmpdir)
-    if os.path.exists(file_cp) and os.path.exists(basename+output_ext):
+    if os.path.exists(basename+output_ext):
         shutil.copy(basename+output_ext, texfile_dir)
     if os.path.exists(basename+".aux"):
         shutil.copy(basename+".aux", texfile_dir)
@@ -493,8 +493,8 @@ try:
             run  += 1
             latex.wait()
             vim_remote_expr(servername, "atplib#CatchStatus('"+str(latex.returncode)+"')")
-            reload_xpdf()
             copy_back_output(tmpdir)
+            reload_xpdf()
 
             #CONDITION
             try:
