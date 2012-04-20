@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:    tex
 " Maintainer:  Marcin Szamotulski
-" Last Change: Tue Mar 27, 2012 at 13:34:17  +0100
+" Last Change: Fri Apr 20, 2012 at 09:36:46  +0100
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 
 " if exists("b:did_ftplugin") | finish | endif
@@ -105,15 +105,13 @@ function! GotoLine(closebuffer) "{{{
     " window to go to
     let gotowinnr= s:gotowinnr()
 
-    let g:gotowinnr = gotowinnr
-
     if gotowinnr != -1
  	exe gotowinnr . " wincmd w"
 	if fnamemodify(file, ":p") != fnamemodify(bufname("%"), ":p")
 	    exe "e " . fnameescape(file)
 	endif
     else
- 	exe " wincmd w"
+ 	exe "wincmd w"
 	exe "e " . fnameescape(file)
     endif
 	

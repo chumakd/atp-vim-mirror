@@ -5,11 +5,12 @@
 " Language:	tex
 " Last Change:
 
-if exists("b:did_indent") && !g:atp_reload_functions
-	finish
+if exists("b:did_indent")
+    finish
 endif
 
 let b:did_indent = 1
+let g:ind=2
 
 setlocal indentexpr=LatexBox_TexIndent()
 setlocal indentkeys==\end,=\item,),],},o,O,0\\,!^F 

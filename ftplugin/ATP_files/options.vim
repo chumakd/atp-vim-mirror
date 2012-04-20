@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Apr 05, 2012 at 23:32:14  +0100
+" Last Change: Fri Apr 20, 2012 at 06:23:13  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -184,7 +184,7 @@ if g:atp_indentation
 "     setl indentkeys+=},=\\item,=\\bibitem,=\\[,=\\],=<CR>
 "     let prefix = expand('<sfile>:p:h:h')
 "     exe 'so '.prefix.'/indent/tex_atp.vim'
-    let prefix = expand('<sfile>:p:h')    
+    let prefix = expand('<sfile>:p:h')
     exe 'source '.prefix.'/LatexBox_indent.vim'
 endif
 " }}}

@@ -147,6 +147,7 @@ endfunction
 " silent call atplib#helpfunctions#HelpIMaps()
 " command! -buffer HelpIMaps :echo atplib#helpfunctions#HelpIMaps()
 " }}}1
+" {{{1 MapSearch
 function! atplib#helpfunctions#MapSearch(bang,rhs_pattern,...)
     let mode = ( a:0 >= 1 ? a:1 : '' )
     let more = &more
@@ -156,13 +157,9 @@ function! atplib#helpfunctions#MapSearch(bang,rhs_pattern,...)
     redir end
     let &l:more = more
     let list = split(maps, "\n")
-    let rhs_list  = ( a:bang == "" ? map(copy(list), 'matchstr(v:val, ''.\s\+\S\+\s\+\zs.*'')') :
+    let pure_rhs_list = map(copy(list), 'matchstr(v:val, ''.\s\+\S\+\s\+\zs.*'')')
+    let rhs_list  = ( a:bang == "" ?  copy(pure_rhs_list) :
 		\ map(copy(list), 'matchstr(v:val, ''.\s\+\zs\S\+\s\+.*'')') )
-    if a:bang == "!"
-	let pure_rhs_list = map(copy(list), 'matchstr(v:val, ''.\s\+\S\+\s\+\zs.*'')')
-    else
-	let pure_rhs_list = rhs_list
-    endif
     if mode == 'i'
 	let j=0
 	for entry in g:atp_imap_greek_letters
@@ -206,9 +203,10 @@ function! atplib#helpfunctions#MapSearch(bang,rhs_pattern,...)
 	echo join(found_maps, "\n")
     else
 	echohl WarningMsg
-	echo "No such map"
+	echo "No matches found"
 	echohl None
     endif
 endfunction
+" }}}1
 
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Apr 03, 2012 at 11:09:11  +0100
+" Last Change: Wed Apr 18, 2012 at 13:36:41  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1014,6 +1014,9 @@ if !exists("g:atp_imap_define_fonts")
 endif
 
 let s:math_open = ( &filetype == 'plaintex' ? '$' : s:bbackslash.'(' )
+" Todo: this should be evaluated while the map triggered not here.
+" Todo: this is not working well in plaintex files (Insert() function doesn't
+" recognize math mode in a correct way)
 if !exists("g:atp_imap_fonts") || g:atp_reload_variables
 let g:atp_imap_fonts = [
     \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'rm', 
