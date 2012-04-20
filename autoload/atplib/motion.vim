@@ -940,6 +940,7 @@ function! atplib#motion#UpdateToCLine(...)
         let sorted	= sort(keys(t:atp_toc[t:atp_bufname]), "atplib#CompareNumbers")
     endif
     let num_list = [0]
+    let g:sorted=deepcopy(sorted)
     let f_test = ( t:atp_bufname == atplib#FullPath(getbufvar(bufnr(t:atp_bufname), "atp_MainFile")) )
     for ind in range(0,len(sorted)-1)
 	let line_l = sorted[ind]
@@ -962,13 +963,18 @@ function! atplib#motion#UpdateToCLine(...)
             endif
         endif
     endfor
+    let savedview = winsaveview()
     if g:atp_python_toc
+	let savedview = winsaveview()
 	let num = max(num_list)+1
 	keepjumps call setpos('.', [0,0,0,0])
 	keepjumps call search('^'.escape(fnamemodify(MainFile, ":t"), '.\/').'\s\+(.*)\s*$', 'cW')
 	exe "normal! ".(num-1)."j"
     else
 	keepjumps call setpos('.',[bufnr(""),num,1,0])
+    endif
+    if line(".") == savedview['lnum']
+	call winrestview(savedview)
     endif
 
     call atplib#tools#CursorLine()
