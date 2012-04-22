@@ -275,9 +275,10 @@ function! atplib#compiler#SyncTex(bang, mouse, main_file, xpdf_server, ...)
 	    call system(sync_cmd)
 	    call atplib#compiler#SyncShow(page_nr, y_coord)
 	endif
-"     elseif b:atp_Viewer == "evince"
-" 	let rev_searchcmd="synctex view -i ".line(".").":".col(".").":".fnameescape(main_file). " -o ".fnameescape(fnamemodify(main_file, ":p:r").".pdf") . " -x 'evince %{output} -i %{page}'"
-"     endif
+    elseif b:atp_Viewer == "evince"
+	let evince_vim_dbus=split(globpath(&rtp, "ftplugin/ATP_files/evince_vim_dbus.py"), "\n")[0]
+	let sync_cmd = g:atp_Python." ".shellescape(evince_vim_dbus)." EVINCE ".shellescape(output_file)." ".line." ".shellescape(main_file)
+	call system(sync_cmd)
     elseif b:atp_Viewer =~ '^\s*xdvi\>'
 	if exists("g:atp_xdviOptions")
 	    let options = " ".join(map(copy(g:atp_xdviOptions), 'shellescape(v:val)'), " ")

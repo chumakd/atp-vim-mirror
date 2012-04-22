@@ -51,9 +51,7 @@ def vim_remote_expr(servername, expr):
 # Get list of vim servers.
 output  = subprocess.Popen([progname, "--serverlist"], stdout=subprocess.PIPE)
 servers = output.stdout.read().decode().split("\n")
-def filter_empty(val):
-    return len(val)
-server_list = filter(filter_empty,servers)
+server_list = filter(lambda x: len(x),servers)
 print(server_list)
 file    = args[0]
 output_file = file

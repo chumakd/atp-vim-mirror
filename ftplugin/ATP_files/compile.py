@@ -115,22 +115,7 @@ verbose         = options.verbose
 keep            = options.keep.split(',')
 keep            = list(filter(nonempty, keep))
 
-def keep_filter_aux(string):
-    if string == 'aux':
-        return False
-    else:
-        return True
-
-def keep_filter_log(string):
-    if string == 'log':
-        return False
-    else:
-        return True
-
-def mysplit(string):
-        return re.split('\s*=\s*', string)
-
-env             = list(map(mysplit, list(filter(nonempty, re.split('\s*;\s*',options.env)))))
+env             = list(map(lambda x: re.split('\s*=\s*', x), list(filter(nonempty, re.split('\s*;\s*',options.env)))))
 
 # Boolean options
 reload_viewer   = options.reload_viewer
@@ -355,7 +340,7 @@ try:
     # Copy important files to output directory:
     # /except the log file/
     os.chdir(mainfile_dir)
-    for ext in filter(keep_filter_log,keep):
+    for ext in filter(lambda x: x != "log", keep):
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
             shutil.copy(file_cp, tmpdir)
@@ -480,7 +465,7 @@ try:
 
     # Copy files:
     os.chdir(tmpdir)
-    for ext in list(filter(keep_filter_aux,keep))+[output_format]:
+    for ext in list(filter(lambda x: x != 'aux', keep))+[output_format]:
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
             debug_file.write(file_cp+' \n')

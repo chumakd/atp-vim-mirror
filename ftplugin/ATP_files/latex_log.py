@@ -119,7 +119,8 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             output_lines.append(line)
         prev_line = line
     log_stream='\n'.join(output_lines)
-    output_lines = []
+    del output_lines
+    output_data = []
     log_lines = log_stream.split("\n")
     log=open("/tmp/log", 'w')
     log.write(log_stream)
@@ -189,7 +190,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if check_path and fnmatch.fnmatch(fname, project_tmpdir+"*"):
                     # ATP specific path rewritting:
                     fname = os.path.normpath(os.path.join(project_dir, os.path.relpath(fname, project_tmpdir)))
-                output_lines.append("Input File::"+fname+"::0::0::Input File")
+                output_data.append(["Input File", fname, "0", "0", "Input File"])
                 file_stack.append(fname)
                 open_dict[fname]=0
             open_dict = shift_dict(open_dict, 1)
@@ -225,9 +226,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if msg == "":
                     msg = " "
                 if input_line:
-                    output_lines.append(wtype+" "+latex_warning+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
+                    output_data.append([wtype+" "+latex_warning, last_file, input_line.group(1), "0", msg])
                 else:
-                    output_lines.append(latex_warning+"::"+last_file+"::0::0::"+msg)
+                    output_data.append([latex_warning, last_file, "0", "0", msg])
             elif re.match(font_warning_pat, line):
                 # Log Message: 'LaTeX Font Warning: '
                 input_line = re.search('on input line (\d+)', line)
@@ -245,9 +246,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if not re.search("\.\s*$", msg):
                     msg = re.sub("\s*$", ".", msg)
                 if input_line:
-                    output_lines.append(font_warning+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
+                    output_data.append([font_warning, last_file, input_line.group(1), "0", msg])
                 else:
-                    output_lines.append(font_warning+"::"+last_file+"::0::0::"+msg)
+                    output_data.append([font_warning, last_file, "0", "0", msg])
             elif re.match(font_info_pat, line):
                 # Log Message: 'LaTeX Font Info: '
                 input_line = re.search('on input line (\d+)', line)
@@ -265,9 +266,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if not re.search("\.\s*$", msg):
                     msg = re.sub("\s*$", ".", msg)
                 if input_line:
-                    output_lines.append(font_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
+                    output_data.append([font_info, last_file, input_line.group(1), "0", msg])
                 else:
-                    output_lines.append(font_info+"::"+last_file+"::0::0::"+msg)
+                    output_data.append([font_info, last_file, "0", "0", msg])
             elif re.match(package_warning_pat, line):
                 # Log Message: 'Package (\w+) Warning: '
                 package = re.match(package_warning_pat, line).group(1)
@@ -289,9 +290,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     msg = " "
                 msg = re.sub(' on input line \d+', '', msg)
                 if input_line:
-                    output_lines.append(package_warning+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg+" ("+package+")")
+                    output_data.append([package_warning, last_file, input_line.group(1), "0", msg+" ("+package+")"])
                 else:
-                    output_lines.append(package_warning+"::"+last_file+"::0::0::"+msg+" ("+package+")")
+                    output_data.append([package_warning, last_file, "0", "0", msg+" ("+package+")"])
             elif re.match(package_info_pat, line):
                 # Log Message: 'Package (\w+) Info: '
                 package = re.match(package_info_pat, line).group(1)
@@ -313,9 +314,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     msg = " "
                 msg = re.sub(' on input line \d+', '', msg)
                 if input_line:
-                    output_lines.append(package_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg+" ("+package+")")
+                    output_data.append([package_info, last_file, input_line.group(1), "0", msg+" ("+package+")"])
                 else:
-                    output_lines.append(package_info+"::"+last_file+"::0::0::"+msg+" ("+package+")")
+                    output_data.append([package_info, last_file, "0", "0", msg+" ("+package+")"])
             elif re.match(hbox_info_pat, line):
                 # Log Message: '(Over|Under)full \\\\hbox'
                 input_line = re.search('at lines (\d+)--(\d+)', line)
@@ -327,9 +328,9 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if msg == "":
                     msg = " "
                 if input_line:
-                    output_lines.append(hbox_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
+                    output_data.append([hbox_info, last_file, input_line.group(1), "0", msg])
                 else:
-                    output_lines.append(hbox_info+"::"+last_file+"::0::"+msg)
+                    output_data.append([hbox_info, last_file, "0", "0", msg])
             elif re.match(latex_info_pat, line):
                 # Log Message: 'LaTeX Info: '
                 input_line = re.search('on input line (\d+)', line)
@@ -337,15 +338,15 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 if msg == "":
                     msg = " "
                 if input_line:
-                    output_lines.append(latex_info+"::"+last_file+"::"+input_line.group(1)+"::0::"+msg)
+                    output_data.append([latex_info, last_file, input_line.group(1), "0", msg])
                 else:
-                    output_lines.append(latex_info+"::"+last_file+"::0::0::"+msg)
+                    output_data.append([latex_info, last_file, "0", "0", msg])
             elif re.match(input_package_pat, line):
                 # Log Message: 'Package: ', 'Document Class: '
                 msg = re.sub(input_package_pat, '', line)
                 if msg == "":
                     msg = " "
-                output_lines.append(input_package+"::"+last_file+"::0::0::"+msg)
+                output_data.append([input_package, last_file, "0", "0", msg])
             elif re.match(latex_emergency_stop_pat, line):
                 # Log Message: '! Emergency stop.'
                 msg = "Emergency stop."
@@ -371,10 +372,15 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                         rest = ""
                         break
                 msg += " "+rest
-                output_lines.append(latex_emergency_stop+"::"+e_file+"::0::0::"+msg)
+                output_data.append([latex_emergency_stop, e_file, "0", "0",msg])
             elif re.match(latex_error_pat, line):
                 # Log Message: '\! (?:LaTeX Error: |Package (\w+) Error: )?'
                 # get the line unmber of the error
+                match = re.search('on input line (\d+)', line)
+                if match:
+                    input_line = match.group(1)
+                else:
+                    input_line = None
                 i=-1
                 while True:
                     i+=1
@@ -382,15 +388,18 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                         nline = log_lines[line_nr-1+i]
                         line_m = re.match('l\.(\d+) (.*)', nline)
                         if line_m:
-                            input_line = line_m.group(1)
+                            if input_line == None:
+                                input_line = line_m.group(1)
                             rest = line_m.group(2)+re.sub('^\s*', ' ', log_lines[line_nr+i])
                             break
                         elif i>50:
-                            input_line="0"
+                            if input_line == None:
+                                input_line="0"
                             rest = ""
                             break
                     except IndexError:
-                        input_line="0"
+                        if input_line == None:
+                            input_line="0"
                         rest = ""
                         break
                 msg = re.sub(latex_error_pat, '', line)
@@ -442,12 +451,14 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                             break
                 else:
                     e_file = last_file
-                output_lines.append(latex_error+"::"+e_file+"::"+input_line+"::0::"+msg+info+verbose_msg)
+                output_data.append([latex_error, e_file, str(input_line), "0", msg+info+verbose_msg])
 
-
-    output=open(output_fname, 'w')
-    output.write('\n'.join(output_lines)+'\n')
-    output.close()
+    # Sort by error line.
+    output_data=sorted(output_data, key=lambda error: int(error[2]))
+    output_data=map(lambda x: "::".join(x), output_data)
+    output_fo=open(output_fname, 'w')
+    output_fo.write('\n'.join(output_data)+'\n')
+    output_fo.close()
 
 # Main call
 if __name__ == '__main__':

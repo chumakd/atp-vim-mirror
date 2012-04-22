@@ -194,6 +194,8 @@ NEWS							*atp-news*
 
  |g:atp_Signs|=0 by default.
 
+ |g:atp_indent|=1 by default, then LatexBox indentation file is used.   
+
  |atp-gf| works well with \bibliography{} command.
 
  See ':help atp-omap-<C-d>' for the defined operator maps. 
@@ -3821,6 +3823,12 @@ s:notreadablebibfiles
 	if the ending bracket is in the same line.
 	See also how it changes the behaviour of |atp-]%| and |atp-[%|.
 
+							*g:atp_indent*
+>
+ g:atp_idnent=1
+<	by defalt ATP is useing LatexBox indentation script. If you set this
+	to 0 the vim runtime indantation script will be used. Also
+	'indentkeys' differ.
 
 
 ================================================================================

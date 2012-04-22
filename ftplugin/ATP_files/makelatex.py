@@ -100,11 +100,8 @@ def cleanup(debug_file, tmpdir, pids):
 atexit.register(cleanup, debug_file, tmpdir, pids)
 
 # FILTER:
-def nonempty(str):
-	if re.match('\s*$', str):
-            return False
-	else:
-            return True
+nonempty = lambda x: (re.match('\s*$', x) == None)
+
 servername      = options.servername
 debug_file.write("SERVERNAME="+servername+"\n")
 progname        = options.progname
@@ -153,22 +150,8 @@ keep            = options.keep.split(',')
 keep            = list(filter(nonempty, keep))
 debug_file.write("KEEP="+str(keep)+"\n")
 
-def keep_filter_aux(string):
-    if string == 'aux':
-        return False
-    else:
-        return True
-
-def keep_filter_log(string):
-    if string == 'log':
-        return False
-    else:
-        return True
-
-def mysplit(string):
-        return re.split('\s*=\s*', string)
 if len(options.env)>0:
-    env = list(map(mysplit, list(filter(nonempty, re.split('\s*;\s*',options.env)))))
+    env = list(map(lambda x: re.split('\s*=\s*', x), list(filter(nonempty, re.split('\s*;\s*',options.env)))))
 else:
     env = []
 
@@ -290,7 +273,7 @@ def copy_back(tmpdir, latex_returncode):
     if not latex_returncode or not os.path.exists(os.path.join(texfile_dir, auxfile)):
         ext_list=list(keep)
     else:
-        ext_list=list(filter(keep_filter_aux, keep))
+        ext_list=list(filter(lambda x: x != 'aux', keep))
     for ext in ext_list:
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
@@ -312,7 +295,7 @@ try:
     debug_file.write("TMPLOG="+tmplog+"\n")
     tmpaux  = os.path.join(tmpdir,basename+".aux")
 
-    for ext in filter(keep_filter_log,keep):
+    for ext in filter(lambda x: x != 'log', keep):
         file_cp=basename+"."+ext
         if os.path.exists(file_cp):
             shutil.copy(file_cp, tmpdir)

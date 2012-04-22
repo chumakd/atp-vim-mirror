@@ -168,7 +168,6 @@ try:
                 tag=str(match)+"\t"+file_name+"\t"+str(linenr)
                 # Set the tag type:
                 tag_type=get_tag_type(line, match, "label")
-#             print(line)
                 if tag_type == "":
                     tag_type=get_tag_type(p_line+line, match, "label")
                 tag+=";\"\tinfo:"+tag_type+"\tkind:label"

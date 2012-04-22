@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Fri Apr 20, 2012 at 06:23:13  +0100
+" Last Change: Sun Apr 22, 2012 at 11:43:10  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -166,28 +166,8 @@ if !exists("g:atp_debugBabel")
 endif
 "}}}
 
-" vim options + indentation
+" vim options
 " {{{ Vim options
-
-" {{{ Intendation
-if !exists("g:atp_indentation")
-    let g:atp_indentation=1
-endif
-" if !exists("g:atp_tex_indent_paragraphs")
-"     let g:atp_tex_indent_paragraphs=1
-" endif
-if g:atp_indentation
-"     setl indentexpr=GetTeXIndent()
-"     setl nolisp
-"     setl nosmartindent
-"     setl autoindent
-"     setl indentkeys+=},=\\item,=\\bibitem,=\\[,=\\],=<CR>
-"     let prefix = expand('<sfile>:p:h:h')
-"     exe 'so '.prefix.'/indent/tex_atp.vim'
-    let prefix = expand('<sfile>:p:h')
-    exe 'source '.prefix.'/LatexBox_indent.vim'
-endif
-" }}}
 
 " Make CTRL-A, CTRL-X work over alphabetic characters:
 setl nrformats=alpha
@@ -382,6 +362,9 @@ call s:SetOptions()
 
 " GLOBAL VARIABLES: (almost all)
 " {{{ global variables 
+if !exists("g:atp_indent")
+    let g:atp_indent=1
+endif
 if !exists("g:atp_DisplaylinePath")
     let g:atp_DisplaylinePath = "/Applications/Skim.app/Contents/SharedSupport/displayline"
 endif
@@ -1606,7 +1589,25 @@ function! <SID>SetPdf(viewer)
     let b:atp_TexCompiler	= "pdflatex"
     " We have to clear tex options (for example -src-specials set by :SetXdvi)
     let b:atp_TexOptions	= "-synctex=1"
+    let preview_viewer		= b:atp_Viewer
     let b:atp_Viewer		= a:viewer
+
+    if has("unix") && has("clientserver")
+	if a:viewer ==? 'evince'
+	    let input_path  = atplib#FullPath(b:atp_MainFile)
+	    let output_path = fnamemodify(input_path, ":r").".pdf"
+	    " Start sync script
+	    let sync_cmd = g:atp_Python." ".shellescape(split(globpath(&rtp, "ftplugin/ATP_files/evince_sync.py"), "\n")[0])
+			\ ." ".toupper(v:progname)." ".shellescape(v:servername)
+			\ ." ".shellescape(output_path)
+			\ ." ".shellescape(input_path)
+			\ ." &"
+	    call system(sync_cmd)
+	elseif preview_viewer ==? 'evince'
+	    " Stop sync script.
+            call <SID>Kill_Evince_Sync()
+	endif
+    endif
 
     " Delete menu entry.
     try
@@ -1624,8 +1625,37 @@ function! <SID>SetPdf(viewer)
 endfunction
 command! -buffer SetXpdf			:call <SID>SetPdf('xpdf')
 command! -buffer SetOkular			:call <SID>SetPdf('okular')
+command! -buffer SetEvince			:call <SID>SetPdf('evince')
 nnoremap <silent> <buffer> <Plug>SetXpdf	:call <SID>SetPdf('xpdf')<CR>
 nnoremap <silent> <buffer> <Plug>SetOkular	:call <SID>SetPdf('okular')<CR>
+nnoremap <silent> <buffer> <Plug>SetEvince	:call <SID>SetPdf('evince')<CR>
+
+function! <SID>Kill_Evince_Sync()
+python << EOF
+try:
+    import psutil, vim, os, signal
+    from psutil import NoSuchProcess
+    for pid in psutil.get_pid_list():
+        try:
+            process = psutil.Process(pid)
+            cmdline = process.cmdline
+            if len(cmdline) > 1 and re.search('evince_sync\.py$', cmdline[1]):
+                os.kill(pid, signal.SIGTERM)
+        except psutil.error.NoSuchProcess:
+            pass
+        except psutil.error.AccessDenied:
+            pass
+except ImportError:
+    vim.command("echomsg '[ATP:] Import error. You will have to kill evince_sync.py script yourself'")
+EOF
+endfunction
+if has("unix")
+    augroup ATP_Evince_Sync
+        au!
+        au VimLeave * :call <SID>Kill_Evince_Sync()
+    augroup END
+endif
+
 " }}}
 ""
 " }}}
