@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Tue Apr 03, 2012 at 14:04:31  +0100
+" Last Change: Thu Apr 26, 2012 at 19:09:01  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 "{{{ ATP_strlen()
@@ -110,50 +110,6 @@ function! ATP_strlen(x)
     return strlen(x)
 endfunction
 "}}}
-" {{{ Insert()
-" Insert() function is used to insert text depending on mode: text/math. 
-" Should be called via an imap:
-" imap <lhs> 	<Esc>:call atplib#various#Insert(text, math)<CR>a
-" a:text	= text to insert in text mode
-" a:math	= text to insert in math mode	
-" a:1		= how much to move cursor to the left after inserti
-function! Insert(text, math, ...)
-
-    let move = ( a:0 >= 1 ? a:1 : 0 )
-    let g:vcol = ( a:0 >= 2 ? a:2 : virtcol(".") )
-    let col  = col('.')
-
-    if b:atp_TexFlavor == 'plaintex' && index(g:atp_MathZones, 'texMathZoneY') == -1
-	call add(g:atp_MathZones, 'texMathZoneY')
-    endif
-    let MathZones = copy(g:atp_MathZones)
-
-    " select the correct wrapper
-    if atplib#complete#CheckSyntaxGroups(MathZones, line("."), col("."))
-	let insert	= a:math
-    else
-	let insert	= a:text
-    endif
-
-    " if the insert variable is empty return
-    if empty(insert)
-	return
-    endif
-
-    let line		= getline(".")
-    let col		= col(".")
-
-    let new_line	= strpart(line, 0, col) . insert . strpart(line, col)
-    let g:new_line	= new_line
-    call setline(line("."), new_line)
-    call cursor(line("."), col(".")+len(insert)-move)
-    if col == 1
-	call cursor(line("."), col(".")-1)
-    endif
-
-    return ""
-endfunction
-" }}}
 " {{{ InsertItem()
 " ToDo: indent
 function! InsertItem()

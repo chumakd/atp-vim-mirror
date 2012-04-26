@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Wed Apr 18, 2012 at 13:36:41  +0100
+" Last Change: Thu Apr 26, 2012 at 20:40:41  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -1013,48 +1013,35 @@ if !exists("g:atp_imap_define_fonts")
     let g:atp_imap_define_fonts = 1
 endif
 
-let s:math_open = ( &filetype == 'plaintex' ? '$' : s:bbackslash.'(' )
-" Todo: this should be evaluated while the map triggered not here.
-" Todo: this is not working well in plaintex files (Insert() function doesn't
-" recognize math mode in a correct way)
+let s:math_open = ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )
 if !exists("g:atp_imap_fonts") || g:atp_reload_variables
-let g:atp_imap_fonts = [
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'rm', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textrm{}", "'.s:bbackslash.'mathrm{}", 1)<CR>a', "g:atp_imap_define_fonts", 'rm font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'te', 
-	\ s:backslash.'text{}<Left>', "g:atp_imap_define_fonts", '\text{} command'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'up', 
-	\ s:backslash.'textup{}<Left>', "g:atp_imap_define_fonts", 'up font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'md', 
-	\ s:backslash.'textmd{}<Left>', "g:atp_imap_define_fonts", 'md font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'it', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textit{}", "'.s:bbackslash.'mathit{}", 1)<CR>a', "g:atp_imap_define_fonts", 'it font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'sl', 
-	\ s:backslash.'textsl{}<Left>', "g:atp_imap_define_fonts", 'sl font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'sc', 
-	\ s:backslash.'textsc{}<Left>', "g:atp_imap_define_fonts", 'sc font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'sf', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textsf{}", "'.s:bbackslash.'mathsf{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'bf', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textbf{}", "'.s:bbackslash.'mathbf{}", 1)<CR>a', "g:atp_imap_define_fonts", 'bf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'tt', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'texttt{}", "'.s:bbackslash.'mathtt{}", 1)<CR>a', "g:atp_imap_define_fonts", 'tt font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'em', 
-	\ s:backslash.'emph{}<Left>', "g:atp_imap_define_fonts", 'emphasize font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'no', 
-	\ '<Esc>:call Insert("'.s:bbackslash.'textnormal{}", "'.s:bbackslash.'mathnormal{}", 1)<Cr>a', "g:atp_imap_define_fonts", 'normal font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'bb', 
-	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathbb{}", "'.s:bbackslash.'mathbb{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cal', 
-	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathcal{}", "'.s:bbackslash.'mathcal{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'cr', 
-	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathscr{}", "'.s:bbackslash.'mathscr{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'fr', 
-	\ '<Esc>:call Insert("'.s:math_open.s:bbackslash.'mathfrak{}", "'.s:bbackslash.'mathfrak{}", 1)<CR>a', "g:atp_imap_define_fonts", 'sf font'],
-    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'uf',
-	\ s:backslash.'usefont{'.g:atp_font_encoding.'}{}{}{}<Left><Left><Left><Left><Left>', "g:atp_imap_define_fonts", 'usefont command']
-\ ]
-endif
+    let g:atp_imap_fonts = []
+    for font in [ 'rm', 'it', 'sf', 'bf', 'tt', 'normal']
+	call add(g:atp_imap_fonts, 
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_2, font, '(atplib#IsInMath() ? "\\math'.font.'{}<Left>" : "\\text'.font.'{}<Left>" )' , "g:atp_imap_define_fonts", '\text'.font ])
+    endfor
+    for font in [ 'up', 'md', 'sl', 'sc' ]
+	call add(g:atp_imap_fonts, 
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, font, s:backslash.'text'.font.'{}<Left>', "g:atp_imap_define_fonts", '\text'.font.'{}']
+	    \ )
+    endfor
+    call extend(g:atp_imap_fonts,  [
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'te', 
+		\ s:backslash.'text{}<Left>', "g:atp_imap_define_fonts", '\text{}'],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'em', 
+		\ s:backslash.'emph{}<Left>', "g:atp_imap_define_fonts", '\emph{}'],
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_2, 'bb', 
+		\ '(atplib#IsInMath() ? "'.s:bbackslash.'mathbb{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."'.s:bbackslash.'mathbb{}<Left>" )' , "g:atp_imap_define_fonts", '\mathbb' ],
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_2, 'cal', 
+		\ '(atplib#IsInMath() ? "'.s:bbackslash.'mathcal{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."'.s:bbackslash.'mathcal{}<Left>" )' , "g:atp_imap_define_fonts", '\mathcal' ],
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_2, 'cr', 
+		\ '(atplib#IsInMath() ? "'.s:bbackslash.'mathscr{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."'.s:bbackslash.'mathscr{}<Left>" )' , "g:atp_imap_define_fonts", '\mathscr' ],
+	    \ [ 'inoremap', '<silent> <buffer> <expr>', g:atp_imap_leader_2, 'fr', 
+		\ '(atplib#IsInMath() ? "'.s:bbackslash.'mathfrak{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."'.s:bbackslash.'mathfrak{}<Left>" )' , "g:atp_imap_define_fonts", '\mathfrak' ],
+	    \ [ 'inoremap', '<silent> <buffer>', g:atp_imap_leader_2, 'uf',
+		\ s:backslash.'usefont{'.g:atp_font_encoding.'}{}{}{}<Left><Left><Left><Left><Left>', "g:atp_imap_define_fonts", 'usefont command']
+	\ ])
+    endif
     " Make Font Maps:
     call atplib#MakeMaps(g:atp_imap_fonts)
 	    
