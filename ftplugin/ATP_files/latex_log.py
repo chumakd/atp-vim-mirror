@@ -1,7 +1,8 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-# Todo: should be '\hbox ... too wide.' (add '\hbox to the message).
-
+# Usage: latex_log.py {tex_log_file}
+# Produces a "._log" file.
 
 # Author: Marcin Szamotulski
 # http://atp-vim.sourceforge.net
@@ -22,12 +23,14 @@
 #     You should have received a copy of the GNU General Public License along
 #     with Automatic Tex Plugin for Vim.  If not, see <http://www.gnu.org/licenses/>.
 
-# Info: this is a python script which reads latex log fiele (which path is gven
-# as the only argument) and it writes back a log messages which are in the
+# INFO: 
+# This is a python script which reads latex log file (which path is gven as
+# the only argument) and it writes back a log messages which are in the
 # following format:
 # WARNING_TYPE::FILE::INPUT_LINE::INPUT_COL::MESSAGE (ADDITIONAL_INFO)
 # this was intendent to be used for vim quick fix:
 # set errorformat=LaTeX\ %tarning::%f::%l::%c::%m,Citation\ %tarning::%f::%l::%c::%m,Reference\ %tarning::%f::%l::%c::%m,Package\ %tarning::%f::%l::%c::%m,hbox\ %tarning::%f::%l::%c::%m,LaTeX\ %tnfo::%f::%l::%c::%m,LaTeX\ %trror::%f::%l::%c::%m
+#
 # The fowllowing WARNING_TYPEs are available:
 # LaTeX Warning
 # Citation Warning
@@ -42,8 +45,6 @@
 # Input Package                 : includes packges and document class
 
 # Note: when FILE,INPUT_LINE,INPUT_COL doesn't exists 0 is put.
-# for Input Package FILE is 0.
-
 
 # It will work well when the tex file was compiled with a big value of 
 # max_print_line (for example with `max_print_line=2000 latex file.tex')
@@ -56,9 +57,10 @@
 import sys, re, os, os.path, fnmatch
 
 def shift_dict( dictionary, nr ):
-# add nr to every value of dictionary
+    ''' Add nr to every value of dictionary.
 
-    for key in dictionary.keys():
+    '''
+    for key in dictionary.iterkeys():
         dictionary[key]+=nr
     return dictionary
 
@@ -69,7 +71,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     # option the files under project_tmpdir will be written using project_dir
     # (this is for the aux file).
 
-    if output_fname == None:
+    if output_fname is None:
         output_fname = os.path.splitext(input_fname)[0]+"._log"
 
     try:
@@ -150,7 +152,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     package_info_pat = re.compile('Package (\w+) Info: ')
     package_info = "Package Info"
 
-    hbox_info_pat = re.compile('(Over|Under)full \\\\hbox')
+    hbox_info_pat = re.compile('(Over|Under)full \\\\hbox ')
     hbox_info = "hbox Warning"
 
     latex_info_pat = re.compile('LaTeX Info: ')
@@ -319,12 +321,12 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     output_data.append([package_info, last_file, "0", "0", msg+" ("+package+")"])
             elif re.match(hbox_info_pat, line):
                 # Log Message: '(Over|Under)full \\\\hbox'
-                input_line = re.search('at lines (\d+)--(\d+)', line)
+                input_line = re.search('at lines? (\d+)(?:--(?:\d+))?', line)
                 if re.match('Underfull', line):
                     h_type = 'Underfull '
                 else:
                     h_type = 'Overfull '
-                msg = h_type+'\\hbox '+re.search('\((.*)\)', str(re.sub(hbox_info_pat,'', line))).group(1)
+                msg = h_type+'\\hbox '+str(re.sub(hbox_info_pat, '', line))
                 if msg == "":
                     msg = " "
                 if input_line:
@@ -388,17 +390,17 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                         nline = log_lines[line_nr-1+i]
                         line_m = re.match('l\.(\d+) (.*)', nline)
                         if line_m:
-                            if input_line == None:
+                            if input_line is None:
                                 input_line = line_m.group(1)
                             rest = line_m.group(2)+re.sub('^\s*', ' ', log_lines[line_nr+i])
                             break
                         elif i>50:
-                            if input_line == None:
+                            if input_line is None:
                                 input_line="0"
                             rest = ""
                             break
                     except IndexError:
-                        if input_line == None:
+                        if input_line is None:
                             input_line="0"
                         rest = ""
                         break

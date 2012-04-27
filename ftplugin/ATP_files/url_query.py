@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import sys, tempfile
 if sys.version_info < (3, 0):
     # Python 2.7 code:

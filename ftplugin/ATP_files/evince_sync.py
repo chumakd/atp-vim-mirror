@@ -26,7 +26,7 @@ parser  = OptionParser()
 parser.add_option("-e", "--evince_version", default=None, type="int", action="store", dest="EVINCE_VERSION")
 (options, args) = parser.parse_args()
 EVINCE_VERSION=options.EVINCE_VERSION
-if EVINCE_VERSION == None:
+if EVINCE_VERSION is None:
     import subprocess, re
     cmd = ["evince", "--version"]
     ev_ver=subprocess.Popen(cmd, stdout=subprocess.PIPE)

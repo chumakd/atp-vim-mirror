@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import re, optparse, subprocess, os, traceback, sys
 from optparse import OptionParser
@@ -101,7 +102,7 @@ def find_in_filelist(match, file_dict, get_type=False, type_pattern=None):
 # file_dict is a dictionary with { 'file_name' : file }.
     r_file = ""
     r_type = ""
-    for file in file_dict.keys():
+    for file in file_dict.iterkeys():
         flinenr=1
         for line in file_dict[file]:
             pat_match=re.search(match, line)

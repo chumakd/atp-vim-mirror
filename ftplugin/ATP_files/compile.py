@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 # Author: Marcin Szamotulski <mszamot[@]gmail[.]com>
 # This file is a part of Automatic TeX Plugin for Vim.
 

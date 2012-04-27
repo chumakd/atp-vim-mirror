@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 # Author: Marcin Szamotulski
 # Date: 23 IV 2011
 # This file is a part of AutomaticTexPlugin plugin for Vim.
@@ -100,7 +101,7 @@ def cleanup(debug_file, tmpdir, pids):
 atexit.register(cleanup, debug_file, tmpdir, pids)
 
 # FILTER:
-nonempty = lambda x: (re.match('\s*$', x) == None)
+nonempty = lambda x: (re.match('\s*$', x) is None)
 
 servername      = options.servername
 debug_file.write("SERVERNAME="+servername+"\n")
