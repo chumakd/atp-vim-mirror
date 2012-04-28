@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Wed Apr 18, 2012 at 13:38:45  +0100
+" Last Change: Sat Apr 28, 2012 at 08:40:02  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2420,8 +2420,6 @@ function! atplib#various#GetLatestSnapshot(bang,url)
 	    let g:atp_Python = "python"
 	endif
     endif
-    if !exists("g:atp_Python")
-	let 
     let cmd=g:atp_Python." ".shellescape(s:URLquery_path)." ".shellescape(url)." ".shellescape(s:atp_tempname)
     if a:bang == "!"
 	echo "[ATP:] getting latest snapshot (unstable version) ..."
