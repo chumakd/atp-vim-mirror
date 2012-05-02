@@ -64,6 +64,11 @@ def shift_dict( dictionary, nr ):
         dictionary[key]+=nr
     return dictionary
 
+if sys.platform.startswith('linux'):
+    log_to_path = "/tmp/latex_log.log"
+else:
+    log_to_path = None
+
 def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir="", project_tmpdir=""):
     # this function rewrites LaTeX log file (input_fname) to output_fname,
     # changeing its format to something readable by Vim.
@@ -81,11 +86,14 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             # We are assuming the default encoding (utf-8)
             log_file = open(input_fname, 'r', errors='replace')
     except IOError:
+        print("IOError: cannot open %s file for reading" % input_fname)
         sys.exit(1)
-    log_stream = log_file.read()
+    else:
+        log_stream = log_file.read()
+    finally:
+        log_file.close()
     # Todo: In python3 there is UnicodeDecodeError. I should remove all the
     # bytes where python cannot decode the character.
-    log_file.close()
 
     dir = os.path.dirname(os.path.abspath(input_fname))
     os.chdir(dir)
@@ -124,11 +132,16 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     del output_lines
     output_data = []
     log_lines = log_stream.split("\n")
-    log=open("/tmp/log", 'w')
-    log.write(log_stream)
-    log.close()
-
-    log_file.close()
+    global log_to_path
+    if log_to_path:
+        try:
+            log_fo=open(log_to_path, 'w')
+        except IOError:
+            print("IOError: cannot open %s file for writting" % log_to_path)
+        else:
+            log_fo.write(log_stream)
+        finally:
+            log_fo.close()
 
     # File stack
     file_stack = []
@@ -379,10 +392,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 # Log Message: '\! (?:LaTeX Error: |Package (\w+) Error: )?'
                 # get the line unmber of the error
                 match = re.search('on input line (\d+)', line)
-                if match:
-                    input_line = match.group(1)
-                else:
-                    input_line = None
+                input_line = (match and [match.group(1)] or [None])[0]
                 i=-1
                 while True:
                     i+=1
@@ -407,8 +417,8 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                 msg = re.sub(latex_error_pat, '', line)
                 if msg == "":
                     msg = " "
-                match = re.match('! Package (\w+) Error', line)
-                if match:
+                p_match = re.match('! Package (\w+) Error', line)
+                if p_match:
                     info = match.group(1)
                 elif rest:
                     info = rest
@@ -453,17 +463,37 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                             break
                 else:
                     e_file = last_file
-                output_data.append([latex_error, e_file, str(input_line), "0", msg+info+verbose_msg])
+                if not match:
+                    index = len(output_data)
+                else:
+                    # Find the correct place to put the error message:
+                    try:
+                        try:
+                            prev_element=filter(lambda d: d[1] == e_file and int(d[2]) <= int(input_line), output_data)[-1]
+                            index = output_data.index(prev_element)+1
+                        except IndexError:
+                            prev_element=filter(lambda d: d[1] == e_file and int(d[2]) > int(input_line), output_data)[0]
+                            index = output_data.index(prev_element)
+                    except IndexError:
+                        index = len(output_data)
 
-    # Sort by error line.
-    output_data=sorted(output_data, key=lambda error: int(error[2]))
+                output_data.insert(index, [latex_error, e_file, input_line, "0", msg+info+verbose_msg])
+
     output_data=map(lambda x: "::".join(x), output_data)
-    output_fo=open(output_fname, 'w')
-    output_fo.write('\n'.join(output_data)+'\n')
-    output_fo.close()
+    try:
+        output_fo=open(output_fname, 'w')
+    except IOError:
+        print("IOError: cannot open %s file for writting" % output_fname)
+        sys.exit(1)
+    else:
+        output_fo.write('\n'.join(output_data)+'\n')
+    finally:
+        output_fo.close()
+
 
 # Main call
 if __name__ == '__main__':
+
     try:
         rewrite_log(sys.argv[1])
     except IOError:

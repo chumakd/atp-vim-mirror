@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys, tempfile
+''' Simple url downloader for ATP'''
+import sys
 if sys.version_info < (3, 0):
     # Python 2.7 code:
     import sys, urllib2, tempfile
@@ -8,10 +9,15 @@ if sys.version_info < (3, 0):
     url  = sys.argv[1]
     tmpf = sys.argv[2]
 
-    f    = open(tmpf, "w")
-    data = urllib2.urlopen(url)
-    f.write(data.read())
-    f.close()
+    try:
+        f    = open(tmpf, "w")
+    except IOError as e:
+        print(str(e))
+    else:
+        data = urllib2.urlopen(url)
+        f.write(data.read())
+    finally:
+        f.close()
 else:
     # Python3 code:
     import urllib.request, urllib.error, urllib.parse

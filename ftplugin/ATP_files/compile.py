@@ -174,10 +174,13 @@ def write_pbf(string):
         else:
             pb_fobject  = open(pb_fname, 'r', errors='replace')
     except IOError:
+        debug_file.write("write_pbf at line %d: %s" % (sys.exc_info()[2].tb_lineno, str(ioerror)))
         cond = True
-        pass
-    if not cond:
+    else:
         pb_file     = pb_fobject.read()
+    finally:
+        pb_fobject.close()
+    if not cond:
         pb          = re.match('(\d*)', pb_file)
         pb_fobject.close()
         if pb:
@@ -196,9 +199,15 @@ def write_pbf(string):
             cond = False
             pass
     if cond:
-        pb_fobject=open(pb_fname, 'w')
-        pb_fobject.write(string+"\n")
-        pb_fobject.close()
+        try:
+            pb_fobject=open(pb_fname, 'w')
+        except IOError as ioerror:
+            debug_file.write("write_pbf at line %d: %s" % (sys.exc_info()[2].tb_lineno, str(ioerror)))
+            pass
+        else:
+            pb_fobject.write(string+"\n")
+        finally:
+            pb_fobject.close()
 
 def latex_progress_bar(cmd):
     # Run latex and send data for progress bar,
@@ -235,10 +244,13 @@ def latex_progress_bar(cmd):
     if not options.callback:
         try:
             pb_fobject = open(pb_fname, 'w')
-            pb_fobject.write('')
-            pb_fobject.close()
-        except IOError:
+        except IOError as ioerror:
+            debug_file.write("latex_progress_bar at line %d : %s" % (sys.exc_info()[2].tb_lineno, str(ioerror)))
             pass
+        else:
+            pb_fobject.write('')
+        finally:
+            pb_fobject.close()
     return child
 
 def xpdf_server_file_dict():

@@ -233,9 +233,7 @@ function! atplib#bibsearch#searchbib(pattern, bibdict, ...)
 		    endif
 		endwhile
 	    let l:bibresults[l:bibfile]=s:bibd
-	    let g:bibresults=l:bibresults
 	endfor
-	let g:bibresults=l:bibresults
 
 	if g:atp_debugBS
 	    silent! echo "atplib#bibsearch#searchbib_bibresults A =" . l:bibresults
@@ -334,7 +332,6 @@ function! atplib#bibsearch#searchbib(pattern, bibdict, ...)
 	endfor
 	let l:bibresults[l:bibfile]=s:bibd
     endfor
-    let g:bibresults=l:bibresults
 
     if g:atp_debugBS
 	silent! echo "atplib#bibsearch#searchbib_bibresults A =" . string(l:bibresults)
@@ -467,7 +464,6 @@ for file in files:
                 lnr+=1
 vim.command("let bibresults="+str(bibresults))
 END
-let g:bibresults=bibresults
 return bibresults
 endfunction
 "}}}

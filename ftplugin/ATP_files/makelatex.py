@@ -175,9 +175,15 @@ def vim_remote_expr(servername, expr):
     if not options.callback:
         return
     cmd=[progname, '--servername', servername, '--remote-expr', expr]
-    devnull=open(os.devnull, "w+")
-    subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT).wait()
-    devnull.close()
+    try:
+        devnull=open(os.devnull, "w+")
+    except IOError:
+        print("IOError: cannot open os.devnull")
+        sys.exit(1)
+    else:
+        subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT).wait()
+    finally:
+        devnull.close()
 
 def latex_progress_bar(cmd):
     # Run latex and send data for progress bar,
