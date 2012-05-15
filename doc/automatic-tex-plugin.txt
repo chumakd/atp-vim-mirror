@@ -172,14 +172,14 @@ NEWS							*atp-news*
  Then ATP completion will work better, since ATP can now scan package and
  documentclass files (.sty, .cls) for commands and options.
 
- NOTE: It was found that 'relativenumber' option slows down vim when edditing
- tex files (at least for some users).
-
  NOTE: I change the name of the script at vim.org to AutomaticLaTeXPlugin
  (with capital X), if you install ATP via Vim-Addon-Manager (or other vim
  plugin manager) this might affect path were the atp_RevSearch.py script is
  located. In this case you might need to adjust the setting of reverse search
  in your viewer (Okular, Xpdf, ...).
+
+ NOTE: It was found that 'relativenumber' option slows down vim when edditing
+ tex files (at least for some users).
 
  QUICK REFERENCE GUIDE:~
  You can download a quick reference guide for ATP from:
@@ -244,7 +244,8 @@ NEWS							*atp-news*
  CHANGE IN MAPS: ~
  As suggested by F.Heiderich: #< and #> are now maps for \langle and \rangle.
 
- New commands: |atp-:TexDef|, |atp-:KpsewhichEdit|.
+ New commands: |atp-:TexDef|, |atp-:KpsewhichEdit|. They are defined in
+ plugin/tex_atp.vim script, so you can use them not only inside tex files.
 >
  ======================
  Changes in version 10.6.4
