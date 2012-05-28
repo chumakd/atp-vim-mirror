@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat Apr 28, 2012 at 08:40:02  +0100
+" Last Change: Sat May 19, 2012 at 14:08:54  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2398,7 +2398,8 @@ function! atplib#various#UpdateATP(bang)
 	endif
 endfunction 
 catch E127:
-endtry
+endtry "}}}
+"{{{ atplib#various#GetLatestSnapshot
 function! atplib#various#GetLatestSnapshot(bang,url)
     " Get latest snapshot/version
     let url = a:url
@@ -2430,7 +2431,8 @@ function! atplib#various#GetLatestSnapshot(bang,url)
 	silent echo "cmd=".cmd
     endif
     call system(cmd)
-endfunction
+endfunction "}}}
+"{{{ atplib#various#CompareStamps
 function! atplib#various#CompareStamps(new, old)
     " newer stamp is smaller 
     " vim sort() function puts smaller items first.
@@ -2449,7 +2451,8 @@ function! atplib#various#CompareStamps(new, old)
     let comp = join(compare, "")
     " comp =~ '^0*1' new is older version 
     return ( comp == 0 ? 0 : ( comp =~ '^0*1' ? 1 : -1 ))
-endfunction
+endfunction "}}}
+"{{{ atplib#various#CompareVersions
 function! atplib#various#CompareVersions(new, old)
     " newer stamp is smaller 
     " vim sort() function puts smaller items first.
@@ -2466,7 +2469,8 @@ function! atplib#various#CompareVersions(new, old)
     let comp = join(compare, "")
     " comp =~ '^0*1' new is older version 
     return ( comp == 0 ? 0 : ( comp =~ '^0*1' ? 1 : -1 ))
-endfunction
+endfunction "}}}
+"{{{ atplib#various#GetTimeStamp
 function! atplib#various#GetTimeStamp(file)
 python << END
 import vim, tarfile, re
@@ -2492,8 +2496,9 @@ except AttributeError:
     stamp="00-00-00_00-00"
 vim.command("let g:atp_stamp='"+stamp+"'")
 END
-endfunction
-function! atplib#various#Tar(file,path)
+endfunction "}}}
+"{{{ atplib#various#Tar
+function! atplib#various#Tar(file, path)
 python << END
 import tarfile, vim
 file_n=vim.eval("a:file")
@@ -2501,7 +2506,8 @@ path=vim.eval("a:path")
 file_o=tarfile.open(file_n, "r:gz")
 file_o.extractall(path)
 END
-endfunction
+endfunction "}}}
+"{{{ atplib#various#ATPversion
 function! atplib#various#ATPversion()
     " This function is used in opitons.vim
     let saved_loclist = getloclist(0)
@@ -2523,8 +2529,7 @@ function! atplib#various#ATPversion()
     redraw
     let g:atp_version = l:version ." (".stamp.")" 
     return "ATP version: ".l:version.", time stamp: ".stamp."."
-endfunction
-"}}}
+endfunction "}}}
 " atplib#various#Comment {{{
 function! atplib#various#Comment(arg)
 

@@ -16,7 +16,6 @@ if sys.version_info < (3, 0):
     else:
         data = urllib2.urlopen(url)
         f.write(data.read())
-    finally:
         f.close()
 else:
     # Python3 code:

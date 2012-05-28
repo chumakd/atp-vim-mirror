@@ -1,4 +1,4 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 15 May 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 16 May 2012
 
 	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 11)
 			by Marcin Szamotulski
@@ -165,7 +165,14 @@ for all the defined functions :help atp*()CTRL-d, mappings: :help atp-mapCTRL-d
 NEWS							*atp-news*
 >
  ======================
- Changes in version 10.6.5
+ Changes in version 11.1
+<
+ Note: ~/.vim/ftplugin/ATP_files/atp_RevSearch.py was moved to
+ ~/.vim/ftplugin/ATP_files/reverse_search.py. You might need to udpat the
+ config file of your browser (Okular, Xpdf, etc.)
+>
+ ======================
+ Changes in version 11
 <
  NOTE: You should remove the file:
      ~/.vim/ftplugin/ATP_files/packages/amsmath.vim
@@ -5079,7 +5086,7 @@ Xpdf ~
 Xpdf: inverse search ~
 							(see also |atp_inverse_search|)
 	Add this line to your $HOME/.xpdfrc file: >
-	    bind shift-mousePress1 any 'run(python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py --synctex  "%f" %i %j %k)'
+	    bind shift-mousePress1 any 'run(python $HOME/.vim/ftplugin/ATP_files/reverse_search.py --synctex  "%f" %i %j %k)'
 <	Note: %i, %j, %k should not be quoted.
 	Pressing <Shift>+<Left_Mouse> will do forward search, i.e. it will set
 	vim according to mouse cursor position over Xpdf. See man page of xpdf
@@ -5087,12 +5094,12 @@ Xpdf: inverse search ~
 
 	Note: to use this xpdf have to be opened giving full path to the file.
 	This is important when you open a file from a terminal. Otherwise
-	atp_RevSearch.py as invoked above by the run() command will look for
+	reverse_search.py as invoked above by the run() command will look for
 	the tex file in the directory: '$HOME/.vim/ftplugin/ATP_files'.
 	Furthermore, it will make new file there which ATP will try to process.
-	A workaround this should be to place atp_RevSearch somewhere in your
+	A workaround this should be to place reverse_search somewhere in your
 	path and make in executable and change the run() command to
-	'run(atp_RevSearch.py --synctex %f %i %j %k)'. This is not tested solution.
+	'run(reverse_search.py --synctex %f %i %j %k)'. This is not tested solution.
 
 	You can debug Xpdf if something doesn't work: open the file from terminal
 	with 'xpdf -cmd' see the man page of Xpdf.
@@ -5110,13 +5117,13 @@ Okular ~
 <
 Okular: inverse search ~
 	Here is how to configure inverse searching (Okular->Vim) with
-	|atp_RevSearch.py| python script shifted with ATP: 
+	|reverse_search.py| python script shifted with ATP: 
 
 	open Okular and go to >
 		settings>Configure Okular>Editor
 <	and set >
 		Editor		Custom Text Editor
-		Command		python $HOME/.vim/ftplugin/ATP_files/atp_RevSearch.py '%f' '%l'
+		Command		python $HOME/.vim/ftplugin/ATP_files/reverse_search.py '%f' '%l'
 <	NOTE: You must substitute $HOME directory to its value!!! It will not
 	work other way. You can also copy the script somewhere inside your
 	$PATH but then when this script will change you have to keep in mind
@@ -5212,14 +5219,14 @@ Mupdf ~
 ================================================================================
 INVERSE SEARCHING					*atp_inverse_search*
 
-							*atp_RevSearch.py*
+							*reverse_search.py*
 	ATP comes with a python script which can do inverse searching. It is
 	based on synctex and a vim function |atplib#FindAndOpen()|. The last
 	function searches which running vim/gvim instance holds the {file},
 	and updates the cursor location. The syntax is as follows:
 
-	    atp_RevSearch.py [--gvim] {file} {line} [column]
-	    atp_RevSearch.py [--gvim] --synctex {file} {page} {x-coord} {y-coord}
+	    reverse_search.py [--vim] {file} {line} [column]
+	    reverse_search.py [--vim] --synctex {file} {page} {x-coord} {y-coord}
 
 	First syntax will work for viewers which calls synctex themselves
 	(like Okular) and has escapes for {line} (and [column]).  The second
@@ -5231,30 +5238,30 @@ INVERSE SEARCHING					*atp_inverse_search*
 	y coordinates counting from bottom left corner)
 
 	Preferably you should call this command with >
-	    python PATH/atp_RevSearch.py  {args}
-<	Then when you update ATP you will not miss updates of |atp_RevSearch.py|. 
-	Another good solution is to link |atp_RevSearch.py| somewhere in the
+	    python PATH/reverse_search.py  {args}
+<	Then when you update ATP you will not miss updates of |reverse_search.py|. 
+	Another good solution is to link |reverse_search.py| somewhere in the
 	$PATH and make it executable. If you just copy it you might miss when
 	it will be updated. If you set the command as above (with python
-	before the path to atp_RevSearch.py) you do not need to make
-	atp_RevSearch.py executable.  Note, that otherwise whenever you update
+	before the path to reverse_search.py) you do not need to make
+	reverse_search.py executable.  Note, that otherwise whenever you update
 	ATP you will have to make the script executable!
 
 	By default, the script is using gvim. If you prefer to use vim add
 	[--vim] switch: >
-	    python PATH/atp_RevSearch --gvim --synctex {file} {page} {x-coord} {y-coord}
+	    python PATH/reverse_search --gvim --synctex {file} {page} {x-coord} {y-coord}
 <
-	Note: |atp_RevSearch.py| doesn't like when you suspend an instance of
+	Note: |reverse_search.py| doesn't like when you suspend an instance of
 	vim (any).
 
-	|atp_RevSearch.py| write to a debug file /tmp/atp_RevSearch.py.
+	|reverse_search.py| write to a debug file /tmp/atp_RevSearch.py.
 
 	Note: if inverse searching stopped working for you, try to recompile
 	the document.
 
-	Finally, |atp_RevSearch.py| will forward error messages (or error code
+	Finally, |reverse_search.py| will forward error messages (or error code
 	if error message was not found) back to vim. This is only possible if
-	|atp_RevSearch.py| found the correct vim server.
+	|reverse_search.py| found the correct vim server.
 
 							*atplib#FindAndOpen()*	
 	The function atplib#FindAndOpen() asks each running gvim server if is

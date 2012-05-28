@@ -178,7 +178,6 @@ def write_pbf(string):
         cond = True
     else:
         pb_file     = pb_fobject.read()
-    finally:
         pb_fobject.close()
     if not cond:
         pb          = re.match('(\d*)', pb_file)
@@ -206,7 +205,6 @@ def write_pbf(string):
             pass
         else:
             pb_fobject.write(string+"\n")
-        finally:
             pb_fobject.close()
 
 def latex_progress_bar(cmd):
@@ -249,7 +247,6 @@ def latex_progress_bar(cmd):
             pass
         else:
             pb_fobject.write('')
-        finally:
             pb_fobject.close()
     return child
 

@@ -14,7 +14,7 @@ VERSION = 11
 DATE	= $(shell date '+%d-%m-%y_%H-%M')
 # The ${DESTDIR} variable should point to one of your vim 'runtimepath'
 # entries. I use VAM plugin, so this setting is more complicated:
-DESTDIR = ${HOME}/.vim/vam-addons/AutomaticLaTexPlugin
+DESTDIR = ${HOME}/.vim/vam-addons/AutomaticLaTeXPlugin
 
 SOURCE = autoload/atplib.vim
 SOURCE += autoload/atplib/bibsearch.vim
@@ -38,7 +38,7 @@ SOURCE += ftplugin/ATP_files/LatexBox_latexmk.vim
 SOURCE += ftplugin/ATP_files/LatexBox_mappings.vim
 SOURCE += ftplugin/ATP_files/LatexBox_motion.vim
 SOURCE += ftplugin/ATP_files/abbreviations.vim
-SOURCE += ftplugin/ATP_files/atp_RevSearch.py
+SOURCE += ftplugin/ATP_files/reverse_search.py
 SOURCE += ftplugin/ATP_files/common.vim
 SOURCE += ftplugin/ATP_files/compile.py
 SOURCE += ftplugin/ATP_files/compiler.vim

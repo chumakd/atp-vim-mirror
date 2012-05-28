@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options defined on startup of ATP
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sun Apr 22, 2012 at 11:43:10  +0100
+" Last Change: Sun May 27, 2012 at 15:37:25  +0100
 
 " NOTE: you can add your local settings to ~/.atprc.vim or
 " ftplugin/ATP_files/atprc.vim file
@@ -168,6 +168,9 @@ endif
 
 " vim options
 " {{{ Vim options
+
+" undo_ftplugin
+let b:undo_ftplugin = "setlocal nrformats< complete< keywordprg< suffixes< comments< commentstring< define< include< suffixesadd< includeexpr<"
 
 " Make CTRL-A, CTRL-X work over alphabetic characters:
 setl nrformats=alpha
@@ -1149,7 +1152,7 @@ if !exists("g:atp_amsmath")
     let g:atp_amsmath=atplib#search#SearchPackage('ams')
 endif
 if atplib#search#SearchPackage('amsmath') || g:atp_amsmath != 0 || atplib#search#DocumentClass(b:atp_MainFile) =~ '^ams'
-    exe "setlocal complete+=k".globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary")
+    exe "setlocal complete+=k".split(globpath(&rtp, "ftplugin/ATP_files/dictionaries/ams_dictionary"), "\n")[0]
 endif
 if !exists("g:atp_no_math_command_completion")
     let g:atp_no_math_command_completion = 0

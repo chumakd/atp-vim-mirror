@@ -90,7 +90,6 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
         sys.exit(1)
     else:
         log_stream = log_file.read()
-    finally:
         log_file.close()
     # Todo: In python3 there is UnicodeDecodeError. I should remove all the
     # bytes where python cannot decode the character.
@@ -140,7 +139,6 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
             print("IOError: cannot open %s file for writting" % log_to_path)
         else:
             log_fo.write(log_stream)
-        finally:
             log_fo.close()
 
     # File stack
@@ -419,7 +417,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
                     msg = " "
                 p_match = re.match('! Package (\w+) Error', line)
                 if p_match:
-                    info = match.group(1)
+                    info = p_match.group(1)
                 elif rest:
                     info = rest
                 else:
@@ -487,7 +485,6 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
         sys.exit(1)
     else:
         output_fo.write('\n'.join(output_data)+'\n')
-    finally:
         output_fo.close()
 
 

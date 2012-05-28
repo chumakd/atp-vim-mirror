@@ -182,7 +182,6 @@ def vim_remote_expr(servername, expr):
         sys.exit(1)
     else:
         subprocess.Popen(cmd, stdout=devnull, stderr=subprocess.STDOUT).wait()
-    finally:
         devnull.close()
 
 def latex_progress_bar(cmd):
