@@ -1184,6 +1184,12 @@ function! atplib#complete#CheckBracket(bracket_dict)
     let time		= reltime()
     let limit_line	= max([1,(line(".")-g:atp_completion_limits[4])])
     let pos		= getpos(".")
+    if pos[2] == 1
+	let check_pos = [0, pos[1], len(getline(line(".")-1)), 0]
+    else
+	let check_pos = copy(pos)
+	let check_pos[2] -= 1
+    endif
     call search('\S', 'bW')
     let begin_line	= max([search('\%(\\par\>\|^\s*$\)', 'bnW'), limit_line])
     let end_line	= min([search('\%(\\par\>\|^\s*$\)', 'nW'), min([line('$'), line(".")+g:atp_completion_limits[4]])]) 
@@ -1222,6 +1228,7 @@ function! atplib#complete#CheckBracket(bracket_dict)
     let bracket_list= keys(a:bracket_dict)
     for ket in bracket_list
 	let pos		= deepcopy(pos_saved)
+	let pos[2]	-=1
 	let time_{i}	= reltime()
 	if ket != '{' && ket != '(' && ket != '['
 	    if search('\\\@<!'.escape(ket,'\[]'), 'bnW', begin_line)
@@ -1248,7 +1255,7 @@ function! atplib#complete#CheckBracket(bracket_dict)
 		let cb=0
 		for lnr in range(begin_line, line("."))
 		    if lnr == line(".")
-			let line_str=strpart(getline(lnr), 0, pos_saved[2])
+			let line_str=strpart(getline(lnr), 0, pos_saved[2]-1)
 		    else
 			let line_str=getline(lnr)
 		    endif
@@ -1263,7 +1270,7 @@ function! atplib#complete#CheckBracket(bracket_dict)
 		endfor
 		call cursor(limit_line, 1)
 		let first_ket_pos	= searchpos(escape(ket,'\[]').'\|'.escape(a:bracket_dict[ket],'\[]'), 'cW', pos_saved[1])
-		call cursor(pos_saved[1], pos_saved[2])
+		call cursor(pos_saved[1], pos_saved[2]-1)
 		let first_ket		= ( first_ket_pos[1] ? getline(first_ket_pos[0])[first_ket_pos[1]-1] : '{' )
 
 	        if g:atp_debugCheckBracket

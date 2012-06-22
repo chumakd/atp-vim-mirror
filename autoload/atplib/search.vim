@@ -1610,7 +1610,7 @@ function! atplib#search#KpsewhichFindFile(format, name, ...)
     let l:count	= a:0 >= 2 ? a:2 : 0
     let modifiers = a:0 >= 3 ? a:3 : ""
     " This takes most of the time!
-    if path == ""
+    if !path
 	let path	= substitute(substitute(system("kpsewhich -show-path ".a:format ),'!!','','g'),'\/\/\+','\/','g')
 	let path	= substitute(path,':\|\n',',','g')
 	let path_list	= split(path, ',')
@@ -1640,15 +1640,30 @@ function! atplib#search#KpsewhichFindFile(format, name, ...)
 	let path	= join(path_list, ',')
     endif
 
+    let g:name = a:name
+    let g:path = path
+    let g:count = l:count
+
     if l:count >= 1
-	let result	= findfile(a:name, path, l:count)
+	if has("python")
+	    let result	= atplib#search#findfile(a:name, path, l:count)
+	else
+	    let result	= findfile(a:name, path, l:count)
+	endif
     elseif l:count == 0
-	let result	= findfile(a:name, path)
+	if has("python")
+	    let result	= atplib#search#findfile(a:name, path)
+	else
+	    let result	= findfile(a:name, path)
+	endif
     elseif l:count < 0
-	let result	= findfile(a:name, path, -1)
+	if has("python")
+	    let result	= atplib#search#findfile(a:name, path, -1)
+	else
+	    let result	= findfile(a:name, path, -1)
+	endif
     endif
 	
-
     if l:count >= 0 && modifiers != ""
 	let result	= fnamemodify(result, modifiers) 
     elseif l:count < 0 && modifiers != ""
@@ -1659,6 +1674,32 @@ function! atplib#search#KpsewhichFindFile(format, name, ...)
     return result
 endfunction
 " }}}1
+" {{{1 atplib#search#findfile
+function! atplib#search#findfile(fname, ...)
+" Python implementation of the vim findfile() function.
+let time = reltime()
+let path = ( a:0 >= 1 ? a:1 : &l:path )
+let l:count = ( a:0 >= 2 ? a:2 : 1 )
+python << EOF
+import vim, os.path, glob
+path=vim.eval("path")
+fname=vim.eval("a:fname")
+file_list = []
+for p in path.split(","):
+    if len(p) >= 2 and p[-2:] == "**":
+	file_list.extend(glob.glob(os.path.join( p[:-2], fname )))
+    file_list.extend(glob.glob(os.path.join( p, fname )))
+vim.command("let file_list=%s" % file_list)
+EOF
+if l:count == -1
+    return file_list
+elseif l:count <= len(file_list)
+    return file_list[l:count-1]
+else
+    return ""
+endif
+endfunction
+"}}}1
 
 " atplib#search#SearchPackage {{{1
 "

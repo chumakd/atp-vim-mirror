@@ -1,6 +1,6 @@
-*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 16 May 2012
+*automatic-tex-plugin.txt* LaTeX filetype plugin	Last change: 22 June 2012
 
-	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 11)
+	    An Introduction to AUTOMATIC (La)TeX PLUGIN (ver. 11.1)
 			by Marcin Szamotulski
 		    mszamot [AT] gmail [DOT] com
 -----------------------------------------------------------------------------
@@ -170,6 +170,13 @@ NEWS							*atp-news*
  Note: ~/.vim/ftplugin/ATP_files/atp_RevSearch.py was moved to
  ~/.vim/ftplugin/ATP_files/reverse_search.py. You might need to udpat the
  config file of your browser (Okular, Xpdf, etc.)
+
+ gf	    - works faster if vim is compiled with |+python| interface.
+ C-XC-O	    - closing brackets: a small bug fixed.
+ vip	    - better support for "\begin{...}[...]\label{...}".
+ TEX!
+ MakeLatex! - with the bang "!" the commands writes (using |update| command)
+	      all the loaded project buffers.
 >
  ======================
  Changes in version 11
@@ -998,12 +1005,8 @@ map [runs]<LocalLeader>l, map [runs]<LocalLeader>d
 	TeX you need (this is important if you want to compile Table of
 	Contents, or index, or the bibliography (see |atp-:Bibtex|)
 
-	Without "!" it copies the aux file only if there are no compilation
-	errors, with "!" it updates the aux file even if there were errors.
-	This is done to make the labels completion work better, when there are
-	errors they often affect the aux file in a way that interferes with
-	|atp-:Labels| command. However ATP also makes a copy of aux file with
-	extension ._aux - this is for label completion: |atp-completion-label|.
+	With bang it saves (using the |update| command) all loaded project
+	buffers.
 
 	If b:atp_OpenViewer=1 and there current viewer (b:Viewer) is not
 	running on the output file then this function will open a viewer. By
@@ -1058,16 +1061,17 @@ map [runs]<LocalLeader>d
 	With one command you can make your whole document: cross references,
 	bibliography (with or without bibtex), index, table of contents, table
 	of figures, table of theorems ([ntheorem package]), table of
-	algorithms. ':MakeLatex!' should be used when an entry in the
-	bibliography was deleted (when 'bibtex' is involved this is when you
-	delete last citation command of a bib entry).
+	algorithms. 
+
+	With bang it saves (using the |update| command) all loaded project
+	buffers.
 
 	If aux or log files are loaded in a buffer then they will be deleted
 	- this is a requirement of vimgrep internal grep command (other wise
 	vimgrep will search in the buffer not the hard disk version and they
 	may differ). 
 
-	Returns with error message if log contains '! Emergency stop.'
+	Returns with an error message if log contains '! Emergency stop.'
 
 	If |g:atp_Compiler| = 'python' it uses the python script to compile
 	document, if |g:atp_Compiler| = 'bash' it uses a bash command (UNIX

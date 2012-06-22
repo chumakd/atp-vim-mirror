@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu Apr 26, 2012 at 20:40:41  +0100
+" Last Change: Thu May 31, 2012 at 21:41:24  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -23,12 +23,10 @@ endif
 if g:atp_mapNn
     call atplib#search#ATP_ToggleNn(1,"on")
 endif
-
 " DICTIONARY MAP: {{{1
 if !hasmapto("<Plug>Dictionray")
     nmap <buffer> <silent> =d <Plug>Dictionary
 endif
-
 " REPLACE: {{{1 
 " Replace map (is not working -> use :Repace command)
 " if !g:atp_VimCompatible && !hasmapto("<Plug>Replace")
@@ -90,19 +88,16 @@ function! <SID>Replace(sid,...) "{{{2
 	call cursor(line("."), col("."))
     endif
 endfunction "}}}2
-
 " UNWRAP MAP: {{{1
 if !hasmapto("<Plug>Unwrap")
     nmap <buffer> <silent> <LocalLeader>u <Plug>Unwrap
 endif
-
 " CC IMAP: {{{1
 " <c-c> in insert mode doesn't trigger InsertLeave autocommands
 " this fixes this.
 if g:atp_IMapCC
     imap <silent> <buffer> <C-c> <C-[>
 endif
-
 " NOT A COMMENT PATTERN CMAP: {{{1
 exe "cmap <buffer> <expr> <M-c> '^'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'([^'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%]'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'\\|".s:bbackslash."'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').')*".s:backslash."zs'"
 " SPECIAL SPACE CMAP: {{{1
@@ -139,14 +134,12 @@ endif
 if maparg("<F2>", "n") == ""
     nmap <buffer> <F2>	:echo ATP_ToggleSpace()<CR>
 endif
-
 " COMMANDS: font preview, open fd file, close last: environment, bracket {{{1
 command! -buffer -bang -nargs=* FontSearch	:call atplib#fontpreview#FontSearch(<q-bang>, <f-args>)
 command! -buffer -bang -nargs=* FontPreview	:call atplib#fontpreview#FontPreview(<q-bang>,<f-args>)
 command! -buffer -nargs=1 -complete=customlist,atplib#Fd_completion OpenFdFile	:call atplib#tools#OpenFdFile(<f-args>) 
 command! -buffer -nargs=* CloseLastEnvironment	:call atplib#complete#CloseLastEnvironment(<f-args>)
 command! -buffer 	  CloseLastBracket	:call atplib#complete#CloseLastBracket()
-
 " SECTION MOTION MAPS: {{{1
 if !hasmapto("\"SSec") && !hasmapto("'SSec")
     exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."S		:<C-U>keepjumps exe v:count1.\"SSec\"<CR>"
@@ -160,7 +153,6 @@ endif
 if !hasmapto("\"Part") && !hasmapto("'Part")
     exe "nmap <buffer> <silent>	".g:atp_goto_section_leader."p		:<C-U>keepjumps exe v:count1.\"Part\"<CR>"
 endif
-
 " SYNCTEX MAPS: {{{1
 if !hasmapto("<Plug>SyncTexKeyStroke", "n")
     nmap <buffer> <silent> <LocalLeader>f	<Plug>SyncTexKeyStroke
@@ -171,7 +163,6 @@ endif
 if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
     nmap <buffer> <S-LeftMouse> 		<LeftMouse><Plug>SyncTexMouse
 endif
-
 " COMMENT LINES: {{{1
 if g:atp_MapCommentLines    
     if !hasmapto("<Plug>CommentLines", "n")
@@ -187,7 +178,6 @@ if g:atp_MapCommentLines
 " 	exe "vmap <buffer> <silent> ".g:atp_map_UnComment."	<Plug>UnCommentLines"
 "     endif
 endif
-
 " MOVE AROUND COMMENTS: {{{1
 if !hasmapto("<Plug>ParagraphNormalMotion")
     nmap <buffer> <silent> }	<Plug>ParagraphNormalMotionForward
@@ -244,7 +234,6 @@ if !hasmapto(":PInput<CR>")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."i	:PInput<CR>"
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."gf	:PInput<CR>"
 endif
-
 " MOTIONS: {{{1
 " imap <buffer> <C-j> <Plug>TexSyntaxMotionForward
 " imap <buffer> <C-k> <Plug>TexSyntaxMotionBackward
@@ -358,7 +347,6 @@ endif
 if !hasmapto("<Plug>GotoPreviousDisplayedMath", "n")
     execute "nmap <silent> <buffer> ".g:atp_map_backward_motion_leader."M	<Plug>GotoPreviousDisplayedMath"
 endif
-
 " GOTO FILE MAP: {{{1
 if has("path_extra") && !hasmapto(" GotoFile(", 'n')
 	nnoremap <buffer> <silent> gf		:call atplib#motion#GotoFile("", "")<CR>
@@ -380,7 +368,6 @@ endif
 if !hasmapto(":Wrap { } begin<cr>", 'v')
     execute "vnoremap <silent> <buffer> ".g:atp_vmap_bracket_leader."{ 	:Wrap { } begin<CR>"
 endif
-
 " WRAPERS: {{{1
 " OPERATOR FONT MAPS: {{{2
 function! ATP_LastWrap(type)
@@ -737,7 +724,6 @@ execute "vnoremap <silent> <buffer> <expr>".g:atp_imap_over_leader."~		':<C-U>Wr
 if !hasmapto(":TexAlign<CR>", 'n')
     nmap <silent> <buffer> <Localleader>a	<Plug>TexAlign
 endif
-
 " PARAGRAPH SELECTION: {{{1
 if !hasmapto("<Plug>ATP_SelectCurrentParagraphInner", 'v')
     vmap <silent> <buffer> ip 	<Plug>ATP_SelectCurrentParagraphInner
@@ -751,16 +737,13 @@ endif
 if !hasmapto(" vap<CR>", "o")
     omap <silent> <buffer>  ap	:normal vap<CR>
 endif
-
 " FORMATING: {{{1
-if !hasmapto("m`vipgq``", "n")
-    nmap <silent> <buffer> gw		m`vipgq``
+if !hasmapto("<Plug>FormatLines", "n")
+    nmap <silent> <buffer> gw		<Plug>FormatLines
 endif
-
 " INDENT BLOCK: {{{1
 nnoremap <buffer> g>	:<C-U>call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1).">``", 't')<CR>
 nnoremap <buffer> g<	:<C-U>call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1)."<``", 't')<CR>
-
 " SELECT SYNTAX: {{{1
 if !hasmapto("<Plug>SelectOuterSyntax", "v")
     vmap <buffer> <silent> aS		<Plug>SelectOuterSyntax
@@ -768,7 +751,6 @@ endif
 if !hasmapto("<Plug>SelectInnerSyntax", "v")
     vmap <buffer> <silent> iS		<Plug>SelectInnerSyntax
 endif
-
 " ENVIRONMENT MOVES: {{{1
 " From vim.vim plugin (by Bram Mooleaner)
 " Move around functions.
@@ -804,7 +786,6 @@ exe "vnoremap <silent> <buffer> <Plug>vEndNextEnvironment m':<C-U>exe \"normal! 
 if !hasmapto("<Plug>vEndNextEnvironment", "v")
     vmap <silent> <buffer> ][ <Plug>vEndNextEnvironment
 endif
-
 " SELECT COMMENT: {{{1
 if !hasmapto("v<Plug>vSelectComment", "n")
     exe "nmap <silent> <buffer> ".g:atp_MapSelectComment." v<Plug>vSelectComment"
@@ -837,7 +818,6 @@ function! <SID>BeamerOptions()
     endif
 endfunction
 au BufEnter *.tex 	call <SID>BeamerOptions()
-
 " NORMAL MODE MAPS: (most of them) {{{1
 
 " Enabling this requires uncommenting augroup ATP_Cmdwin in options.vim
@@ -993,7 +973,6 @@ endif
 if !hasmapto("<Plug>PdfFonts", "n")
     nmap  <silent> <buffer> <F6>g 			<Plug>PdfFonts
 endif
-
 " TEXDOC: {{{2
 " Note :TexDoc map cannot be <silent>
 nnoremap           <buffer> <Plug>TexDoc		:TexDoc<space>
@@ -1044,7 +1023,6 @@ if !exists("g:atp_imap_fonts") || g:atp_reload_variables
     endif
     " Make Font Maps:
     call atplib#MakeMaps(g:atp_imap_fonts)
-	    
 " GREEK LETTERS: {{{1
 if !exists("g:atp_imap_greek_letters") || g:atp_reload_variables
     let g:atp_imap_greek_letters= [
@@ -1139,7 +1117,6 @@ endif
 " 	au InsertLeave	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'InsertLeave')
 	au BufEnter	*.tex 	:call atplib#MakeMaps(g:atp_imap_greek_letters, 'BufEnter')
     augroup END
-
 " MISCELLANEOUS MATHEMATICAL MAPS: {{{1
 if !exists("g:atp_imap_math_misc") || g:atp_reload_variables
 let g:atp_imap_math_misc = [
@@ -1209,7 +1186,6 @@ endif
 	au CursorHoldI 	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'CursorHoldI', g:atp_imap_diacritics) 
 	au InsertEnter	*.tex 	:call atplib#ToggleIMaps(g:atp_imap_math_misc, 'InsertEnter', g:atp_imap_diacritics) 
     augroup END
-
 " DIACRITICSC IMAPS: {{{1
     if g:atp_diacritics == 2
 	let g:atp_imap_diacritics = [
@@ -1273,7 +1249,6 @@ endif
     else
 	let g:atp_imap_diacritics=[]
     endif
-
 " ENVIRONMENT MAPS: {{{1
 if g:atp_no_env_maps != 1
     if !exists("g:atp_imap_environments") || g:atp_reload_variables
@@ -1312,8 +1287,6 @@ if g:atp_no_env_maps != 1
     " Make Environment Maps:
     call atplib#MakeMaps(g:atp_imap_environments)
 endif
-
-
 " MATHEMATICAL MAPS: {{{1
 if !exists("g:atp_imap_math") || g:atp_reload_variables
     let g:atp_imap_math	= [ 
@@ -1354,7 +1327,6 @@ if !exists("g:atp_imap_math") || g:atp_reload_variables
 	\ [ "inoremap", "<buffer> <silent> <expr>", "", "_>", "atplib#IsInMath('!') ? '".s:backslash."Rightarrow' 	: '->'", "g:atp_imap_define_math",		'\\Rightarrow'],
 	\ ]
 endif
-
 " MAKE MATHEMATICAL MAPS: (autocommands) "{{{1
 augroup ATP_MathIMaps
     au!

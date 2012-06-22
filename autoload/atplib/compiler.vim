@@ -636,7 +636,11 @@ function! atplib#compiler#MakeLatex(bang, mode, start)
     lockvar g:atp_TexCommand
 
     " Write file
-    call atplib#write("COM", "silent")
+    if a:bang == "!"
+	call atplib#WriteProject('update')
+    else
+	call atplib#write("COM", "silent")
+    endif
 
     if mode == "verbose"
 	exe ":!".cmd
@@ -653,7 +657,7 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     " a:1	= b:atp_XpdfServer (default value)
 
     if fnamemodify(&l:errorfile, ":p") != fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
-	exe "setl errorfile=".fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log"
+	exe "setl errorfile=".fnameescape(fnamemodify(a:filename, ":p:r").".".(g:atp_ParseLog ? "_" : "")."log")
     endif
 
     " Kill comiple.py scripts if there are too many of them.
@@ -748,7 +752,10 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     else
 	let viewer_options  	= local_options
     endif
-    let bang 			= ( a:bang == '!' ? ' --bang ' : '' ) 
+"     let bang 			= ( a:bang == '!' ? ' --bang ' : '' ) 
+	" this is the old bang (used furthere in the code: when           
+	" equal to '!' the function wasn't not makeing a copy of aux file    
+    let bang			= ""
     let bibtex 			= ( a:bibtex ? ' --bibtex ' : '' )
     let reload_on_error 	= ( b:atp_ReloadOnError ? ' --reload-on-error ' : '' )
     let gui_running 		= ( has("gui_running") ? ' --gui-running ' : '' )
@@ -788,7 +795,11 @@ function! atplib#compiler#PythonCompiler(bibtex, start, runs, verbose, command, 
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
-    call atplib#write(a:command,"silent")
+    if a:bang == "!"
+	call atplib#WriteProject('write')
+    else
+	call atplib#write(a:command, "silent")
+    endif
 
     if g:atp_debugPythonCompiler
 	call atplib#Log("PythonCompiler.log", "POST WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
@@ -1113,8 +1124,8 @@ function! atplib#compiler#Compiler(bibtex, start, runs, verbose, command, filena
 	    " 	Reload on Error:
 	    " 	for xpdf it copies the out file but does not reload the xpdf
 	    " 	server for other viewers it simply doesn't copy the out file.
-	    if b:atp_ReloadOnError || a:bang == "!"
-		if a:bang == "!"
+	    if b:atp_ReloadOnError || bang == "!"
+		if bang == "!"
 		    let command="( ".texcomp." ; ".catchstatus_cmd." ".g:atp_cpcmd." ".cpoptions." ".shellescape(tmpaux)." ".shellescape(b:atp_OutDir)." ; ".cpoutfile." ".Reload_Viewer 
 		else
 		    let command="( (".texcomp." && ".g:atp_cpcmd." ".cpoptions." ".shellescape(tmpaux)." ".shellescape(b:atp_OutDir)." ) ; ".catchstatus_cmd." ".cpoutfile." ".Reload_Viewer 
@@ -1215,13 +1226,20 @@ endfunction
 "{{{ aptlib#compiler#ThreadedCompiler
 function! atplib#compiler#ThreadedCompiler(bibtex, start, runs, verbose, command, filename, bang)
 
+
     " Write file:
     if g:atp_debugPythonCompiler
 	call atplib#Log("ThreadedCompiler.log", "", "init")
 	call atplib#Log("ThreadedCompiler.log", "PRE WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)
     endif
 
-    call atplib#write(a:command, "silent")
+    let bang = ""   " this is the old bang (used furthere in the code: when
+		    " equal to '!' the function wasn't not makeing a copy of aux file
+    if a:bang == "!"
+	call atplib#WriteProject('update')
+    else
+	call atplib#write(a:command, "silent")
+    endif
 
     if g:atp_debugPythonCompiler
 	call atplib#Log("ThreadedCompiler.log", "POST WRITING b:atp_changedtick=".b:atp_changedtick." b:changedtick=".b:changedtick)

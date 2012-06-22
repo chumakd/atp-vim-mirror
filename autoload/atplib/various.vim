@@ -2,7 +2,7 @@
 " Descriptiion:	These are various editting tools used in ATP.
 " Note:	       This file is a part of Automatic Tex Plugin for Vim.
 " Language:    tex
-" Last Change: Sat May 19, 2012 at 14:08:54  +0100
+" Last Change: Thu May 31, 2012 at 21:39:56  +0100
 
 let s:sourced 	= exists("s:sourced") ? 1 : 0
 
@@ -2569,4 +2569,11 @@ function! atplib#various#DebugPrintComp(A,C,L)
     return join(list, "\n")
 endfunction
 "}}}
+" {{{ atplib#various#FormatLines
+function! atplib#various#FormatLines()
+    " This function is not using winsaveview() since this might change the
+    " cursor position in the text.
+    normal m`vipgq``
+endfunction
+" }}}
 " vim:fdm=marker:tw=85:ff=unix:noet:ts=8:sw=4:fdc=1

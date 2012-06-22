@@ -1759,9 +1759,9 @@ function! atplib#motion#GotoFile(bang,args,...)
 	call extend(level_d, { atp_MainFile : 0 })
     endif
 
-"     let g:file_l = copy(file_l)
-"     let g:method = method
-"     let g:line 	= line
+    let g:file_l = copy(file_l)
+    let g:method = method
+    let g:line 	= line
 
     if len(file_l) > 1 && file =~ '^\s*$'
 	if method == "all"

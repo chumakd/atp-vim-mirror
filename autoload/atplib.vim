@@ -88,10 +88,8 @@ function! atplib#write(command,...) "{{{
 endfunction "}}}
 function! atplib#update(main_file, ...) "{{{
     if !(exists("b:atp_MainFile") && a:main_file == atplib#FullPath(b:atp_MainFile))
-" 	echomsg "NO UPDATE: ".expand("%:p")
 	return
     endif
-"     echomsg "UPDATE: ".expand("%:p")
 
     if a:0 > 0 && a:1 == "silent"
 	silent! update
@@ -99,6 +97,19 @@ function! atplib#update(main_file, ...) "{{{
 	update
     endif
 
+endfunction "}}}
+function! atplib#WriteProject(command,...) "{{{
+    let silent = a:0 >=1 ? a:1 : ''
+    let flist = [b:atp_MainFile]
+    call extend(flist, b:ListOfFiles)
+    for file in flist
+	let bufnr_saved = bufnr("%")
+	if bufloaded(file)
+	    exe "buffer ".bufnr(file)
+	    exe silent." ".a:command
+	endif
+	exe "buffer ".bufnr_saved
+    endfor
 endfunction "}}}
 " Log:
 function! atplib#Log(file, string, ...) "{{{1
