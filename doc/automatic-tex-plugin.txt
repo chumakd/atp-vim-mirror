@@ -167,6 +167,18 @@ NEWS							*atp-news*
  ======================
  Changes in version 11.1
 <
+ Hi, 
+    I have put ATP on fundageek - a rais funding platform: 
+    http://www.fundageek.com/project/detail/353/LaTeX-plugin-for-Vim
+
+    I am forced to do that, since my laptop is not working properly and I need
+    a replacement. Please share the link among people who would like to
+    support this project.
+
+ Best regards,
+    Marcin
+
+
  Note: ~/.vim/ftplugin/ATP_files/atp_RevSearch.py was moved to
  ~/.vim/ftplugin/ATP_files/reverse_search.py. You might need to udpat the
  config file of your browser (Okular, Xpdf, etc.)
