@@ -2379,6 +2379,7 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 		    endif
 		endif
 	    endif
+	    call extend(completion_list, g:atp_math_commands_PRE)
 	    " ----------------------- nicefrac {{{5
 	    if atplib#search#SearchPackage('nicefrac', stop_line)
 		call add(completion_list,"\\nicefrac{")
@@ -2793,8 +2794,13 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 	    if has("python") && g:atp_bibsearch == "python" && pat != ""
 		let bibfiles=[]
 		for f in b:ListOfFiles
-		    if b:TypeDict[f] == 'bib'
+		    let type = get(b:TypeDict, f, "NOTYPE")
+		    if type == 'bib'
 			call add(bibfiles, f)
+		    elseif type == "NOTYPE"
+			echohl WarningMsg
+			echo "[ATP:] run :InputFiles command."
+			echohl Normal
 		    endif
 		endfor
 		let bibitems_list=values(atplib#bibsearch#searchbib_py(pat, bibfiles))
@@ -2802,8 +2808,13 @@ function! atplib#complete#TabCompletion(expert_mode,...)
 		let bibdict={}
 		for f in b:ListOfFiles
 		    try
-			if b:TypeDict[f] == 'bib'
+			let type = get(b:TypeDict, f, "NOTYPE")
+			if type == 'bib'
 			    let bibdict[f]=readfile(f)
+			elseif type == "NOTYPE"
+			    echohl WarningMsg
+			    echo "[ATP:] run :InputFiles command."
+			    echohl Normal
 			endif
 		    catch /E716:/
 			echoerr "[ATP]: key ".f." not present in dictionary b:TypeDict. Try to run :InputFiles."

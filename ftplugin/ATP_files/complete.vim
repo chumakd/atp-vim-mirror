@@ -2,7 +2,7 @@
 " Description: 	This file contains all the options and functions for completion.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Sat Mar 03, 2012 at 15:58:17  +0000
+" Last Change: Tue Jun 26, 2012 at 19:10:50  +0100
 
 " Todo: biblatex.sty (recursive search for commands contains strange command \i}.
 
@@ -259,8 +259,11 @@ endif
 	\ "\\diamondsuit", "\\heartsuit", "\\clubsuit", "\\spadesuit", "\\top", "\\ell", 
 	\ "\\imath", "\\jmath", "\\wp", "\\Im", "\\Re", "\\prime", "\\ll", "\\gg", "\\Nabla" ]
 
-	let g:atp_math_commands_PRE=[ "\\diagdown", "\\diagup", "\\subset", "\\subseteq", "\\supset", "\\supsetneq",
-		    \ "\\sharp", "\\underline{", "\\underbrace{",  ]
+	let g:atp_math_commands_PRE=[  
+		    \ "\\diagdown", "\\diagup", 
+		    \ "\\subset", "\\subseteq", 
+		    \ "\\supset", "\\supseteq", "\\sharp", 
+		    \ "\\underline{", "\\underbrace{",  ] " THEY ARE NOT REALLY AT THE BEGINING.
 
 	let g:atp_greek_letters = ['\alpha', '\beta', '\chi', '\delta', '\epsilon', '\phi', '\gamma', '\eta', '\iota', '\kappa', '\lambda', '\mu', '\nu', '\theta', '\pi', '\rho', '\sigma', '\tau', '\upsilon', '\vartheta', '\xi', '\psi', '\zeta', '\Delta', '\Phi', '\Gamma', '\Lambda', '\Mu', '\Theta', '\Pi', '\Sigma', '\Tau', '\Upsilon', '\Omega', '\Psi']
 

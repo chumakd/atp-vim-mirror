@@ -217,10 +217,18 @@ def latex_progress_bar(cmd):
     stack = deque([])
     while True:
         try:
-            out = child.stdout.read(1).decode(errors="replace")
+            if sys.version_info >= (2, 7):
+                out = child.stdout.read(1).decode(errors="replace")
+            else:
+                # XXX: set the encoding in a better way. 
+                # we could check what is the encoding of the log file.
+                out = child.stdout.read(1).decode(sys.getdefaultencoding(), "replace")
         except UnicodeDecodeError:
             debug_file.write("UNICODE DECODE ERROR:\n")
-            debug_file.write(child.stdout.read(1).encode(errors="ignore"))
+            if sys.version_info >= (2, 7):
+                debug_file.write(child.stdout.read(1).encode(errors="ignore"))
+            else:
+                debug_file.write(child.stdout.read(1).encode(sys.getdefaultencoding(), "ignore"))
             debug_file.write("\n")
             debug_file.write("stack="+''.join(stack)+"\n")
             out = ""

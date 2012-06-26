@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Thu May 31, 2012 at 21:41:24  +0100
+" Last Change: Tue Jun 26, 2012 at 14:35:48  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -893,6 +893,7 @@ if !hasmapto("<Plug>ATP_TeXCurrent", "n")
 endif
 if !hasmapto("<Plug>ATP_TeXLocal", "n")
     nmap <silent> <buffer> <LocalLeader>k		<Plug>ATP_TeXLocal
+"     nmap <silent> <buffer> <LocalLeader><LocalLeader>l  <Plug>ATP_TeXLocal " a good alternative.
 endif
 if !hasmapto("<Plug>ATP_TeXdebug", "n")
     nmap  <silent> <buffer> <LocalLeader>d 		<Plug>ATP_TeXdebug

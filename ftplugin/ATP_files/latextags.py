@@ -24,6 +24,26 @@ import locale
 # (2) Scan bib files to get bibkeys (but this might be slow)!
 #       this could be written to seprate file.
 
+class Dict(dict):
+    """ 2to3 Python transition. """
+    def iterkeys(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).iterkeys()
+        else:
+            return self.keys()
+
+    def iteritems(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).iteritems()
+        else:
+            return self.items()
+
+    def itervalues(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).itervalues()
+        else:
+            return self.values()
+
 # OPTIONS:
 usage   = "usage: %prog [options]"
 parser  = OptionParser(usage=usage)
@@ -97,9 +117,9 @@ def get_tag_type(line, match, label):
     return tag_type
 
 def find_in_filelist(match, file_dict, get_type=False, type_pattern=None):
-# find match in list of files, 
+    # find match in list of files, 
 
-# file_dict is a dictionary with { 'file_name' : file }.
+    # file_dict is a dictionary with { 'file_name' : file }.
     r_file = ""
     r_type = ""
     for file in file_dict.iterkeys():
@@ -125,7 +145,7 @@ def comma_split(arg_list):
 
 try:
 # Read tex files:
-    file_dict={}
+    file_dict=Dict({})
 # { 'file_name' : list_of_lines }
     for file in file_list:
         try:
@@ -143,7 +163,7 @@ try:
 
 # Read bib files:
     if len(bib_list) > 1:
-        bib_dict={}
+        bib_dict=Dict({})
         # { 'bib_name' : list_of_lines } 
         for bibfile in bib_list:
             if sys.version_info < (3, 0):
@@ -156,7 +176,7 @@ try:
 # GENERATE TAGS:
 # From \label{} and \hypertarget{}{} commands:
     tags=[]
-    tag_dict={}
+    tag_dict=Dict({})
     for file_name in file_list:
         file_ll=file_dict[file_name]
         linenr=0

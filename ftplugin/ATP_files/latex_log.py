@@ -56,9 +56,29 @@
 
 import sys, re, os, os.path, fnmatch
 
-def shift_dict( dictionary, nr ):
-    ''' Add nr to every value of dictionary.
+class Dict(dict):
+    """ 2to3 Python transition. """
+    def iterkeys(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).iterkeys()
+        else:
+            return self.keys()
 
+    def iteritems(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).iteritems()
+        else:
+            return self.items()
+
+    def itervalues(self):
+        if sys.version_info < (3,0):
+            return super(type(self), self).itervalues()
+        else:
+            return self.values()
+
+def shift_dict( dictionary, nr ):
+    '''
+    Add nr to every value of dictionary.
     '''
     for key in dictionary.iterkeys():
         dictionary[key]+=nr
@@ -178,7 +198,7 @@ def rewrite_log(input_fname, output_fname=None, check_path=False, project_dir=""
     input_package_pat = re.compile('(?:Package: |Document Class: )')
     input_package = 'Input Package'
 
-    open_dict = {}
+    open_dict = Dict({})
     # This dictionary is of the form:
     # { file_name : number_of_brackets_opened_after_the_file_name_was_found ... }
 
