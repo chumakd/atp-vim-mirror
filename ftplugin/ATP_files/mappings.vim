@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Jun 26, 2012 at 14:35:48  +0100
+" Last Change: Tue Jul 03, 2012 at 18:37:45  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -104,31 +104,30 @@ exe "cmap <buffer> <expr> <M-c> '^'.(getcmdline() =~ '\\\\v' ? '' : '".s:backsla
 if has("gui")
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) ) 
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) ) 
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
     endif
 else
     if &l:cpoptions =~# "B"
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\\v' ? '\_s\+' : ( getcmdline() =~ '\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
     else
 	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
+	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
 	endif
-	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\\v' ? '\\_s\\+' : ( getcmdline() =~ '\\v' ? '\\_s+' : ' ' ) )
-" OK
+	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
+	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
     endif
 endif
 if maparg("<F2>", "n") == ""
@@ -155,10 +154,10 @@ if !hasmapto("\"Part") && !hasmapto("'Part")
 endif
 " SYNCTEX MAPS: {{{1
 if !hasmapto("<Plug>SyncTexKeyStroke", "n")
-    nmap <buffer> <silent> <LocalLeader>f	<Plug>SyncTexKeyStroke
+    nmap <buffer> <silent> <LocalLeader>f		<Plug>SyncTexKeyStroke
 endif
 if !hasmapto("<Plug>SyncTexLKeyStroke", "n")
-    nmap <buffer> <silent> <LocalLeader>F	<Plug>SyncTexLKeyStroke
+    nmap <buffer> <silent> <LocalLeader><LocalLeader>f	<Plug>SyncTexLKeyStroke
 endif
 if !hasmapto("<LeftMouse><Plug>SyncTexMouse", "n")
     nmap <buffer> <S-LeftMouse> 		<LeftMouse><Plug>SyncTexMouse
@@ -892,8 +891,8 @@ if !hasmapto("<Plug>ATP_TeXCurrent", "n")
     nmap  <silent> <buffer> <LocalLeader>l 		<Plug>ATP_TeXCurrent
 endif
 if !hasmapto("<Plug>ATP_TeXLocal", "n")
-    nmap <silent> <buffer> <LocalLeader>k		<Plug>ATP_TeXLocal
-"     nmap <silent> <buffer> <LocalLeader><LocalLeader>l  <Plug>ATP_TeXLocal " a good alternative.
+"     nmap <silent> <buffer> <LocalLeader>k		<Plug>ATP_TeXLocal
+    nmap <silent> <buffer> <LocalLeader><LocalLeader>l  <Plug>ATP_TeXLocal " a good alternative.
 endif
 if !hasmapto("<Plug>ATP_TeXdebug", "n")
     nmap  <silent> <buffer> <LocalLeader>d 		<Plug>ATP_TeXdebug
