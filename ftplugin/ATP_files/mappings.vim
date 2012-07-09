@@ -2,7 +2,7 @@
 " Description:  This file contains mappings defined by ATP.
 " Note:		This file is a part of Automatic Tex Plugin for Vim.
 " Language:	tex
-" Last Change: Tue Jul 03, 2012 at 18:37:45  +0100
+" Last Change: Mon Jul 09, 2012 at 20:39:29  +0100
 
 " Add maps, unless the user didn't want them.
 if exists("g:no_plugin_maps") && g:no_plugin_maps ||
@@ -101,34 +101,20 @@ endif
 " NOT A COMMENT PATTERN CMAP: {{{1
 exe "cmap <buffer> <expr> <M-c> '^'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'([^'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%]'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').'\\|".s:bbackslash."'.(getcmdline() =~ '\\\\v' ? '".s:backslash."' : '').'%'.(getcmdline() =~ '\\\\v' ? '' : '".s:backslash."').')*".s:backslash."zs'"
 " SPECIAL SPACE CMAP: {{{1
-if has("gui")
-    if &l:cpoptions =~# "B"
-	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
-	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) ) 
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
-    else
-	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
-	endif
-	cmap <expr> <buffer> <C-Space> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
+if &l:cpoptions =~# "B"
+    if g:atp_cmap_space
+	cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
     endif
+    cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
+    cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
 else
-    if &l:cpoptions =~# "B"
-	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
-	endif
-	cmap <expr> <buffer> <C-@> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( getcmdtype() =~ '[/?]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\_s\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : ' ' ) )
-    else
-	if g:atp_cmap_space
-	    cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
-	endif
-	cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
-	cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[?\/]' && getcmdline() !~ '\%([^\\]\|^\)\\v' ? '\\_s\\+' : ( getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\\_s+' : ' ' ) )
+    " Some how with no 'B' flag the patter which matches '\v' but not '\\v' is
+    " might be simpler.
+    if g:atp_cmap_space
+	cmap <buffer> <expr> <space> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '[^\\\\]\\v' ? '\\_s+' : '\\_s\\+') : ' ' )
     endif
+    cmap <expr> <buffer> <C-@> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '[^\\\\]\\v' ? '\\_s+' : '\\_s\\+') : ' ' )
+    cmap <expr> <buffer> <C-_> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '[^\\\\]\\v' ? '\\_s+' : '\\_s\\+') : ' ' )
 endif
 if maparg("<F2>", "n") == ""
     nmap <buffer> <F2>	:echo ATP_ToggleSpace()<CR>
